@@ -1,8 +1,8 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import React from 'react';
 import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
+import styled, { createGlobalStyle } from 'styled-components';
 
 const ContainerRangePicker = styled.div`
   & div {
@@ -22,13 +22,21 @@ const ContainerRangePicker = styled.div`
   }
   div > div > input::placeholder {
     color: #4c5055 !important;
-    opacity: 1; /* Ensures the color is not faded */
+    opacity: 1;
     font-family: 'Red Hat Display', sans-serif;
   }
 `;
+
+const DateRangePredefinedGlobalStyle = createGlobalStyle`
+  div[data-testid='daterange-predefined-side'] {
+    overflow-y: scroll !important;
+  }
+`;
+
 const DateRangePickerInput = ({ value, handleChange, customRanges }) => {
   return (
     <>
+      <DateRangePredefinedGlobalStyle />
       <ContainerRangePicker>
         <DateRangePicker
           value={value}
@@ -39,17 +47,18 @@ const DateRangePickerInput = ({ value, handleChange, customRanges }) => {
           showOneCalendar
           size="md"
           showHeader={false}
-          editable={false}
-          showTime={false}
-          format="MM/dd/yyyy"
+          editable={true}
+          showTime={{ format: 'HH:mm' }}
+          format="MM/dd/yyyy HH:mm"
         />
       </ContainerRangePicker>
     </>
   );
 };
+
 DateRangePickerInput.propTypes = {
   value: PropTypes.array,
-  handleChange: PropTypes.func,
+  handleChange: PropTypes.func.isRequired,
   customRanges: PropTypes.array,
 };
 

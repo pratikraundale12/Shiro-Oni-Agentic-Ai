@@ -1,11 +1,18 @@
 /*eslint-disable*/
-import React, { useState, useEffect } from 'react';
+import { isEmpty } from 'lodash';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
+  ExclamationIcon,
+  GreaterArrowIcon,
+  GreenRightCircleIcon,
   OpenLinkIcon,
+  SanityCheckIcon,
+  ScheduleStartIcon,
+  ScheduleStopIcon,
   SmallNotThunderIcon,
   // SmallThunderIcon,
   SquareBoxIcon,
@@ -18,13 +25,14 @@ import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
-import { ModalWithIcon } from '../../shared';
+import { history } from '../../helpers/history';
+import { Button, ModalWithIcon } from '../../shared';
 import {
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { history } from '../../helpers/history';
+import { SchedularActions } from '../../store/schedular';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -136,12 +144,32 @@ const ScrollSetGrey = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
 `;
-
+const BottomButtonWrapper = styled.div`
+  padding: 1rem;
+  border-top: 1px solid #dde4f0;
+`;
 const FlowControl = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  function extractIdFromPath(path) {
+    if (typeof path !== 'string' || path.trim() === '') {
+      return null;
+    }
+    const parts = path.split('/');
+    return parts[parts.length - 1];
+  }
+
+  // Example usage:
+  const path = location?.pathname;
+  const idOfLocation = extractIdFromPath(path);
+
   const sigleNamespaceData = useSelector(
     NamespacesSelectors.getFlowControlData
   );
+  const selectedNamespaceForDetail = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+
   const [activeButton, setActiveButton] = useState(null);
   const [confirmDialogue, setConfirmDialogue] = useState({
     state: false,
@@ -203,6 +231,47 @@ const FlowControl = () => {
       NamespacesActions.fetchInvalidProcessorDetails({ namespaceId: id })
     );
   };
+
+  const handleScheduleFlow = type => {
+    dispatch(SchedularActions.setScheduleFromList(true));
+    dispatch(NamespacesActions.setScheduleStartFlow(true));
+    dispatch(NamespacesActions.setScheduleFlowType(type));
+    dispatch(NamespacesActions.setFlowPath(singleNamespaceData1?.flowId));
+    dispatch(
+      NamespacesActions.setSelectedNamespace({
+        label: singleNamespaceData1?.name,
+        value: singleNamespaceData1?.id,
+        ...singleNamespaceData1,
+      })
+    );
+    dispatch(NamespacesActions.setSelectedNameSpaceForDetail({}));
+    dispatch(
+      NamespacesActions.setVersionSelect({
+        version: singleNamespaceData1?.version,
+      })
+    );
+    dispatch(NamespacesActions.setDeployByRegistryFlow(false));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: singleNamespaceData1?.bucketId,
+        flowId: singleNamespaceData1?.flowId,
+      })
+    );
+    dispatch(
+      NamespacesActions.fetchRegistryFlowDetails({
+        bucketId: singleNamespaceData1?.bucketId,
+        flowId: singleNamespaceData1?.flowId,
+        version: singleNamespaceData1?.version,
+      })
+    );
+
+    history.push('/process-group/config-details', {
+      state: {
+        id: singleNamespaceData1?.id,
+      },
+    });
+  };
+
   return (
     <DataWrapper>
       <FullPageLoader loading={loading} />
@@ -279,15 +348,15 @@ const FlowControl = () => {
               sigleNamespaceData?.stoppedCount === 0
             ) ? (
               <>
-                <TextsvgDiv className="d-flex">
-                  <ActiveButtonDiv className="div-btn-1 mr-2">
+                {selectedNamespaceForDetail?.is_active_schedule === false ? (
+                  <TextsvgDiv className="d-flex">
                     <ActiveButtonDiv
                       disabled={
                         !canWrite ||
                         (sigleNamespaceData?.runningCount > 0 &&
                           sigleNamespaceData?.stoppedCount === 0)
                       }
-                      className="div-btn-1 "
+                      className="div-btn-1 mr-2"
                       isActive={activeButton === 'RUNNING'}
                       activeColor="#58e715"
                       hoverColor="#58e715"
@@ -306,19 +375,24 @@ const FlowControl = () => {
                     >
                       <TriangleIcons color="#B5BDC8" />
                     </ActiveButtonDiv>
-                  </ActiveButtonDiv>
-                  <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                  {sigleNamespaceData?.runningCount > 0 &&
-                    sigleNamespaceData?.stoppedCount === 0 && (
-                      <ReactTooltip
-                        id="runningProcessor"
-                        content="Running Components"
-                        place="right"
-                        positionStrategy="fixed"
-                      />
-                    )}
-                </TextsvgDiv>
-
+                    <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                    {sigleNamespaceData?.runningCount > 0 &&
+                      sigleNamespaceData?.stoppedCount === 0 && (
+                        <ReactTooltip
+                          id="runningProcessor"
+                          content="Running Components"
+                          place="right"
+                          positionStrategy="fixed"
+                        />
+                      )}
+                  </TextsvgDiv>
+                ) : (
+                  <div className="text-message mb-3">
+                    The process group has been successfully deployed and is
+                    scheduled to start automatically at the specified date and
+                    time.
+                  </div>
+                )}
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-2 mr-2">
                     <ActiveButtonDiv
@@ -357,7 +431,53 @@ const FlowControl = () => {
                         positionStrategy="fixed"
                       />
                     )}
-                </TextsvgDiv>
+                </TextsvgDiv>{' '}
+                {singleNamespaceData1?.flowName && (
+                  <>
+                    {selectedNamespaceForDetail?.is_active_schedule ===
+                      false && (
+                      <>
+                        {/* Schedule Start Flow Button */}
+                        <TextsvgDiv className="d-flex">
+                          <ActiveButtonDiv className="div-btn-1 mr-2">
+                            <ActiveButtonDiv
+                              data-tooltip-id="scheduleStartFlow"
+                              onClick={() => handleScheduleFlow('RUNNING')}
+                            >
+                              <ScheduleStartIcon />
+                            </ActiveButtonDiv>
+                          </ActiveButtonDiv>
+                          <div className="mr-2">Schedule Start Flow</div>
+                          <ReactTooltip
+                            id="scheduleStartFlow"
+                            content="Schedule start flow"
+                            place="right"
+                            positionStrategy="fixed"
+                          />
+                        </TextsvgDiv>
+
+                        {/* Schedule Stop Flow Button */}
+                        <TextsvgDiv className="d-flex">
+                          <ActiveButtonDiv className="div-btn-2 mr-2">
+                            <ActiveButtonDiv
+                              data-tooltip-id="scheduleStopFlow"
+                              onClick={() => handleScheduleFlow('STOPPED')}
+                            >
+                              <ScheduleStopIcon />
+                            </ActiveButtonDiv>
+                          </ActiveButtonDiv>
+                          <div>Schedule Stop Flow</div>
+                          <ReactTooltip
+                            id="scheduleStopFlow"
+                            content="Schedule stop flow"
+                            place="right"
+                            positionStrategy="fixed"
+                          />
+                        </TextsvgDiv>
+                      </>
+                    )}
+                  </>
+                )}
               </>
             ) : (
               <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
@@ -397,6 +517,33 @@ const FlowControl = () => {
           primaryText={`Do you really want to ${confirmDialogue?.text}?`}
           onSubmit={handleConfirmUpdateStatus}
         />
+        {/* <ModalWithIcon
+          title={'Sanity Check Confirmation'}
+          primaryButtonText={'Confirm'}
+          secondaryButtonText="Cancel"
+          icon={<ExclamationIcon height={120} width={150} />}
+          isOpen={isSanityCheckModalOpen}
+          onRequestClose={() => setIsSanityCheckModalOpen(false)}
+          primaryText={'Do you want Sanity Check during Deployment?'}
+          secondaryText={
+            'Process group will be deployed in a stopped state and cannot be undone'
+          }
+          onSubmit={handledeployByRegistry}
+        /> */}
+        {/* {isEmpty(sanityCheckData) && sanityCheckCleanModalDisplay && (
+          <ModalWithIcon
+            title={'Sanity Check'}
+            secondaryButtonText='Close'
+            icon={<GreenRightCircleIcon />}
+            isOpen={sanityCheckCleanModalDisplay}
+            secondaryText={
+              'Sanity check passed with no issues. Start the flow from the Flow Control tab in the Process Group Details page.'
+            }
+            onSubmit={() =>
+              dispatch(NamespacesActions.setDisplaySanityCheckCleanModal(false))
+            }
+          />
+        )} */}
       </ScrollSetGrey>
     </DataWrapper>
   );

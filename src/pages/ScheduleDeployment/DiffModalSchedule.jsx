@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { KDFM } from '../../constants';
@@ -7,10 +7,11 @@ import { Modal } from '../../shared';
 import { ActivityHistorySelectors } from '../../store/activityHistory';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
+import DiffLocalChanges from './DiffLocalChanges';
 import DiffScheduleCS from './DiffScheduleControllerService';
 import DiffScheduleParameter from './DiffScheduleParamter';
 import DiffScheduleVariables from './DiffScheduleVariables';
-import DiffLocalChanges from './DiffLocalChanges';
+import { history } from '../../helpers/history';
 const GreyBoxNamespace = styled.div`
   padding: 5px 10px 0px 10px;
   border-radius: 20px;
@@ -53,6 +54,9 @@ export const DiffModalScheduleList = props => {
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
   const selectedItem = useSelector(ActivityHistorySelectors.getSelectedItem);
+  const sanityCheckData = useSelector(
+    SchedularSelectors.getSanityAndDeployStatus
+  );
 
   const renderContent = () => {
     switch (activeTab) {
@@ -79,6 +83,7 @@ export const DiffModalScheduleList = props => {
         );
       case 'Local Changes':
         return <DiffLocalChanges />;
+
       default:
         return null;
     }
@@ -89,9 +94,18 @@ export const DiffModalScheduleList = props => {
     dispatch(SchedularActions.setIsDiffModalOpen(false));
     props?.setIsModalOpen && props?.setIsModalOpen(false);
     setActiveTab(KDFM.PARAMETER_CONTEXT);
+    dispatch(SchedularActions.setSanityAndDeployStatus(null));
   };
   const handleSetTab = tab => {
-    setActiveTab(tab);
+    if (tab === 'Sanity Check') {
+      setActiveTab(tab);
+    } else {
+      setActiveTab(tab);
+    }
+  };
+
+  const handleprocessGroupDetails = () => {
+    history.push('/process-group/' + sanityCheckData?.namespaceId);
   };
   return (
     <div {...props}>
@@ -103,8 +117,11 @@ export const DiffModalScheduleList = props => {
         }
         isOpen={props?.isModalOpen || modalOpen}
         onRequestClose={closeModal}
-        primaryButtonText="Close"
-        onSubmit={() => closeModal()}
+        primaryButtonText={
+          sanityCheckData?.data ? 'Process Group Details' : null
+        }
+        secondaryButtonText="Close"
+        onSubmit={handleprocessGroupDetails}
         footerAlign="start"
         contentStyles={{ minWidth: '65%' }}
         noPadding={true}

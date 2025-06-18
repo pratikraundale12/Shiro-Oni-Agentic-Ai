@@ -154,12 +154,12 @@ export const Add = () => {
   const [saveButtonEnable, setSaveButtonEnable] = useState(true);
   const [error, setError] = useState('');
   const filteredGridData = gridData.filter(item => {
-    if(location?.pathname === '/clusters/add'){ 
+    if (location?.pathname === '/clusters/add') {
       return true;
     }
     return item?.nifi_url !== data?.nifi_url;
   });
-  
+
   const hostToEdit = clusterData?.clusterName || clusterId;
 
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -224,16 +224,20 @@ export const Add = () => {
     registryUrl: yup
       .string()
       .required('NiFi Registry URL is required')
-      .test('is-valid-url', 'Enter a valid NiFi Registry URL', function (value) {
-        if (!value) return false;
-        const trimmedValue = value.trim();
-        try {
-          new URL(trimmedValue);
-          return true;
-        } catch {
-          return false;
+      .test(
+        'is-valid-url',
+        'Enter a valid NiFi Registry URL',
+        function (value) {
+          if (!value) return false;
+          const trimmedValue = value.trim();
+          try {
+            new URL(trimmedValue);
+            return true;
+          } catch {
+            return false;
+          }
         }
-      })
+      )
       .test(
         'unique-registry-urls',
         'Registry already exists',
@@ -266,6 +270,10 @@ export const Add = () => {
   const [approverEnable, setApproverEnable] = useState(
     data?.approver_enable || false
   );
+
+  const [approverEnableForStartAndStop, setApproverEnableForStartAndStop] =
+    useState(data?.start_stop_requires_approval || false);
+
   const [changeRequestEnable, setChangeRequestApproverEnable] = useState(
     data?.change_request_enable || false
   );
@@ -334,6 +342,7 @@ export const Add = () => {
         tag: tags,
         notification_enable: notificationEnable,
         approver_enable: approverEnable,
+        start_stop_requires_approval: approverEnableForStartAndStop,
         change_request_enable: changeRequestEnable,
         registry_id: selectedRegistryId,
         has_custom_service_account: false,
@@ -631,7 +640,8 @@ export const Add = () => {
       data?.tag === tags &&
       data?.approver_enable === approverEnable &&
       data?.notification_enable === notificationEnable &&
-      data?.change_request_enable === changeRequestEnable
+      data?.change_request_enable === changeRequestEnable &&
+      data?.start_stop_requires_approval === approverEnableForStartAndStop
     );
   };
 
@@ -641,7 +651,14 @@ export const Add = () => {
     } else {
       setSaveButtonEnable(false);
     }
-  }, [data, tags, approverEnable, notificationEnable, changeRequestEnable]);
+  }, [
+    data,
+    tags,
+    approverEnable,
+    notificationEnable,
+    changeRequestEnable,
+    approverEnableForStartAndStop,
+  ]);
   const handleTitleProvider = data => {
     if (data && location?.pathname === '/clusters/edit') {
       return `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`;
@@ -749,8 +766,12 @@ export const Add = () => {
               setApproverEnable={setApproverEnable}
               setChangeRequestApproverEnable={setChangeRequestApproverEnable}
               setNotificationEnable={setNotificationEnable}
+              setApproverEnableForStartAndStop={
+                setApproverEnableForStartAndStop
+              }
               changeRequestEnable={changeRequestEnable}
               notificationEnable={notificationEnable}
+              approverEnableForStartAndStop={approverEnableForStartAndStop}
             />
             <ClusterTestSection
               test={test}
@@ -911,6 +932,7 @@ export const Add = () => {
         notificationEnable={notificationEnable}
         approverEnable={approverEnable}
         changeRequestEnable={changeRequestEnable}
+        approverEnableForStartAndStop={approverEnableForStartAndStop}
         tags={tags}
       />
       {successModal && (

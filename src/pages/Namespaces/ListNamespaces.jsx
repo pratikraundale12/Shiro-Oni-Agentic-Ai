@@ -6,7 +6,6 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   CalenderIcon2,
-  DeleteDustbinIcon,
   DeleteSmallIcon,
   OpenEyeIcon,
   SmallNotThunderIcon,
@@ -17,6 +16,7 @@ import {
 import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
+import { InputField, Modal } from '../../shared';
 import {
   ClustersSelectors,
   LoadingSelectors,
@@ -28,7 +28,6 @@ import { SettingsSelectors } from '../../store/settings';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from './ProcessGroupSorting';
-import { InputField, Modal } from '../../shared';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -88,9 +87,58 @@ const DeleteConfirmationText = styled.p`
   text-align: center;
 `;
 
-const IconWrapper = styled.div`
+const DetailsLink = styled.button`
+  color: ${props => props.theme.colors.primary};
+  text-decoration: none;
+  font-size: 14px;
+  display: block;
   text-align: center;
   margin-bottom: 16px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const StatsContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+`;
+
+const StatCard = styled.div`
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 0.75rem;
+`;
+
+const StatRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const StatLabel = styled.span`
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+`;
+
+const StatValue = styled.span`
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: ${props => {
+    if (props.type === 'error') return '#dc2626';
+    if (props.type === 'success') return '#059669';
+    if (props.type === 'warning') return '#d97706';
+    return '#111827';
+  }};
 `;
 
 export const ListNamespaces = () => {
@@ -103,6 +151,9 @@ export const ListNamespaces = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
+  const getDeleteNamespaceDetails = useSelector(
+    NamespacesSelectors.getDeleteNamespaceDetails
+  );
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
@@ -183,6 +234,7 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setVersionListReduxData([]));
     dispatch(NamespacesActions.setAlreadyFetchedLsIdentifierForUpgrade([]));
     dispatch(NamespacesActions.setLocalServiceInUpgrade([]));
+    dispatch(NamespacesActions.setScheduleStartFlow(false));
   }, []);
 
   const ListForTooltip = item => {
@@ -547,6 +599,11 @@ export const ListNamespaces = () => {
     setItemToDelete(item);
     setDeleteModalOpen(true);
     e.currentTarget.blur();
+    dispatch(
+      NamespacesActions.fetchDeleteNamespaceDetails({
+        namespaceId: item.id,
+      })
+    );
   };
 
   const handleConfirmDelete = () => {
@@ -593,12 +650,98 @@ export const ListNamespaces = () => {
         primaryButtonDisabled={deleteConfirmationText !== 'DELETE'}
         contentStyles={{ width: '400px', maxWidth: '90%' }}
       >
-        <IconWrapper>
-          <DeleteDustbinIcon />
-        </IconWrapper>
         <DeleteConfirmationText>
           Are you sure you want to delete {itemToDelete?.name} process group?
         </DeleteConfirmationText>
+        {/* Stats Grid */}
+        <StatsContainer>
+          <StatCard>
+            <StatRow>
+              <StatLabel>Flow Files Queued:</StatLabel>
+              <StatValue>
+                {
+                  getDeleteNamespaceDetails?.namespacesInsights
+                    ?.flow_files_queued
+                }
+              </StatValue>
+            </StatRow>
+          </StatCard>
+          <StatCard>
+            <StatRow>
+              <StatLabel>Invalid Count:</StatLabel>
+              <StatValue type="error">
+                {getDeleteNamespaceDetails?.namespacesInsights?.invalid_count}
+              </StatValue>
+            </StatRow>
+          </StatCard>
+        </StatsContainer>
+
+        <StatsContainer>
+          <StatCard>
+            <StatRow>
+              <StatLabel>Queued Size:</StatLabel>
+              <StatValue>
+                {getDeleteNamespaceDetails?.namespacesInsights?.queued_size}
+              </StatValue>
+            </StatRow>
+          </StatCard>
+          <StatCard>
+            <StatRow>
+              <StatLabel>Running Processors:</StatLabel>
+              <StatValue type="success">
+                {
+                  getDeleteNamespaceDetails?.namespacesInsights
+                    ?.running_processors
+                }
+              </StatValue>
+            </StatRow>
+          </StatCard>
+        </StatsContainer>
+
+        <StatsContainer>
+          <StatCard>
+            <StatRow>
+              <StatLabel>Stopped Processors:</StatLabel>
+              <StatValue type="warning">
+                {
+                  getDeleteNamespaceDetails?.namespacesInsights
+                    ?.stopped_processors
+                }
+              </StatValue>
+            </StatRow>
+          </StatCard>
+          <StatCard>
+            <StatRow>
+              <StatLabel>Total Processors:</StatLabel>
+              <StatValue>
+                {
+                  getDeleteNamespaceDetails?.namespacesInsights
+                    ?.total_processors
+                }
+              </StatValue>
+            </StatRow>
+          </StatCard>
+        </StatsContainer>
+
+        <StatsContainer style={{ marginBottom: '1.5rem' }}>
+          <StatCard>
+            <StatRow>
+              <StatLabel>Total Queued:</StatLabel>
+              <StatValue>
+                {getDeleteNamespaceDetails?.namespacesInsights?.total_queued}
+              </StatValue>
+            </StatRow>
+          </StatCard>
+        </StatsContainer>
+
+        <DetailsLink
+          onClick={() => {
+            history.push(`/process-group/${itemToDelete?.id}`);
+          }}
+        >
+          Process Group Details
+        </DetailsLink>
+
         <DeleteConfirmationText>
           Please type &quot;DELETE&quot; to confirm deletion:
         </DeleteConfirmationText>
