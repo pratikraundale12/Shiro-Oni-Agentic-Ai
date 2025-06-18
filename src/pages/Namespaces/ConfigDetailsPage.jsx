@@ -117,7 +117,8 @@ const ConfigDetailsPage = () => {
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-
+  const scheduleFlowType = useSelector(NamespacesSelectors.getScheduleFlowType);
+  console.log('wwwwwwwwwwwww SCEHD', scheduleFlowType);
   const breadcrumbDataOnUpgrade = scheduleStartFlow
     ? [
         {
@@ -159,6 +160,10 @@ const ConfigDetailsPage = () => {
   let type = '';
   if (versionSelected?.version > singleNameSpace?.version) {
     type = 'upgrade';
+  } else if (scheduleFlowType === 'RUNNING') {
+    type = 'start';
+  } else if (scheduleFlowType === 'STOPPED') {
+    type = 'stop';
   } else {
     type = 'downgrade';
   }
