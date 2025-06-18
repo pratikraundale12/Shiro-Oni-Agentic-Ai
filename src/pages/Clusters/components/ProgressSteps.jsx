@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../../styles';
 import { CompletedLabelIcon, InprogressLabelIcon } from '../../../assets';
@@ -111,7 +111,10 @@ const StepContentItem = styled.li`
 
 const ProgressStage = styled.div`
   position: relative;
-  padding-left: 2rem;
+  padding-left: 3rem;
+  height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
   &::before {
     content: '';
     border-left: 2px solid rgba(217, 217, 217, 1);
@@ -128,6 +131,13 @@ const StepProgress = () => {
   const processData = useSelector(
     ClustersSelectors.getAnsibleClusterProgressData
   );
+  const progressStageRef = useRef(null);
+  useEffect(() => {
+    if (progressStageRef.current) {
+      progressStageRef.current.scrollTop =
+        progressStageRef.current.scrollHeight;
+    }
+  }, [processData?.data?.steps]);
   const handleOpenTab = index => {
     if (openTabIndex === index) {
       setOpenTabIndex(null);
@@ -149,7 +159,7 @@ const StepProgress = () => {
         ) : (
           <>
             {' '}
-            <ProgressStage>
+            <ProgressStage ref={progressStageRef}>
               {processData?.data?.steps?.map((ele, index) => (
                 <StepConatiner
                   className={`row d-flex ${ele?.status === 'completed' ? 'done' : 'processing'}`}
