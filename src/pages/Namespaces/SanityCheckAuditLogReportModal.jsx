@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import { InvalidProcessorIcon, NoDataIcon } from '../../assets';
+import { NoDataIcon } from '../../assets';
 // import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { isEmpty } from 'lodash';
@@ -43,7 +43,6 @@ const SanityCheckAuditLogReportModal = ({
     <Modal
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <InvalidProcessorIcon />
           {'Sanity Verification Report'}
         </div>
       }

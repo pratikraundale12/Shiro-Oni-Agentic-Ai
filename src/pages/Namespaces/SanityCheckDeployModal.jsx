@@ -1,10 +1,7 @@
-// import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-// import { NoDataIcon } from '../../assets';
 import { isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { InvalidProcessorIcon } from '../../assets';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Modal } from '../../shared';
@@ -51,7 +48,6 @@ const SanityCheckDeployModal = () => {
     <Modal
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <InvalidProcessorIcon />
           {'Sanity Verification Report'}
         </div>
       }

@@ -99,7 +99,6 @@ const ScheduleSanityCheckModal = () => {
     <Modal
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <InvalidProcessorIcon />
           {'Sanity Verification Report'}
         </div>
       }
@@ -151,17 +150,17 @@ const ScheduleSanityCheckModal = () => {
                 sanityCheckData?.data || responseData?.data?.sanity_details
               ) ? (
                 // ✅ No issues detected
-                <div className="ml-4 flex items-center text-green-600">
+                <div className="mx-4 flex items-center text-green-600">
                   <RightCircleIcon width="16" height="16" />
-                  <span className="ml-2">
+                  <span className="ml-2 text-md">
                     Sanity check passed with no errors or inconsistencies.
                   </span>
                 </div>
               ) : (
                 // ⚠️ Issues found
-                <div className="ml-4 flex items-center text-red-600">
+                <div className="mx-4 flex items-center text-red-600">
                   <InvalidProcessorIcon width="16" height="16" />
-                  <span className="ml-2">
+                  <span className="ml-2 text-md">
                     Sanity check identified potential configuration issues
                   </span>
                 </div>
