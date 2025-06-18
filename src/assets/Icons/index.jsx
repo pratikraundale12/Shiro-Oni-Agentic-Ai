@@ -159,3 +159,6 @@ export * from './CircleArrowIcon';
 export * from './StarInfoIcon';
 export * from './ScheduleStartIcon';
 export * from './ScheduleStopIcon';
+export * from './ScheduleUpgrade';
+export * from './SccheduleDeployIcon';
+export * from './ScheduleDowngradeIcon';

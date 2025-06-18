@@ -1288,9 +1288,13 @@ const Summary = () => {
               <TodoIcon />
             </ImageContainer>
             <MainTitleHfour className="mb-0">
-              {`${isScheduled ? 'Schedule ' : ''} ${
-                deploymentAction
-              } ${KDFM.NAMESPACE}`}
+              {scheduleStartFlow
+                ? scheduleFlowType === 'RUNNING'
+                  ? 'Schedule Start Flow'
+                  : scheduleFlowType === 'STOPPED'
+                    ? 'Schedule Stop Flow'
+                    : null
+                : `${isScheduled ? 'Schedule ' : ''}${deploymentAction} ${KDFM.NAMESPACE}`}
             </MainTitleHfour>
             :
             <MainTitleHfour className="mb-0">

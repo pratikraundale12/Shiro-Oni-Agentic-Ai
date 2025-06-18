@@ -351,6 +351,10 @@ export const namespacesAPI = api => {
     );
   };
 
+  const fetchLastSanityReport = ({ namespaceId }) => {
+    return api.get(`/last-sanity-report/${namespaceId}`);
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -393,5 +397,6 @@ export const namespacesAPI = api => {
     getInvalidProcessorDetails,
     fetchSanityReportAuditLog,
     getDeleteNamespaceDetails,
+    fetchLastSanityReport,
   };
 };

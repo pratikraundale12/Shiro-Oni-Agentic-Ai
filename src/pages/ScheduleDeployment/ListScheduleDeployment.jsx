@@ -14,6 +14,9 @@ import {
   PencilIcon,
   RejectIcon,
   SanityCheckIcon,
+  SccheduleDeployIcon,
+  ScheduleDowngradeIcon,
+  ScheduleUpgrade,
   SortDownIcon,
   SortUpIcon,
   SquareBoxIcon,
@@ -726,7 +729,7 @@ export const ListScheduleDeployment = () => {
       resize: true,
     },
     {
-      label: 'Scheduled Type',
+      label: 'Schedule Type',
       renderCell: item => {
         if (item.mode === 'start') {
           return (
@@ -740,6 +743,27 @@ export const ListScheduleDeployment = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <SquareBoxIcon color="red" />
               <TextRender text="Stop" />
+            </div>
+          );
+        } else if (item.mode === 'deploy') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <SccheduleDeployIcon />
+              <TextRender text="Deploy" />
+            </div>
+          );
+        } else if (item.mode === 'upgrade') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <ScheduleUpgrade />
+              <TextRender text="Upgrade" />
+            </div>
+          );
+        } else if (item.mode === 'downgrade') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <ScheduleDowngradeIcon />
+              <TextRender text="Downgrade" />
             </div>
           );
         } else {
@@ -1064,7 +1088,8 @@ export const ListScheduleDeployment = () => {
             dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
             dispatch(SchedularActions.setSanityAndDeployStatus(null));
           }}
-          secondaryText={'Sanity check passed with no issues detected.'}
+          primaryText={'Sanity check passed with no errors or inconsistencies.'}
+          secondaryText="The configuration meets the required standards for a flow to get started"
           onSubmit={hadleSuccessSanityCheck}
         />
       )}

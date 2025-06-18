@@ -249,7 +249,10 @@ export const NamespacesActions = {
     'FETCH_DELETE_NAMESPACE_DETAILS_SUCCESS'
   ),
   fetchNamespaceDetails: createAction('FETCH_NAMESPACE_DETAILS'),
-  fetchNamespaceDetailsSuccess: createAction('FETCH_NAMESPACE_DETAILS_SUCCESS'),
+  fetchLastSanityReport: createAction(`${prefix}fetchLastSanityReport`),
+  fetchLastSanityReportSuccess: createAction(
+    `${prefix}fetchLastSanityReportSuccess`
+  ),
   setScheduleStartFlow: createAction(`${prefix}setScheduleStartFlow`),
   setScheduleFlowType: createAction(`${prefix}setScheduleFlowType`),
 };
@@ -375,6 +378,7 @@ export const NAMESPACES_INITIAL_STATE = {
   deleteNamespaceDetails: {},
   scheduleStartFlow: false,
   scheduleFlowType: null,
+  lastSanityReportData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -506,6 +510,7 @@ export const NamespacesSelectors = {
   getDeleteNamespaceDetails: state => state.namespaces.deleteNamespaceDetails,
   getScheduleStartFlow: state => state.namespaces.scheduleStartFlow,
   getScheduleFlowType: state => state.namespaces.scheduleFlowType,
+  getLastSanityReportData: state => state.namespaces.lastSanityReportData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1182,13 +1187,6 @@ const fetchDeleteNamespaceDetailsSuccess = (state, { payload }) => {
   state.deleteNamespaceDetails = payload;
 };
 
-const fetchNamespaceDetailsSuccess = (state, { payload }) => {
-  return {
-    ...state,
-    namespaceDetails: payload,
-  };
-};
-
 const setScheduleStartFlow = (state, { payload }) => {
   return {
     ...state,
@@ -1198,6 +1196,13 @@ const setScheduleStartFlow = (state, { payload }) => {
 
 const setScheduleFlowType = (state, { payload }) => {
   state.scheduleFlowType = payload;
+};
+
+const fetchLastSanityReportSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    lastSanityReportData: payload,
+  };
 };
 
 /* ------------- Hookup Reducers To Types ------------- */
@@ -1482,8 +1487,8 @@ export const namespacesReducer = createReducer(
         fetchDeleteNamespaceDetailsSuccess
       )
       .addCase(
-        NamespacesActions.fetchNamespaceDetailsSuccess,
-        fetchNamespaceDetailsSuccess
+        NamespacesActions.fetchLastSanityReportSuccess,
+        fetchLastSanityReportSuccess
       )
       .addCase(NamespacesActions.setScheduleStartFlow, setScheduleStartFlow)
       .addCase(NamespacesActions.setScheduleFlowType, setScheduleFlowType);

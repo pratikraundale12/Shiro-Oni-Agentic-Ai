@@ -114,6 +114,7 @@ const ConfigDetailsPage = () => {
   const scheduleStartFlow = useSelector(
     NamespacesSelectors.getScheduleStartFlow
   );
+  const scheduleFlowType = useSelector(NamespacesSelectors.getScheduleFlowType);
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
@@ -326,11 +327,21 @@ const ConfigDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {scheduleDeploymentFlow || scheduleUpgradeFromList
-              ? 'Schedule '
-              : ''}
-            {!isUpgrade ? formattedType : KDFM.DEPLOY_NAMESPACE}
-          </MainTitleHfour>{' '}
+            {scheduleStartFlow ? (
+              scheduleFlowType === 'RUNNING' ? (
+                'Schedule Start Flow'
+              ) : scheduleFlowType === 'STOPPED' ? (
+                'Schedule Stop Flow'
+              ) : null
+            ) : (
+              <>
+                {scheduleDeploymentFlow || scheduleUpgradeFromList
+                  ? 'Schedule '
+                  : ''}
+                {!isUpgrade ? formattedType : KDFM.DEPLOY_NAMESPACE}
+              </>
+            )}
+          </MainTitleHfour>
           :
           <MainTitleHfour className="mb-0">
             {!isUpgrade

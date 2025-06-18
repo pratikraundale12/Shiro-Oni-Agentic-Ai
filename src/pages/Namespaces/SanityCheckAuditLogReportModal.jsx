@@ -44,7 +44,7 @@ const SanityCheckAuditLogReportModal = ({
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <InvalidProcessorIcon />
-          {'Invalid Component(s) Detected : Sanity Verification Report'}
+          {'Sanity Verification Report'}
         </div>
       }
       isOpen={isSanityCheckModalOpen}

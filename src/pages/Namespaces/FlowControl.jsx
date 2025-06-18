@@ -169,12 +169,6 @@ const FlowControl = () => {
   const selectedNamespaceForDetail = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  const sanityCheckData = useSelector(
-    NamespacesSelectors.getSanityCheckDetailSectionData
-  );
-  const sanityCheckCleanModalDisplay = useSelector(
-    NamespacesSelectors.getDisplaySanityCheckCleanModal
-  );
 
   const [activeButton, setActiveButton] = useState(null);
   const [confirmDialogue, setConfirmDialogue] = useState({
@@ -237,25 +231,6 @@ const FlowControl = () => {
       NamespacesActions.fetchInvalidProcessorDetails({ namespaceId: id })
     );
   };
-  const loadingSanity = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchSanityCheckSummaryData')
-  );
-
-  useEffect(() => {
-    dispatch(NamespacesActions.setDisplaySanityCheckCleanModal(false));
-    dispatch(NamespacesActions.setSanityCheckDetailSectionData([]));
-  }, [dispatch]);
-
-  const [isSanityCheckModalOpen, setIsSanityCheckModalOpen] = useState(false);
-
-  const handledeployByRegistry = () => {
-    dispatch(
-      NamespacesActions.fetchSanityCheckSummaryData({
-        id: selectedNamespaceForDetail?.id || idOfLocation,
-      })
-    );
-    setIsSanityCheckModalOpen(false);
-  };
 
   const handleScheduleFlow = type => {
     dispatch(SchedularActions.setScheduleFromList(true));
@@ -299,7 +274,7 @@ const FlowControl = () => {
 
   return (
     <DataWrapper>
-      <FullPageLoader loading={loading || loadingSanity} />
+      <FullPageLoader loading={loading} />
       <ScrollSetGrey className="scroll-set-grey pe-1">
         <IconsvgDiv>
           <CustomNine className="col-4 mb-3">
@@ -542,26 +517,7 @@ const FlowControl = () => {
           primaryText={`Do you really want to ${confirmDialogue?.text}?`}
           onSubmit={handleConfirmUpdateStatus}
         />
-
-        <BottomButtonWrapper>
-          <div className="col-2 ">
-            {' '}
-            <Button
-              size="md"
-              onClick={() => setIsSanityCheckModalOpen(true)}
-              variant="quaternary"
-            >
-              <div
-                className="d-flex "
-                style={{ fontSize: '14px', fontWeight: '750' }}
-              >
-                <SanityCheckIcon height="24" width="24" />
-                Sanity Check
-              </div>
-            </Button>
-          </div>
-        </BottomButtonWrapper>
-        <ModalWithIcon
+        {/* <ModalWithIcon
           title={'Sanity Check Confirmation'}
           primaryButtonText={'Confirm'}
           secondaryButtonText="Cancel"
@@ -573,8 +529,8 @@ const FlowControl = () => {
             'Process group will be deployed in a stopped state and cannot be undone'
           }
           onSubmit={handledeployByRegistry}
-        />
-        {isEmpty(sanityCheckData) && sanityCheckCleanModalDisplay && (
+        /> */}
+        {/* {isEmpty(sanityCheckData) && sanityCheckCleanModalDisplay && (
           <ModalWithIcon
             title={'Sanity Check'}
             secondaryButtonText='Close'
@@ -587,7 +543,7 @@ const FlowControl = () => {
               dispatch(NamespacesActions.setDisplaySanityCheckCleanModal(false))
             }
           />
-        )}
+        )} */}
       </ScrollSetGrey>
     </DataWrapper>
   );

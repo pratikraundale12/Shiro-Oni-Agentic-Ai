@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   InvalidProcessorIcon,
+  RightCircleIcon,
   SanityCheckIcon,
   StarInfoIcon,
 } from '../../assets';
@@ -14,6 +15,7 @@ import {
 } from '../../store/schedular/redux';
 import SanityCheckCollapsableItem from '../Namespaces/SanityCheckCollapsableItem';
 import { NamespacesSelectors } from '../../store';
+import { history } from '../../helpers/history';
 // import { useEffect } from 'react';
 
 const ModalBody = styled.div`
@@ -65,7 +67,6 @@ const ScheduleSanityCheckModal = () => {
   const sanityCheckData = useSelector(
     SchedularSelectors.getSanityAndDeployStatus
   );
-  // const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const responseData = useSelector(
     NamespacesSelectors.getSanityReportAuditData
   );
@@ -91,13 +92,15 @@ const ScheduleSanityCheckModal = () => {
     dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
     dispatch(SchedularActions.setIsDiffModalOpen(false));
   };
+  const namespaceId =
+    sanityCheckData?.data?.namespaceId ?? responseData?.data?.namespace_id;
 
   return (
     <Modal
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <InvalidProcessorIcon />
-          {'Invalid Component(s) Detected : Sanity Verification Report'}
+          {'Sanity Verification Report'}
         </div>
       }
       isOpen={isOpen}
@@ -110,12 +113,15 @@ const ScheduleSanityCheckModal = () => {
       footerAlign="start"
       onSubmit={() => {
         dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
+        history.push(`/process-group/${namespaceId}`);
       }}
       contentStyles={{ maxWidth: '70%', maxHeight: '60%' }}
       secondaryButtonText="Close"
       tertiaryButton={true}
       tertiaryButtonConfig={{
-        tertiaryButtonTest: 'Sanity Check',
+        tertiaryButtonTest: isEmpty(sanityCheckData?.data || responseData?.data)
+          ? 'Run Sanity Check'
+          : 'Re-run Sanity Check',
         tertiaryButtonSubmit: handleScheduleTertiaryButton,
         tertiaryButtonDisable: true,
         tertiaryButtonIcon: <SanityCheckIcon />,
@@ -140,29 +146,42 @@ const ScheduleSanityCheckModal = () => {
             </ActionContainer>
           </div>
           <div>
-            {!isEmpty(
-              sanityCheckData?.data || responseData?.data?.sanity_details
-            ) && (
-              <div className="ml-4">
-                <InvalidProcessorIcon width="16" height="16" />
-                <span className="ml-2">Sanity check detected some issues</span>
-              </div>
-            )}
+            {responseData?.data &&
+              (isEmpty(
+                sanityCheckData?.data || responseData?.data?.sanity_details
+              ) ? (
+                // ✅ No issues detected
+                <div className="ml-4 flex items-center text-green-600">
+                  <RightCircleIcon width="16" height="16" />
+                  <span className="ml-2">
+                    Sanity check passed with no errors or inconsistencies.
+                  </span>
+                </div>
+              ) : (
+                // ⚠️ Issues found
+                <div className="ml-4 flex items-center text-red-600">
+                  <InvalidProcessorIcon width="16" height="16" />
+                  <span className="ml-2">
+                    Sanity check identified potential configuration issues
+                  </span>
+                </div>
+              ))}
           </div>
         </div>
-        {sanityCheckData?.data &&
-          !isEmpty(sanityCheckData?.data) &&
-          sanityCheckData?.data.map(item => (
-            <span key={item?.processGroupId}>
-              <SanityCheckCollapsableItem item={item} />
-            </span>
-          ))}
-
+        {!isEmpty(sanityCheckData?.data) &&
+          sanityCheckData.data.map(item => {
+            console.log(item); // side‑effect is fine here
+            return (
+              <span key={item?.processGroupId}>
+                <SanityCheckCollapsableItem item={item} />
+              </span>
+            );
+          })}
         {isEmpty(sanityCheckData?.data) &&
           responseData?.data?.sanity_details &&
           !isEmpty(responseData?.data?.sanity_details) &&
           responseData?.data?.sanity_details.map(item => (
-            <span key={item?.processGroupId}>
+            <span key={item?.namespace_id}>
               <SanityCheckCollapsableItem item={item} />
             </span>
           ))}

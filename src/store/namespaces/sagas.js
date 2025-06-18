@@ -1626,7 +1626,7 @@ export function* fetchSanityCheckSummaryData(api, { payload }) {
     if (isEmpty(response?.data?.data)) {
       yield put(NamespacesActions.setDisplaySanityCheckCleanModal(true));
     } else {
-      yield call(history.push, '/process-group/sanity-check-details');
+      // yield call(history.push, '/process-group/sanity-check-details');
     }
   } else {
     toast.error(response?.message || response?.data?.message);
@@ -1675,6 +1675,24 @@ export function* fetchDeleteNamespaceDetails(api, { payload }) {
   });
   if (!response.ok) {
     toast.error(response?.message || response?.data?.message);
+  }
+}
+
+export function* fetchLastSanityReport(api, { payload }) {
+  try {
+    const response = yield call(requestSaga, {
+      errorSection: 'fetchLastSanityReport',
+      loadingSection: 'fetchLastSanityReport',
+      apiMethod: api.fetchLastSanityReport,
+      apiParams: [payload],
+    });
+    if (response.ok) {
+      yield put(NamespacesActions.fetchLastSanityReportSuccess(response.data));
+    } else {
+      toast.error(response?.message || response?.data?.message);
+    }
+  } catch (error) {
+    toast.error(error.message || 'Failed to fetch last sanity report');
   }
 }
 
@@ -1820,6 +1838,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.fetchDeleteNamespaceDetails,
       fetchDeleteNamespaceDetails,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchLastSanityReport,
+      fetchLastSanityReport,
       api
     ),
   ]);
