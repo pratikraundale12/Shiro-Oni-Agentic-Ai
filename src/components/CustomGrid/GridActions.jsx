@@ -548,31 +548,31 @@ export const GridActions = ({
       value: [subHours(new Date(), 1), new Date()],
       placement: 'left',
     },
-    {
-      label: 'Last 30 minutes',
-      value: [subMinutes(new Date(), 30), new Date()],
-      placement: 'left',
-    },
-    {
-      label: 'Last 15 minutes',
-      value: [subMinutes(new Date(), 15), new Date()],
-      placement: 'left',
-    },
+    // {
+    //   label: 'Last 30 minutes',
+    //   value: [subMinutes(new Date(), 30), new Date()],
+    //   placement: 'left',
+    // },
+    // {
+    //   label: 'Last 15 minutes',
+    //   value: [subMinutes(new Date(), 15), new Date()],
+    //   placement: 'left',
+    // },
     {
       label: 'Next 1 hour',
       value: [new Date(), addHours(new Date(), 1)],
       placement: 'left',
     },
-    {
-      label: 'Next 30 minutes',
-      value: [new Date(), addMinutes(new Date(), 30)],
-      placement: 'left',
-    },
-    {
-      label: 'Next 15 minutes',
-      value: [new Date(), addMinutes(new Date(), 15)],
-      placement: 'left',
-    },
+    // {
+    //   label: 'Next 30 minutes',
+    //   value: [new Date(), addMinutes(new Date(), 30)],
+    //   placement: 'left',
+    // },
+    // {
+    //   label: 'Next 15 minutes',
+    //   value: [new Date(), addMinutes(new Date(), 15)],
+    //   placement: 'left',
+    // },
     {
       label: 'Today',
       value: [startOfDay(new Date()), endOfDay(new Date())],
@@ -747,6 +747,9 @@ export const GridActions = ({
                       { label: 'All', value: 'all' },
                       { label: 'Start', value: 'start' },
                       { label: 'Stop', value: 'stop' },
+                      { label: 'Deploy', value: 'deploy' },
+                      { label: 'Upgrade', value: 'upgrade' },
+                      { label: 'Downgrade', value: 'downgrade' },
                     ]}
                     value={scheduleType}
                     placeholder="Schedule Type"
