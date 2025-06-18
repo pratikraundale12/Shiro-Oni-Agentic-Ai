@@ -136,7 +136,6 @@ export const ListScheduleDeployment = () => {
   const sanityCheckData = useSelector(
     SchedularSelectors.getSanityAndDeployStatus
   );
-  console.log('sanityCheckData', sanityCheckData);
 
   const search = useSelector(SchedularSelectors.getSearchText);
   const settingData = useSelector(SettingsSelectors.getSettings);
@@ -359,7 +358,7 @@ export const ListScheduleDeployment = () => {
             wordWrap: 'break-word',
           }}
         />
-        {item?.has_sanity_permission === true && (
+        {item?.mode === 'deploy' && item?.has_sanity_permission === true && (
           <IconButton
             onClick={event => {
               dispatch(
@@ -383,6 +382,7 @@ export const ListScheduleDeployment = () => {
             <SanityCheckIcon />
           </IconButton>
         )}
+
         <ReactTooltip
           id={`tooltip-group-sanity-check`}
           place="left"
@@ -956,20 +956,6 @@ export const ListScheduleDeployment = () => {
         clusterId: selectedSchedule?.cluster_id,
       })
     );
-    // if (selectedSchedule?.last_sanity_check_id) {
-    //   dispatch(
-    //     NamespacesActions.fetchSanityReportAuditLog(
-    //       selectedSchedule?.last_sanity_check_id
-    //     )
-    //   );
-    // } else {
-    //   dispatch(
-    //     SchedularActions.scheduleSanityAndDeploy({
-    //       schedularId: sanityCheckData?.id || selectedSchedule?.id,
-    //       clusterId: selectedSchedule?.cluster_id,
-    //     })
-    //   );
-    // }
   };
 
   useEffect(() => {
