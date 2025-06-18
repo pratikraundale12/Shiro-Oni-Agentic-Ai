@@ -213,6 +213,18 @@ export const ClusterAccess = () => {
         />
       ),
     },
+    {
+      label: 'Sanity Check',
+      renderCell: item => (
+        <CellRender
+          isEdit={hasEditPermssion}
+          clusterId={item.value}
+          roleClusters={updatedRoleClusters}
+          policy={policies?.find(policy => policy.name === 'view_sanity_check')}
+          onChange={handleChange}
+        />
+      ),
+    },
   ];
 
   const path = [

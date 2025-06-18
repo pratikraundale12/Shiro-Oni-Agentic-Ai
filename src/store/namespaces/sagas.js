@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
@@ -417,11 +418,19 @@ export function* updateParameterContext(api, { payload }) {
         id: '',
       })
     );
-  } else {
+    toast.success('Parameter context updated successfully');
+  } else if (response.ok) {
     yield call(fetchParameterContext, api, {
       initialCall: false,
       showError: true,
     });
+    toast.success('Parameter context updated successfully');
+  } else {
+    toast.error(
+      response?.message ||
+        response?.data?.message ||
+        'Failed to update parameter context'
+    );
   }
 }
 
@@ -569,6 +578,7 @@ export function* addVariableServices(api, { payload }) {
     ],
   });
   if (response.ok && response.data?.requestId) {
+    toast.success('Variables added successfully');
     yield call(getStatusAndDeleteVariables, api, {
       method: 'get',
       additionalData: { requestId: response.data?.requestId },
@@ -1267,6 +1277,9 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
 
 export function* deployNamespaceByRegistryFlow(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const isSanityCheckAtDeploy = yield select(
+    NamespacesSelectors.getSanityCheckAtDeploy
+  );
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1295,7 +1308,11 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
       yield call(history.push, '/schedule-deployment');
       yield put(AuthenticationActions.setRoute('schedule-deployment'));
     } else {
-      yield put(NamespacesActions.setDeployedModal(true));
+      if (isSanityCheckAtDeploy) {
+        yield put(NamespacesActions.setSanityCheckDeployModalOpen(true));
+      } else {
+        yield put(NamespacesActions.setDeployedModal(true));
+      }
       yield put(
         NamespacesActions.setRegistryDeployResponseData(response?.data)
       );
@@ -1416,7 +1433,7 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
   } else if (response?.status === 204) {
     if (payload?.mode == 'deploy') {
       yield put(NamespacesActions.deployNamespaceByRegistryFlow(payload));
-    } else if (payload?.mode == 'upgrade') {
+    } else if (payload?.mode !== 'deploy') {
       yield put(NamespacesActions.upgradeCluster(payload));
     }
   }
@@ -1560,6 +1577,7 @@ export function* deleteNamespace(api, { payload }) {
     toast.error(response?.message || response?.data?.message);
   }
 }
+//
 
 export function* fetchInvalidProcessorDetails(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -1583,6 +1601,49 @@ export function* fetchInvalidProcessorDetails(api, { payload }) {
     successAction: NamespacesActions.fetchInvalidProcessorDetailsSuccess,
   });
   if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+export function* fetchSanityCheckSummaryData(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchSanityCheckSummaryData',
+    loadingSection: 'fetchSanityCheckSummaryData',
+    apiMethod: api.fetchSanityCheckSummaryData,
+    apiParams: [
+      {
+        namespaceId: payload?.id,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield put(
+      NamespacesActions.setSanityCheckDetailSectionData(response?.data?.data)
+    );
+    if (isEmpty(response?.data?.data)) {
+      yield put(NamespacesActions.setDisplaySanityCheckCleanModal(true));
+    } else {
+      // yield call(history.push, '/process-group/sanity-check-details');
+    }
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+export function* fetchSanityReportAuditLog(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchSanityReportAuditLog',
+    loadingSection: 'fetchSanityReportAuditLog',
+    apiMethod: api.fetchSanityReportAuditLog,
+    apiParams: [
+      {
+        recordId: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield put(NamespacesActions.setSanityReportAuditData(response?.data));
+  } else {
     toast.error(response?.message || response?.data?.message);
   }
 }
@@ -1611,6 +1672,24 @@ export function* fetchDeleteNamespaceDetails(api, { payload }) {
   });
   if (!response.ok) {
     toast.error(response?.message || response?.data?.message);
+  }
+}
+
+export function* fetchLastSanityReport(api, { payload }) {
+  try {
+    const response = yield call(requestSaga, {
+      errorSection: 'fetchLastSanityReport',
+      loadingSection: 'fetchLastSanityReport',
+      apiMethod: api.fetchLastSanityReport,
+      apiParams: [payload],
+    });
+    if (response.ok) {
+      yield put(NamespacesActions.fetchLastSanityReportSuccess(response.data));
+    } else {
+      toast.error(response?.message || response?.data?.message);
+    }
+  } catch (error) {
+    toast.error(error.message || 'Failed to fetch last sanity report');
   }
 }
 
@@ -1737,6 +1816,11 @@ export function* namespacesSagas(api) {
       fetchAddPropertyToAdd,
       api
     ),
+    takeLatest(
+      NamespacesActions.fetchSanityCheckSummaryData,
+      fetchSanityCheckSummaryData,
+      api
+    ),
     takeLatest(NamespacesActions.revertLocalChanges, revertLocalChanges, api),
     takeLatest(
       NamespacesActions.fetchInvalidProcessorDetails,
@@ -1744,8 +1828,18 @@ export function* namespacesSagas(api) {
       api
     ),
     takeLatest(
+      NamespacesActions.fetchSanityReportAuditLog,
+      fetchSanityReportAuditLog,
+      api
+    ),
+    takeLatest(
       NamespacesActions.fetchDeleteNamespaceDetails,
       fetchDeleteNamespaceDetails,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchLastSanityReport,
+      fetchLastSanityReport,
       api
     ),
   ]);

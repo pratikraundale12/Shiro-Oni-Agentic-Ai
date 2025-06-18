@@ -6,6 +6,7 @@ import { AuthenticationActions } from '../authentication';
 import { GridActions, fetchGrid } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularActions, SchedularSelectors } from './redux';
+import { NamespacesActions } from '../namespaces';
 
 export function* createScheduleDeployment(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -203,6 +204,32 @@ export function* fetchScheduleDeploymentDetails(api, { payload }) {
   }
 }
 
+export function* scheduleSanityAndDeploy(api, { payload }) {
+  const selectedSchedule = yield select(SchedularSelectors.getSelectedSchedule);
+  const response = yield call(requestSaga, {
+    errorSection: 'scheduleSanityAndDeploy',
+    loadingSection: 'scheduleSanityAndDeploy',
+    apiMethod: api.scheduleSanityAndDeploy,
+    apiParams: [payload],
+  });
+  if (response.ok) {
+    yield put(SchedularActions.setSanityAndDeployStatus(response?.data));
+    toast.success(
+      response?.data?.message ||
+        'Successfully performed sanity check and deployment'
+    );
+
+    yield put(
+      NamespacesActions.fetchSanityReportAuditLog(
+        response?.data?.id || selectedSchedule?.last_sanity_check_id
+      )
+    );
+  } else {
+    toast.error(response?.data?.message);
+    yield put(SchedularActions.setSanityAndDeployStatus(null));
+  }
+}
+
 export function* schedularSagas(api) {
   yield all([
     takeLatest(
@@ -234,6 +261,11 @@ export function* schedularSagas(api) {
     takeLatest(
       SchedularActions.fetchScheduleDeploymentDetails,
       fetchScheduleDeploymentDetails,
+      api
+    ),
+    takeLatest(
+      SchedularActions.scheduleSanityAndDeploy,
+      scheduleSanityAndDeploy,
       api
     ),
   ]);

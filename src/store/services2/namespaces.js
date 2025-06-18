@@ -317,6 +317,9 @@ export const namespacesAPI = api => {
     );
   };
 
+  const fetchSanityCheckSummaryData = ({ namespaceId }) => {
+    return api.get(`namespace/${namespaceId}/sanity-check`);
+  };
   const fetchLocalChanges = ({ clusterId, namespaceId }) => {
     return api.get(
       `/clusters/${clusterId}/namespaces/${namespaceId}/local-changes`
@@ -338,11 +341,18 @@ export const namespacesAPI = api => {
       `/clusters/${clusterId}/namespace/${namespaceId}/invalid-processors`
     );
   };
+  const fetchSanityReportAuditLog = ({ recordId }) => {
+    return api.get(`sanity-report/${recordId}`);
+  };
 
   const getDeleteNamespaceDetails = ({ clusterId, namespaceId }) => {
     return api.get(
       `/clusters/${clusterId}/namespaces/${namespaceId}/namespace-details`
     );
+  };
+
+  const fetchLastSanityReport = ({ namespaceId }) => {
+    return api.get(`/last-sanity-report/${namespaceId}`);
   };
 
   return {
@@ -380,10 +390,13 @@ export const namespacesAPI = api => {
     fetchRegistryFlowDetails,
     fetchDuplicateScheduleData,
     fetchAddPropertyToAdd,
+    fetchSanityCheckSummaryData,
     fetchLocalChanges,
     revertLocalChanges,
     deleteNamespace,
     getInvalidProcessorDetails,
+    fetchSanityReportAuditLog,
     getDeleteNamespaceDetails,
+    fetchLastSanityReport,
   };
 };

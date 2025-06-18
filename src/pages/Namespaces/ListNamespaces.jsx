@@ -234,6 +234,7 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setVersionListReduxData([]));
     dispatch(NamespacesActions.setAlreadyFetchedLsIdentifierForUpgrade([]));
     dispatch(NamespacesActions.setLocalServiceInUpgrade([]));
+    dispatch(NamespacesActions.setScheduleStartFlow(false));
   }, []);
 
   const ListForTooltip = item => {
