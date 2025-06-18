@@ -1605,6 +1605,7 @@ export function* fetchInvalidProcessorDetails(api, { payload }) {
   }
 }
 export function* fetchSanityCheckSummaryData(api, { payload }) {
+  const namespace_Id = window.location.pathname.split('/').pop();
   const response = yield call(requestSaga, {
     errorSection: 'fetchSanityCheckSummaryData',
     loadingSection: 'fetchSanityCheckSummaryData',
@@ -1616,6 +1617,11 @@ export function* fetchSanityCheckSummaryData(api, { payload }) {
     ],
   });
   if (response.ok) {
+    yield put(
+      NamespacesActions.fetchLastSanityReport({
+        namespaceId: namespace_Id,
+      })
+    );
     toast.success(response?.data?.message);
     yield put(
       NamespacesActions.setSanityCheckDetailSectionData(response?.data?.data)
