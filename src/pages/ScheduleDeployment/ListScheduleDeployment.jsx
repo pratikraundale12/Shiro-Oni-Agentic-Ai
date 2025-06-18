@@ -993,6 +993,7 @@ export const ListScheduleDeployment = () => {
   }, [dispatch]);
 
   const hadleSuccessSanityCheck = () => {
+    fetchRecords();
     dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
     dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
     dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
@@ -1084,6 +1085,7 @@ export const ListScheduleDeployment = () => {
             dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
             dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
             dispatch(SchedularActions.setSanityAndDeployStatus(null));
+            fetchRecords();
           }}
           primaryText={'Sanity check passed with no errors or inconsistencies.'}
           secondaryText="The configuration meets the required standards for a flow to get started"

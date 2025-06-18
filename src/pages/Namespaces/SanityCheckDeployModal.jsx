@@ -7,6 +7,7 @@ import { history } from '../../helpers/history';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import SanityCheckCollapsableItem from './SanityCheckCollapsableItem';
+import { InvalidProcessorIcon, RightCircleIcon } from '../../assets';
 
 const ModalBody = styled.div`
   position: relative;
@@ -65,7 +66,28 @@ const SanityCheckDeployModal = () => {
       contentStyles={{ maxWidth: '60%', maxHeight: '60%' }}
     >
       <ModalBody className="modal-body">
-        {' '}
+        <div className="d-flex gap-2 justify-content-end">
+          <div>
+            {isEmpty(sanityCheckData) ? (
+              // ✅ No issues detected
+              <div className="mx-4 flex items-center text-green-600">
+                <RightCircleIcon width="16" height="16" />
+                <span className="ml-2 text-md">
+                  Sanity check passed with no errors or inconsistencies.
+                </span>
+              </div>
+            ) : (
+              // ⚠️ Issues found
+              <div className="mx-4 flex items-center text-red-600">
+                <InvalidProcessorIcon width="16" height="16" />
+
+                <span className="ml-2 text-md">
+                  Sanity check identified potential configuration issues
+                </span>
+              </div>
+            )}
+          </div>
+        </div>{' '}
         {sanityCheckData &&
           !isEmpty(sanityCheckData) &&
           sanityCheckData?.map(item => (
