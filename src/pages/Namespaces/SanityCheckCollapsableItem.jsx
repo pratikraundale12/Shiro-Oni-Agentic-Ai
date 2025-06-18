@@ -1,12 +1,12 @@
+import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import Collapsible from './Collapsible';
-import PropTypes from 'prop-types';
-import SanityCheckProcessorItem from './SanitaryCheckProcessorsItem';
 import SanityCheckControllerServiceItem from './SanitaryCheckControllerServiceItem';
-import { isEmpty } from 'lodash';
+import SanityCheckProcessorItem from './SanitaryCheckProcessorsItem';
 
 const SanityCheckCollapsableItem = ({ item = {} }) => {
-  const [isOpenTab, setIsOpenTab] = useState(false);
+  const [isOpenTab, setIsOpenTab] = useState(true);
 
   return (
     <>

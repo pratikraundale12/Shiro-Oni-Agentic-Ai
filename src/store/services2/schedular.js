@@ -17,8 +17,8 @@ export const schedularAPI = api => {
     api.get(`/group-users/${groupId}`);
   const fetchScheduleDeploymentDetails = ({ schedularId }) =>
     api.get(`/schedule-deployment-details/${schedularId}`);
-  const scheduleSanityAndDeploy = ({ schedularId }) =>
-    api.get(`/schedule-sanity-and-deploy/${schedularId}`);
+  const scheduleSanityAndDeploy = ({ schedularId, clusterId }) =>
+    api.get(`/cluster/${clusterId}/schedule-sanity-and-deploy/${schedularId}`);
   return {
     fetchSchedular,
     createScheduleDeployment,

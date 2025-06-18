@@ -81,6 +81,7 @@ export const Modal = ({
     tertiaryButtonSubmit: () => null,
     tertiaryButtonDisable: false,
     tertiaryButtonLoading: false,
+    tertiaryButtonIcon: null, // Added icon support
   },
   tertiaryButtonLoading,
   thirdVarint = false,
@@ -165,18 +166,6 @@ export const Modal = ({
                 {secondaryButtonText}
               </Button>
             )}
-            {tertiaryButton && tertiaryButtonConfig && (
-              <Button
-                type="button"
-                variant={thirdVarint ? 'tertiary' : 'secondary'}
-                onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
-                disabled={tertiaryButtonConfig.disabled}
-                loading={tertiaryButtonConfig.tertiaryButtonLoading}
-                {...tertiaryButtonConfig}
-              >
-                {tertiaryButtonConfig.tertiaryButtonTest}
-              </Button>
-            )}
             {primaryButtonText && (
               <Button
                 type="submit"
@@ -187,6 +176,19 @@ export const Modal = ({
                 {...primaryButtonProps}
               >
                 {primaryButtonText}
+              </Button>
+            )}
+            {tertiaryButton && tertiaryButtonConfig && (
+              <Button
+                type="button"
+                variant={thirdVarint ? 'tertiary' : 'secondary'}
+                onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
+                disabled={tertiaryButtonConfig.disabled}
+                loading={tertiaryButtonConfig.tertiaryButtonLoading}
+                icon={tertiaryButtonConfig.tertiaryButtonIcon} // Added icon prop
+                {...tertiaryButtonConfig}
+              >
+                {tertiaryButtonConfig.tertiaryButtonTest}
               </Button>
             )}
           </Footer>

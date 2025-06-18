@@ -13,6 +13,7 @@ import {
   OpenEyeIcon,
   PencilIcon,
   RejectIcon,
+  SanityCheckIcon,
   SortDownIcon,
   SortUpIcon,
   SquareBoxIcon,
@@ -40,6 +41,7 @@ import { DiffModalScheduleList } from './DiffModalSchedule';
 import { GroupListModal } from './GroupListModal';
 import { RejectScheduleModal } from './RejectScheduleModal';
 import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
+import ScheduleSanityCheckModal from './ScheduleSanityCheckModal';
 import { StatusText } from './StatusText';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
 import { UserStoryModal } from './UserStoryModal';
@@ -134,6 +136,8 @@ export const ListScheduleDeployment = () => {
   const sanityCheckData = useSelector(
     SchedularSelectors.getSanityAndDeployStatus
   );
+  console.log('sanityCheckData', sanityCheckData);
+
   const search = useSelector(SchedularSelectors.getSearchText);
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [sortingState, setSortingState] = useState('');
@@ -351,6 +355,40 @@ export const ListScheduleDeployment = () => {
           content={'View Changes'}
           style={{
             width: '125px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+          }}
+        />
+        {item?.has_sanity_permission === true && (
+          <IconButton
+            onClick={event => {
+              dispatch(
+                SchedularActions.setIsScheduleSanityCheckModalOpen(true)
+              );
+              dispatch(SchedularActions.setSelectedSchedule(item));
+              event.currentTarget.blur();
+              if (item?.last_sanity_check_id === null) {
+                dispatch(SchedularActions.setSanityAndDeployStatus(null));
+              }
+              if (item?.last_sanity_check_id) {
+                dispatch(
+                  NamespacesActions.fetchSanityReportAuditLog(
+                    sanityCheckData?.id || item?.last_sanity_check_id
+                  )
+                );
+              }
+            }}
+            data-tooltip-id={`tooltip-group-sanity-check`}
+          >
+            <SanityCheckIcon />
+          </IconButton>
+        )}
+        <ReactTooltip
+          id={`tooltip-group-sanity-check`}
+          place="left"
+          content={'Sanity Check'}
+          style={{
+            width: '110px',
             whiteSpace: 'normal',
             wordWrap: 'break-word',
           }}
@@ -907,15 +945,35 @@ export const ListScheduleDeployment = () => {
   }, []);
 
   const handleDeployWithSanityCheck = () => {
-    dispatch(SchedularActions.setIsDiffModalOpen(true));
-    dispatch(SchedularActions.scheduleSanityAndDeploy(selectedSchedule?.id));
+    dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+    dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(true));
+    dispatch(
+      SchedularActions.scheduleSanityAndDeploy({
+        schedularId: selectedSchedule?.id,
+        clusterId: selectedSchedule?.cluster_id,
+      })
+    );
+    // if (selectedSchedule?.last_sanity_check_id) {
+    //   dispatch(
+    //     NamespacesActions.fetchSanityReportAuditLog(
+    //       selectedSchedule?.last_sanity_check_id
+    //     )
+    //   );
+    // } else {
+    //   dispatch(
+    //     SchedularActions.scheduleSanityAndDeploy({
+    //       schedularId: sanityCheckData?.id || selectedSchedule?.id,
+    //       clusterId: selectedSchedule?.cluster_id,
+    //     })
+    //   );
+    // }
   };
 
   useEffect(() => {
     if (sanityCheckData && isEmpty(sanityCheckData?.data)) {
       dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
       dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(true));
-      dispatch(SchedularActions.setIsDiffModalOpen(false));
+      dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
     }
   }, [sanityCheckData, dispatch]);
 
@@ -926,7 +984,8 @@ export const ListScheduleDeployment = () => {
 
   const hadleSuccessSanityCheck = () => {
     dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
-    history.push('/process-group/' + sanityCheckData?.namespaceId);
+    dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+    dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
   };
 
   const statusLoading = useSelector(state =>
@@ -989,6 +1048,7 @@ export const ListScheduleDeployment = () => {
         setSortingState={setSortingState}
       />
       <DiffModalScheduleList />
+      <ScheduleSanityCheckModal />
       <ModalWithIcon
         title="Sanity Check Confirmation"
         primaryButtonText="Confirm"
@@ -997,7 +1057,7 @@ export const ListScheduleDeployment = () => {
         isOpen={isSanityCheckModalOpen}
         onRequestClose={() => {
           dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
-          dispatch(SchedularActions.setIsDiffModalOpen(true));
+          dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(true));
         }}
         primaryText="Do you want to perform a Sanity Check before Scheduled Deployment?"
         secondaryText="Process Group will be deployed in a stopped state. This action cannot be undone."
@@ -1006,12 +1066,13 @@ export const ListScheduleDeployment = () => {
       {isEmpty(sanityCheckData?.data) && (
         <ModalWithIcon
           title={'Sanity Check'}
-          primaryButtonText={'Continue'}
+          secondaryButtonText={'Close'}
           icon={<GreenRightCircleIcon />}
           isOpen={isSuccessSanityCheckModalOpen}
           onRequestClose={() => {
             dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
-            dispatch(SchedularActions.setIsDiffModalOpen(true));
+            dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+            dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
             dispatch(SchedularActions.setSanityAndDeployStatus(null));
           }}
           secondaryText={'Sanity check passed with no issues detected.'}

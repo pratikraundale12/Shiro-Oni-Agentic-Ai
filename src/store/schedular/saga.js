@@ -210,18 +210,13 @@ export function* scheduleSanityAndDeploy(api, { payload }) {
     errorSection: 'scheduleSanityAndDeploy',
     loadingSection: 'scheduleSanityAndDeploy',
     apiMethod: api.scheduleSanityAndDeploy,
-    apiParams: [{ schedularId: payload }],
+    apiParams: [payload],
   });
   if (response.ok) {
     yield put(SchedularActions.setSanityAndDeployStatus(response?.data));
     toast.success(
       response?.data?.message ||
         'Successfully performed sanity check and deployment'
-    );
-    console.log(
-      response?.data?.id,
-      selectedSchedule?.last_sanity_check_id,
-      'line no 221'
     );
 
     yield put(
@@ -231,6 +226,9 @@ export function* scheduleSanityAndDeploy(api, { payload }) {
     );
   } else {
     toast.error(response?.data?.message);
+    yield put(SchedularActions.setSanityAndDeployStatus(null));
+    // yield put(NamespacesActions.setSanityReportAuditData(null));
+    console.log('Error in scheduleSanityAndDeploy:', response?.data?.error);
   }
 }
 
