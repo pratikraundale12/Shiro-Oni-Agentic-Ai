@@ -38,7 +38,6 @@ const StatusTexts = styled.div`
   // cursor: pointer;
 `;
 export const StatusText = ({ text = '', item }) => {
-  console.log('WWWWWWWWWWWWWWW', text);
   const color = statusColors[text] || statusColors.DEFAULT;
   function capitalizeFirstLetter(text) {
     if (!text) return '';

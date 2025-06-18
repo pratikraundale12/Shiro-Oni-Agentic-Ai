@@ -80,7 +80,6 @@ const SanityVerifictionReport = () => {
     NamespacesSelectors.getSelectedNamespace
   );
   const namespace_Id = window.location.pathname.split('/').pop();
-  console.log(namespace_Id, 'namespace_Id');
 
   const handledeployByRegistry = () => {
     dispatch(

@@ -118,8 +118,6 @@ const ConfigDetailsPage = () => {
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  const scheduleFlowType = useSelector(NamespacesSelectors.getScheduleFlowType);
-  console.log('wwwwwwwwwwwww SCEHD', scheduleFlowType);
   const breadcrumbDataOnUpgrade = scheduleStartFlow
     ? [
         {

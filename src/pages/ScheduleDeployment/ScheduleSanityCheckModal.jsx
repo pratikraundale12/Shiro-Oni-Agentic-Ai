@@ -170,7 +170,6 @@ const ScheduleSanityCheckModal = () => {
         </div>
         {!isEmpty(sanityCheckData?.data) &&
           sanityCheckData.data.map(item => {
-            console.log(item); // side‑effect is fine here
             return (
               <span key={item?.processGroupId}>
                 <SanityCheckCollapsableItem item={item} />

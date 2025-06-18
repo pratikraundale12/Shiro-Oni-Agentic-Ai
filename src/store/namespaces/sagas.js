@@ -1428,12 +1428,9 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
   });
 
   if (response?.status === 200) {
-    console.log('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq', payload);
     yield put(NamespacesActions.setDuplicateScheduleModalOpen(true));
     yield put(NamespacesActions.setDuplicateScheduleModalData(response?.data));
   } else if (response?.status === 204) {
-    console.log('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq', payload);
-
     if (payload?.mode == 'deploy') {
       yield put(NamespacesActions.deployNamespaceByRegistryFlow(payload));
     } else if (payload?.mode !== 'deploy') {

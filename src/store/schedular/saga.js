@@ -227,8 +227,6 @@ export function* scheduleSanityAndDeploy(api, { payload }) {
   } else {
     toast.error(response?.data?.message);
     yield put(SchedularActions.setSanityAndDeployStatus(null));
-    // yield put(NamespacesActions.setSanityReportAuditData(null));
-    console.log('Error in scheduleSanityAndDeploy:', response?.data?.error);
   }
 }
 
