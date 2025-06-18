@@ -368,6 +368,7 @@ SummaryModal.propTypes = {
   edit: PropTypes.bool,
   notificationEnable: PropTypes.bool,
   approverEnable: PropTypes.bool,
+  approverEnableForStartAndStop: PropTypes.bool,
   tags: PropTypes.string,
   changeRequestEnable: PropTypes.bool,
 };
