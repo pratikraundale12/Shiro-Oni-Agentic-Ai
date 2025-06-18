@@ -64,7 +64,7 @@ const ProcessorIdCell = styled.div`
 `;
 
 const SanityCheckProcessorItem = ({ item = [] }) => {
-  const [isOpenTab, setIsOpenTab] = useState(false);
+  const [isOpenTab, setIsOpenTab] = useState(true);
 
   const COLUMNS = [
     {

@@ -44,6 +44,9 @@ export const SchedularActions = {
   ),
   scheduleSanityAndDeploy: createAction(`${prefix}scheduleSanityAndDeploy`),
   setSanityAndDeployStatus: createAction(`${prefix}setSanityAndDeployStatus`),
+  setIsScheduleSanityCheckModalOpen: createAction(
+    `${prefix}setIsScheduleSanityCheckModalOpen`
+  ),
 };
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
@@ -70,6 +73,7 @@ export const SCHEDULAR_INITIAL_STATE = {
   listGroupMembers: [],
   scheduleDeploymentDetails: null,
   sanityAndDeployStatus: null,
+  isScheduleSanityCheckModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -100,6 +104,8 @@ export const SchedularSelectors = {
   getScheduleDeploymentDetails: state =>
     state.schedular.scheduleDeploymentDetails,
   getSanityAndDeployStatus: state => state.schedular.sanityAndDeployStatus,
+  getIsScheduleSanityCheckModalOpen: state =>
+    state.schedular.isScheduleSanityCheckModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -247,6 +253,13 @@ const setSanityAndDeployStatus = (state, { payload }) => {
   };
 };
 
+const setIsScheduleSanityCheckModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isScheduleSanityCheckModalOpen: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const schedularReducer = createReducer(
   SCHEDULAR_INITIAL_STATE,
@@ -298,6 +311,10 @@ export const schedularReducer = createReducer(
       .addCase(
         SchedularActions.setSanityAndDeployStatus,
         setSanityAndDeployStatus
+      )
+      .addCase(
+        SchedularActions.setIsScheduleSanityCheckModalOpen,
+        setIsScheduleSanityCheckModalOpen
       );
   }
 );

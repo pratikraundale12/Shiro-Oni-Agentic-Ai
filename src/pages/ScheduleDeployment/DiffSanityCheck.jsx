@@ -97,12 +97,6 @@ const DiffSanityCheck = () => {
     dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
   }, [dispatch]);
 
-  console.log(
-    sanityCheckData?.id,
-    selectedSchedule?.last_sanity_check_id,
-    'line no. 100'
-  );
-
   useEffect(() => {
     if (selectedSchedule?.last_sanity_check_id) {
       dispatch(

@@ -31,7 +31,7 @@ const TableWrapper = styled.div`
 `;
 
 const SanityCheckControllerServiceItem = ({ item = [] }) => {
-  const [isOpenTab, setIsOpenTab] = useState(false);
+  const [isOpenTab, setIsOpenTab] = useState(true);
   const COLUMNS = [
     {
       label: 'Controller Service Name',
