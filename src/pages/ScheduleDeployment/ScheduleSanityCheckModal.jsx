@@ -126,6 +126,9 @@ const ScheduleSanityCheckModal = () => {
         tertiaryButtonIcon: <SanityCheckIcon />,
         variant: 'tertiary',
       }}
+      primaryButtonDisabled={isEmpty(
+        sanityCheckData?.data || responseData?.data?.sanity_details
+      )}
     >
       <ModalBody className="modal-body">
         <div className="d-flex gap-2 justify-content-between">

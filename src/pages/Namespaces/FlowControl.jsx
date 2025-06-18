@@ -348,7 +348,7 @@ const FlowControl = () => {
               sigleNamespaceData?.stoppedCount === 0
             ) ? (
               <>
-                {selectedNamespaceForDetail?.is_active_schedule === false ? (
+                {(!selectedNamespaceForDetail?.is_active_schedule || selectedNamespaceForDetail?.is_active_schedule == 'false') ? (
                   <TextsvgDiv className="d-flex">
                     <ActiveButtonDiv
                       disabled={
@@ -434,8 +434,8 @@ const FlowControl = () => {
                 </TextsvgDiv>{' '}
                 {singleNamespaceData1?.flowName && (
                   <>
-                    {selectedNamespaceForDetail?.is_active_schedule ===
-                      false && (
+                    {(!selectedNamespaceForDetail?.is_active_schedule || selectedNamespaceForDetail?.is_active_schedule == 'false')
+                      && (
                       <>
                         {/* Schedule Start Flow Button */}
                         <TextsvgDiv className="d-flex">
