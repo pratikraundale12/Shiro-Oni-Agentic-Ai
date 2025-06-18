@@ -577,7 +577,7 @@ const FlowControl = () => {
         {isEmpty(sanityCheckData) && sanityCheckCleanModalDisplay && (
           <ModalWithIcon
             title={'Sanity Check'}
-            primaryButtonText={'Continue'}
+            secondaryButtonText='Close'
             icon={<GreenRightCircleIcon />}
             isOpen={sanityCheckCleanModalDisplay}
             secondaryText={

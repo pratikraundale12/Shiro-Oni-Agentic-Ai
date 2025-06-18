@@ -8,7 +8,6 @@ import { ActivityHistorySelectors } from '../../store/activityHistory';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import DiffLocalChanges from './DiffLocalChanges';
-import DiffSanityCheck from './DiffSanityCheck';
 import DiffScheduleCS from './DiffScheduleControllerService';
 import DiffScheduleParameter from './DiffScheduleParamter';
 import DiffScheduleVariables from './DiffScheduleVariables';
@@ -59,8 +58,6 @@ export const DiffModalScheduleList = props => {
     SchedularSelectors.getSanityAndDeployStatus
   );
 
-  const checkMode = selectedSchedule?.mode === 'deploy';
-
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
@@ -87,8 +84,6 @@ export const DiffModalScheduleList = props => {
       case 'Local Changes':
         return <DiffLocalChanges />;
 
-      case 'Sanity Check':
-        return <DiffSanityCheck />;
       default:
         return null;
     }
@@ -176,15 +171,6 @@ export const DiffModalScheduleList = props => {
             >
               Local Changes
             </Tab>
-            {selectedSchedule?.has_sanity_permission && checkMode && (
-              <Tab
-                active={activeTab === 'Sanity Check'}
-                onClick={() => handleSetTab('Sanity Check')}
-                className="nav-item"
-              >
-                Sanity Check
-              </Tab>
-            )}
           </TabWrapper>
           <TabContent>{renderContent()}</TabContent>
         </GreyBoxNamespace>

@@ -219,14 +219,11 @@ export function* scheduleSanityAndDeploy(api, { payload }) {
         'Successfully performed sanity check and deployment'
     );
 
-    // yield put(
-    //   NamespacesActions.fetchSanityReportAuditLog(
-    //     response?.data?.id || selectedSchedule?.last_sanity_check_id
-    //   )
-    // );
-    // yield put(
-    //   SchedularActions.setSanityAndDeployStatus(response?.data?.sanity_detail)
-    // );
+    yield put(
+      NamespacesActions.fetchSanityReportAuditLog(
+        response?.data?.id || selectedSchedule?.last_sanity_check_id
+      )
+    );
   } else {
     toast.error(response?.data?.message);
     yield put(SchedularActions.setSanityAndDeployStatus(null));

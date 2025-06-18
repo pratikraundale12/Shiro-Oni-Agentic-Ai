@@ -13,7 +13,7 @@ import {
   SchedularSelectors,
 } from '../../store/schedular/redux';
 import SanityCheckCollapsableItem from '../Namespaces/SanityCheckCollapsableItem';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { NamespacesSelectors } from '../../store';
 // import { useEffect } from 'react';
 
 const ModalBody = styled.div`
@@ -103,8 +103,7 @@ const ScheduleSanityCheckModal = () => {
       isOpen={isOpen}
       onRequestClose={() => {
         dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
-        dispatch(SchedularActions.setSanityAndDeployStatus(null));
-        dispatch(NamespacesActions.setSanityReportAuditData(null));
+        // dispatch(NamespacesActions.setSanityReportAuditData(null));
       }}
       size="md"
       primaryButtonText={'Quick Fixes'}

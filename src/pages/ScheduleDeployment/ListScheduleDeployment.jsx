@@ -136,6 +136,8 @@ export const ListScheduleDeployment = () => {
   const sanityCheckData = useSelector(
     SchedularSelectors.getSanityAndDeployStatus
   );
+  console.log('sanityCheckData', sanityCheckData);
+
   const search = useSelector(SchedularSelectors.getSearchText);
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [sortingState, setSortingState] = useState('');
@@ -357,31 +359,30 @@ export const ListScheduleDeployment = () => {
             wordWrap: 'break-word',
           }}
         />
-        <IconButton
-          onClick={event => {
-            dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(true));
-            dispatch(SchedularActions.setSelectedSchedule(item));
-            if (selectedSchedule?.last_sanity_check_id) {
-              console.log(
-                selectedSchedule?.last_sanity_check_id,
-                'selectedSchedule'
-              );
-              console.log(sanityCheckData?.id, 'sanityCheckData');
-              console.log(selectedSchedule?.last_sanity_check_id);
-
+        {item?.has_sanity_permission === true && (
+          <IconButton
+            onClick={event => {
               dispatch(
-                NamespacesActions.fetchSanityReportAuditLog(
-                  sanityCheckData?.id || selectedSchedule?.last_sanity_check_id
-                )
+                SchedularActions.setIsScheduleSanityCheckModalOpen(true)
               );
-            }
-            event.currentTarget.blur();
-          }}
-          data-tooltip-id={`tooltip-group-sanity-check`}
-          style={{ border: 'transparent' }}
-        >
-          <SanityCheckIcon />
-        </IconButton>
+              dispatch(SchedularActions.setSelectedSchedule(item));
+              event.currentTarget.blur();
+              if (item?.last_sanity_check_id === null) {
+                dispatch(SchedularActions.setSanityAndDeployStatus(null));
+              }
+              if (item?.last_sanity_check_id) {
+                dispatch(
+                  NamespacesActions.fetchSanityReportAuditLog(
+                    sanityCheckData?.id || item?.last_sanity_check_id
+                  )
+                );
+              }
+            }}
+            data-tooltip-id={`tooltip-group-sanity-check`}
+          >
+            <SanityCheckIcon />
+          </IconButton>
+        )}
         <ReactTooltip
           id={`tooltip-group-sanity-check`}
           place="left"
@@ -951,10 +952,24 @@ export const ListScheduleDeployment = () => {
     dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(true));
     dispatch(
       SchedularActions.scheduleSanityAndDeploy({
-        schedularId: sanityCheckData?.id || selectedSchedule?.id,
+        schedularId: selectedSchedule?.id,
         clusterId: selectedSchedule?.cluster_id,
       })
     );
+    // if (selectedSchedule?.last_sanity_check_id) {
+    //   dispatch(
+    //     NamespacesActions.fetchSanityReportAuditLog(
+    //       selectedSchedule?.last_sanity_check_id
+    //     )
+    //   );
+    // } else {
+    //   dispatch(
+    //     SchedularActions.scheduleSanityAndDeploy({
+    //       schedularId: sanityCheckData?.id || selectedSchedule?.id,
+    //       clusterId: selectedSchedule?.cluster_id,
+    //     })
+    //   );
+    // }
   };
 
   useEffect(() => {
