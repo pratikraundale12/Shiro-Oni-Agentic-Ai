@@ -45,9 +45,7 @@ const CustomNine = styled.div`
   }
 `;
 const ActiveButtonContainer = styled.div`
-  gap: 7px;
-  justify-content: center;
-  flex-direction: column;
+ row-gap: 8px;
   .text_info {
     border-left: 5px solid #ff7a00;
     padding: 1rem;
@@ -56,13 +54,11 @@ const ActiveButtonContainer = styled.div`
 `;
 const TextDiv = styled.div`
   display: flex;
-  align-items: center;
+  align-items: start;
+  flex-direction: column;
 `;
 const CountDiv = styled.div`
-  height: 48px;
   margin-left: 6px;
-  max-height: 48px;
-  min-height: 48px;
   min-width: 60px;
   position: relative;
   display: flex;
@@ -89,17 +85,17 @@ const TextsvgDiv = styled.div`
   align-items: center;
 `;
 const IconsvgDiv = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: start;
 `;
 const ActiveButtonDiv = styled.div`
-  height: 48px;
-  width: 48px;
-  max-width: 48px;
+  /* height: 48px; */
+  /* width: 48px;
+  max-width: 48px; */
+  width: 100%;
+  gap: 12px;
   max-height: 48px;
   min-height: 48px;
-  min-width: 48px;
+  padding: 8px;
+  /* min-width: 48px; */
   border: 1px solid #dde4f0;
   border-radius: 8px;
   background-color: #f5f7fa;
@@ -107,7 +103,7 @@ const ActiveButtonDiv = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   &:hover {
     border: 1px solid
       ${props => (props.isActive ? props.activeColor : '#FF7A00')};
@@ -147,6 +143,25 @@ const ScrollSetGrey = styled.div`
 const BottomButtonWrapper = styled.div`
   padding: 1rem;
   border-top: 1px solid #dde4f0;
+`;
+
+const IconCover = styled.div`
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #DDE4F0;
+`;
+
+const TextDetails = styled.div` 
+font-weight: 700;
+font-size: 16px;
+line-height: 100%;
+text-transform: capitalize;
+color: #444445;
+margin-bottom: 25px;
 `;
 const FlowControl = () => {
   const dispatch = useDispatch();
@@ -276,10 +291,11 @@ const FlowControl = () => {
     <DataWrapper>
       <FullPageLoader loading={loading} />
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        <IconsvgDiv>
-          <CustomNine className="col-4 mb-3">
-            <ActiveButtonContainer className="d-flex ">
-              <TextDiv className="d-flex">
+        <IconsvgDiv className='row'>
+          <CustomNine className="col-md-6 mb-3">
+            <TextDetails className='col-lg-12'>Processor Details</TextDetails>
+            <ActiveButtonContainer className="row">
+              <TextDiv className="col-lg-6">
                 <CountDiv
                   className="div-btn-1 mr-2"
                   count={sigleNamespaceData?.runningCount}
@@ -290,7 +306,7 @@ const FlowControl = () => {
                 </CountDiv>
                 <div>{KDFM.RUNNING_PROCESSORS}</div>
               </TextDiv>
-              <TextDiv className="d-flex">
+              <TextDiv className="col-lg-6">
                 <CountDiv
                   className="div-btn-2 mr-2"
                   count={sigleNamespaceData?.stoppedCount}
@@ -301,7 +317,7 @@ const FlowControl = () => {
                 </CountDiv>
                 <div>{KDFM.STOPPED_PROCESSORS}</div>
               </TextDiv>
-              <TextDiv className="d-flex">
+              <TextDiv className="col-lg-6">
                 <CountDiv
                   className="div-btn-3 mr-2"
                   count={sigleNamespaceData?.invalidCount}
@@ -329,7 +345,7 @@ const FlowControl = () => {
                   <div>{KDFM.INVALID_PROCESSORS}</div>
                 )}
               </TextDiv>
-              <TextDiv className="d-flex">
+              <TextDiv className="col-lg-6">
                 <CountDiv
                   className="div-btn-4 mr-2"
                   count={singleNamespaceData1?.disabledCount}
@@ -342,21 +358,23 @@ const FlowControl = () => {
               </TextDiv>
             </ActiveButtonContainer>
           </CustomNine>
-          <ActiveButtonContainer className="d-flex ">
+          <div className='col-md-6'>
+            <TextDetails className='col-lg-12'>Control Action</TextDetails>
+            <ActiveButtonContainer className="row ">
             {!(
               sigleNamespaceData?.runningCount === 0 &&
               sigleNamespaceData?.stoppedCount === 0
             ) ? (
               <>
                 {(!selectedNamespaceForDetail?.is_active_schedule || selectedNamespaceForDetail?.is_active_schedule == 'false') ? (
-                  <TextsvgDiv className="d-flex">
+                  <TextsvgDiv className="col-lg-6">
                     <ActiveButtonDiv
                       disabled={
                         !canWrite ||
                         (sigleNamespaceData?.runningCount > 0 &&
                           sigleNamespaceData?.stoppedCount === 0)
                       }
-                      className="div-btn-1 mr-2"
+                      className="div-btn-1"
                       isActive={activeButton === 'RUNNING'}
                       activeColor="#58e715"
                       hoverColor="#58e715"
@@ -373,18 +391,9 @@ const FlowControl = () => {
                         handleUpdateStatus('RUNNING');
                       }}
                     >
-                      <TriangleIcons color="#B5BDC8" />
+                      <IconCover><TriangleIcons color="#B5BDC8" /></IconCover>
+                       <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
                     </ActiveButtonDiv>
-                    <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                    {sigleNamespaceData?.runningCount > 0 &&
-                      sigleNamespaceData?.stoppedCount === 0 && (
-                        <ReactTooltip
-                          id="runningProcessor"
-                          content="Running Components"
-                          place="right"
-                          positionStrategy="fixed"
-                        />
-                      )}
                   </TextsvgDiv>
                 ) : (
                   <div className="text-message mb-3">
@@ -393,8 +402,8 @@ const FlowControl = () => {
                     time.
                   </div>
                 )}
-                <TextsvgDiv className="d-flex">
-                  <ActiveButtonDiv className="div-btn-2 mr-2">
+                <TextsvgDiv className="col-lg-6">
+                  
                     <ActiveButtonDiv
                       disabled={
                         !canWrite ||
@@ -418,19 +427,11 @@ const FlowControl = () => {
                         handleUpdateStatus('STOPPED');
                       }}
                     >
-                      <SquareBoxIcon color="#B5BDC8" />
+                      <IconCover>
+                        <SquareBoxIcon color="#B5BDC8" />
+                      </IconCover>
+                      <div>{KDFM.STOPPED_FLOW}</div>
                     </ActiveButtonDiv>
-                  </ActiveButtonDiv>
-                  <div>{KDFM.STOPPED_FLOW}</div>
-                  {sigleNamespaceData?.runningCount === 0 &&
-                    sigleNamespaceData?.stoppedCount > 0 && (
-                      <ReactTooltip
-                        id="stoppedProcessor"
-                        content="Stopped Components"
-                        place="right"
-                        positionStrategy="fixed"
-                      />
-                    )}
                 </TextsvgDiv>{' '}
                 {singleNamespaceData1?.flowName && (
                   <>
@@ -438,41 +439,31 @@ const FlowControl = () => {
                       && (
                       <>
                         {/* Schedule Start Flow Button */}
-                        <TextsvgDiv className="d-flex">
-                          <ActiveButtonDiv className="div-btn-1 mr-2">
+                        <TextsvgDiv className="col-lg-6">
+                          
                             <ActiveButtonDiv
                               data-tooltip-id="scheduleStartFlow"
                               onClick={() => handleScheduleFlow('RUNNING')}
                             >
-                              <ScheduleStartIcon />
+                             <IconCover>
+                               <ScheduleStartIcon />
+                             </IconCover>
+                               <div className="mr-2">Schedule Start Flow</div>
                             </ActiveButtonDiv>
-                          </ActiveButtonDiv>
-                          <div className="mr-2">Schedule Start Flow</div>
-                          <ReactTooltip
-                            id="scheduleStartFlow"
-                            content="Schedule start flow"
-                            place="right"
-                            positionStrategy="fixed"
-                          />
                         </TextsvgDiv>
 
                         {/* Schedule Stop Flow Button */}
-                        <TextsvgDiv className="d-flex">
-                          <ActiveButtonDiv className="div-btn-2 mr-2">
+                        <TextsvgDiv className="col-lg-6">
+                         
                             <ActiveButtonDiv
                               data-tooltip-id="scheduleStopFlow"
                               onClick={() => handleScheduleFlow('STOPPED')}
                             >
-                              <ScheduleStopIcon />
+                             <IconCover>
+                               <ScheduleStopIcon />
+                             </IconCover>
+                              <div>Schedule Stop Flow</div>
                             </ActiveButtonDiv>
-                          </ActiveButtonDiv>
-                          <div>Schedule Stop Flow</div>
-                          <ReactTooltip
-                            id="scheduleStopFlow"
-                            content="Schedule stop flow"
-                            place="right"
-                            positionStrategy="fixed"
-                          />
                         </TextsvgDiv>
                       </>
                     )}
@@ -483,6 +474,7 @@ const FlowControl = () => {
               <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
             )}
           </ActiveButtonContainer>
+          </div>
         </IconsvgDiv>
         <ModalWithIcon
           title={'Flow Confirmation'}
