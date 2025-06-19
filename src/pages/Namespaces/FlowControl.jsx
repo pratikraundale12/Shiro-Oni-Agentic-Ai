@@ -366,7 +366,7 @@ const FlowControl = () => {
               sigleNamespaceData?.stoppedCount === 0
             ) ? (
               <>
-                {(!selectedNamespaceForDetail?.is_active_schedule || selectedNamespaceForDetail?.is_active_schedule == 'false') ? (
+                {selectedNamespaceForDetail?.is_active_schedule === false || singleNamespaceData1?.is_active_schedule === false ? (
                   <TextsvgDiv className="col-lg-6">
                     <ActiveButtonDiv
                       disabled={
@@ -435,7 +435,7 @@ const FlowControl = () => {
                 </TextsvgDiv>{' '}
                 {singleNamespaceData1?.flowName && (
                   <>
-                    {(!selectedNamespaceForDetail?.is_active_schedule || selectedNamespaceForDetail?.is_active_schedule == 'false')
+                    {selectedNamespaceForDetail?.is_active_schedule === false || singleNamespaceData1?.is_active_schedule === false
                       && (
                       <>
                         {/* Schedule Start Flow Button */}
@@ -509,33 +509,6 @@ const FlowControl = () => {
           primaryText={`Do you really want to ${confirmDialogue?.text}?`}
           onSubmit={handleConfirmUpdateStatus}
         />
-        {/* <ModalWithIcon
-          title={'Sanity Check Confirmation'}
-          primaryButtonText={'Confirm'}
-          secondaryButtonText="Cancel"
-          icon={<ExclamationIcon height={120} width={150} />}
-          isOpen={isSanityCheckModalOpen}
-          onRequestClose={() => setIsSanityCheckModalOpen(false)}
-          primaryText={'Do you want Sanity Check during Deployment?'}
-          secondaryText={
-            'Process group will be deployed in a stopped state and cannot be undone'
-          }
-          onSubmit={handledeployByRegistry}
-        /> */}
-        {/* {isEmpty(sanityCheckData) && sanityCheckCleanModalDisplay && (
-          <ModalWithIcon
-            title={'Sanity Check'}
-            secondaryButtonText='Close'
-            icon={<GreenRightCircleIcon />}
-            isOpen={sanityCheckCleanModalDisplay}
-            secondaryText={
-              'Sanity check passed with no issues. Start the flow from the Flow Control tab in the Process Group Details page.'
-            }
-            onSubmit={() =>
-              dispatch(NamespacesActions.setDisplaySanityCheckCleanModal(false))
-            }
-          />
-        )} */}
       </ScrollSetGrey>
     </DataWrapper>
   );
