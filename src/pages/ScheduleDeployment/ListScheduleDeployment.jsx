@@ -364,6 +364,8 @@ export const ListScheduleDeployment = () => {
         {item?.mode === 'deploy' && item?.has_sanity_permission === true && (
           <IconButton
             onClick={event => {
+              dispatch(SchedularActions.setSanityAndDeployStatus(null));
+              dispatch(NamespacesActions.setSanityReportAuditData(null));
               dispatch(
                 SchedularActions.setIsScheduleSanityCheckModalOpen(true)
               );
