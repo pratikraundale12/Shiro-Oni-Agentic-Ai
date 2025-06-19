@@ -2,16 +2,16 @@ import React from 'react';
 import {
   InputField,
   PasswordField,
-  RadioSelectField,
+  // RadioSelectField,
   SelectField,
 } from '../../../shared';
 import {
   FLOW_ELECTION_MAX_WAIT_OPTIONS,
   KDFM,
-  TRUE_FALSE_OPTIONS,
+  // TRUE_FALSE_OPTIONS,
 } from '../../../constants';
 import { NotePadIcon, QRIcons } from '../../../assets';
-import { isEmpty } from 'lodash';
+// import { isEmpty } from 'lodash';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
@@ -52,225 +52,180 @@ const StyledSelectField = styled(SelectField)`
   }
 `;
 const NifiConfigTabFieldsContainer = ({ register, errors, control, watch }) => {
+  const inputObject = [
+    {
+      label: 'Web Http Port',
+      name: 'nifi_web_https_port',
+      placeholder: 'Enter Http Port',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.web.https.host',
+      name: 'host',
+      placeholder: 'Enter nifi.web.https.host',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.web.proxy.host',
+      name: 'nifi_web_proxy_host',
+      placeholder: 'Enter nifi.web.proxy.host',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.security.keystore',
+      name: 'nifi_security_keystore',
+      placeholder: 'Enter nifi.security.keystore',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.security.keystoreType',
+      name: 'nifi_security_keystoreType',
+      placeholder: 'Enter nifi.security.keystoreType',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.security.truststore',
+      name: 'nifi_security_truststore',
+      placeholder: 'Enter nifi.security.truststore',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.security.truststoreType',
+      name: 'nifi_security_truststoreType',
+      placeholder: 'Enter nifi.security.truststoreType',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.security.user.authorizer',
+      name: 'nifi_security_user_authorizer',
+      placeholder: 'Enter nifi.security.user.authorizer',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'Protocol Max Threads',
+      name: 'nifi_cluster_node_protocol_max_threads',
+      placeholder: 'Enter Protocol Max Threads',
+      required: true,
+      defaultValue: 50,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: KDFM.COMMENTS,
+      name: 'comments',
+      placeholder: KDFM.ENTER_YOUR_COMMENTS,
+      required: true,
+      icon: <NotePadIcon />,
+    },
+  ];
+
+  const selectObject = [
+    {
+      label: 'Flow Election Max Wait Time',
+      name: 'nifi_cluster_flow_election_max_wait_time',
+      icon: <QRIcons />,
+      size: 'lg',
+      options: FLOW_ELECTION_MAX_WAIT_OPTIONS,
+      placeholder: 'Select Flow Election Max Wait Time',
+      sortAlphabetically: false,
+      defaultValue: '5',
+      height: '54px',
+      labelMargin: '0px',
+    },
+    {
+      label: KDFM.NIFI_VERSION,
+      name: 'nifiVersion',
+      icon: <QRIcons />,
+      required: true,
+      options: [],
+      placeholder: KDFM.SELECT_NIFI_VERSION,
+      height: '54px',
+      labelMargin: '0px',
+    },
+  ];
+
+  const passwordObject = [
+    {
+      name: 'nifi_security_truststorePasswd',
+      label: 'nifi.security.truststorePasswd',
+      placeholder: 'Enter nifi.security.truststorePasswd',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      name: 'nifi_security_keyPasswd',
+      label: 'nifi.security.keyPasswd',
+      placeholder: 'Enter nifi.security.keyPasswd',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      name: 'nifi_security_truststorePasswd',
+      label: 'nifi.security.truststorePasswd',
+      placeholder: 'Enter nifi.security.truststorePasswd',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+  ];
   return (
     <>
       {/*  */}
       <div className="row mt-3">
-        <div className="col-4">
-          <InputField
-            label="Web Http Port"
-            name="nifi_web_https_port"
-            type="text"
-            placeholder="Enter Http Port"
-            required
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-          />
-        </div>
-        <div className="col-4">
-          <InputField
-            label={'nifi.web.https.host'}
-            name="host"
-            type="text"
-            placeholder={'Enter nifi.web.https.host'}
-            required
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-            // disabled={!isEmpty(configToEdit)}
-          />
-        </div>
-        <div className="col-4">
-          <InputField
-            label={'nifi.web.proxy.host'}
-            name="nifi_web_proxy_host"
-            type="text"
-            placeholder={'Enter nifi.web.proxy.host'}
-            required
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-            // disabled={!isEmpty(configToEdit)}
-          />
-        </div>
-      </div>
-      <div className="row mt-3">
-        <div className="col-4">
-          <InputField
-            label="nifi.security.keystore"
-            name="nifi_security_keystore"
-            type="text"
-            placeholder="Enter nifi.security.keystore"
-            required
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-          />
-        </div>
-        <div className="col-4">
-          <InputField
-            label={'nifi.security.keystoreType'}
-            name="nifi_security_keystoreType"
-            type="text"
-            placeholder={'Enter nifi.security.keystoreType'}
-            required
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-            // disabled={!isEmpty(configToEdit)}
-          />
-        </div>
-        <div className="col-4">
-          <PasswordField
-            name="nifi_security_keystorePasswd"
-            label="nifi.security.keystorePasswd"
-            placeholder="Enter nifi.security.keystorePasswd"
-            required
-            watch={watch}
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-          />
-        </div>
-      </div>
-      <div className="row mt-3">
-        <div className="col-4">
-          <PasswordField
-            name="nifi_security_keyPasswd"
-            label="nifi.security.keyPasswd"
-            placeholder="nifi.security.keyPasswd"
-            required
-            watch={watch}
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-          />
-        </div>
-        <div className="col-4">
-          <InputField
-            label={'nifi.security.truststore'}
-            name="nifi_security_truststore"
-            type="text"
-            placeholder={'Enter nifi.security.truststore'}
-            required
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-            // disabled={!isEmpty(configToEdit)}
-          />
-        </div>
-        <div className="col-4">
-          <InputField
-            label={'nifi.security.truststoreType'}
-            name="nifi_security_truststoreType"
-            type="text"
-            placeholder={'Enter nifi.security.truststoreType'}
-            required
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-            // disabled={!isEmpty(configToEdit)}
-          />
-        </div>
-      </div>
-      {/*  */}
-      <div className="row mt-3">
-        <div className="col-4">
-          <PasswordField
-            name="nifi_security_truststorePasswd"
-            label="nifi.security.truststorePasswd"
-            placeholder="Enter nifi.security.truststorePasswd"
-            required
-            watch={watch}
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-          />
-        </div>
-        <div className="col-4">
-          <InputField
-            label={'nifi.security.user.authorizer'}
-            name="nifi_security_user_authorizer"
-            type="text"
-            placeholder={'Enter nifi.security.user.authorizer'}
-            required
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-            // disabled={!isEmpty(configToEdit)}
-          />
-        </div>
-      </div>
-      {/*  */}
-      <div className="row mt-3">
-        <div className="col-5">
-          <InputField
-            label="Protocol Max Threads"
-            name="nifi_cluster_node_protocol_max_threads"
-            type="text"
-            placeholder="Enter Protocol Max Threads"
-            required
-            register={register}
-            errors={errors}
-            defaultValue={50}
-            icon={<NotePadIcon />}
-          />
-        </div>
-        <div className="col-5">
-          <StyledSelectField
-            label="Flow Election Max Wait Time"
-            name="nifi_cluster_flow_election_max_wait_time"
-            icon={<QRIcons />}
-            size="lg"
-            errors={errors}
-            control={control}
-            options={FLOW_ELECTION_MAX_WAIT_OPTIONS}
-            placeholder="Select Flow Election Max Wait Time"
-            sortAlphabetically={false}
-            defaultValue="5"
-            height="54px"
-            labelMargin="0px"
-          />
-        </div>
-        <div className="col-2">
-          <RadioSelectField
-            name="nifi_cluster_is_node"
-            options={TRUE_FALSE_OPTIONS}
-            label="NiFi Cluster Node"
-            register={register}
-            defaultValue={'false'}
-          />
-        </div>
-      </div>
-      <div className="row ">
-        <div className="col-4">
-          <StyledSelectField
-            label={KDFM.NIFI_VERSION}
-            name="nifiVersion"
-            icon={<QRIcons />}
-            register={register}
-            required
-            errors={errors}
-            control={control}
-            options={[]}
-            placeholder={KDFM.SELECT_NIFI_VERSION}
-            height="54px"
-            labelMargin="0px"
-          />
-        </div>
-        <div className="col-4">
-          <InputField
-            label={KDFM.COMMENTS}
-            name="comments"
-            type="text"
-            placeholder={KDFM.ENTER_YOUR_COMMENTS}
-            required
-            register={register}
-            errors={errors}
-            icon={<NotePadIcon />}
-          />
-        </div>
+        {inputObject.map((input, index) => (
+          <div className="col-4" key={index}>
+            <InputField
+              label={input.label}
+              name={input.name}
+              type="text"
+              placeholder={input.placeholder}
+              required={input.required}
+              register={register}
+              errors={errors}
+              icon={input.icon}
+            />
+          </div>
+        ))}
+        {selectObject.map((select, index) => (
+          <div className="col-4" key={index}>
+            <StyledSelectField
+              label={select.label}
+              name={select.name}
+              control={control}
+              options={select.options}
+              placeholder={select.placeholder}
+              required={select.required}
+              icon={select.icon}
+              size={select.size}
+              height={select.height}
+              labelMargin={select.labelMargin}
+              defaultValue={select.defaultValue}
+              sortAlphabetically={select.sortAlphabetically}
+              register={register}
+              errors={errors}
+            />
+          </div>
+        ))}
+        {passwordObject.map((password, index) => (
+          <div className="col-4" key={index}>
+            <PasswordField
+              label={password.label}
+              name={password.name}
+              placeholder={password.placeholder}
+              required={password.required}
+              register={register}
+              errors={errors}
+              icon={password.icon}
+              watch={watch}
+            />
+          </div>
+        ))}
       </div>
     </>
   );
