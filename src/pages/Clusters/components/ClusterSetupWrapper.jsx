@@ -147,7 +147,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
       <Title
         title={
           !isEmpty(nodesUpdateAnsbibleClusterId)
-            ? 'Update Nodes'
+            ? 'Add Nodes'
             : !isEmpty(clusterIdForAnsible)
               ? 'Upgrade Cluster'
               : 'Add New Cluster'
@@ -191,7 +191,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
             }
           >
             {!isEmpty(nodesUpdateAnsbibleClusterId)
-              ? 'Update Nodes'
+              ? 'Add Nodes'
               : !isEmpty(clusterIdForAnsible)
                 ? 'Upgrade Cluster'
                 : 'Create Cluster'}
