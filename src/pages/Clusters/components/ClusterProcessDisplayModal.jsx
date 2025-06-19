@@ -70,6 +70,7 @@ const CreationmodelSteps = [
   { step: 'Certificate deployment', status: 'completed' },
   { step: 'NiFi Configuration', status: 'completed' },
   { step: 'Custom metrics agent', status: 'completed' },
+  { step: 'NiFi cluster flow election', status: 'completed' },
 ];
 const deleteModalSteps = [
   {
@@ -94,6 +95,7 @@ const RestartModalSteps = [
     step: 'Restart NiFi service',
     status: 'completed',
   },
+  { step: 'NiFi cluster flow election', status: 'completed' },
 ];
 const StopModalSteps = [
   {
@@ -115,6 +117,7 @@ const StartModalSteps = [
     step: 'NiFi stop via systemd service',
     status: 'completed',
   },
+  { step: 'NiFi cluster flow election', status: 'completed' },
 ];
 
 const UpgradeModalSteps = [
@@ -150,6 +153,7 @@ const UpgradeModalSteps = [
     step: 'Custom metrics agent',
     status: 'completed',
   },
+  { step: 'NiFi cluster flow election', status: 'completed' },
 ];
 
 const nodesUpdateModalSteps = [
@@ -193,6 +197,7 @@ const nodesUpdateModalSteps = [
     step: 'Custom metrics',
     status: 'completed',
   },
+  { step: 'NiFi cluster flow election', status: 'completed' },
   {
     step: 'NiFi cluster deployment',
     status: 'completed',
@@ -243,6 +248,8 @@ export const ClusterProcessDisplayModal = ({
   const dispatch = useDispatch();
   const [isCompleted, setIsCompleted] = useState(false);
   const [isInitialisaitionPhase, setIsInitialisaitionPhase] = useState(false);
+  const [initialisingTime, setInitialisingTime] = useState(null);
+  const [progressValue, setProgressValue] = useState(0);
   const isModalOpen = useSelector(
     ClustersSelectors.getProgressTrackingModalOpen
   );
@@ -437,16 +444,10 @@ export const ClusterProcessDisplayModal = ({
     return match ? parseInt(match[0], 10) : null;
   };
 
-  const [initialisingTime, setInitialisingTime] = useState(null);
-  const [progressValue, setProgressValue] = useState(0);
-
   useEffect(() => {
-    const extractedTime = extractNumberFromTimeString(
-      processData?.nifi_cluster_flow_election_max_wait_time || '2 mins'
-    );
-
+    const extractedTime = extractNumberFromTimeString('1 mins');
     if (extractedTime !== null && !isNaN(extractedTime)) {
-      setInitialisingTime(extractedTime * 60 * 1000);
+      setInitialisingTime(10 * 1000);
     }
   }, [processData]);
 
