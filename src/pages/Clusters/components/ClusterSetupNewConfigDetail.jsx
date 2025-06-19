@@ -43,6 +43,7 @@ import { toast } from 'react-toastify';
 import BootstrapConfig from './BootstrapConfig';
 import AuthorizersXml from './AuthorizersXml';
 import LogbackXml from './LogbackXml';
+import NifiConfigTabFieldsContainer from './NifiConfigTabFieldsConatiner';
 
 const StyledSelectField = styled(SelectField)`
   /* Container styling */
@@ -940,7 +941,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
     }
   };
   const methodForLogin = watch('loginProvider');
-  const bootstrapConfig = watch('bootstrap_config');    
+  const bootstrapConfig = watch('bootstrap_config');
   useEffect(() => {
     if (methodForLogin) {
       // Store current form state before changing authentication method
@@ -1153,6 +1154,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
             <SectionHeading>{selectedTitle?.[0]?.name}</SectionHeading>
             {selectedProperty === 'nifi_properties' && (
               <div>
+                <NifiConfigTabFieldsContainer
+                  register={register}
+                  errors={errors}
+                  control={control}
+                  watch={watch}
+                />
                 <div>
                   <TitleTabWrapper className="mt-3">
                     <TitleTab className="ms-3">Core Configuration</TitleTab>
@@ -1250,11 +1257,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
             )}
             {selectedProperty === 'bootstrap_config' && (
               <div>
-               <BootstrapConfig
-                 register={register}
-                 errors={errors}
-                 rows={21}
-               />
+                <BootstrapConfig
+                  register={register}
+                  errors={errors}
+                  rows={21}
+                />
                 {/* <div>
                   <TitleTabWrapper className="mt-3">
                     <TitleTab className="ms-3">Java Memory Settings</TitleTab>
@@ -1618,7 +1625,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
               </div>
             )}
             {selectedProperty === 'authorizers_xml' && (
-                <AuthorizersXml register={register} errors={errors} />
+              <AuthorizersXml register={register} errors={errors} />
             )}
             {selectedProperty === 'logback_xml' && (
               <LogbackXml register={register} errors={errors} />
