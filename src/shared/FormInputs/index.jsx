@@ -10,3 +10,4 @@ export { default as DateTimeInput } from './components/DateSelector';
 export { default as UploadField } from './components/UplaodField';
 export { default as DateField } from './components/DateField';
 export { default as DateRangePickerInput } from './components/DateRangePicker';
+export { default as TextareaField } from './components/TextareaField';
