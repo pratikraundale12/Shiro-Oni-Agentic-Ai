@@ -40,6 +40,9 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { testConfigApi } from '../../../store/apis/ldap';
 import { SuccessTestModal } from './SuccessTestModal';
 import { toast } from 'react-toastify';
+import BootstrapConfig from './BootstrapConfig';
+import AuthorizersXml from './AuthorizersXml';
+import LogbackXml from './LogbackXml';
 
 const StyledSelectField = styled(SelectField)`
   /* Container styling */
@@ -354,23 +357,23 @@ const ClusterSetupNewConfigDetailsPage = () => {
         value => value === value?.trim()
       )
       .min(10, 'Password must be minimum 10 in length'),
-    java_arg_2: yup
-      .number()
-      .transform((value, originalValue) =>
-        originalValue === '' ? undefined : value
-      )
-      .typeError('Must be a number')
-      .positive('Must be a positive number')
-      .required('Initial heap size is required'),
-    java_arg_3: yup
-      .number()
-      .typeError('Must be a number')
-      .positive('Must be a positive number')
-      .required('Maximum heap size is required')
-      .min(
-        initialHeapSize,
-        `Maximum heap size must be at least ${initialHeapSize}`
-      ),
+    // java_arg_2: yup
+    //   .number()
+    //   .transform((value, originalValue) =>
+    //     originalValue === '' ? undefined : value
+    //   )
+    //   .typeError('Must be a number')
+    //   .positive('Must be a positive number')
+    //   .required('Initial heap size is required'),
+    // java_arg_3: yup
+    //   .number()
+    //   .typeError('Must be a number')
+    //   .positive('Must be a positive number')
+    //   .required('Maximum heap size is required')
+    //   .min(
+    //     initialHeapSize,
+    //     `Maximum heap size must be at least ${initialHeapSize}`
+    //   ),
     directory: yup
       .string()
       .required('Directory is required')
@@ -658,6 +661,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
       icon: CheckListIcon,
     },
     {
+      name: 'Authorizers.xml',
+      path: 'authorizers_xml',
+      icon: CheckListIcon,
+    },
+    {
+      name: 'Logback.xml',
+      path: 'logback_xml',
+      icon: CheckListIcon,
+    },
+    {
       name: 'State-management.xml',
       path: 'state_management_xml',
       icon: CheckListIcon,
@@ -685,12 +698,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
       bootstrap,
       login_identity_providers,
       state_management,
+      authorizers,
+      lockback,
     } = configToEdit;
 
     const nifiProps = safeParseJSON(nifi_properties) || {};
-    const bootstrapProps = safeParseJSON(bootstrap) || {};
+    const bootstrapConfig = bootstrap || '';
     const loginProviders = safeParseJSON(login_identity_providers) || {};
     const stateManagement = safeParseJSON(state_management) || {};
+    const authorizersXml = authorizers || '';
+    const logbackXml = lockback || '';
 
     setValue('configName', config_name);
     setValue('nifiVersion', nifi_version);
@@ -722,9 +739,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
     );
     setValue('nifi_zookeeper_connect_timeout', nifi_zookeeper_connect_timeout);
     setValue('nifi_web_https_port', nifi_web_https_port);
-
-    setValue('java_arg_2', getMemoryValue(bootstrapProps.java_arg_2));
-    setValue('java_arg_3', getMemoryValue(bootstrapProps.java_arg_3));
+    setValue('bootstrap_config', bootstrapConfig);
+    setValue('authorizers_xml', authorizersXml);
+    setValue('logback_xml', logbackXml);
+    // setValue('java_arg_2', getMemoryValue(bootstrapProps.java_arg_2));
+    // setValue('java_arg_3', getMemoryValue(bootstrapProps.java_arg_3));
 
     if (isLdapProvider) {
       const groupObjectClass =
@@ -833,10 +852,9 @@ const ClusterSetupNewConfigDetailsPage = () => {
           ? 'single-user-provider'
           : 'ldap-provider',
     };
-    const bootstrapPayload = {
-      java_arg_2: `-Xms${data?.java_arg_2}g`,
-      java_arg_3: `-Xmx${data?.java_arg_3}g`,
-    };
+    const bootstrapPayload = data?.bootstrap_config;
+    const authorizersXmlPayload = data?.authorizers_xml;
+    const logbackXmlPayload = data?.logback_xml;
     const loginLDAPdata = {
       ldap_login_dn: ldapConnectionData?.loginDn,
       ldap_login_password: ldapConnectionData?.password2,
@@ -879,8 +897,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
     payload.append('nifiVersion', data?.nifiVersion);
     payload.append('comments', data?.comments);
     payload.append('nifi_properties', JSON.stringify(nifiPropertyPayload));
-    payload.append('bootstrap_configuration', JSON.stringify(bootstrapPayload));
+    payload.append('bootstrap_configuration', bootstrapPayload);
     payload.append('login_identity_provider', JSON.stringify(loginPayload));
+    payload.append('authorizers_xml', authorizersXmlPayload);
+    payload.append('logback_xml', logbackXmlPayload);
     payload.append('state_management', JSON.stringify(statePayload));
     if (isEmpty(configToEdit)) {
       dispatch(ClustersActions.addConfigClusterSetup(payload));
@@ -906,7 +926,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       setSelectedProperty('nifi_properties');
       return;
     }
-    if (errors?.java_arg_2 || errors?.java_arg_3) {
+    if (errors?.bootstrap_config) {
       setSelectedProperty('bootstrap_config');
       return;
     }
@@ -920,7 +940,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
     }
   };
   const methodForLogin = watch('loginProvider');
-
+  const bootstrapConfig = watch('bootstrap_config');    
   useEffect(() => {
     if (methodForLogin) {
       // Store current form state before changing authentication method
@@ -1230,7 +1250,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
             )}
             {selectedProperty === 'bootstrap_config' && (
               <div>
-                <div>
+               <BootstrapConfig
+                 register={register}
+                 errors={errors}
+                 rows={21}
+               />
+                {/* <div>
                   <TitleTabWrapper className="mt-3">
                     <TitleTab className="ms-3">Java Memory Settings</TitleTab>
                   </TitleTabWrapper>
@@ -1274,7 +1299,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             )}
             {selectedProperty === 'login_identity_provider' && (
@@ -1591,6 +1616,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </div>
                 )}
               </div>
+            )}
+            {selectedProperty === 'authorizers_xml' && (
+                <AuthorizersXml register={register} errors={errors} />
+            )}
+            {selectedProperty === 'logback_xml' && (
+              <LogbackXml register={register} errors={errors} />
             )}
             {selectedProperty === 'state_management_xml' && (
               <div>
