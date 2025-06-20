@@ -364,6 +364,8 @@ export const ListScheduleDeployment = () => {
         {item?.mode === 'deploy' && item?.has_sanity_permission === true && (
           <IconButton
             onClick={event => {
+              dispatch(SchedularActions.setSanityAndDeployStatus(null));
+              dispatch(NamespacesActions.setSanityReportAuditData(null));
               dispatch(
                 SchedularActions.setIsScheduleSanityCheckModalOpen(true)
               );
@@ -993,6 +995,7 @@ export const ListScheduleDeployment = () => {
   }, [dispatch]);
 
   const hadleSuccessSanityCheck = () => {
+    fetchRecords();
     dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
     dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
     dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
@@ -1004,7 +1007,7 @@ export const ListScheduleDeployment = () => {
 
   return (
     <>
-      <FullPageLoader loading={statusLoading} />;
+      <FullPageLoader loading={statusLoading} />
       <ModalWithIcon
         title={'Disapprove Deployment Schedule'}
         primaryButtonText={'Stop'}
@@ -1084,6 +1087,7 @@ export const ListScheduleDeployment = () => {
             dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
             dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
             dispatch(SchedularActions.setSanityAndDeployStatus(null));
+            fetchRecords();
           }}
           primaryText={'Sanity check passed with no errors or inconsistencies.'}
           secondaryText="The configuration meets the required standards for a flow to get started"

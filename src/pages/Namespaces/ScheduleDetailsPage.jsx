@@ -37,12 +37,15 @@ const ActiveButtonContainer = styled.div`
 `;
 
 const ActiveButtonDiv = styled.div`
-  height: 48px;
-  width: 48px;
-  max-width: 48px;
+  /* height: 48px; */
+  /* width: 48px;
+  max-width: 48px; */
+  width: 100%;
+  gap: 12px;
   max-height: 48px;
   min-height: 48px;
-  min-width: 48px;
+  padding: 8px 60px 8px 8px;
+  /* min-width: 48px; */
   border: 1px solid #dde4f0;
   border-radius: 8px;
   background-color: #f5f7fa;
@@ -138,6 +141,23 @@ const ConfigTitleHTwo = styled.div`
   border-bottom: 1px solid #ff7a00;
   width: fit-content;
 `;
+const IconCover = styled.div`
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #dde4f0;
+`;
+const TextDetails = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  text-transform: capitalize;
+  color: #444445;
+  margin-bottom: 25px;
+`;
 const ScheduleDeploymentTab = ({
   scheduleDeployTime,
   setScheduleDeployTime,
@@ -218,6 +238,9 @@ const ScheduleDeploymentTab = ({
           {(scheduleDeploymentFlow || scheduleUpgradeFromList) && (
             <CustomNine className="col-4 mb-3">
               <ActiveButtonContainer className="d-flex ">
+                <TextDetails className="col-lg-12">
+                  Processor Details
+                </TextDetails>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-1 mr-2"
@@ -273,6 +296,7 @@ const ScheduleDeploymentTab = ({
           )}
           {
             <ActiveButtonContainer className="d-flex ">
+              <TextDetails className="col-lg-12">Control Action</TextDetails>
               {!(
                 selectedNameSpace?.runningCount === 0 &&
                 selectedNameSpace?.stoppedCount === 0
@@ -291,9 +315,11 @@ const ScheduleDeploymentTab = ({
                             activeTextColor="#fff"
                             onClick={() => handleUpdateStatus('RUNNING')}
                           >
-                            <TriangleIcons color="#B5BDC8" />
+                            <IconCover>
+                              <TriangleIcons color="#B5BDC8" />
+                            </IconCover>
+                            <div>{KDFM.RUNNING_FLOW}</div>
                           </ActiveButtonDiv>
-                          <div>{KDFM.RUNNING_FLOW}</div>
                         </TextsvgDiv>
 
                         {/* STOPPED Button */}
@@ -306,9 +332,12 @@ const ScheduleDeploymentTab = ({
                             activeTextColor="#fff"
                             onClick={() => handleUpdateStatus('STOPPED')}
                           >
-                            <SquareBoxIcon color="#B5BDC8" />
+                            <IconCover>
+                              {' '}
+                              <SquareBoxIcon color="#B5BDC8" />
+                            </IconCover>
+                            <div>{KDFM.STOPPED_FLOW}</div>
                           </ActiveButtonDiv>
-                          <div>{KDFM.STOPPED_FLOW}</div>
                         </TextsvgDiv>
                       </>
                     )}
@@ -316,22 +345,22 @@ const ScheduleDeploymentTab = ({
 
                   {activeButton && (
                     <TextsvgDiv className="d-flex">
-                      <ActiveButtonDiv className="div-btn-2 mr-2">
-                        <ActiveButtonDiv
-                          className="div-btn-1"
-                          onClick={() => {
-                            setActiveButton(null);
-                            dispatch(
-                              NamespacesActions.setFlowControlStateAtScheduleDeploy(
-                                null
-                              )
-                            );
-                          }}
-                        >
+                      <ActiveButtonDiv
+                        className="div-btn-1"
+                        onClick={() => {
+                          setActiveButton(null);
+                          dispatch(
+                            NamespacesActions.setFlowControlStateAtScheduleDeploy(
+                              null
+                            )
+                          );
+                        }}
+                      >
+                        <IconCover>
                           <CrossIcon color="#B5BDC8" />
-                        </ActiveButtonDiv>
+                        </IconCover>
+                        <div>Reset Flow</div>
                       </ActiveButtonDiv>
-                      <div>Reset Flow</div>
                     </TextsvgDiv>
                   )}
                 </>

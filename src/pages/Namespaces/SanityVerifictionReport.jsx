@@ -1,4 +1,6 @@
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   ExclamationIcon,
@@ -7,16 +9,14 @@ import {
   SanityCheckIcon,
   StarInfoIcon,
 } from '../../assets';
+import { FullPageLoader } from '../../components';
+import { Button, ModalWithIcon } from '../../shared';
 import {
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { useDispatch, useSelector } from 'react-redux';
-import { isEmpty } from 'lodash';
-import { Button, ModalWithIcon } from '../../shared';
 import SanityCheckCollapsableItem from './SanityCheckCollapsableItem';
-import { FullPageLoader } from '../../components';
 
 const DataWrapper = styled.div`
   width: 100%;
