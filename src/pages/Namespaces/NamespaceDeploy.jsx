@@ -125,16 +125,17 @@ const ActiveButtonContainer = styled.div`
 `;
 
 const ActiveButtonDiv = styled.div`
-  /* height: 48px; */
-  /* width: 48px;
-  max-width: 48px; */
   width: 30%;
   gap: 12px;
   max-height: 48px;
   min-height: 48px;
-   padding: 8px;
-  /* min-width: 48px; */
-  border: 1px solid #dde4f0;
+  padding: 8px;
+  border: 1px solid
+    ${({ className }) => {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      return '#dde4f0';
+    }};
   border-radius: 8px;
   background-color: #f5f7fa;
   cursor: pointer;
@@ -142,7 +143,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-
   &:hover {
     border: 1px solid
       ${props => (props.isActive ? props.activeColor : '#FF7A00')};
@@ -308,7 +308,12 @@ const NamespaceDeploy = ({
             <ColumnThree className="col-5 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
                 <ActionTitleSet className="mb-0 ">Flow Name</ActionTitleSet>
-                <SubTitleSet id="process-group-deploy-modal-flow-name" className="mb-0 ">{getFlowName()}</SubTitleSet>
+                <SubTitleSet
+                  id="process-group-deploy-modal-flow-name"
+                  className="mb-0 "
+                >
+                  {getFlowName()}
+                </SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
             <ColumnThree className="col-5 mb-3">
@@ -316,7 +321,10 @@ const NamespaceDeploy = ({
                 <ActionTitleSet className="mb-0 ">
                   Current Version
                 </ActionTitleSet>
-                <SubTitleSet id="process-group-deploy-modal-current-version" className="mb-0 ">
+                <SubTitleSet
+                  id="process-group-deploy-modal-current-version"
+                  className="mb-0 "
+                >
                   {registryFlowVerion?.version}
                 </SubTitleSet>
               </RowModalDiv>
@@ -377,49 +385,47 @@ const NamespaceDeploy = ({
             <CustomNine className="col-8 mb-3">
               <ActiveButtonContainer className="d-flex">
                 {!checkFlowControlsDisplay() ? (
-                  (
-                    <>
-                      <ActiveButtonDiv
-                        className={`div-btn-1 ${
-                          checkStartFlowCondition() ? 'disabled' : ''
-                        }`}
-                        isActive={activeButtonPopup === 'RUNNING'}
-                        activeColor="#58e715"
-                        hoverColor="#58e715"
-                        activeTextColor="#fff"
-                        onClick={() =>
-                          checkStartFlowCondition() ||
-                          handleFlowConfirmPopup('RUNNING')
-                        }
-                        data-tooltip-id="running-tooltip"
-                      >
-                        <IconCover>
-                           <TriangleIcons color="#B5BDC8" />
-                        </IconCover>
-                        <div>{KDFM.RUNNING_FLOW}</div>
-                      </ActiveButtonDiv>
+                  <>
+                    <ActiveButtonDiv
+                      className={`div-btn-1 ${
+                        checkStartFlowCondition() ? 'disabled' : ''
+                      }`}
+                      isActive={activeButtonPopup === 'RUNNING'}
+                      activeColor="#58e715"
+                      hoverColor="#58e715"
+                      activeTextColor="#fff"
+                      onClick={() =>
+                        checkStartFlowCondition() ||
+                        handleFlowConfirmPopup('RUNNING')
+                      }
+                      data-tooltip-id="running-tooltip"
+                    >
+                      <IconCover>
+                        <TriangleIcons color="#B5BDC8" />
+                      </IconCover>
+                      <div>{KDFM.RUNNING_FLOW}</div>
+                    </ActiveButtonDiv>
 
-                      <ActiveButtonDiv
-                        className={`div-btn-1 ${
-                          checkStopFlowCondition() ? 'disabled' : ''
-                        }`}
-                        isActive={activeButtonPopup === 'STOPPED'}
-                        activeColor="#c52b2b"
-                        hoverColor="#c52b2b"
-                        activeTextColor="#fff"
-                        onClick={() =>
-                          checkStopFlowCondition() ||
-                          handleFlowConfirmPopup('STOPPED')
-                        }
-                        data-tooltip-id="stopped-tooltip"
-                      >
-                        <IconCover>
-                          <SquareBoxIcon color="#B5BDC8" />
-                        </IconCover>
-                        <div>{KDFM.STOPPED_FLOW}</div>
-                      </ActiveButtonDiv>
-                    </>
-                  )
+                    <ActiveButtonDiv
+                      className={`div-btn-2 ${
+                        checkStopFlowCondition() ? 'disabled' : ''
+                      }`}
+                      isActive={activeButtonPopup === 'STOPPED'}
+                      activeColor="#c52b2b"
+                      hoverColor="#c52b2b"
+                      activeTextColor="#fff"
+                      onClick={() =>
+                        checkStopFlowCondition() ||
+                        handleFlowConfirmPopup('STOPPED')
+                      }
+                      data-tooltip-id="stopped-tooltip"
+                    >
+                      <IconCover>
+                        <SquareBoxIcon color="#B5BDC8" />
+                      </IconCover>
+                      <div>{KDFM.STOPPED_FLOW}</div>
+                    </ActiveButtonDiv>
+                  </>
                 ) : (
                   <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
                 )}
