@@ -297,7 +297,6 @@ const ScheduleDeploymentTab = ({
           )}
           {
             <ActiveButtonContainer className="d-flex ">
-              <TextDetails className="col-lg-12">Control Action</TextDetails>
               {!(
                 selectedNameSpace?.runningCount === 0 &&
                 selectedNameSpace?.stoppedCount === 0
@@ -306,6 +305,9 @@ const ScheduleDeploymentTab = ({
                   <>
                     {scheduleStartFlow === false && (
                       <>
+                        <TextDetails className="col-lg-12">
+                          Control Action
+                        </TextDetails>
                         {/* RUNNING Button */}
                         <TextsvgDiv className="d-flex align-items-center mb-2">
                           <ActiveButtonDiv
