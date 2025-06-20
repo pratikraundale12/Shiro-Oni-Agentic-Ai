@@ -193,16 +193,17 @@ const ActiveButtonContainer = styled.div`
 `;
 
 const ActiveButtonDiv = styled.div`
-  /* height: 48px; */
-  /* width: 48px;
-  max-width: 48px; */
   width: 100%;
   gap: 12px;
   max-height: 48px;
   min-height: 48px;
-   padding: 8px 60px 8px 8px;
-  /* min-width: 48px; */
-  border: 1px solid #dde4f0;
+  padding: 8px 60px 8px 8px;
+  border: 1px solid
+    ${({ className, activeColor }) => {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      return '#dde4f0';
+    }};
   border-radius: 8px;
   background-color: #f5f7fa;
   cursor: pointer;
@@ -328,15 +329,15 @@ const IconCover = styled.div`
   justify-content: center;
   background-color: white;
   border-radius: 4px;
-  border: 1px solid #DDE4F0;
+  border: 1px solid #dde4f0;
 `;
-const TextDetails = styled.div` 
-font-weight: 700;
-font-size: 16px;
-line-height: 100%;
-text-transform: capitalize;
-color: #444445;
-margin-bottom: 25px;
+const TextDetails = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  text-transform: capitalize;
+  color: #444445;
+  margin-bottom: 25px;
 `;
 export const scheduleSchema = yup.object().shape({
   approver_ids: yup.array().required('Approver is required'),
@@ -1630,7 +1631,9 @@ const Summary = () => {
                 !sanityCheckAfterDeploy && (
                   <CustomNine className="col-4 mb-3">
                     <ActiveButtonContainer className="d-flex ">
-                      <TextDetails className='col-lg-12'>Processor Details</TextDetails>
+                      <TextDetails className="col-lg-12">
+                        Processor Details
+                      </TextDetails>
                       <TextDiv className="d-flex">
                         <CountDiv
                           className="div-btn-1 mr-2"
@@ -1688,61 +1691,66 @@ const Summary = () => {
                 !scheduleUpgradeFromList &&
                 !sanityCheckAfterDeploy && (
                   <ActiveButtonContainer className="d-flex ">
-                    <TextDetails className='col-lg-12'>Control Action</TextDetails>
+                    <TextDetails className="col-lg-12">
+                      Control Action
+                    </TextDetails>
                     {!(
                       processStatus?.runningCount === 0 &&
                       processStatus?.stoppedCount === 0
                     ) ? (
                       <>
                         <TextsvgDiv className="d-flex">
-                         
-                            <ActiveButtonDiv
-                              className="div-btn-1"
-                              isActive={activeButton === 'RUNNING'}
-                              data-tooltip-id="runningProcessor"
-                              activeColor="#58e715"
-                              hoverColor="#58e715"
-                              activeTextColor="#fff"
-                              onClick={() => {
-                                handleUpdateStatus('RUNNING');
-                              }}
-                            >
-                            <IconCover><TriangleIcons color="#B5BDC8" /></IconCover>
-                               <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                            </ActiveButtonDiv>
+                          <ActiveButtonDiv
+                            className="div-btn-1"
+                            isActive={activeButton === 'RUNNING'}
+                            data-tooltip-id="runningProcessor"
+                            activeColor="#58e715"
+                            hoverColor="#58e715"
+                            activeTextColor="#fff"
+                            onClick={() => {
+                              handleUpdateStatus('RUNNING');
+                            }}
+                          >
+                            <IconCover>
+                              <TriangleIcons color="#B5BDC8" />
+                            </IconCover>
+                            <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                          </ActiveButtonDiv>
                         </TextsvgDiv>
                         <TextsvgDiv className="d-flex">
-                          
-                            <ActiveButtonDiv
-                              className="div-btn-2"
-                              isActive={activeButton === 'STOPPED'}
-                              activeColor="#c52b2b"
-                              hoverColor="#c52b2b"
-                              activeTextColor="#fff"
-                              data-tooltip-id="stoppedProcessor"
-                              onClick={() => {
-                                handleUpdateStatus('STOPPED');
-                              }}
-                            >
-                            <IconCover><SquareBoxIcon color="#B5BDC8" /></IconCover>
-                              <div>{KDFM.STOPPED_FLOW}</div>
-                            </ActiveButtonDiv>
+                          <ActiveButtonDiv
+                            className="div-btn-2"
+                            isActive={activeButton === 'STOPPED'}
+                            activeColor="#c52b2b"
+                            hoverColor="#c52b2b"
+                            activeTextColor="#fff"
+                            data-tooltip-id="stoppedProcessor"
+                            onClick={() => {
+                              handleUpdateStatus('STOPPED');
+                            }}
+                          >
+                            <IconCover>
+                              <SquareBoxIcon color="#B5BDC8" />
+                            </IconCover>
+                            <div>{KDFM.STOPPED_FLOW}</div>
+                          </ActiveButtonDiv>
                         </TextsvgDiv>
                         {activeButton && (
                           <TextsvgDiv className="d-flex">
-                              <ActiveButtonDiv
-                                className="div-btn-3"
-                                activeTextColor="#fff"
-                                onClick={() => {
-                                  setActiveButton(null);
-                                  setFlowControlState(null);
-                                }}
-                              >
-                              
-                              <IconCover>  <CrossIcon color="#B5BDC8" /> </IconCover>
+                            <ActiveButtonDiv
+                              className="div-btn-3"
+                              activeTextColor="#fff"
+                              onClick={() => {
+                                setActiveButton(null);
+                                setFlowControlState(null);
+                              }}
+                            >
+                              <IconCover>
+                                {' '}
+                                <CrossIcon color="#B5BDC8" />{' '}
+                              </IconCover>
                               <div>Reset Flow</div>
-                              </ActiveButtonDiv>
-                            
+                            </ActiveButtonDiv>
                           </TextsvgDiv>
                         )}
                       </>

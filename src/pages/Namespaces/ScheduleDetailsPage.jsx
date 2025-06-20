@@ -37,16 +37,17 @@ const ActiveButtonContainer = styled.div`
 `;
 
 const ActiveButtonDiv = styled.div`
-  /* height: 48px; */
-  /* width: 48px;
-  max-width: 48px; */
   width: 100%;
   gap: 12px;
   max-height: 48px;
   min-height: 48px;
   padding: 8px 60px 8px 8px;
-  /* min-width: 48px; */
-  border: 1px solid #dde4f0;
+  border: 1px solid
+    ${({ className }) => {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      return '#dde4f0';
+    }};
   border-radius: 8px;
   background-color: #f5f7fa;
   cursor: pointer;
