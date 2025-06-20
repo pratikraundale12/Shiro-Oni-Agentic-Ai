@@ -286,6 +286,7 @@ const FlowControl = () => {
       },
     });
   };
+  
 
   return (
     <DataWrapper>
@@ -435,7 +436,7 @@ const FlowControl = () => {
                 </TextsvgDiv>{' '}
                 {singleNamespaceData1?.flowName && (
                   <>
-                    {selectedNamespaceForDetail?.is_active_schedule === false || singleNamespaceData1?.is_active_schedule === false
+                  {(selectedNamespaceForDetail?.is_active_schedule === false || singleNamespaceData1?.is_active_schedule === false)
                       && (
                       <>
                         {/* Schedule Start Flow Button */}
