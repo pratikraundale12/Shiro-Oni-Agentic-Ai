@@ -361,32 +361,34 @@ export const ListScheduleDeployment = () => {
             wordWrap: 'break-word',
           }}
         />
-        {item?.mode === 'deploy' && item?.has_sanity_permission === true && (
-          <IconButton
-            onClick={event => {
-              dispatch(SchedularActions.setSanityAndDeployStatus(null));
-              dispatch(NamespacesActions.setSanityReportAuditData(null));
-              dispatch(
-                SchedularActions.setIsScheduleSanityCheckModalOpen(true)
-              );
-              dispatch(SchedularActions.setSelectedSchedule(item));
-              event.currentTarget.blur();
-              if (item?.last_sanity_check_id === null) {
+        {item?.state !== 'DEPLOYED' &&
+          item?.mode === 'deploy' &&
+          item?.has_sanity_permission === true && (
+            <IconButton
+              onClick={event => {
                 dispatch(SchedularActions.setSanityAndDeployStatus(null));
-              }
-              if (item?.last_sanity_check_id) {
+                dispatch(NamespacesActions.setSanityReportAuditData(null));
                 dispatch(
-                  NamespacesActions.fetchSanityReportAuditLog(
-                    sanityCheckData?.id || item?.last_sanity_check_id
-                  )
+                  SchedularActions.setIsScheduleSanityCheckModalOpen(true)
                 );
-              }
-            }}
-            data-tooltip-id={`tooltip-group-sanity-check`}
-          >
-            <SanityCheckIcon />
-          </IconButton>
-        )}
+                dispatch(SchedularActions.setSelectedSchedule(item));
+                event.currentTarget.blur();
+                if (item?.last_sanity_check_id === null) {
+                  dispatch(SchedularActions.setSanityAndDeployStatus(null));
+                }
+                if (item?.last_sanity_check_id) {
+                  dispatch(
+                    NamespacesActions.fetchSanityReportAuditLog(
+                      sanityCheckData?.id || item?.last_sanity_check_id
+                    )
+                  );
+                }
+              }}
+              data-tooltip-id={`tooltip-group-sanity-check`}
+            >
+              <SanityCheckIcon />
+            </IconButton>
+          )}
 
         <ReactTooltip
           id={`tooltip-group-sanity-check`}

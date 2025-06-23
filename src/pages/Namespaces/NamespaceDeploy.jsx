@@ -143,10 +143,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
 
   & span {
     position: absolute;
@@ -159,10 +155,10 @@ const ActiveButtonDiv = styled.div`
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
 
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
-  }
   .div-btn-1.disabled {
+    cursor: not-allowed;
+  }
+   &.disabled {
     cursor: not-allowed;
   }
 `;

@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+// import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -50,23 +50,24 @@ export const StatusText = ({ text = '', item }) => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
-  const tooltipData = !isEmpty(item.approvers) ? (
-    item.approvers.map(element => (
-      <div key={element.scheduler_id}>
-        {capitalizeFirstLetter(element.approver_name)} : &nbsp;
-        {element.is_approved === true
-          ? 'Approved'
-          : element.is_approved === false
-            ? 'Not Approved'
-            : 'N/A'}{' '}
-      </div>
-    ))
-  ) : (
-    <div>{'N/A'}</div>
-  );
+  // const tooltipData = !isEmpty(item.approvers) ? (
+  //   item.approvers.map(element => (
+  //     <div key={element.scheduler_id}>
+  //       {capitalizeFirstLetter(element.approver_name)} : &nbsp;
+  //       {element.is_approved === true
+  //         ? 'Approved'
+  //         : element.is_approved === false
+  //           ? 'Not Approved'
+  //           : 'N/A'}{' '}
+  //     </div>
+  //   ))
+  // ) : (
+  //   <div>{'N/A'}</div>
+  // );
+
   return (
     <>
-      <StatusTexts color={color} data-tooltip-id={item.scheduler_id}>
+      <StatusTexts color={color} data-tooltip-id={item.state}>
         {capitalizeFirstLetter(
           item?.state === 'TIME_LAPSED'
             ? 'Time Lapsed'
@@ -75,11 +76,7 @@ export const StatusText = ({ text = '', item }) => {
               : text
         )}
       </StatusTexts>{' '}
-      <ReactTooltip
-        id={item.scheduler_id}
-        content={tooltipData}
-        place={'left'}
-      />
+      <ReactTooltip id={item.state} content={text} place={'left'} />
     </>
   );
 };

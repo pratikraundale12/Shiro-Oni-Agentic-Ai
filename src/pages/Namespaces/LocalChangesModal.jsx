@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
-  CircleArrowIcon,
+  // CircleArrowIcon,
   LocalChangeIcon,
   RevertLocalChangesIcon,
   SmallSearchIcon,
@@ -108,6 +108,11 @@ const Search = styled.input`
     font-size: 14px !important;
   }
 `;
+const LinkColor = styled.div`
+  color: ${props => props.theme.colors.primary};
+  cursor: pointer;
+  text-decoration: underline;
+`;
 
 const LocalChangesModal = () => {
   const dispatch = useDispatch();
@@ -142,18 +147,6 @@ const LocalChangesModal = () => {
         return 'Revert Local Changes';
       default:
         return 'Local Changes';
-    }
-  };
-
-  const getModalSize = () => {
-    switch (type) {
-      case 'local':
-        return 'sm';
-      case 'show':
-      case 'revert':
-        return 'md';
-      default:
-        return 'sm';
     }
   };
 
@@ -208,23 +201,11 @@ const LocalChangesModal = () => {
     {
       label: 'Component Name',
       renderCell: item => <TextRender text={item.componentName} />,
-      width: '30%',
+      width: '25%',
       resize: true,
     },
     {
-      label: 'Change Type',
-      renderCell: item => <TextRender text={item.componentType} />,
-      width: '30%',
-      resize: true,
-    },
-    {
-      label: 'Difference',
-      renderCell: item => <TextRender text={item.difference} />,
-      width: '30%',
-      resize: true,
-    },
-    {
-      label: '',
+      label: 'Component ID',
       renderCell: item => (
         <div className="text-center">
           <>
@@ -233,11 +214,25 @@ const LocalChangesModal = () => {
               onClick={() => handleIdClick(item?.componentLink)}
               type="button"
             >
-              <CircleArrowIcon />
+              <LinkColor>{item.componentId}</LinkColor>
             </button>
           </>
         </div>
       ),
+      width: '25%',
+      resize: true,
+    },
+    {
+      label: 'Change Type',
+      renderCell: item => <TextRender text={item.componentType} />,
+      width: '25%',
+      resize: true,
+    },
+    {
+      label: 'Difference',
+      renderCell: item => <TextRender text={item.difference} />,
+      width: '25%',
+      resize: true,
     },
   ];
 
@@ -302,15 +297,11 @@ const LocalChangesModal = () => {
         title={getModalTitle()}
         isOpen={isOpen}
         onRequestClose={handleMainModalClose}
-        size={getModalSize(type)}
+        size="lg"
         primaryButtonText={getButtonText(type)}
         secondaryButtonText="Cancel"
         onSubmit={handleRevertChanges}
-        contentStyles={
-          type === 'local'
-            ? { width: '400px', maxWidth: '90%' }
-            : { width: '800px', maxWidth: '95%', maxHeight: '80vh' }
-        }
+        contentStyles={{ minWidth: '70%', maxHeight: '90%' }}
       >
         <ModalContent>
           {type === 'local' && (
