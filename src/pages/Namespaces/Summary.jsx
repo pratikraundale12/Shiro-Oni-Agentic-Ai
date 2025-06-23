@@ -1094,7 +1094,7 @@ const Summary = () => {
         namespaceId: checkDestCluster?.id,
         registryId: registryData?.id,
         bucketId: selectedNameSpace?.bucketId,
-        namespaceStatus: flowControlSelectedScheduleStored,
+        namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
         payload: {
           namespaceId: checkDestCluster?.value,
           oldVariablesData: orignalVariables,
@@ -1106,10 +1106,11 @@ const Summary = () => {
         previousVersion: selectedNameSpace?.version || 1,
         flowName: selectedNameSpace?.flowName,
         isScheduled: true,
-        mode: 'upgrade',
-        type: type,
+         mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
+        type: scheduleStartFlow ? scheduleflowtypeMethod : type,
         nameSpaceName: selectedNameSpace?.name,
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
+         revert_local_changes: shouldRevertChanges,
         position: {
           x: XcordUpdated || registryDetailsData?.positions[0]?.x,
           y: YcordUpdated || registryDetailsData?.positions[0]?.y,
@@ -1135,6 +1136,13 @@ const Summary = () => {
       : scheduleFlowType === 'RUNNING'
         ? 'start'
         : '';
+
+      const scheduleafterDeploy =
+    scheduleFlowType === 'STOPPED'
+      ? 'STOPPED'
+      : scheduleFlowType === 'RUNNING'
+        ? 'RUNNING'
+        : '';    
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -1567,7 +1575,9 @@ const Summary = () => {
                             {KDFM.FLOW_STATE_AFTER_DEPLOY}
                           </SummaryDetailsHFourTag>
                           <SummaryDetailsPtag className="mb-0">
-                            {flowControlSelectedScheduleStored || 'N/A'}
+                           {scheduleStartFlow ? scheduleafterDeploy : flowControlSelectedScheduleStored || 'N/A'}
+
+                            
                           </SummaryDetailsPtag>
                         </div>
                       </UseColXl>
