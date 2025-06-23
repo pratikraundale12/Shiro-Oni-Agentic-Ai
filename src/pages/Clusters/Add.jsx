@@ -277,6 +277,10 @@ export const Add = () => {
   const [approverEnable, setApproverEnable] = useState(
     data?.approver_enable || false
   );
+
+  const [approverEnableForStartAndStop, setApproverEnableForStartAndStop] =
+    useState(data?.start_stop_requires_approval || false);
+
   const [changeRequestEnable, setChangeRequestApproverEnable] = useState(
     data?.change_request_enable || false
   );
@@ -345,6 +349,7 @@ export const Add = () => {
         tag: tags,
         notification_enable: notificationEnable,
         approver_enable: approverEnable,
+        start_stop_requires_approval: approverEnableForStartAndStop,
         change_request_enable: changeRequestEnable,
         registry_id: selectedRegistryId,
         has_custom_service_account: false,
@@ -642,7 +647,8 @@ export const Add = () => {
       data?.tag === tags &&
       data?.approver_enable === approverEnable &&
       data?.notification_enable === notificationEnable &&
-      data?.change_request_enable === changeRequestEnable
+      data?.change_request_enable === changeRequestEnable &&
+      data?.start_stop_requires_approval === approverEnableForStartAndStop
     );
   };
 
@@ -652,7 +658,14 @@ export const Add = () => {
     } else {
       setSaveButtonEnable(false);
     }
-  }, [data, tags, approverEnable, notificationEnable, changeRequestEnable]);
+  }, [
+    data,
+    tags,
+    approverEnable,
+    notificationEnable,
+    changeRequestEnable,
+    approverEnableForStartAndStop,
+  ]);
   const handleTitleProvider = data => {
     if (data && location?.pathname === '/clusters/edit') {
       return `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`;
@@ -760,8 +773,12 @@ export const Add = () => {
               setApproverEnable={setApproverEnable}
               setChangeRequestApproverEnable={setChangeRequestApproverEnable}
               setNotificationEnable={setNotificationEnable}
+              setApproverEnableForStartAndStop={
+                setApproverEnableForStartAndStop
+              }
               changeRequestEnable={changeRequestEnable}
               notificationEnable={notificationEnable}
+              approverEnableForStartAndStop={approverEnableForStartAndStop}
             />
             <ClusterTestSection
               test={test}
@@ -925,6 +942,7 @@ export const Add = () => {
         notificationEnable={notificationEnable}
         approverEnable={approverEnable}
         changeRequestEnable={changeRequestEnable}
+        approverEnableForStartAndStop={approverEnableForStartAndStop}
         tags={tags}
         selectedRegistriesArray={formStateData?.registry}
         registries={registries}

@@ -3,7 +3,22 @@ import { debounce, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { useForm } from 'react-hook-form';
-import { endOfDay, startOfDay } from 'date-fns';
+import {
+  addHours,
+  addMinutes,
+  endOfDay,
+  endOfHour,
+  endOfMinute,
+  isSameDay,
+  isSameHour,
+  isSameMinute,
+  startOfDay,
+  startOfHour,
+  startOfMinute,
+  subHours,
+  subMinutes,
+} from 'date-fns';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -254,6 +269,7 @@ export const GridActions = ({
   const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const clusters = useSelector(ClustersSelectors.getAllClustersList);
+  const [scheduleType, setScheduleType] = useState(null);
 
   useEffect(() => {
     setIsButtonDisabled(isEmpty(selectedCluster?.value));
@@ -262,6 +278,37 @@ export const GridActions = ({
   const selecedNamespaceDetails = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+
+  function getDynamicRangeStartEnd(start, end) {
+    if (!start || !end) return [null, null];
+
+    // Only round if EXACTLY the same minute
+    if (isSameMinute(start, end)) {
+      return [startOfMinute(start), endOfMinute(end)];
+    }
+
+    // Optional: remove this block if you don't want rounding
+    // if (isSameHour(start, end)) {
+    //   return [startOfHour(start), endOfHour(end)];
+    // }
+
+    // If same day and covering full day, round
+    if (isSameDay(start, end)) {
+      const sameTime =
+        start.getHours() === 0 &&
+        start.getMinutes() === 0 &&
+        start.getSeconds() === 0 &&
+        end.getHours() === 23 &&
+        end.getMinutes() === 59;
+      if (sameTime) {
+        return [startOfDay(start), endOfDay(end)];
+      }
+      return [start, end]; // keep original times
+    }
+
+    // Different days → keep exact
+    return [start, end];
+  }
 
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
@@ -341,7 +388,8 @@ export const GridActions = ({
       selectedRole ||
       clusterSelectedValue ||
       selectEvent ||
-      selectEntity
+      selectEntity ||
+      scheduleType
     ) {
       if (module === 'namespaces' && selectedCluster?.value === '') {
         return;
@@ -379,6 +427,10 @@ export const GridActions = ({
                 selectEntity?.value !== 'all' && {
                   entity: selectEntity?.value,
                 }),
+              ...(location?.pathname?.includes('schedule-deployment') &&
+                scheduleType?.value !== 'all' && {
+                  type: scheduleType?.value,
+                }),
               ...(location?.pathname?.match(
                 /user-management|clusters|schedule-deployment|activity-history/
               ) &&
@@ -399,6 +451,7 @@ export const GridActions = ({
     selectedRange,
     selectEvent,
     selectEntity,
+    scheduleType,
   ]);
   const [canWrite, setCanWrite] = useState(false); // State to store canWrite value
   const gridPermissions = useSelector(state =>
@@ -427,11 +480,13 @@ export const GridActions = ({
 
   const handleChange = value => {
     setCurrentPage(1);
+    const [dynamicStart, dynamicEnd] = getDynamicRangeStartEnd(
+      value?.[0],
+      value?.[1]
+    );
+
     dispatch(
-      SchedularActions.setScheduleSelectRange([
-        startOfDay(value?.[0]),
-        endOfDay(value?.[1]),
-      ])
+      SchedularActions.setScheduleSelectRange([dynamicStart, dynamicEnd])
     );
     if (!value) {
       dispatch(SchedularActions.setScheduleSelectRange([]));
@@ -489,10 +544,41 @@ export const GridActions = ({
       placement: 'left',
     },
     {
+      label: 'Last 1 hour',
+      value: [subHours(new Date(), 1), new Date()],
+      placement: 'left',
+    },
+    // {
+    //   label: 'Last 30 minutes',
+    //   value: [subMinutes(new Date(), 30), new Date()],
+    //   placement: 'left',
+    // },
+    // {
+    //   label: 'Last 15 minutes',
+    //   value: [subMinutes(new Date(), 15), new Date()],
+    //   placement: 'left',
+    // },
+    {
+      label: 'Next 1 hour',
+      value: [new Date(), addHours(new Date(), 1)],
+      placement: 'left',
+    },
+    // {
+    //   label: 'Next 30 minutes',
+    //   value: [new Date(), addMinutes(new Date(), 30)],
+    //   placement: 'left',
+    // },
+    // {
+    //   label: 'Next 15 minutes',
+    //   value: [new Date(), addMinutes(new Date(), 15)],
+    //   placement: 'left',
+    // },
+    {
       label: 'Today',
       value: [startOfDay(new Date()), endOfDay(new Date())],
       placement: 'left',
     },
+
     {
       label: 'Last 7 Days',
       value: [
@@ -559,6 +645,7 @@ export const GridActions = ({
       setClusterSelectedValue(null);
       dispatch(SchedularActions.setSelectedClusterState(null));
       setSortingState(null);
+      setScheduleType(null);
     } else if (module === 'activityHistory') {
       setValue('is_active', null);
       setState(prev => ({ ...prev, search: null }));
@@ -627,6 +714,9 @@ export const GridActions = ({
                   value={selectedRange}
                   handleChange={handleChange}
                   customRanges={customRanges}
+                  showTime={{ format: 'hh:mm A' }}
+                  format="YYYY-MM-DD hh:mm A"
+                  placeholder={['Start Time', 'End Time']}
                 />
                 <DropdownContainer>
                   <StyledSelectField
@@ -645,6 +735,25 @@ export const GridActions = ({
                     value={clusterSelectedValue}
                     placeholder="Select Cluster"
                     onChange={handleClusterChange}
+                    backgroundColor={theme.colors.lightGrey}
+                  />
+                </DropdownContainer>
+                <DropdownContainer>
+                  <StyledSelectField
+                    size="sm"
+                    name="scheduleType"
+                    control={control}
+                    options={[
+                      { label: 'All', value: 'all' },
+                      { label: 'Start', value: 'start' },
+                      { label: 'Stop', value: 'stop' },
+                      { label: 'Deploy', value: 'deploy' },
+                      { label: 'Upgrade', value: 'upgrade' },
+                      { label: 'Downgrade', value: 'downgrade' },
+                    ]}
+                    value={scheduleType}
+                    placeholder="Schedule Type"
+                    onChange={setScheduleType}
                     backgroundColor={theme.colors.lightGrey}
                   />
                 </DropdownContainer>

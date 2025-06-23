@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
 
+import { toast } from 'react-toastify';
 import {
   CrossIcon,
   LinkIcon,
@@ -28,7 +29,6 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
-import { toast } from 'react-toastify';
 
 const Container = styled.div`
   height: 350px;
@@ -40,7 +40,12 @@ const ActiveButtonDiv = styled.div`
   max-height: 48px;
   min-height: 48px;
   min-width: 48px;
-  border: 1px solid #dde4f0;
+  border: 1px solid
+    ${({ className }) => {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      return '#dde4f0';
+    }};
   border-radius: 8px;
   background-color: #f5f7fa;
   cursor: pointer;
@@ -97,6 +102,9 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
   const dispatch = useDispatch();
   const scheduleModal = useSelector(SchedularSelectors.getScheduleModal);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
+  const hideVersionSchedulestartstop =
+    selectedSchedule?.mode === 'start' || selectedSchedule?.mode === 'stop';
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'editScheduleDeployment')
   );
@@ -109,6 +117,7 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
   );
 
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
+
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const {
     control,
@@ -149,10 +158,13 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
     };
     const currentTime = new Date();
     const scheduledTime = new Date(data?.scheduled_time);
-    if (data?.select_version === selectedSchedule?.prev_version) {
-      toast.info('The selected version is already deployed.');
-      return;
+    if (!hideVersionSchedulestartstop) {
+      if (data?.select_version === selectedSchedule?.prev_version) {
+        toast.info('The selected version is already deployed.');
+        return;
+      }
     }
+
     if (scheduledTime.getTime() > currentTime.getTime()) {
       setScheduleErrors({});
       dispatch(SchedularActions.editScheduleDeployment(payload));
@@ -236,66 +248,70 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
                 required
               />
             </div>
-            <div className="col-12">
-              <SelectField
-                name="select_version"
-                label="Version"
-                icon={<LinkIcon />}
-                placeholder="Select Version"
-                options={versionOptions}
-                control={control}
-                sortAlphabetically={false}
-              />
-            </div>
-            <FlowControlDiv className="mt-4">Flow Control</FlowControlDiv>
-            <div className="d-flex mt-3">
-              <TextsvgDiv className="d-flex mr-4">
-                <ActiveButtonDiv className="div-btn-1 mr-2">
-                  <ActiveButtonDiv
-                    className="div-btn-1 "
-                    isActive={activeButton === 'RUNNING'}
-                    activeColor="#58e715"
-                    hoverColor="#58e715"
-                    activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('RUNNING')}
-                  >
-                    <TriangleIcons color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
-                <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-              </TextsvgDiv>
-              <TextsvgDiv className="d-flex">
-                <ActiveButtonDiv className="div-btn-2 mr-2">
-                  <ActiveButtonDiv
-                    className="div-btn-1"
-                    isActive={activeButton === 'STOPPED'}
-                    activeColor="#c52b2b"
-                    hoverColor="#c52b2b"
-                    activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('STOPPED')}
-                  >
-                    <SquareBoxIcon color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
-                <div>{KDFM.STOPPED_FLOW}</div>
-              </TextsvgDiv>
-
-              {activeButton && (
-                <TextsvgDiv className="d-flex ml-4">
-                  <ActiveButtonDiv className="div-btn-2 mr-2">
-                    <ActiveButtonDiv
-                      className="div-btn-1"
-                      onClick={() => {
-                        setActiveButton(null);
-                      }}
-                    >
-                      <CrossIcon color="#B5BDC8" />
+            {!hideVersionSchedulestartstop && (
+              <>
+                <div className="col-12">
+                  <SelectField
+                    name="select_version"
+                    label="Version"
+                    icon={<LinkIcon />}
+                    placeholder="Select Version"
+                    options={versionOptions}
+                    control={control}
+                    sortAlphabetically={false}
+                  />
+                </div>
+                <FlowControlDiv className="mt-4">Flow Control</FlowControlDiv>
+                <div className="d-flex mt-3">
+                  <TextsvgDiv className="d-flex mr-4">
+                    <ActiveButtonDiv className="div-btn-1 mr-2">
+                      <ActiveButtonDiv
+                        className="div-btn-1 "
+                        isActive={activeButton === 'RUNNING'}
+                        activeColor="#58e715"
+                        hoverColor="#58e715"
+                        activeTextColor="#fff"
+                        onClick={() => handleUpdateStatus('RUNNING')}
+                      >
+                        <TriangleIcons color="#B5BDC8" />
+                      </ActiveButtonDiv>
                     </ActiveButtonDiv>
-                  </ActiveButtonDiv>
-                  <div>Reset Flow</div>
-                </TextsvgDiv>
-              )}
-            </div>
+                    <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                  </TextsvgDiv>
+                  <TextsvgDiv className="d-flex">
+                    <ActiveButtonDiv className="div-btn-2 mr-2">
+                      <ActiveButtonDiv
+                        className="div-btn-2"
+                        isActive={activeButton === 'STOPPED'}
+                        activeColor="#c52b2b"
+                        hoverColor="#c52b2b"
+                        activeTextColor="#fff"
+                        onClick={() => handleUpdateStatus('STOPPED')}
+                      >
+                        <SquareBoxIcon color="#B5BDC8" />
+                      </ActiveButtonDiv>
+                    </ActiveButtonDiv>
+                    <div>{KDFM.STOPPED_FLOW}</div>
+                  </TextsvgDiv>
+
+                  {activeButton && (
+                    <TextsvgDiv className="d-flex ml-4">
+                      <ActiveButtonDiv className="div-btn-2 mr-2">
+                        <ActiveButtonDiv
+                          className="div-btn-2"
+                          onClick={() => {
+                            setActiveButton(null);
+                          }}
+                        >
+                          <CrossIcon color="#B5BDC8" />
+                        </ActiveButtonDiv>
+                      </ActiveButtonDiv>
+                      <div>Reset Flow</div>
+                    </TextsvgDiv>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </Container>
       </Modal>

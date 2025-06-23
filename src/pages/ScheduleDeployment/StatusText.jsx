@@ -15,6 +15,11 @@ const statusColors = {
   'N/A': '#b5b5bd',
   CANCELLED: 'red',
   FAILED: 'red',
+  'DEPLOYED WITH ERROR': 'red',
+  'UPGRADED WITH ERROR': 'red',
+  'DOWNGRADED WITH ERROR': 'red',
+  'STARTED WITH ERROR': 'red',
+  'STOPPED WITH ERROR': 'red',
   REJECTED: 'red',
   'TIME LAPSED': '#F2891F',
 };

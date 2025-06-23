@@ -19,6 +19,7 @@ import ListControllerService from './ListControllerServiceNamespace';
 import ListVariables from './Listvariables';
 import ParameterContext from './ParameterContext';
 import SummaryDetails from './SummaryDetails';
+import SanityVerifictionReport from './SanityVerifictionReport';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -175,6 +176,8 @@ const ConfigDetailsPage = () => {
 
       case 'Audit Log':
         return <AuditLog />;
+      case 'Sanity Verification Report':
+        return <SanityVerifictionReport />;
       default:
         return null;
     }
@@ -258,6 +261,13 @@ const ConfigDetailsPage = () => {
             className="nav-item"
           >
             Audit Log
+          </Tab>
+          <Tab
+            active={activeTab === 'Sanity Verification Report'}
+            onClick={() => setActiveTab('Sanity Verification Report')}
+            className="nav-item"
+          >
+            Sanity Verification Report
           </Tab>
         </TabWrapper>
         <TabContent>{renderContent()}</TabContent>

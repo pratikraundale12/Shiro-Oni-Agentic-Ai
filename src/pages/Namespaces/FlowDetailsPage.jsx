@@ -211,6 +211,9 @@ const FlowDetailsPage = () => {
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
   const userStoryValue = useSelector(NamespacesSelectors.getUserStory);
   const changeRequestValue = useSelector(NamespacesSelectors.getChangeRequest);
   const storedXcord = useSelector(NamespacesSelectors.getregistryFlowXCord);
@@ -345,10 +348,16 @@ const FlowDetailsPage = () => {
     if (isUpgrade) {
       history.push('/process-group/config-details');
     } else {
-      if (selectedVersion === selectedNameSpace?.version) {
-        {
-          toast.info('The selected version is already deployed.');
-        }
+      if (scheduleStartFlow) {
+        dispatch(
+          NamespacesActions.fetchRegistryFlowDetails({
+            bucketId: selectedNameSpace?.bucketId,
+            flowId: selectedNameSpace?.flowId,
+            version: selectedVersion,
+          })
+        );
+      } else if (selectedVersion === selectedNameSpace?.version) {
+        toast.info('The selected version is already deployed.');
       } else {
         dispatch(
           NamespacesActions.fetchRegistryFlowDetails({
@@ -374,6 +383,10 @@ const FlowDetailsPage = () => {
   };
 
   const handleRowClick = item => {
+    if (scheduleStartFlow) {
+      toast.info('Version selection is disabled in schedule start flow');
+      return;
+    }
     setSelectedVersion(item?.version);
     dispatch(NamespacesActions.setVersionSelect({ version: item?.version }));
     if (item?.version !== selectedVersion) {
@@ -461,17 +474,18 @@ const FlowDetailsPage = () => {
     selectedNameSpace?.state === 'STALE' ||
     selectedNameSpace?.state === 'UP_TO_DATE';
 
-  const isButtonDisabled = versionListData?.versionList?.length === 1;
+  const isButtonDisabled =
+    versionListData?.versionList?.length === 1 && !scheduleStartFlow;
 
   useEffect(() => {
-    if (!isUpgrade) {
+    if (!isUpgrade && !scheduleStartFlow) {
       if (versionListData?.versionList?.length === 1) {
         toast.info(
           "This process group can't be upgraded as there is only one version available"
         );
       }
     }
-  }, [versionListData?.versionList, isUpgrade]);
+  }, [versionListData?.versionList, isUpgrade, scheduleStartFlow]);
   const schemaForStoryAndChangeRequest = Yup.object().shape({
     change_request: Yup.string()
       .trim()
@@ -753,6 +767,7 @@ const FlowDetailsPage = () => {
                   selectedVersion,
                   handleRadioChange,
                   handleRowClick,
+                  disabled: scheduleStartFlow,
                 })}
               />
             </>

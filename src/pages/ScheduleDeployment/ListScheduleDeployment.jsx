@@ -8,13 +8,21 @@ import {
   CrossWithCircleIcon,
   DeleteDustbinIcon,
   DiffIcon,
+  ExclamationIcon,
+  GreenRightCircleIcon,
   OpenEyeIcon,
   PencilIcon,
   RejectIcon,
+  SanityCheckIcon,
+  SccheduleDeployIcon,
+  ScheduleDowngradeIcon,
+  ScheduleUpgrade,
   SortDownIcon,
   SortUpIcon,
+  SquareBoxIcon,
   ThreedotsIcon,
   TickIconWithCircle,
+  TriangleIcons,
 } from '../../assets';
 import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
 import { history } from '../../helpers/history';
@@ -36,6 +44,7 @@ import { DiffModalScheduleList } from './DiffModalSchedule';
 import { GroupListModal } from './GroupListModal';
 import { RejectScheduleModal } from './RejectScheduleModal';
 import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
+import ScheduleSanityCheckModal from './ScheduleSanityCheckModal';
 import { StatusText } from './StatusText';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
 import { UserStoryModal } from './UserStoryModal';
@@ -121,6 +130,16 @@ export const ListScheduleDeployment = () => {
     SchedularSelectors.getSelectedClusterState
   );
   const selctedStatus = useSelector(SchedularSelectors.getSelectedStatusState);
+  const isSanityCheckModalOpen = useSelector(
+    SchedularSelectors.getIsSanityCheckModalOpen
+  );
+  const isSuccessSanityCheckModalOpen = useSelector(
+    SchedularSelectors.getIsSuccessSanityCheckModalOpen
+  );
+  const sanityCheckData = useSelector(
+    SchedularSelectors.getSanityAndDeployStatus
+  );
+
   const search = useSelector(SchedularSelectors.getSearchText);
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [sortingState, setSortingState] = useState('');
@@ -338,6 +357,43 @@ export const ListScheduleDeployment = () => {
           content={'View Changes'}
           style={{
             width: '125px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+          }}
+        />
+        {item?.mode === 'deploy' && item?.has_sanity_permission === true && (
+          <IconButton
+            onClick={event => {
+              dispatch(SchedularActions.setSanityAndDeployStatus(null));
+              dispatch(NamespacesActions.setSanityReportAuditData(null));
+              dispatch(
+                SchedularActions.setIsScheduleSanityCheckModalOpen(true)
+              );
+              dispatch(SchedularActions.setSelectedSchedule(item));
+              event.currentTarget.blur();
+              if (item?.last_sanity_check_id === null) {
+                dispatch(SchedularActions.setSanityAndDeployStatus(null));
+              }
+              if (item?.last_sanity_check_id) {
+                dispatch(
+                  NamespacesActions.fetchSanityReportAuditLog(
+                    sanityCheckData?.id || item?.last_sanity_check_id
+                  )
+                );
+              }
+            }}
+            data-tooltip-id={`tooltip-group-sanity-check`}
+          >
+            <SanityCheckIcon />
+          </IconButton>
+        )}
+
+        <ReactTooltip
+          id={`tooltip-group-sanity-check`}
+          place="left"
+          content={'Sanity Check'}
+          style={{
+            width: '110px',
             whiteSpace: 'normal',
             wordWrap: 'break-word',
           }}
@@ -637,7 +693,7 @@ export const ListScheduleDeployment = () => {
           )}
         </>
       ),
-      width: '13%',
+      width: '12%',
       resize: true,
     },
     {
@@ -659,19 +715,64 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => <TextRender text={item?.cluster_name} />,
-      width: '10%',
+      width: '8%',
       resize: true,
     },
     {
       label: 'Version',
       renderCell: item => <TextRender text={item?.version} />,
-      width: '5%',
+      width: '4%',
       resize: true,
     },
     {
       label: 'Post Deploy State',
       renderCell: item => <TextRender text={item?.deployment_status} />,
-      width: '10%',
+      width: '8%',
+      resize: true,
+    },
+    {
+      label: 'Schedule Type',
+      renderCell: item => {
+        if (item.mode === 'start') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <TriangleIcons color="green" />
+              <TextRender text="Start" />
+            </div>
+          );
+        } else if (item.mode === 'stop') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <SquareBoxIcon color="red" />
+              <TextRender text="Stop" />
+            </div>
+          );
+        } else if (item.mode === 'deploy') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <SccheduleDeployIcon />
+              <TextRender text="Deploy" />
+            </div>
+          );
+        } else if (item.mode === 'upgrade') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <ScheduleUpgrade />
+              <TextRender text="Upgrade" />
+            </div>
+          );
+        } else if (item.mode === 'downgrade') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <ScheduleDowngradeIcon />
+              <TextRender text="Downgrade" />
+            </div>
+          );
+        } else {
+          return <TextRender text={item?.mode} />;
+        }
+      },
+      width: '8%',
       resize: true,
     },
     {
@@ -717,7 +818,7 @@ export const ListScheduleDeployment = () => {
       renderCell: item => (
         <TextRender text={item?.change_request ? item.change_request : 'N/A'} />
       ),
-      width: '10%',
+      width: '8%',
       resize: true,
     },
     {
@@ -759,10 +860,7 @@ export const ListScheduleDeployment = () => {
     {
       label: 'Status',
       renderCell: item => (
-        <StatusText
-          text={item?.state === 'TIME_LAPSED' ? 'TIME LAPSED' : item?.state}
-          item={item}
-        />
+        <StatusText text={item?.state?.replace(/_/g, ' ')} item={item} />
       ),
       width: '8%',
       resize: true,
@@ -871,8 +969,45 @@ export const ListScheduleDeployment = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleDeployWithSanityCheck = () => {
+    dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+    dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(true));
+    dispatch(
+      SchedularActions.scheduleSanityAndDeploy({
+        schedularId: selectedSchedule?.id,
+        clusterId: selectedSchedule?.cluster_id,
+      })
+    );
+  };
+
+  useEffect(() => {
+    if (sanityCheckData && isEmpty(sanityCheckData?.data)) {
+      dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+      dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(true));
+      dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
+    }
+  }, [sanityCheckData, dispatch]);
+
+  useEffect(() => {
+    dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
+    dispatch(SchedularActions.setSanityAndDeployStatus(null));
+  }, [dispatch]);
+
+  const hadleSuccessSanityCheck = () => {
+    fetchRecords();
+    dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
+    dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+    dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
+  };
+
+  const statusLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'scheduleSanityAndDeploy')
+  );
+
   return (
     <>
+      <FullPageLoader loading={statusLoading} />
       <ModalWithIcon
         title={'Disapprove Deployment Schedule'}
         primaryButtonText={'Stop'}
@@ -926,6 +1061,39 @@ export const ListScheduleDeployment = () => {
         setSortingState={setSortingState}
       />
       <DiffModalScheduleList />
+      <ScheduleSanityCheckModal />
+      <ModalWithIcon
+        title="Sanity Check Confirmation"
+        primaryButtonText="Confirm"
+        secondaryButtonText="Cancel"
+        icon={<ExclamationIcon height={120} width={150} />}
+        isOpen={isSanityCheckModalOpen}
+        onRequestClose={() => {
+          dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+          dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(true));
+        }}
+        primaryText="Do you want to perform a Sanity Check before Scheduled Deployment?"
+        secondaryText="Process Group will be deployed in a stopped state. This action cannot be undone."
+        onSubmit={handleDeployWithSanityCheck}
+      />
+      {isEmpty(sanityCheckData?.data) && (
+        <ModalWithIcon
+          title={'Sanity Check'}
+          secondaryButtonText={'Close'}
+          icon={<GreenRightCircleIcon />}
+          isOpen={isSuccessSanityCheckModalOpen}
+          onRequestClose={() => {
+            dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
+            dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+            dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
+            dispatch(SchedularActions.setSanityAndDeployStatus(null));
+            fetchRecords();
+          }}
+          primaryText={'Sanity check passed with no errors or inconsistencies.'}
+          secondaryText="The configuration meets the required standards for a flow to get started"
+          onSubmit={hadleSuccessSanityCheck}
+        />
+      )}
     </>
   );
 };

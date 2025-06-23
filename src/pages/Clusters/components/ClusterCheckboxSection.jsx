@@ -14,9 +14,11 @@ const ClusterCheckBoxSection = ({
   approverEnable,
   setApproverEnable,
   setChangeRequestApproverEnable,
+  setApproverEnableForStartAndStop,
   setNotificationEnable,
   changeRequestEnable,
   notificationEnable,
+  approverEnableForStartAndStop,
 }) => {
   return (
     <>
@@ -26,6 +28,12 @@ const ClusterCheckBoxSection = ({
           label="Need approval for the deployment schedule?"
           checked={approverEnable}
           onChange={e => setApproverEnable(e.target.checked)}
+        />
+        <CheckboxField
+          name="check"
+          label="Need approval for start/stop schedule?"
+          checked={approverEnableForStartAndStop}
+          onChange={e => setApproverEnableForStartAndStop(e.target.checked)}
         />
         {approverEnable && (
           <CheckboxField

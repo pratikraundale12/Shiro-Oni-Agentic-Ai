@@ -1,11 +1,18 @@
 /*eslint-disable*/
-import React, { useState, useEffect } from 'react';
+import { isEmpty } from 'lodash';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
+  ExclamationIcon,
+  GreaterArrowIcon,
+  GreenRightCircleIcon,
   OpenLinkIcon,
+  SanityCheckIcon,
+  ScheduleStartIcon,
+  ScheduleStopIcon,
   SmallNotThunderIcon,
   // SmallThunderIcon,
   SquareBoxIcon,
@@ -18,13 +25,14 @@ import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
-import { ModalWithIcon } from '../../shared';
+import { history } from '../../helpers/history';
+import { Button, ModalWithIcon } from '../../shared';
 import {
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { history } from '../../helpers/history';
+import { SchedularActions } from '../../store/schedular';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -37,9 +45,7 @@ const CustomNine = styled.div`
   }
 `;
 const ActiveButtonContainer = styled.div`
-  gap: 7px;
-  justify-content: center;
-  flex-direction: column;
+  row-gap: 8px;
   .text_info {
     border-left: 5px solid #ff7a00;
     padding: 1rem;
@@ -48,13 +54,11 @@ const ActiveButtonContainer = styled.div`
 `;
 const TextDiv = styled.div`
   display: flex;
-  align-items: center;
+  align-items: start;
+  flex-direction: column;
 `;
 const CountDiv = styled.div`
-  height: 48px;
   margin-left: 6px;
-  max-height: 48px;
-  min-height: 48px;
   min-width: 60px;
   position: relative;
   display: flex;
@@ -80,26 +84,26 @@ const TextsvgDiv = styled.div`
   display: flex;
   align-items: center;
 `;
-const IconsvgDiv = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: start;
-`;
+const IconsvgDiv = styled.div``;
 const ActiveButtonDiv = styled.div`
-  height: 48px;
-  width: 48px;
-  max-width: 48px;
+  width: 100%;
+  gap: 12px;
   max-height: 48px;
   min-height: 48px;
-  min-width: 48px;
-  border: 1px solid #dde4f0;
+  padding: 8px;
+  border: 1px solid
+    ${({ className, activeColor }) => {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      return '#dde4f0';
+    }};
   border-radius: 8px;
   background-color: #f5f7fa;
   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   &:hover {
     border: 1px solid
       ${props => (props.isActive ? props.activeColor : '#FF7A00')};
@@ -136,12 +140,51 @@ const ScrollSetGrey = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
 `;
+const BottomButtonWrapper = styled.div`
+  padding: 1rem;
+  border-top: 1px solid #dde4f0;
+`;
 
+const IconCover = styled.div`
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #dde4f0;
+`;
+
+const TextDetails = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  text-transform: capitalize;
+  color: #444445;
+  margin-bottom: 25px;
+`;
 const FlowControl = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  function extractIdFromPath(path) {
+    if (typeof path !== 'string' || path.trim() === '') {
+      return null;
+    }
+    const parts = path.split('/');
+    return parts[parts.length - 1];
+  }
+
+  // Example usage:
+  const path = location?.pathname;
+  const idOfLocation = extractIdFromPath(path);
+
   const sigleNamespaceData = useSelector(
     NamespacesSelectors.getFlowControlData
   );
+  const selectedNamespaceForDetail = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+
   const [activeButton, setActiveButton] = useState(null);
   const [confirmDialogue, setConfirmDialogue] = useState({
     state: false,
@@ -203,14 +246,56 @@ const FlowControl = () => {
       NamespacesActions.fetchInvalidProcessorDetails({ namespaceId: id })
     );
   };
+
+  const handleScheduleFlow = type => {
+    dispatch(SchedularActions.setScheduleFromList(true));
+    dispatch(NamespacesActions.setScheduleStartFlow(true));
+    dispatch(NamespacesActions.setScheduleFlowType(type));
+    dispatch(NamespacesActions.setFlowPath(singleNamespaceData1?.flowId));
+    dispatch(
+      NamespacesActions.setSelectedNamespace({
+        label: singleNamespaceData1?.name,
+        value: singleNamespaceData1?.id,
+        ...singleNamespaceData1,
+      })
+    );
+    dispatch(NamespacesActions.setSelectedNameSpaceForDetail({}));
+    dispatch(
+      NamespacesActions.setVersionSelect({
+        version: singleNamespaceData1?.version,
+      })
+    );
+    dispatch(NamespacesActions.setDeployByRegistryFlow(false));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: singleNamespaceData1?.bucketId,
+        flowId: singleNamespaceData1?.flowId,
+      })
+    );
+    dispatch(
+      NamespacesActions.fetchRegistryFlowDetails({
+        bucketId: singleNamespaceData1?.bucketId,
+        flowId: singleNamespaceData1?.flowId,
+        version: singleNamespaceData1?.version,
+      })
+    );
+
+    history.push('/process-group/config-details', {
+      state: {
+        id: singleNamespaceData1?.id,
+      },
+    });
+  };
+
   return (
     <DataWrapper>
       <FullPageLoader loading={loading} />
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        <IconsvgDiv>
-          <CustomNine className="col-4 mb-3">
-            <ActiveButtonContainer className="d-flex ">
-              <TextDiv className="d-flex">
+        <IconsvgDiv className="row">
+          <CustomNine className="col-md-6 mb-3">
+            <TextDetails className="col-lg-12">Processor Details</TextDetails>
+            <ActiveButtonContainer className="row">
+              <TextDiv className="col-lg-6">
                 <CountDiv
                   className="div-btn-1 mr-2"
                   count={sigleNamespaceData?.runningCount}
@@ -221,7 +306,7 @@ const FlowControl = () => {
                 </CountDiv>
                 <div>{KDFM.RUNNING_PROCESSORS}</div>
               </TextDiv>
-              <TextDiv className="d-flex">
+              <TextDiv className="col-lg-6">
                 <CountDiv
                   className="div-btn-2 mr-2"
                   count={sigleNamespaceData?.stoppedCount}
@@ -232,7 +317,7 @@ const FlowControl = () => {
                 </CountDiv>
                 <div>{KDFM.STOPPED_PROCESSORS}</div>
               </TextDiv>
-              <TextDiv className="d-flex">
+              <TextDiv className="col-lg-6">
                 <CountDiv
                   className="div-btn-3 mr-2"
                   count={sigleNamespaceData?.invalidCount}
@@ -260,7 +345,7 @@ const FlowControl = () => {
                   <div>{KDFM.INVALID_PROCESSORS}</div>
                 )}
               </TextDiv>
-              <TextDiv className="d-flex">
+              <TextDiv className="col-lg-6">
                 <CountDiv
                   className="div-btn-4 mr-2"
                   count={singleNamespaceData1?.disabledCount}
@@ -273,61 +358,61 @@ const FlowControl = () => {
               </TextDiv>
             </ActiveButtonContainer>
           </CustomNine>
-          <ActiveButtonContainer className="d-flex ">
-            {!(
-              sigleNamespaceData?.runningCount === 0 &&
-              sigleNamespaceData?.stoppedCount === 0
-            ) ? (
-              <>
-                <TextsvgDiv className="d-flex">
-                  <ActiveButtonDiv className="div-btn-1 mr-2">
-                    <ActiveButtonDiv
-                      disabled={
-                        !canWrite ||
-                        (sigleNamespaceData?.runningCount > 0 &&
-                          sigleNamespaceData?.stoppedCount === 0)
-                      }
-                      className="div-btn-1 "
-                      isActive={activeButton === 'RUNNING'}
-                      activeColor="#58e715"
-                      hoverColor="#58e715"
-                      activeTextColor="#fff"
-                      data-tooltip-id="runningProcessor"
-                      onClick={() => {
-                        if (
+          <div className="col-md-6">
+            <TextDetails className="col-lg-12">Control Action</TextDetails>
+            <ActiveButtonContainer className="row ">
+              {!(
+                sigleNamespaceData?.runningCount === 0 &&
+                sigleNamespaceData?.stoppedCount === 0
+              ) ? (
+                <>
+                  {selectedNamespaceForDetail?.is_active_schedule === false ||
+                  singleNamespaceData1?.is_active_schedule === false ? (
+                    <TextsvgDiv className="col-lg-6">
+                      <ActiveButtonDiv
+                        disabled={
                           !canWrite ||
                           (sigleNamespaceData?.runningCount > 0 &&
                             sigleNamespaceData?.stoppedCount === 0)
-                        ) {
-                          return;
                         }
-                        handleUpdateStatus('RUNNING');
-                      }}
-                    >
-                      <TriangleIcons color="#B5BDC8" />
-                    </ActiveButtonDiv>
-                  </ActiveButtonDiv>
-                  <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                  {sigleNamespaceData?.runningCount > 0 &&
-                    sigleNamespaceData?.stoppedCount === 0 && (
-                      <ReactTooltip
-                        id="runningProcessor"
-                        content="Running Components"
-                        place="right"
-                        positionStrategy="fixed"
-                      />
-                    )}
-                </TextsvgDiv>
-
-                <TextsvgDiv className="d-flex">
-                  <ActiveButtonDiv className="div-btn-2 mr-2">
+                        className="div-btn-1"
+                        isActive={activeButton === 'RUNNING'}
+                        activeColor="#58e715"
+                        hoverColor="#58e715"
+                        activeTextColor="#fff"
+                        data-tooltip-id="runningProcessor"
+                        onClick={() => {
+                          if (
+                            !canWrite ||
+                            (sigleNamespaceData?.runningCount > 0 &&
+                              sigleNamespaceData?.stoppedCount === 0)
+                          ) {
+                            return;
+                          }
+                          handleUpdateStatus('RUNNING');
+                        }}
+                      >
+                        <IconCover>
+                          <TriangleIcons color="#B5BDC8" />
+                        </IconCover>
+                        <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                      </ActiveButtonDiv>
+                    </TextsvgDiv>
+                  ) : (
+                    <div className="text-message mb-3">
+                      The process group has been successfully deployed and is
+                      scheduled to start automatically at the specified date and
+                      time.
+                    </div>
+                  )}
+                  <TextsvgDiv className="col-lg-6">
                     <ActiveButtonDiv
                       disabled={
                         !canWrite ||
                         (sigleNamespaceData?.runningCount === 0 &&
                           sigleNamespaceData?.stoppedCount > 0)
                       }
-                      className="div-btn-1"
+                      className="div-btn-2"
                       isActive={activeButton === 'STOPPED'}
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
@@ -344,25 +429,55 @@ const FlowControl = () => {
                         handleUpdateStatus('STOPPED');
                       }}
                     >
-                      <SquareBoxIcon color="#B5BDC8" />
+                      <IconCover>
+                        <SquareBoxIcon color="#B5BDC8" />
+                      </IconCover>
+                      <div>{KDFM.STOPPED_FLOW}</div>
                     </ActiveButtonDiv>
-                  </ActiveButtonDiv>
-                  <div>{KDFM.STOPPED_FLOW}</div>
-                  {sigleNamespaceData?.runningCount === 0 &&
-                    sigleNamespaceData?.stoppedCount > 0 && (
-                      <ReactTooltip
-                        id="stoppedProcessor"
-                        content="Stopped Components"
-                        place="right"
-                        positionStrategy="fixed"
-                      />
-                    )}
-                </TextsvgDiv>
-              </>
-            ) : (
-              <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
-            )}
-          </ActiveButtonContainer>
+                  </TextsvgDiv>{' '}
+                  {singleNamespaceData1?.flowName && (
+                    <>
+                      {(selectedNamespaceForDetail?.is_active_schedule ===
+                        false ||
+                        singleNamespaceData1?.is_active_schedule === false) && (
+                        <>
+                          {/* Schedule Start Flow Button */}
+                          <TextsvgDiv className="col-lg-6">
+                            <ActiveButtonDiv
+                              className="div-btn-1"
+                              data-tooltip-id="scheduleStartFlow"
+                              onClick={() => handleScheduleFlow('RUNNING')}
+                            >
+                              <IconCover>
+                                <ScheduleStartIcon />
+                              </IconCover>
+                              <div className="mr-2">Schedule Start Flow</div>
+                            </ActiveButtonDiv>
+                          </TextsvgDiv>
+
+                          {/* Schedule Stop Flow Button */}
+                          <TextsvgDiv className="col-lg-6">
+                            <ActiveButtonDiv
+                              className="div-btn-2"
+                              data-tooltip-id="scheduleStopFlow"
+                              onClick={() => handleScheduleFlow('STOPPED')}
+                            >
+                              <IconCover>
+                                <ScheduleStopIcon />
+                              </IconCover>
+                              <div>Schedule Stop Flow</div>
+                            </ActiveButtonDiv>
+                          </TextsvgDiv>
+                        </>
+                      )}
+                    </>
+                  )}
+                </>
+              ) : (
+                <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
+              )}
+            </ActiveButtonContainer>
+          </div>
         </IconsvgDiv>
         <ModalWithIcon
           title={'Flow Confirmation'}
