@@ -172,7 +172,7 @@ const ScheduleSanityCheckModal = () => {
               <MessageText>
                 {responseData?.data?.updated_at
                   ? formatDate(responseData?.data?.updated_at)
-                  : 'N/A'}
+                  : 'No Sanity Performed Yet'}
               </MessageText>
             </ActionContainer>
           </div>

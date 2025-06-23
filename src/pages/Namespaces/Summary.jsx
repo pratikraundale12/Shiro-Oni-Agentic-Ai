@@ -226,6 +226,9 @@ const ActiveButtonDiv = styled.div`
   .div-btn-1.disabled {
     cursor: not-allowed;
   }
+  svg path {
+    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
+  }
 `;
 const BottomButtonDiv = styled.div`
   gap: 16px;

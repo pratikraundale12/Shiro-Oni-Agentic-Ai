@@ -66,6 +66,9 @@ const ActiveButtonDiv = styled.div`
     line-height: 23px;
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
+  svg path {
+    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
+  }
 `;
 const CountDiv = styled.div`
   height: 48px;
