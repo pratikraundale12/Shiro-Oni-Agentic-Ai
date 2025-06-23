@@ -154,6 +154,9 @@ const ActiveButtonDiv = styled.div`
     line-height: 23px;
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
+  svg path {
+    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
+  }
 
   .div-btn-1.disabled {
     cursor: not-allowed;
