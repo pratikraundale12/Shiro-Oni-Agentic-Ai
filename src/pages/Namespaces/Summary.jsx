@@ -211,10 +211,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
 
   & span {
     position: absolute;
@@ -227,9 +223,6 @@ const ActiveButtonDiv = styled.div`
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
 
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
-  }
   .div-btn-1.disabled {
     cursor: not-allowed;
   }
@@ -1106,11 +1099,11 @@ const Summary = () => {
         previousVersion: selectedNameSpace?.version || 1,
         flowName: selectedNameSpace?.flowName,
         isScheduled: true,
-         mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
+        mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
         type: scheduleStartFlow ? scheduleflowtypeMethod : type,
         nameSpaceName: selectedNameSpace?.name,
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
-         revert_local_changes: shouldRevertChanges,
+        revert_local_changes: shouldRevertChanges,
         position: {
           x: XcordUpdated || registryDetailsData?.positions[0]?.x,
           y: YcordUpdated || registryDetailsData?.positions[0]?.y,
@@ -1137,12 +1130,12 @@ const Summary = () => {
         ? 'start'
         : '';
 
-      const scheduleafterDeploy =
+  const scheduleafterDeploy =
     scheduleFlowType === 'STOPPED'
       ? 'STOPPED'
       : scheduleFlowType === 'RUNNING'
         ? 'RUNNING'
-        : '';    
+        : '';
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -1575,9 +1568,9 @@ const Summary = () => {
                             {KDFM.FLOW_STATE_AFTER_DEPLOY}
                           </SummaryDetailsHFourTag>
                           <SummaryDetailsPtag className="mb-0">
-                           {scheduleStartFlow ? scheduleafterDeploy : flowControlSelectedScheduleStored || 'N/A'}
-
-                            
+                            {scheduleStartFlow
+                              ? scheduleafterDeploy
+                              : flowControlSelectedScheduleStored || 'N/A'}
                           </SummaryDetailsPtag>
                         </div>
                       </UseColXl>

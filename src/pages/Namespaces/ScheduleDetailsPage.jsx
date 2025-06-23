@@ -55,10 +55,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
 
   & span {
     position: absolute;
@@ -69,10 +65,6 @@ const ActiveButtonDiv = styled.div`
     font-weight: 500;
     line-height: 23px;
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
-  }
-
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
 `;
 const CountDiv = styled.div`

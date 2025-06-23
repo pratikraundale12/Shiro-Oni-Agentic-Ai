@@ -61,6 +61,33 @@ const MessageText = styled.span`
   white-space: nowrap;
   margin-right: 16px;
 `;
+const ActionContainerSuccess = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid green;
+  width: fit-content;
+  font-family: Red Hat Display;
+  font-size: 16px;
+  font-weight: 400;
+`;
+const ActionContainerInvalid = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid red;
+  width: fit-content;
+  font-family: Red Hat Display;
+  font-size: 16px;
+  font-weight: 400;
+`;
+
+const MessageTextSuccess = styled.span`
+  font-weight: 600;
+  font-size: 16px;
+`;
 
 const ScheduleSanityCheckModal = () => {
   const dispatch = useDispatch();
@@ -70,6 +97,8 @@ const ScheduleSanityCheckModal = () => {
   const responseData = useSelector(
     NamespacesSelectors.getSanityReportAuditData
   );
+
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   const formatDate = isoString => {
     const date = new Date(isoString);
@@ -105,7 +134,6 @@ const ScheduleSanityCheckModal = () => {
       isOpen={isOpen}
       onRequestClose={() => {
         dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
-        // dispatch(NamespacesActions.setSanityReportAuditData(null));
       }}
       size="md"
       primaryButtonText={'Quick Fixes'}
@@ -126,9 +154,10 @@ const ScheduleSanityCheckModal = () => {
         tertiaryButtonIcon: <SanityCheckIcon />,
         variant: 'tertiary',
       }}
-      primaryButtonDisabled={isEmpty(
-        sanityCheckData?.data || responseData?.data?.sanity_details
-      )}
+      primaryButtonDisabled={
+        isEmpty(sanityCheckData?.data ?? responseData?.data?.sanity_details) ||
+        !selectedCluster?.value
+      }
     >
       <ModalBody className="modal-body">
         <div className="d-flex gap-2 justify-content-between">
@@ -153,20 +182,20 @@ const ScheduleSanityCheckModal = () => {
                 sanityCheckData?.data || responseData?.data?.sanity_details
               ) ? (
                 // ✅ No issues detected
-                <div className="mx-4 flex items-center text-green-600">
+                <ActionContainerSuccess className="mx-4 flex items-center text-green-600">
                   <RightCircleIcon width="16" height="16" />
-                  <span className="ml-2 text-md">
-                    Sanity check passed with no errors or inconsistencies.
-                  </span>
-                </div>
+                  <MessageTextSuccess className="ml-2 text-md">
+                    Sanity check passed with no errors or inconsistencies
+                  </MessageTextSuccess>
+                </ActionContainerSuccess>
               ) : (
                 // ⚠️ Issues found
-                <div className="mx-4 flex items-center text-red-600">
+                <ActionContainerInvalid className="mx-4 flex items-center text-red-600">
                   <InvalidProcessorIcon width="16" height="16" />
-                  <span className="ml-2 text-md">
+                  <MessageTextSuccess className="ml-2 text-md">
                     Sanity check identified potential configuration issues
-                  </span>
-                </div>
+                  </MessageTextSuccess>
+                </ActionContainerInvalid>
               ))}
           </div>
         </div>

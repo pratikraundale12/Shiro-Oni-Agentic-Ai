@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { CircleArrowIcon, SmallSearchIcon, StarInfoIcon } from '../../assets';
+import { SmallSearchIcon, StarInfoIcon } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { theme } from '../../styles';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
@@ -80,6 +80,20 @@ const MessageText = styled.span`
   margin-right: 16px;
 `;
 
+const RevertText = styled.span`
+  color: #374151;
+  font-size: 16px;
+  white-space: nowrap;
+  margin-right: 16px;
+  font-weight: 700;
+  font-family: Red Hat Display;
+`;
+const LinkColor = styled.div`
+  color: ${props => props.theme.colors.primary};
+  cursor: pointer;
+  text-decoration: underline;
+`;
+
 const DiffLocalChanges = () => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,36 +112,39 @@ const DiffLocalChanges = () => {
   const COLUMNS = [
     {
       label: 'Component Name',
-      renderCell: item => <TextRender text={item.componentName} />,
-      width: '30%',
+      renderCell: item => <TextRender text={item?.componentName} />,
+      width: '25%',
       resize: true,
     },
     {
-      label: 'Change Type',
-      renderCell: item => <TextRender text={item.componentType} />,
-      width: '30%',
-      resize: true,
-    },
-    {
-      label: 'Difference',
-      renderCell: item => <TextRender text={item.difference} />,
-      width: '30%',
-      resize: true,
-    },
-    {
-      label: '',
+      label: 'Component ID',
       renderCell: item => (
         <div className="text-center">
           <>
             <button
               className="border-0 bg-white"
               onClick={() => handleIdClick(item?.componentLink)}
+              type="button"
             >
-              <CircleArrowIcon />
+              <LinkColor>{item.componentId}</LinkColor>
             </button>
           </>
         </div>
       ),
+      width: '30%',
+      resize: true,
+    },
+    {
+      label: 'Change Type',
+      renderCell: item => <TextRender text={item?.componentType} />,
+      width: '20%',
+      resize: true,
+    },
+    {
+      label: 'Difference',
+      renderCell: item => <TextRender text={item?.difference} />,
+      width: '25%',
+      resize: true,
     },
   ];
 
@@ -137,9 +154,7 @@ const DiffLocalChanges = () => {
         field?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     ) || [];
-  const message =
-    'Action Selected : ' +
-    (details?.revert_local_changes === true ? 'Revert' : 'N/A');
+  const message = details?.revert_local_changes === true ? 'Revert' : 'N/A';
 
   return (
     <div>
@@ -151,7 +166,7 @@ const DiffLocalChanges = () => {
           <MessageText>Local change detected!</MessageText>
         </NotificationContainer>
         <ActionContainer>
-          <MessageText> {message}</MessageText>
+          <RevertText>{message}</RevertText>
         </ActionContainer>
       </div>
       <SearchContainer>
