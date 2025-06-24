@@ -76,7 +76,7 @@ export const StatusText = ({ text = '', item }) => {
               : text
         )}
       </StatusTexts>{' '}
-      <ReactTooltip id={item.state} content={text} place={'left'} />
+      <ReactTooltip id={item.state} content={item?.state} place={'left'} />
     </>
   );
 };
