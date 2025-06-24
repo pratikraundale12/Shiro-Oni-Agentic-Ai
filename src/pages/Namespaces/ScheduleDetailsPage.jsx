@@ -179,6 +179,10 @@ const ScheduleDeploymentTab = ({
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+
+  const sigleNamespaceData = useSelector(
+    NamespacesSelectors.getFlowControlData
+  );
   const { control, reset } = useForm({});
 
   useEffect(() => {
@@ -240,40 +244,68 @@ const ScheduleDeploymentTab = ({
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-1 mr-2"
-                    count={selectedNameSpace?.runningCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.runningCount
+                        : selectedNameSpace?.runningCount || 0
+                    }
                     activeColor="#58e715"
                   >
                     <TriangleIcons color="#B5BDC8" />
-                    <span>{selectedNameSpace?.runningCount || 0}</span>
+                    <span>
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.runningCount
+                        : selectedNameSpace?.runningCount || 0}
+                    </span>
                   </CountDiv>
                   <div>{KDFM.RUNNING_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-2 mr-2"
-                    count={selectedNameSpace?.stoppedCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.stoppedCount
+                        : selectedNameSpace?.stoppedCount || 0
+                    }
                     activeColor="#c52b2b"
                   >
                     <SquareBoxIcon color="#B5BDC8" />
-                    <span>{selectedNameSpace?.stoppedCount || 0}</span>
+                    <span>
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.stoppedCount
+                        : selectedNameSpace?.stoppedCount || 0}
+                    </span>
                   </CountDiv>
                   <div>{KDFM.STOPPED_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-3 mr-2"
-                    count={selectedNameSpace?.invalidCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.invalidCount
+                        : selectedNameSpace?.invalidCount || 0
+                    }
                     activeColor="#CF9F5D"
                   >
                     <TriangleExclamationMarkIcon color="#B5BDC8" />
-                    <span>{selectedNameSpace?.invalidCount || 0}</span>
+                    <span>
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.invalidCount
+                        : selectedNameSpace?.invalidCount || 0}
+                    </span>
                   </CountDiv>
                   <div>{KDFM.INVALID_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-4 mr-2"
-                    count={selectedNameSpace?.disabledCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.disabledCount
+                        : selectedNameSpace?.disabledCount || 0
+                    }
                     activeColor="#2c7cf3"
                   >
                     <SmallNotThunderIcon
@@ -282,7 +314,9 @@ const ScheduleDeploymentTab = ({
                       color="#B5BDC8"
                     />
                     <StyledSpan>
-                      {selectedNameSpace?.disabledCount || 0}
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.disabledCount
+                        : selectedNameSpace?.disabledCount || 0}
                     </StyledSpan>
                   </CountDiv>
                   <div>{KDFM.DISABLED_PROCESSORS}</div>
