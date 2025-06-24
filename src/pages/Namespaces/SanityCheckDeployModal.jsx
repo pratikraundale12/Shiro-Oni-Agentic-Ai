@@ -110,7 +110,7 @@ const SanityCheckDeployModal = () => {
                 <InvalidProcessorIcon width="16" height="16" />
 
                 <MessageTextSuccess className="ml-2 text-md">
-                  Sanity check identified potential configuration issues
+                  Sanity check identified potential configuration errors
                 </MessageTextSuccess>
               </ActionContainerInvalid>
             )}
@@ -126,7 +126,7 @@ const SanityCheckDeployModal = () => {
         {isEmpty(sanityCheckData) && (
           <div className="d-flex flex-column align-items-center mt-5">
             <NoDataText>
-              Sanity check passed with no issues. Start the flow from the Flow
+              Sanity check passed with no errors. Start the flow from the Flow
               Control tab in the Process Group Details page.
             </NoDataText>
           </div>

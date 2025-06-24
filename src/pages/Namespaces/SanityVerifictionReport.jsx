@@ -192,7 +192,7 @@ const SanityVerifictionReport = () => {
                   <ActionContainerInvalid className="mx-4 flex items-center text-red-600">
                     <InvalidProcessorIcon width="16" height="16" />
                     <MessageTextSuccess className="ml-2 text-md">
-                      Sanity check identified potential configuration issues
+                      Sanity check identified potential configuration errors
                     </MessageTextSuccess>
                   </ActionContainerInvalid>
                 ) : (

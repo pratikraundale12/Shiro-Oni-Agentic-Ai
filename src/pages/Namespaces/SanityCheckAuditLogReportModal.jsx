@@ -176,7 +176,7 @@ const SanityCheckAuditLogReportModal = ({
                   <InvalidProcessorIcon width="16" height="16" />
 
                   <MessageTextSuccess className="ml-2 text-md">
-                    Sanity check identified potential configuration issues
+                    Sanity check identified potential configuration errors
                   </MessageTextSuccess>
                 </ActionContainerInvalid>
               ))}

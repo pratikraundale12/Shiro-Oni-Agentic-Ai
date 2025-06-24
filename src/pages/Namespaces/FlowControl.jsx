@@ -246,20 +246,6 @@ const FlowControl = () => {
     dispatch(SchedularActions.setScheduleFromList(true));
     dispatch(NamespacesActions.setScheduleStartFlow(true));
     dispatch(NamespacesActions.setScheduleFlowType(type));
-    dispatch(NamespacesActions.setFlowPath(singleNamespaceData1?.flowId));
-    dispatch(
-      NamespacesActions.setSelectedNamespace({
-        label: singleNamespaceData1?.name,
-        value: singleNamespaceData1?.id,
-        ...singleNamespaceData1,
-      })
-    );
-    dispatch(NamespacesActions.setSelectedNameSpaceForDetail({}));
-    dispatch(
-      NamespacesActions.setVersionSelect({
-        version: singleNamespaceData1?.version,
-      })
-    );
     dispatch(NamespacesActions.setDeployByRegistryFlow(false));
     dispatch(
       NamespacesActions.fetchVersionData({

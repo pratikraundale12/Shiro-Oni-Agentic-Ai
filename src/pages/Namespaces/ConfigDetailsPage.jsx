@@ -12,7 +12,10 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { SchedularSelectors } from '../../store/schedular/redux.js';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux.js';
 import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import ParameterContextTab from './ParameterContextTab';
 import ScheduleDeploymentTab from './ScheduleDetailsPage.jsx';
@@ -185,6 +188,7 @@ const ConfigDetailsPage = () => {
   const handleBackClick = () => {
     if (scheduleStartFlow === true) {
       history.push(`/process-group/${selectedNameSpace?.id}`);
+      dispatch(SchedularActions.setScheduleFromList(false));
     } else {
       history.push('/process-group/flow-details');
     }
