@@ -446,7 +446,15 @@ const FlowControl = () => {
                           <ActiveButtonDiv
                             className="div-btn-1"
                             data-tooltip-id="scheduleStartFlow"
-                            onClick={() => handleScheduleFlow('RUNNING')}
+                            onClick={
+                              !(
+                                !canWrite ||
+                                (sigleNamespaceData?.runningCount > 0 &&
+                                  sigleNamespaceData?.stoppedCount === 0)
+                              )
+                                ? () => handleScheduleFlow('RUNNING')
+                                : undefined
+                            }
                             disabled={
                               !canWrite ||
                               (sigleNamespaceData?.runningCount > 0 &&
@@ -465,7 +473,15 @@ const FlowControl = () => {
                           <ActiveButtonDiv
                             className="div-btn-2"
                             data-tooltip-id="scheduleStopFlow"
-                            onClick={() => handleScheduleFlow('STOPPED')}
+                            onClick={
+                              !(
+                                !canWrite ||
+                                (sigleNamespaceData?.runningCount === 0 &&
+                                  sigleNamespaceData?.stoppedCount > 0)
+                              )
+                                ? () => handleScheduleFlow('STOPPED')
+                                : undefined
+                            }
                             disabled={
                               !canWrite ||
                               (sigleNamespaceData?.runningCount === 0 &&
