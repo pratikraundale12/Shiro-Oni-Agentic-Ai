@@ -119,7 +119,7 @@ const DiffLocalChanges = () => {
     {
       label: 'Component ID',
       renderCell: item => (
-        <div className="text-center">
+        <div>
           <>
             <button
               className="border-0 bg-white"
