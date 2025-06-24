@@ -444,15 +444,23 @@ const FlowControl = () => {
                         {/* Schedule Start Flow Button */}
                         <TextsvgDiv className="col-lg-6">
                           <ActiveButtonDiv
-                            className="div-btn-1"
-                            data-tooltip-id="scheduleStartFlow"
-                            onClick={() => handleScheduleFlow('RUNNING')}
-                            disabled={
-                              !canWrite ||
-                              (sigleNamespaceData?.runningCount > 0 &&
-                                sigleNamespaceData?.stoppedCount === 0)
-                            }
-                          >
+  className="div-btn-1"
+  data-tooltip-id="scheduleStartFlow"
+  onClick={
+    !(
+      !canWrite ||
+      (sigleNamespaceData?.runningCount > 0 &&
+        sigleNamespaceData?.stoppedCount === 0)
+    )
+      ? () => handleScheduleFlow('RUNNING')
+      : undefined
+  }
+  disabled={
+    !canWrite ||
+    (sigleNamespaceData?.runningCount > 0 &&
+      sigleNamespaceData?.stoppedCount === 0)
+  }
+>
                             <IconCover>
                               <ScheduleStartIcon />
                             </IconCover>
@@ -462,16 +470,24 @@ const FlowControl = () => {
 
                         {/* Schedule Stop Flow Button */}
                         <TextsvgDiv className="col-lg-6">
-                          <ActiveButtonDiv
-                            className="div-btn-2"
-                            data-tooltip-id="scheduleStopFlow"
-                            onClick={() => handleScheduleFlow('STOPPED')}
-                            disabled={
-                              !canWrite ||
-                              (sigleNamespaceData?.runningCount === 0 &&
-                                sigleNamespaceData?.stoppedCount > 0)
-                            }
-                          >
+                         <ActiveButtonDiv
+  className="div-btn-2"
+  data-tooltip-id="scheduleStopFlow"
+  onClick={
+    !(
+      !canWrite ||
+      (sigleNamespaceData?.runningCount === 0 &&
+        sigleNamespaceData?.stoppedCount > 0)
+    )
+      ? () => handleScheduleFlow('STOPPED')
+      : undefined
+  }
+  disabled={
+    !canWrite ||
+    (sigleNamespaceData?.runningCount === 0 &&
+      sigleNamespaceData?.stoppedCount > 0)
+  }
+>
                             <IconCover>
                               <ScheduleStopIcon />
                             </IconCover>
