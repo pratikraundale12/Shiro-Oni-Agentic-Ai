@@ -121,6 +121,9 @@ export const ACTIVITY_EVENTS = [
   { label: 'Enable', value: 'Enable' },
   { label: 'Disable', value: 'Disable' },
   { label: 'Revert', value: 'Revert' },
+  { label: 'Schedule stop', value: 'Schedule stop' },
+  { label: 'Schedule start', value: 'Schedule start' },
+  { label: 'Sanity Check', value: 'Sanity Check' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
