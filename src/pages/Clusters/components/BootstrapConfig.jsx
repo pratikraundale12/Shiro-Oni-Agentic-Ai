@@ -2,7 +2,7 @@ import React from 'react';
 import { TextareaField } from '../../../shared';
 import PropTypes from 'prop-types';
 
-const BootstrapConfig = ({ register, errors, rows = 21 }) => {
+const BootstrapConfig = ({ register, errors, rows = 21, name }) => {
   return (
     <div>
       <TextareaField

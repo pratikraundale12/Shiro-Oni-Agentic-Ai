@@ -21,6 +21,139 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       icon: <NotePadIcon />,
     },
     {
+      label: 'nifi.zookeeper.connect.string',
+      name: 'nifi_zookeeper_connect_string',
+      placeholder: 'Enter nifi.zookeeper.connect.string',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.web.https.port',
+      name: 'nifi_web_https_port',
+      placeholder: 'Enter nifi.web.https.port',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.cluster.node.protocol.port',
+      name: 'nifi_cluster_node_protocol_port',
+      placeholder: 'Enter nifi.cluster.node.protocol.port',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.cluster.load.balance.port',
+      name: 'nifi_cluster_load_balance_port',
+      placeholder: 'Enter nifi.cluster.load.balance.port',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.cluster.node.address',
+      name: 'nifi_cluster_node_address',
+      placeholder: 'Enter nifi.cluster.node.address',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.cluster.load.balance.host',
+      name: 'nifi_cluster_load_balance_host',
+      placeholder: 'Enter nifi.cluster.load.balance.host',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.remote.input.host',
+      name: 'nifi_remote_input_host',
+      placeholder: 'Enter nifi.remote.input.host',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.remote.input.http.transaction.ttl',
+      name: 'nifi_remote_input_http_transaction_ttl',
+      placeholder: 'Enter nifi.remote.input.http.transaction.ttl',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.remote.input.secure',
+      name: 'nifi_remote_input_secure',
+      placeholder: 'Enter nifi.remote.input.secure',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.remote.input.socket.port',
+      name: 'nifi_remote_input_socket_port',
+      placeholder: 'Enter nifi.remote.input.socket.port',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.cluster.flow.election.max.wait.time',
+      name: 'nifi_cluster_flow_election_max_wait_time',
+      placeholder: 'Enter nifi.cluster.flow.election.max.wait.time',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.cluster.is.node',
+      name: 'nifi_cluster_is_node',
+      placeholder: 'nifi.cluster.is.node',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.security.truststore',
+      name: 'nifi_security_truststore',
+      placeholder: 'Enter nifi.security.truststore',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.security.truststoreType',
+      name: 'nifi_security_truststoreType',
+      placeholder: 'Enter nifi.security.truststoreType',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.security.user.authorizer',
+      name: 'nifi_security_user_authorizer',
+      placeholder: 'Enter nifi.security.user.authorizer',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.security.user.login.identity.provider',
+      name: 'nifi_security_user_login_identity_provider',
+      placeholder: 'Enter nifi.security.user.login.identity.provider',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.security.keystoreType',
+      name: 'nifi_security_keystoreType',
+      placeholder: 'Enter nifi.security.keystoreType',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.web.https.host',
+      name: 'nifi_web_https_host',
+      placeholder: 'Enter nifi.web.https.host',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
+      label: 'nifi.web.proxy.host',
+      name: 'nifi_web_proxy_host',
+      placeholder: 'Enter nifi.web.proxy.host',
+      required: true,
+      icon: <NotePadIcon />,
+    },
+    {
       label: 'nifi.analytics.connection.model.score.name',
       name: 'nifi_analytics_connection_model_score_name',
       placeholder: 'Enter nifi.analytics.connection.model.score.name',
@@ -87,20 +220,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.cluster.flow.election.max.wait.time',
-      name: 'nifi_cluster_flow_election_max_wait_time',
-      placeholder: 'Enter nifi.cluster.flow.election.max.wait.time',
-      required: true,
-      icon: <NotePadIcon />,
-    },
-    {
-      label: 'nifi.cluster.is.node',
-      name: 'nifi_cluster_is_node',
-      placeholder: 'nifi.cluster.is.node',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     //
     {
       label: 'nifi.cluster.load.balance.comms.timeout',
@@ -116,13 +236,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.cluster.load.balance.host',
-      name: 'nifi_cluster_load_balance_host',
-      placeholder: 'Enter nifi.cluster.load.balance.host',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.cluster.load.balance.max.thread.count',
       name: 'nifi_cluster_load_balance_max_thread_count',
@@ -130,20 +244,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.cluster.load.balance.port',
-      name: 'nifi_cluster_load_balance_port',
-      placeholder: 'Enter nifi.cluster.load.balance.port',
-      required: true,
-      icon: <NotePadIcon />,
-    },
-    {
-      label: 'nifi.cluster.node.address',
-      name: 'nifi_cluster_node_address',
-      placeholder: 'Enter nifi.cluster.node.address',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.cluster.node.connection.timeout',
       name: 'nifi_cluster_node_connection_timeout',
@@ -172,13 +273,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.cluster.node.protocol.port',
-      name: 'nifi_cluster_node_protocol_port',
-      placeholder: 'Enter nifi.cluster.node.protocol.port',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.cluster.node.protocol.threads',
       name: 'nifi_cluster_node_protocol_threads',
@@ -644,34 +739,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.remote.input.host',
-      name: 'nifi_remote_input_host',
-      placeholder: 'Enter nifi.remote.input.host',
-      required: true,
-      icon: <NotePadIcon />,
-    },
-    {
-      label: 'nifi.remote.input.http.transaction.ttl',
-      name: 'nifi_remote_input_http_transaction_ttl',
-      placeholder: 'Enter nifi.remote.input.http.transaction.ttl',
-      required: true,
-      icon: <NotePadIcon />,
-    },
-    {
-      label: 'nifi.remote.input.secure',
-      name: 'nifi_remote_input_secure',
-      placeholder: 'Enter nifi.remote.input.secure',
-      required: true,
-      icon: <NotePadIcon />,
-    },
-    {
-      label: 'nifi.remote.input.socket.port',
-      name: 'nifi_remote_input_socket_port',
-      placeholder: 'Enter nifi.remote.input.socket.port',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.security.allow.anonymous.authentication',
       name: 'nifi_security_allow_anonymous_authentication',
@@ -749,13 +817,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.security.keystoreType',
-      name: 'nifi_security_keystoreType',
-      placeholder: 'Enter nifi.security.keystoreType',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.security.ocsp.responder.certificate',
       name: 'nifi_security_ocsp_responder_certificate',
@@ -770,27 +832,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.security.truststore',
-      name: 'nifi_security_truststore',
-      placeholder: 'Enter nifi.security.truststore',
-      required: true,
-      icon: <NotePadIcon />,
-    },
-    {
-      label: 'nifi.security.truststoreType',
-      name: 'nifi_security_truststoreType',
-      placeholder: 'Enter nifi.security.truststoreType',
-      required: true,
-      icon: <NotePadIcon />,
-    },
-    {
-      label: 'nifi.security.user.authorizer',
-      name: 'nifi_security_user_authorizer',
-      placeholder: 'Enter nifi.security.user.authorizer',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.security.user.knox.audiences',
       name: 'nifi_security_user_knox_audiences',
@@ -819,13 +861,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.security.user.login.identity.provider',
-      name: 'nifi_security_user_login_identity_provider',
-      placeholder: 'Enter nifi.security.user.login.identity.provider',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.security.user.oidc.additional.scopes',
       name: 'nifi_security_user_oidc_additional_scopes',
@@ -1016,13 +1052,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.web.https.host',
-      name: 'nifi_web_https_host',
-      placeholder: 'Enter nifi.web.https.host',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.web.https.network.interface.default',
       name: 'nifi_web_https_network_interface_default',
@@ -1030,13 +1060,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.web.https.port',
-      name: 'nifi_web_https_port',
-      placeholder: 'Enter nifi.web.https.port',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.web.jetty.threads',
       name: 'nifi_web_jetty_threads',
@@ -1079,13 +1103,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.web.proxy.host',
-      name: 'nifi_web_proxy_host',
-      placeholder: 'Enter nifi.web.proxy.host',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.web.should.send.server.version',
       name: 'nifi_web_should_send_server_version',
@@ -1100,13 +1118,7 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
       required: false,
       icon: <NotePadIcon />,
     },
-    {
-      label: 'nifi.zookeeper.connect.string',
-      name: 'nifi_zookeeper_connect_string',
-      placeholder: 'Enter nifi.zookeeper.connect.string',
-      required: true,
-      icon: <NotePadIcon />,
-    },
+
     {
       label: 'nifi.zookeeper.connect.timeout',
       name: 'nifi_zookeeper_connect_timeout',

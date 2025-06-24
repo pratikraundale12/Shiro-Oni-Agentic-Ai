@@ -22,8 +22,11 @@ import { theme } from '../../../styles';
 import {
   ACCESS_CONTROL_OPTIONS,
   CHECKPOINT_INTERVAL_OPTIONS,
+  CLUSTER_ANSIBLE_DEFAULT_CONFIGURATION_VALUE,
   FLOW_ELECTION_MAX_WAIT_OPTIONS,
   KDFM,
+  loginIdentityStrategy,
+  scopeOptions,
   SESSION_TIMEOUT_OPTIONS,
   TRUE_FALSE_OPTIONS,
   ZOOKEEPER_CONNECTION_TIMEOUT,
@@ -323,23 +326,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Username must not start or end with a space',
         value => value === value?.trim()
       ),
-    nifi_cluster_node_protocol_max_threads: yup
-      .number()
-      .typeError('Protocol Max thread must be a number')
-      .integer('Protocol Max thread must be an integer')
-      .positive('Protocol Max thread must be a positive number')
-      .required('Protocol Max thread is required'),
-    nifi_web_https_port: yup
-      .number()
-      .typeError('Web http port must be a number')
-      .integer('Web http port must be an integer')
-      .positive('Web http port must be a positive number')
-      .required('Web http port is required')
-      .test(
-        'len',
-        'Port must be between 4 and 5 digits',
-        val => val && val.toString().length >= 4 && val.toString().length <= 5
-      ),
     username: yup
       .string()
       .required('Username is required')
@@ -358,23 +344,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
         value => value === value?.trim()
       )
       .min(10, 'Password must be minimum 10 in length'),
-    // java_arg_2: yup
-    //   .number()
-    //   .transform((value, originalValue) =>
-    //     originalValue === '' ? undefined : value
-    //   )
-    //   .typeError('Must be a number')
-    //   .positive('Must be a positive number')
-    //   .required('Initial heap size is required'),
-    // java_arg_3: yup
-    //   .number()
-    //   .typeError('Must be a number')
-    //   .positive('Must be a positive number')
-    //   .required('Maximum heap size is required')
-    //   .min(
-    //     initialHeapSize,
-    //     `Maximum heap size must be at least ${initialHeapSize}`
-    //   ),
     directory: yup
       .string()
       .required('Directory is required')
@@ -384,6 +353,92 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .string()
       .required('Root node is required')
       .matches(/^\S+$/, 'Root node cannot contain spaces'),
+    nifi_administrative_yield_duration: yup
+      .string()
+      .required('nifi.administrative.yield.duration is required'),
+
+    nifi_analytics_connection_model_implementation: yup
+      .string()
+      .required('nifi.analytics.connection.model.implementation is required'),
+
+    nifi_zookeeper_connect_string: yup
+      .string()
+      .required('nifi.zookeeper.connect.string is required'),
+
+    nifi_web_https_port: yup
+      .string()
+      .required('nifi.web.https.port is required'),
+
+    nifi_cluster_node_protocol_port: yup
+      .string()
+      .required('nifi.cluster.node.protocol.port is required'),
+
+    nifi_cluster_load_balance_port: yup
+      .string()
+      .required('nifi.cluster.load.balance.port is required'),
+
+    nifi_cluster_node_address: yup
+      .string()
+      .required('nifi.cluster.node.address is required'),
+
+    nifi_cluster_load_balance_host: yup
+      .string()
+      .required('nifi.cluster.load.balance.host is required'),
+
+    nifi_remote_input_host: yup
+      .string()
+      .required('nifi.remote.input.host is required'),
+
+    nifi_remote_input_http_transaction_ttl: yup
+      .string()
+      .required('nifi.remote.input.http.transaction.ttl is required'),
+
+    nifi_remote_input_secure: yup
+      .string()
+      .required('nifi.remote.input.secure is required'),
+
+    nifi_remote_input_socket_port: yup
+      .string()
+      .required('nifi.remote.input.socket.port is required'),
+
+    nifi_cluster_flow_election_max_wait_time: yup
+      .string()
+      .required('nifi.cluster.flow.election.max.wait.time is required'),
+
+    nifi_cluster_is_node: yup
+      .string()
+      .required('nifi.cluster.is.node is required'),
+
+    nifi_security_truststore: yup
+      .string()
+      .required('nifi.security.truststore is required'),
+
+    nifi_security_truststoreType: yup
+      .string()
+      .required('nifi.security.truststoreType is required'),
+
+    nifi_security_user_authorizer: yup
+      .string()
+      .required('nifi.security.user.authorizer is required'),
+
+    nifi_security_user_login_identity_provider: yup
+      .string()
+      .required('nifi.security.user.login.identity.provider is required'),
+
+    nifi_security_keystoreType: yup
+      .string()
+      .required('nifi.security.keystoreType is required'),
+
+    nifi_web_https_host: yup
+      .string()
+      .required('nifi.web.https.host is required'),
+
+    nifi_web_proxy_host: yup
+      .string()
+      .required('nifi.web.proxy.host is required'),
+    bootstrap_config: yup.string().required('Bootstrap config is required'),
+    authorizers_xml: yup.string().required('Authorizers.xml is required'),
+    logback_xml: yup.string().required('logback.xml is required'),
   });
   const schemaLDAPlogin = yup.object().shape({
     configName: yup
@@ -403,57 +458,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Username must not start or end with a space',
         value => value === value?.trim()
       ),
-    nifi_cluster_node_protocol_max_threads: yup
-      .number()
-      .typeError('Protocol Max thread must be a number')
-      .integer('Protocol Max thread must be an integer')
-      .positive('Protocol Max thread must be a positive number')
-      .required('Protocol Max thread is required'),
-    nifi_web_https_port: yup
-      .number()
-      .typeError('Web http port must be a number')
-      .integer('Web http port must be an integer')
-      .positive('Web http port must be a positive number')
-      .required('Web http port is required')
-      .test(
-        'len',
-        'Port must be between 4 and 5 digits',
-        val => val && val.toString().length >= 4 && val.toString().length <= 5
-      ),
-    groupDn: yup.string().required('Groups DN is required'),
-    userDn: yup.string().required('Users DN is required'),
-    userUniqueIdentifier: yup
-      .string()
-      .required('User Unique Identifier is required'),
-    groupUniqueIdentifier: yup
-      .string()
-      .required('Group Unique Identifier is required'),
-    usernameIdentifier: yup
-      .string()
-      .required('Username Identifier is required'),
-    InitialAdminIdentity: yup
-      .string()
-      .required('Username Identifier is required'),
-    ldap_login_user_filter: yup
-      .string()
-      .required('Username Identifier is required'),
-    java_arg_2: yup
-      .number()
-      .transform((value, originalValue) =>
-        originalValue === '' ? undefined : value
-      )
-      .typeError('Must be a number')
-      .positive('Must be a positive number')
-      .required('Initial heap size is required'),
-    java_arg_3: yup
-      .number()
-      .typeError('Must be a number')
-      .positive('Must be a positive number')
-      .required('Maximum heap size is required')
-      .min(
-        initialHeapSize,
-        `Maximum heap size must be at least ${initialHeapSize}`
-      ),
     directory: yup
       .string()
       .required('Directory is required')
@@ -463,6 +467,92 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .string()
       .required('Root node is required')
       .matches(/^\S+$/, 'Root node cannot contain spaces'),
+    nifi_administrative_yield_duration: yup
+      .string()
+      .required('nifi.administrative.yield.duration is required'),
+
+    nifi_analytics_connection_model_implementation: yup
+      .string()
+      .required('nifi.analytics.connection.model.implementation is required'),
+
+    nifi_zookeeper_connect_string: yup
+      .string()
+      .required('nifi.zookeeper.connect.string is required'),
+
+    nifi_web_https_port: yup
+      .string()
+      .required('nifi.web.https.port is required'),
+
+    nifi_cluster_node_protocol_port: yup
+      .string()
+      .required('nifi.cluster.node.protocol.port is required'),
+
+    nifi_cluster_load_balance_port: yup
+      .string()
+      .required('nifi.cluster.load.balance.port is required'),
+
+    nifi_cluster_node_address: yup
+      .string()
+      .required('nifi.cluster.node.address is required'),
+
+    nifi_cluster_load_balance_host: yup
+      .string()
+      .required('nifi.cluster.load.balance.host is required'),
+
+    nifi_remote_input_host: yup
+      .string()
+      .required('nifi.remote.input.host is required'),
+
+    nifi_remote_input_http_transaction_ttl: yup
+      .string()
+      .required('nifi.remote.input.http.transaction.ttl is required'),
+
+    nifi_remote_input_secure: yup
+      .string()
+      .required('nifi.remote.input.secure is required'),
+
+    nifi_remote_input_socket_port: yup
+      .string()
+      .required('nifi.remote.input.socket.port is required'),
+
+    nifi_cluster_flow_election_max_wait_time: yup
+      .string()
+      .required('nifi.cluster.flow.election.max.wait.time is required'),
+
+    nifi_cluster_is_node: yup
+      .string()
+      .required('nifi.cluster.is.node is required'),
+
+    nifi_security_truststore: yup
+      .string()
+      .required('nifi.security.truststore is required'),
+
+    nifi_security_truststoreType: yup
+      .string()
+      .required('nifi.security.truststoreType is required'),
+
+    nifi_security_user_authorizer: yup
+      .string()
+      .required('nifi.security.user.authorizer is required'),
+
+    nifi_security_user_login_identity_provider: yup
+      .string()
+      .required('nifi.security.user.login.identity.provider is required'),
+
+    nifi_security_keystoreType: yup
+      .string()
+      .required('nifi.security.keystoreType is required'),
+
+    nifi_web_https_host: yup
+      .string()
+      .required('nifi.web.https.host is required'),
+
+    nifi_web_proxy_host: yup
+      .string()
+      .required('nifi.web.proxy.host is required'),
+    bootstrap_config: yup.string().required('Bootstrap config is required'),
+    authorizers_xml: yup.string().required('Authorizers.xml is required'),
+    logback_xml: yup.string().required('logback.xml is required'),
   });
   const schemaConnectionCheck = yup.object().shape({
     url: yup.string().required('LDAP URL is required'),
@@ -521,48 +611,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      nifi_cluster_flow_election_max_wait_time: '5 mins',
-      nifi_zookeeper_connect_timeout: '10 secs',
-      nifi_web_https_port: 8443,
-      directory: './state/local',
-      partitions: 16,
-      root_node: '/nifi',
-      session_timeout: '10 seconds',
-      checkpoint_interval: '2 mins',
-      java_arg_2: 0,
-      java_arg_3: 0,
-      always_sync: 'false',
-      access_control: 'Open',
-      loginProvider: 'single-user-provider',
-      ldap_login_identity_strategy: 'USE_USERNAME',
-      scope: 'SUBTREE',
+      ...CLUSTER_ANSIBLE_DEFAULT_CONFIGURATION_VALUE,
     },
   });
 
-  const scopeOptions = [
-    {
-      label: 'Subtree',
-      value: 'SUBTREE',
-    },
-    {
-      label: 'One Level',
-      value: 'ONE_LEVEL',
-    },
-    {
-      label: 'Object',
-      value: 'OBJECT',
-    },
-  ];
-  const loginIdentityStrategy = [
-    {
-      label: 'USE_USERNAME',
-      value: 'USE_USERNAME',
-    },
-    {
-      label: 'USE_DN',
-      value: 'USE_DN',
-    },
-  ];
   const handleKeyDown = e => {
     const value = e.target.value.trim();
 
@@ -839,15 +891,265 @@ const ClusterSetupNewConfigDetailsPage = () => {
       return;
     }
     const nifiPropertyPayload = {
-      nifi_cluster_is_node: data?.nifi_cluster_is_node,
-      nifi_cluster_node_protocol_max_threads:
-        data?.nifi_cluster_node_protocol_max_threads,
+      nifi_administrative_yield_duration:
+        data?.nifi_administrative_yield_duration,
+      nifi_analytics_connection_model_implementation:
+        data?.nifi_analytics_connection_model_implementation,
+      nifi_zookeeper_connect_string: data?.nifi_zookeeper_connect_string,
+      nifi_web_https_port: data?.nifi_web_https_port,
+      nifi_cluster_node_protocol_port: data?.nifi_cluster_node_protocol_port,
+      nifi_cluster_load_balance_port: data?.nifi_cluster_load_balance_port,
+      nifi_cluster_node_address: data?.nifi_cluster_node_address,
+      nifi_cluster_load_balance_host: data?.nifi_cluster_load_balance_host,
+      nifi_remote_input_host: data?.nifi_remote_input_host,
+      nifi_remote_input_http_transaction_ttl:
+        data?.nifi_remote_input_http_transaction_ttl,
+      nifi_remote_input_secure: data?.nifi_remote_input_secure,
+      nifi_remote_input_socket_port: data?.nifi_remote_input_socket_port,
       nifi_cluster_flow_election_max_wait_time:
         data?.nifi_cluster_flow_election_max_wait_time,
-      nifi_state_management_embedded_zookeeper_start:
-        data?.nifi_cluster_is_node,
+      nifi_cluster_is_node: data?.nifi_cluster_is_node,
+      nifi_security_truststore: data?.nifi_security_truststore,
+      nifi_security_truststoreType: data?.nifi_security_truststoreType,
+      nifi_security_user_authorizer: data?.nifi_security_user_authorizer,
+      nifi_security_user_login_identity_provider:
+        data?.nifi_security_user_login_identity_provider,
+      nifi_security_keystoreType: data?.nifi_security_keystoreType,
+      nifi_web_https_host: data?.nifi_web_https_host,
+      nifi_web_proxy_host: data?.nifi_web_proxy_host,
+      nifi_analytics_connection_model_score_name:
+        data?.nifi_analytics_connection_model_score_name,
+      nifi_analytics_connection_model_score_threshold:
+        data?.nifi_analytics_connection_model_score_threshold,
+      nifi_analytics_predict_enabled: data?.nifi_analytics_predict_enabled,
+      nifi_analytics_predict_interval: data?.nifi_analytics_predict_interval,
+      nifi_analytics_query_interval: data?.nifi_analytics_query_interval,
+      nifi_authorizer_configuration_file:
+        data?.nifi_authorizer_configuration_file,
+      nifi_bored_yield_duration: data?.nifi_bored_yield_duration,
+      nifi_cluster_firewall_file: data?.nifi_cluster_firewall_file,
+      fi_cluster_flow_election_max_candidates:
+        data?.fi_cluster_flow_election_max_candidates,
+      nifi_cluster_load_balance_comms_timeout:
+        data?.nifi_cluster_load_balance_comms_timeout,
+      nifi_cluster_load_balance_connections_per_node:
+        data?.nifi_cluster_load_balance_connections_per_node,
+      nifi_cluster_load_balance_max_thread_count:
+        data?.nifi_cluster_load_balance_max_thread_count,
+      nifi_cluster_node_connection_timeout:
+        data?.nifi_cluster_node_connection_timeout,
+      nifi_cluster_node_event_history_size:
+        data?.nifi_cluster_node_event_history_size,
+      nifi_cluster_node_max_concurrent_requests:
+        data?.nifi_cluster_node_max_concurrent_requests,
+      nifi_cluster_node_protocol_max_threads:
+        data?.nifi_cluster_node_protocol_max_threads,
+      nifi_cluster_node_protocol_threads:
+        data?.nifi_cluster_node_protocol_threads,
+      nifi_cluster_node_read_timeout: data?.nifi_cluster_node_read_timeout,
+      nifi_cluster_protocol_heartbeat_interval:
+        data?.nifi_cluster_protocol_heartbeat_interval,
+      nifi_cluster_protocol_heartbeat_missable_max:
+        data?.nifi_cluster_protocol_heartbeat_missable_max,
+      nifi_cluster_protocol_is_secure: data?.nifi_cluster_protocol_is_secure,
+      nifi_components_status_repository_buffer_size:
+        data?.nifi_components_status_repository_buffer_size,
+      nifi_components_status_repository_implementation:
+        data?.nifi_components_status_repository_implementation,
+      nifi_components_status_snapshot_frequency:
+        data?.nifi_components_status_snapshot_frequency,
+      nifi_content_claim_max_appendable_size:
+        data?.nifi_content_claim_max_appendable_size,
+      nifi_content_claim_max_flow_files:
+        data?.nifi_content_claim_max_flow_files,
+      nifi_content_repository_archive_max_retention_period:
+        data?.nifi_content_repository_archive_max_retention_period,
+      nifi_content_repository_archive_max_usage_percentage:
+        data?.nifi_content_repository_archive_max_usage_percentage,
+      nifi_content_repository_directory_default:
+        data?.nifi_content_repository_directory_default,
+      nifi_content_repository_implementation:
+        data?.nifi_content_repository_implementation,
+      nifi_content_viewer_url: data?.nifi_content_viewer_url,
+      nifi_database_directory: data?.nifi_database_directory,
+      nifi_documentation_working_directory:
+        data?.nifi_documentation_working_directory,
+      nifi_flow_configuration_archive_dir:
+        data?.nifi_flow_configuration_archive_dir,
+      nifi_flow_configuration_archive_max_count:
+        data?.nifi_flow_configuration_archive_max_count,
+      nifi_flow_configuration_archive_max_storage:
+        data?.nifi_flow_configuration_archive_max_storage,
+      nifi_flow_configuration_archive_max_time:
+        data?.nifi_flow_configuration_archive_max_time,
+      nifi_flow_configuration_file: data?.nifi_flow_configuration_file,
+      nifi_flowcontroller_graceful_shutdown_period:
+        data?.nifi_flowcontroller_graceful_shutdown_period,
+      nifi_flowfile_repository_checkpoint_interval:
+        data?.nifi_flowfile_repository_checkpoint_interval,
+      nifi_flowfile_repository_directory:
+        data?.nifi_flowfile_repository_directory,
+      nifi_flowfile_repository_implementation:
+        data?.nifi_flowfile_repository_implementation,
+      nifi_flowfile_repository_partitions:
+        data?.nifi_flowfile_repository_partitions,
+      nifi_flowfile_repository_retain_orphaned_flowfiles:
+        data?.nifi_flowfile_repository_retain_orphaned_flowfiles,
+      nifi_flowfile_repository_wal_implementation:
+        data?.nifi_flowfile_repository_wal_implementation,
+      nifi_flowservice_writedelay_interval:
+        data?.nifi_flowservice_writedelay_interval,
+      nifi_h2_url_append: data?.nifi_h2_url_append,
+      nifi_kerberos_krb5_file: data?.nifi_kerberos_krb5_file,
+      nifi_kerberos_service_keytab_location:
+        data?.nifi_kerberos_service_keytab_location,
+      nifi_kerberos_service_principal: data?.nifi_kerberos_service_principal,
+      nifi_kerberos_spnego_authentication_expiration:
+        data?.nifi_kerberos_spnego_authentication_expiration,
+      nifi_kerberos_spnego_keytab_location:
+        data?.nifi_kerberos_spnego_keytab_location,
+      nifi_kerberos_spnego_principal: data?.nifi_kerberos_spnego_principal,
+      nifi_login_identity_provider_configuration_file:
+        data?.nifi_login_identity_provider_configuration_file,
+      nifi_nar_library_autoload_directory:
+        data?.nifi_nar_library_autoload_directory,
+      nifi_nar_library_directory: data?.nifi_nar_library_directory,
+      nifi_nar_working_directory: data?.nifi_nar_working_directory,
+      nifi_provenance_repository_buffer_size:
+        data?.nifi_provenance_repository_buffer_size,
+      nifi_provenance_repository_concurrent_merge_threads:
+        data?.nifi_provenance_repository_concurrent_merge_threads,
+      nifi_provenance_repository_debug_frequency:
+        data?.nifi_provenance_repository_debug_frequency,
+      nifi_provenance_repository_directory_default:
+        data?.nifi_provenance_repository_directory_default,
+      nifi_provenance_repository_encryption_key:
+        data?.nifi_provenance_repository_encryption_key,
+      nifi_provenance_repository_encryption_key_id:
+        data?.nifi_provenance_repository_encryption_key_id,
+      nifi_provenance_repository_encryption_key_provider_implementation:
+        data?.nifi_provenance_repository_encryption_key_provider_implementation,
+      nifi_provenance_repository_encryption_key_provider_location:
+        data?.nifi_provenance_repository_encryption_key_provider_location,
+      nifi_provenance_repository_implementation:
+        data?.nifi_provenance_repository_implementation,
+      nifi_provenance_repository_index_shard_size:
+        data?.nifi_provenance_repository_index_shard_size,
+      nifi_provenance_repository_index_threads:
+        data?.nifi_provenance_repository_index_threads,
+      nifi_provenance_repository_indexed_attributes:
+        data?.nifi_provenance_repository_indexed_attributes,
+      nifi_provenance_repository_indexed_fields:
+        data?.nifi_provenance_repository_indexed_fields,
+      nifi_provenance_repository_journal_count:
+        data?.nifi_provenance_repository_journal_count,
+      nifi_provenance_repository_max_attribute_length:
+        data?.nifi_provenance_repository_max_attribute_length,
+      nifi_provenance_repository_max_storage_size:
+        data?.nifi_provenance_repository_max_storage_size,
+      nifi_provenance_repository_max_storage_time:
+        data?.nifi_provenance_repository_max_storage_time,
+      nifi_provenance_repository_query_threads:
+        data?.nifi_provenance_repository_query_threads,
+      nifi_provenance_repository_rollover_size:
+        data?.nifi_provenance_repository_rollover_size,
+      nifi_provenance_repository_rollover_time:
+        data?.nifi_provenance_repository_rollover_time,
+      nifi_provenance_repository_warm_cache_frequency:
+        data?.nifi_provenance_repository_warm_cache_frequency,
+      nifi_queue_backpressure_count: data?.nifi_queue_backpressure_count,
+      nifi_queue_backpressure_size: data?.nifi_queue_backpressure_size,
+      nifi_queue_swap_threshold: data?.nifi_queue_swap_threshold,
+      nifi_remote_contents_cache_expiration:
+        data?.nifi_remote_contents_cache_expiration,
+      nifi_security_allow_anonymous_authentication:
+        data?.nifi_security_allow_anonymous_authentication,
+      nifi_security_group_mapping_pattern_anygroup:
+        data?.nifi_security_group_mapping_pattern_anygroup,
+      nifi_security_group_mapping_transform_anygroup:
+        data?.nifi_security_group_mapping_transform_anygroup,
+      nifi_security_group_mapping_value_anygroup:
+        data?.nifi_security_group_mapping_value_anygroup,
+      nifi_security_identity_mapping_pattern_dn:
+        data?.nifi_security_identity_mapping_pattern_dn,
+      nifi_security_identity_mapping_pattern_kerb:
+        data?.nifi_security_identity_mapping_pattern_kerb,
+      nifi_security_identity_mapping_transform_dn:
+        data?.nifi_security_identity_mapping_transform_dn,
+      nifi_security_identity_mapping_transform_kerb:
+        data?.nifi_security_identity_mapping_transform_kerb,
+      nifi_security_identity_mapping_value_dn:
+        data?.nifi_security_identity_mapping_value_dn,
+      nifi_security_identity_mapping_value_kerb:
+        data?.nifi_security_identity_mapping_value_kerb,
+      nifi_security_keystore: data?.nifi_security_keystore,
+      nifi_security_ocsp_responder_certificate:
+        data?.nifi_security_ocsp_responder_certificate,
+      nifi_security_ocsp_responder_url: data?.nifi_security_ocsp_responder_url,
+      nifi_security_user_knox_audiences:
+        data?.nifi_security_user_knox_audiences,
+      nifi_security_user_knox_cookieName:
+        data?.nifi_security_user_knox_cookieName,
+      nifi_security_user_knox_publicKey:
+        data?.nifi_security_user_knox_publicKey,
+      nifi_security_user_knox_url: data?.nifi_security_user_knox_url,
+      nifi_security_user_oidc_additional_scopes:
+        data?.nifi_security_user_oidc_additional_scopes,
+      nifi_security_user_oidc_claim_identifying_user:
+        data?.nifi_security_user_oidc_claim_identifying_user,
+      nifi_security_user_oidc_client_id:
+        data?.nifi_security_user_oidc_client_id,
+      nifi_security_user_oidc_client_secret:
+        data?.nifi_security_user_oidc_client_secret,
+      nifi_security_user_oidc_connect_timeout:
+        data?.nifi_security_user_oidc_connect_timeout,
+      nifi_security_user_oidc_discovery_url:
+        data?.nifi_security_user_oidc_discovery_url,
+      nifi_security_user_oidc_preferred_jwsalgorithm:
+        data?.nifi_security_user_oidc_preferred_jwsalgorithm,
+      nifi_security_user_oidc_read_timeout:
+        data?.nifi_security_user_oidc_read_timeout,
+      nifi_sensitive_props_additional_keys:
+        data?.nifi_sensitive_props_additional_keys,
+      nifi_sensitive_props_algorithm: data?.nifi_sensitive_props_algorithm,
+      nifi_sensitive_props_key: data?.nifi_sensitive_props_key,
+      nifi_state_management_configuration_file:
+        data?.nifi_state_management_configuration_file,
+      nifi_state_management_provider_cluster:
+        data?.nifi_state_management_provider_cluster,
+      nifi_state_management_provider_local:
+        data?.nifi_state_management_provider_local,
+      nifi_swap_in_period: data?.nifi_swap_in_period,
+      nifi_swap_in_threads: data?.nifi_swap_in_threads,
+      nifi_swap_manager_implementation: data?.nifi_swap_manager_implementation,
+      nifi_swap_out_period: data?.nifi_swap_out_period,
+      nifi_swap_out_threads: data?.nifi_swap_out_threads,
+      nifi_templates_directory: data?.nifi_templates_directory,
+      nifi_ui_autorefresh_interval: data?.nifi_ui_autorefresh_interval,
+      nifi_ui_banner_text: data?.nifi_ui_banner_text,
+      nifi_variable_registry_properties:
+        data?.nifi_variable_registry_properties,
+      nifi_version: data?.nifi_version,
+      nifi_web_http_host: data?.nifi_web_http_host,
+      nifi_web_http_network_interface_default:
+        data?.nifi_web_http_network_interface_default,
+      nifi_web_http_port: data?.nifi_web_http_port,
+      nifi_web_https_network_interface_default:
+        data?.nifi_web_https_network_interface_default,
+      nifi_web_jetty_threads: data?.nifi_web_jetty_threads,
+      nifi_web_jetty_working_directory: data?.nifi_web_jetty_working_directory,
+      nifi_web_max_content_size: data?.nifi_web_max_content_size,
+      nifi_web_max_header_size: data?.nifi_web_max_header_size,
+      nifi_web_max_requests_per_second: data?.nifi_web_max_requests_per_second,
+      nifi_web_proxy_context_path: data?.nifi_web_proxy_context_path,
+      nifi_web_should_send_server_version:
+        data?.nifi_web_should_send_server_version,
+      nifi_web_war_directory: data?.nifi_web_war_directory,
       nifi_zookeeper_connect_timeout: data?.nifi_zookeeper_connect_timeout,
-      nifi_web_https_port: data?.nifi_web_https_port,
+      nifi_zookeeper_root_node: data?.nifi_zookeeper_root_node,
+      nifi_zookeeper_session_timeout: data?.nifi_zookeeper_session_timeout,
+      nifi_state_management_embedded_zookeeper_properties:
+        data?.nifi_state_management_embedded_zookeeper_properties,
       nifi_user_login_provider:
         methodForLoginIdentity === 'single-user-provider'
           ? 'single-user-provider'
@@ -922,7 +1224,27 @@ const ClusterSetupNewConfigDetailsPage = () => {
   const onError = errors => {
     if (
       errors?.nifi_cluster_node_protocol_max_threads ||
-      errors?.nifi_web_https_port
+      errors?.nifi_web_https_port ||
+      errors?.nifi_cluster_node_protocol_port ||
+      errors?.nifi_cluster_load_balance_port ||
+      errors?.nifi_administrative_yield_duration ||
+      errors?.nifi_analytics_connection_model_implementation ||
+      errors?.nifi_zookeeper_connect_string ||
+      errors?.nifi_cluster_node_address ||
+      errors?.nifi_cluster_load_balance_host ||
+      errors?.nifi_remote_input_host ||
+      errors?.nifi_remote_input_http_transaction_ttl ||
+      errors?.nifi_remote_input_secure ||
+      errors?.nifi_remote_input_socket_port ||
+      errors?.nifi_cluster_flow_election_max_wait_time ||
+      errors?.nifi_cluster_is_node ||
+      errors?.nifi_security_truststore ||
+      errors?.nifi_security_truststoreType ||
+      errors?.nifi_security_user_authorizer ||
+      errors?.nifi_security_user_login_identity_provider ||
+      errors?.nifi_security_keystoreType ||
+      errors?.nifi_web_https_host ||
+      errors?.nifi_web_proxy_host
     ) {
       setSelectedProperty('nifi_properties');
       return;
@@ -935,6 +1257,15 @@ const ClusterSetupNewConfigDetailsPage = () => {
       setSelectedProperty('login_identity_provider');
       return;
     }
+    if (errors?.authorizers_xml) {
+      setSelectedProperty('authorizers_xml');
+      return;
+    }
+    if (errors?.logback_xml) {
+      setSelectedProperty('logback_xml');
+      return;
+    }
+
     if (errors?.directory || errors?.partitions || errors?.root_node) {
       setSelectedProperty('state_management_xml');
       return;
@@ -1160,99 +1491,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   control={control}
                   watch={watch}
                 />
-                <div>
-                  <TitleTabWrapper className="mt-3">
-                    <TitleTab className="ms-3">Core Configuration</TitleTab>
-                  </TitleTabWrapper>
-                  <div className="row mt-3">
-                    <div className="col-5">
-                      <InputField
-                        label="Protocol Max Threads"
-                        name="nifi_cluster_node_protocol_max_threads"
-                        type="text"
-                        placeholder="Enter Protocol Max Threads"
-                        required
-                        register={register}
-                        errors={errors}
-                        defaultValue={50}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                    <div className="col-5">
-                      <StyledSelectField
-                        label="Flow Election Max Wait Time"
-                        name="nifi_cluster_flow_election_max_wait_time"
-                        icon={<QRIcons />}
-                        size="lg"
-                        errors={errors}
-                        control={control}
-                        options={FLOW_ELECTION_MAX_WAIT_OPTIONS}
-                        placeholder="Select Flow Election Max Wait Time"
-                        sortAlphabetically={false}
-                        defaultValue="5"
-                        height="54px"
-                        labelMargin="0px"
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-2">
-                      <RadioSelectField
-                        name="nifi_cluster_is_node"
-                        options={TRUE_FALSE_OPTIONS}
-                        label="NiFi Cluster Node"
-                        register={register}
-                        defaultValue={'false'}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <TitleTabWrapper className="mt-2">
-                    <TitleTab className="ms-3">
-                      Zookeeper Configuration
-                    </TitleTab>
-                  </TitleTabWrapper>
-                  <div className="row mt-3">
-                    <div className="col-5">
-                      <StyledSelectField
-                        label="Zookeeper Connection Timeout"
-                        name="nifi_zookeeper_connect_timeout"
-                        icon={<QRIcons />}
-                        errors={errors}
-                        control={control}
-                        options={ZOOKEEPER_CONNECTION_TIMEOUT}
-                        placeholder="Select Zookeeper Connection Timeout"
-                        sortAlphabetically={false}
-                        height="54px"
-                        labelMargin="0px"
-                      />
-                    </div>{' '}
-                  </div>
-                </div>
-
-                <div>
-                  <TitleTabWrapper className="mt-3">
-                    <TitleTab className="ms-3">
-                      Web Server Configuration
-                    </TitleTab>
-                  </TitleTabWrapper>
-                  <div className="row mt-3">
-                    <div className="col-5">
-                      <InputField
-                        label="Web Http Port"
-                        name="nifi_web_https_port"
-                        type="text"
-                        placeholder="Enter Http Port"
-                        required
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                  </div>
-                </div>
               </div>
             )}
             {selectedProperty === 'bootstrap_config' && (
@@ -1262,51 +1500,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   errors={errors}
                   rows={21}
                 />
-                {/* <div>
-                  <TitleTabWrapper className="mt-3">
-                    <TitleTab className="ms-3">Java Memory Settings</TitleTab>
-                  </TitleTabWrapper>
-                  <div className="row mt-3">
-                    <div className="col-4">
-                      <LabelSelect className="ms-1 row">
-                        Java.arg.2
-                        <LabelWarning>
-                          (Initial Heap Size in GB)
-                          <span className="text-danger">*</span>
-                        </LabelWarning>
-                      </LabelSelect>
-
-                      <InputField
-                        name="java_arg_2"
-                        type="number"
-                        placeholder="Enter java.arg.2"
-                        required
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                    <div className="col-4">
-                      <LabelSelect className="row">
-                        Java.arg.3
-                        <LabelWarning>
-                          (Maximum Heap Size in GB)
-                          <span className="text-danger">*</span>
-                        </LabelWarning>
-                      </LabelSelect>
-
-                      <InputField
-                        name="java_arg_3"
-                        type="number"
-                        placeholder="Enter java.arg.3"
-                        required
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                  </div>
-                </div> */}
               </div>
             )}
             {selectedProperty === 'login_identity_provider' && (
