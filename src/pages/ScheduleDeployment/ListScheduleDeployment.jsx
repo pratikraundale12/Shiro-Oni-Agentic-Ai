@@ -117,6 +117,18 @@ const List = styled.div`
     // width: 100%;
   }
 `;
+
+const NoapproverText = styled.div`
+  font-family: 'Red Hat Display', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  text-align: left;
+  color: rgb(181, 181, 189);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+`;
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -852,7 +864,7 @@ export const ListScheduleDeployment = () => {
       label: 'Approver group/Approver',
       renderCell: item =>
         item?.action_by === 'NO_APPROVER_REQUIRED' ? (
-          <StatusText text={'No Approver Required'} item={item} />
+          <NoapproverText>No Approver Required</NoapproverText>
         ) : (
           <ApproverGroupDisplay item={item} />
         ),

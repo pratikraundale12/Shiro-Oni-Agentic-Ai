@@ -1535,6 +1535,7 @@ export function* revertLocalChanges(api) {
 
   if (response?.ok) {
     yield put(NamespacesActions.setSelectedNamespace(response?.data));
+    toast.success('Local changes reverted successfully');
   } else {
     toast.error(response?.message || response?.data?.message);
   }
