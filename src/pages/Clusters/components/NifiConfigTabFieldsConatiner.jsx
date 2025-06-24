@@ -1149,31 +1149,6 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
     },
   ];
 
-  // const selectObject = [
-  //   {
-  //     label: 'Flow Election Max Wait Time',
-  //     name: 'nifi_cluster_flow_election_max_wait_time',
-  //     icon: <QRIcons />,
-  //     size: 'lg',
-  //     options: FLOW_ELECTION_MAX_WAIT_OPTIONS,
-  //     placeholder: 'Select Flow Election Max Wait Time',
-  //     sortAlphabetically: false,
-  //     defaultValue: '5',
-  //     height: '54px',
-  //     labelMargin: '0px',
-  //   },
-  //   {
-  //     label: KDFM.NIFI_VERSION,
-  //     name: 'nifiVersion',
-  //     icon: <QRIcons />,
-  //     required: false,
-  //     options: [],
-  //     placeholder: KDFM.SELECT_NIFI_VERSION,
-  //     height: '54px',
-  //     labelMargin: '0px',
-  //   },
-  // ];
-
   const passwordObject = [
     {
       name: 'nifi_security_keyPasswd',
@@ -1254,26 +1229,6 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
             />
           </div>
         ))}
-        {/* {selectObject.map((select, index) => (
-          <div className="col-4" key={index}>
-            <StyledSelectField
-              label={select.label}
-              name={select.name}
-              control={control}
-              options={select.options}
-              placeholder={select.placeholder}
-              required={select.required}
-              icon={select.icon}
-              size={select.size}
-              height={select.height}
-              labelMargin={select.labelMargin}
-              defaultValue={select.defaultValue}
-              sortAlphabetically={select.sortAlphabetically}
-              register={register}
-              errors={errors}
-            />
-          </div>
-        ))} */}
         {passwordObject.map((password, index) => (
           <div className="col-6" key={index}>
             <PasswordField
@@ -1288,7 +1243,6 @@ const NifiConfigTabFieldsContainer = ({ register, errors, watch }) => {
             />
           </div>
         ))}
-
         {radioObjectArray?.map(radio => (
           <div className="col-5" key={radio?.name}>
             <RadioSelectField

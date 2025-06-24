@@ -775,6 +775,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifi_web_https_port,
     } = nifiProps;
 
+    ///
+    setValue(
+      'nifi_administrative_yield_duration',
+      nifi_administrative_yield_duration
+    );
+    Object.entries(nifiProps).forEach(([key, value]) => {
+      setValue(key, value);
+    });
+    ///
+
     const isLdapProvider = nifi_user_login_provider === 'ldap-provider';
 
     setValue(

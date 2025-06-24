@@ -67,8 +67,9 @@ const RadioField = ({ name, register, label, refName = null, ...props }) => {
         type="radio"
         name={name}
         id={label}
+        {...register(name)}
         {...props}
-        {...(typeof register === 'function' && register(name))}
+        // {...(typeof register === 'function' && register(name))}
       />
       <StyledLabel htmlFor={label}>{label}</StyledLabel>
     </Wrapper>
