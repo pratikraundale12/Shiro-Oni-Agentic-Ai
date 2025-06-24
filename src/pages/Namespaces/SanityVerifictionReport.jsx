@@ -180,7 +180,7 @@ const SanityVerifictionReport = () => {
                   <MessageText>
                     {lastSanityReport?.data?.updated_at
                       ? formatDate(lastSanityReport?.data?.updated_at)
-                      : 'No Sanity Performed Yet'}
+                      : 'No sanity performed yet'}
                   </MessageText>
                 </ActionContainer>
               </div>

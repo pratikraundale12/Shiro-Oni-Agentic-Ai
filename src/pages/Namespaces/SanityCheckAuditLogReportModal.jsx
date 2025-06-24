@@ -154,7 +154,7 @@ const SanityCheckAuditLogReportModal = ({
               <MessageText>
                 {responseData?.data?.updated_at
                   ? formatDate(responseData?.data?.updated_at)
-                  : 'No Sanity Performed Yet'}
+                  : 'No sanity performed yet'}
               </MessageText>
             </ActionContainer>
           </div>

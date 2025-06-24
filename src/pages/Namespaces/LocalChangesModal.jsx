@@ -207,7 +207,7 @@ const LocalChangesModal = () => {
     {
       label: 'Component ID',
       renderCell: item => (
-        <div className="text-center">
+        <div>
           <>
             <button
               className="border-0 bg-white"
@@ -219,13 +219,13 @@ const LocalChangesModal = () => {
           </>
         </div>
       ),
-      width: '25%',
+      width: '30%',
       resize: true,
     },
     {
       label: 'Change Type',
       renderCell: item => <TextRender text={item.componentType} />,
-      width: '25%',
+      width: '20%',
       resize: true,
     },
     {
