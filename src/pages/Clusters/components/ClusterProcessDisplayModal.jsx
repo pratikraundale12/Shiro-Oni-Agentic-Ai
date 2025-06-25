@@ -243,6 +243,8 @@ export const ClusterProcessDisplayModal = ({
   const dispatch = useDispatch();
   const [isCompleted, setIsCompleted] = useState(false);
   const [isInitialisaitionPhase, setIsInitialisaitionPhase] = useState(false);
+  const [initialisingTime, setInitialisingTime] = useState(null);
+  const [progressValue, setProgressValue] = useState(0);
   const isModalOpen = useSelector(
     ClustersSelectors.getProgressTrackingModalOpen
   );
@@ -437,9 +439,6 @@ export const ClusterProcessDisplayModal = ({
     return match ? parseInt(match[0], 10) : null;
   };
 
-  const [initialisingTime, setInitialisingTime] = useState(null);
-  const [progressValue, setProgressValue] = useState(0);
-
   useEffect(() => {
     const extractedTime = extractNumberFromTimeString(
       processData?.nifi_cluster_flow_election_max_wait_time || '2 mins'
@@ -521,7 +520,11 @@ export const ClusterProcessDisplayModal = ({
         onSubmit={() => onRequestClose()}
         title={getModalHeading(processExeName)}
         primaryButtonText={
-          !isInitialisaitionPhase && isCompleted ? 'Close' : null
+          !isInitialisaitionPhase && isCompleted
+            ? 'Close'
+            : processExeName == 'delete' && isCompleted
+              ? 'Close'
+              : null
         }
         contentStyles={{ minWidth: '60%' }}
         footerAlign="start"

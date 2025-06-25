@@ -128,16 +128,39 @@ const ProgressStage = styled.div`
 
 const StepProgress = () => {
   const [openTabIndex, setOpenTabIndex] = useState(null);
+  const [startScroll, setStartScroll] = useState(true);
   const processData = useSelector(
     ClustersSelectors.getAnsibleClusterProgressData
   );
   const progressStageRef = useRef(null);
   useEffect(() => {
-    if (progressStageRef.current) {
+    const element = progressStageRef.current;
+    if (!element) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = element;
+      const sum = scrollTop + clientHeight;
+      if (Math.abs(sum - scrollHeight) < 50) {
+        setStartScroll(true);
+      } else {
+        setStartScroll(false);
+      }
+    };
+
+    element.addEventListener('scroll', handleScroll);
+
+    return () => {
+      element.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (progressStageRef.current && startScroll) {
       progressStageRef.current.scrollTop =
         progressStageRef.current.scrollHeight;
     }
   }, [processData?.data?.steps]);
+
   const handleOpenTab = index => {
     if (openTabIndex === index) {
       setOpenTabIndex(null);
