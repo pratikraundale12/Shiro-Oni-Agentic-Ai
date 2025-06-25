@@ -1299,6 +1299,146 @@ const Summary = () => {
   };
 
   const selectedFlowNameProvider = getSelectedFlowName();
+
+  // Helper to merge old and new variables for diff modal (only changed)
+  const getMergedVariablesData = (original, updated) => {
+    if (!original || !updated) return [];
+    const updatedMap = updated.reduce((acc, item) => {
+      acc[item.pgId] = item;
+      return acc;
+    }, {});
+    return original
+      .map(origPg => {
+        const updPg = updatedMap[origPg.pgId];
+        if (!updPg) return null;
+        // Map variable name to value for old and new
+        const updVarMap = (updPg.variables || []).reduce((acc, v) => {
+          acc[v.name] = v.value;
+          return acc;
+        }, {});
+        const origVarMap = (origPg.variables || []).reduce((acc, v) => {
+          acc[v.name] = v.value;
+          return acc;
+        }, {});
+        // Only include changed variables
+        const changedNames = Object.keys(updVarMap).filter(
+          name =>
+            origVarMap[name] !== undefined &&
+            updVarMap[name] !== origVarMap[name]
+        );
+        if (changedNames.length === 0) return null;
+        return {
+          pgId: origPg.pgId,
+          pgName: origPg.pgName,
+          variables: changedNames.map(name => ({
+            name,
+            old_value: origVarMap[name],
+            new_value: updVarMap[name],
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  // Helper to merge old and new parameters for diff modal (only changed)
+  const getMergedParametersData = (original, updated) => {
+    if (!original || !updated) return [];
+    return original
+      .map(origGroup => {
+        const updGroup = updated.find(
+          g => g.parameterName === origGroup.parameterName
+        );
+        if (!updGroup) return null;
+        // Map param name to value/desc for old and new
+        const updParamMap = (updGroup.parameters || []).reduce((acc, p) => {
+          acc[p.name] = { value: p.value, description: p.description };
+          return acc;
+        }, {});
+        const origParamMap = (origGroup.parameters || []).reduce((acc, p) => {
+          acc[p.name] = { value: p.value, description: p.description };
+          return acc;
+        }, {});
+        // Only include changed parameters
+        const changedNames = Object.keys(updParamMap).filter(name => {
+          const oldVal = origParamMap[name];
+          const newVal = updParamMap[name];
+          return (
+            oldVal &&
+            (oldVal.value !== newVal.value ||
+              oldVal.description !== newVal.description)
+          );
+        });
+        if (changedNames.length === 0) return null;
+        return {
+          parameterName: origGroup.parameterName,
+          parameters: changedNames.map(name => ({
+            name,
+            old_value: origParamMap[name],
+            new_value: updParamMap[name],
+            description:
+              updParamMap[name]?.description || origParamMap[name]?.description,
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  // Helper to merge old and new controller service properties for diff modal (only changed)
+  const getMergedControllerServicesData = (original, updated) => {
+    if (!original || !updated) return [];
+    // Flatten original to map by identifier
+    const origMap = (original || [])
+      .flatMap(item => item?.controllerData || [])
+      .reduce((acc, cs) => {
+        acc[cs.identifier] = cs;
+        return acc;
+      }, {});
+    return (updated || [])
+      .map(service => {
+        const orig = origMap[service.identifier];
+        if (!orig) return null;
+        // Map property name to value for old and new
+        const updPropMap = (service.properties || []).reduce((acc, p) => {
+          acc[p.name] = p.value;
+          return acc;
+        }, {});
+        const origPropMap = (orig.properties || []).reduce((acc, p) => {
+          acc[p.name] = p.value;
+          return acc;
+        }, {});
+        // Only include changed properties
+        const changedNames = Object.keys(updPropMap).filter(
+          name =>
+            origPropMap[name] !== undefined &&
+            updPropMap[name] !== origPropMap[name]
+        );
+        if (changedNames.length === 0) return null;
+        return {
+          identifier: service.identifier,
+          name: service.name,
+          properties: changedNames.map(name => ({
+            name,
+            old_value: origPropMap[name],
+            new_value: updPropMap[name],
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  const mergedVariablesData = getMergedVariablesData(
+    registryAllDetails?.variablesData,
+    variblesReduxData
+  );
+  const mergedParametersData = getMergedParametersData(
+    currentParametersData,
+    updatedParametersData
+  );
+  const mergedControllerServicesData = getMergedControllerServicesData(
+    registryAllDetails?.controllerServicesData?.localServices,
+    controllerServiceReduxData?.localServicesData
+  );
+
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -1475,7 +1615,7 @@ const Summary = () => {
                           {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {versionSelected.version || ''}
+                          {versionSelected?.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -1920,9 +2060,9 @@ const Summary = () => {
                 : checkDestCluster?.version || 'N/A'
             }`}
             isFromDeploySummary={true}
-            parametersData={newParametersData}
-            variablesData={variblesReduxData}
-            csData={updatedLocalCsPayloadOnDeploy}
+            parametersData={mergedParametersData}
+            variablesData={mergedVariablesData}
+            csData={mergedControllerServicesData}
           />
         )}
         <SanityCheckDeployModal />
