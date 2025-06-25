@@ -55,7 +55,7 @@ const ClusterNavigationTab = ({
           active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
           onClick={() =>
             Object.keys(data || {})?.length
-              ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
+              ? data.id ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY): {}
               : {}
           }
           disabled={isRegistryDetailDisable}
