@@ -522,7 +522,11 @@ export const ClusterProcessDisplayModal = ({
         onSubmit={() => onRequestClose()}
         title={getModalHeading(processExeName)}
         primaryButtonText={
-          !isInitialisaitionPhase && isCompleted ? 'Close' : null
+          !isInitialisaitionPhase && isCompleted
+            ? 'Close'
+            : processExeName == 'delete' && isCompleted
+              ? 'Close'
+              : null
         }
         contentStyles={{ minWidth: '60%' }}
         footerAlign="start"
