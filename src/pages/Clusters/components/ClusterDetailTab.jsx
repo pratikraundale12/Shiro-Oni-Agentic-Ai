@@ -1,13 +1,20 @@
 /* eslint-disable */
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   CheckboxField,
   InputField,
+  Modal,
+  ModalWithIcon,
   RadioField,
   SelectField,
 } from '../../../shared';
-import { PlusIcon, QRIcons } from '../../../assets';
+import {
+  DeleteDustbinIcon,
+  DeleteSmallIcon,
+  PlusIcon,
+  QRIcons,
+} from '../../../assets';
 import styled from 'styled-components';
 import { FullPageLoader, StatusRender, Table } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +29,7 @@ import { KDFM } from '../../../constants';
 import { toast } from 'react-toastify';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { theme } from '../../../styles';
 
 const LabelSelect = styled.div`
   font-size: 14px;
@@ -39,6 +47,10 @@ const ClusterDetailTab = ({
   setHostList,
   setValue,
 }) => {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
+    useState(false);
+  const [deleteNodes, setDeleteNodes] = useState([]);
   const dispatch = useDispatch();
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getNiFiVersions')
@@ -211,7 +223,53 @@ const ClusterDetailTab = ({
       );
     }
   };
+  const checkDisabledCheckbox = item => {
+    const currentItem = listHostIpData?.filter(ele => ele?.id === item?.id);
+    if (currentItem?.[0]?.is_selected) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
+  const handleDeleteNodeCheck = ele => {
+    const targetItem = deleteNodes.find(item => item.id === ele?.id);
+
+    if (!targetItem.hasToDelete) {
+      const alreadyMarked = deleteNodes.filter(item => item.hasToDelete);
+
+      if (alreadyMarked.length === deleteNodes.length - 1) {
+        toast.error(
+          'At least one existing associated node must remain in cluster'
+        );
+        return;
+      }
+    }
+    const updatedData = deleteNodes.map(item =>
+      item.id === ele?.id ? { ...item, hasToDelete: !item.hasToDelete } : item
+    );
+    setDeleteNodes(updatedData);
+  };
+  const handleDeleteNodes = () => {
+    if (isEmpty(deleteNodes.filter(item => item.hasToDelete))) {
+      toast.error('No node selected');
+    } else {
+      setDeleteConfirmationModalOpen(true);
+    }
+  };
+  const handleConfirmDelete = () => {
+    const alreadyMarked = deleteNodes.filter(item => item.hasToDelete);
+    const deselectedNodesIds = alreadyMarked.map(ele => ele?.id);
+    dispatch(
+      ClustersActions.updateNodesAnsibleCluster({
+        clusterId: nodesUpdateAnsbibleClusterId,
+        payload: {
+          nodeIdsToRemove: deselectedNodesIds,
+          nodeIdsToAdd: [],
+        },
+      })
+    );
+  };
   const COLUMNS = [
     {
       label: <></>,
@@ -221,8 +279,85 @@ const ClusterDetailTab = ({
             <CheckboxField
               name="check"
               checked={item?.is_selected}
+              disabled={
+                !isEmpty(nodesUpdateAnsbibleClusterId)
+                  ? checkDisabledCheckbox(item)
+                  : false
+              }
               onChange={() => {
                 handleCheck(item);
+              }}
+            />
+          ) : (
+            <></>
+          )}
+        </div>
+      ),
+      resize: true,
+      width: '5%',
+    },
+    {
+      label: 'Available Host IP',
+      renderCell: item => (
+        <>
+          <div className="d-flex gap-2">
+            {item?.host_ip}
+            <span data-tooltip-id={`copy-${item?.host_ip}-host-url`}>
+              <CopyToClipboard copyItem={item?.host_ip} />
+            </span>
+            <ReactTooltip
+              id={`copy-${item?.host_ip}-host-url`}
+              place="bottom"
+              effect="solid"
+              content={'Copy URL'}
+              style={{
+                width: '100px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+                zIndex: 10000,
+              }}
+            />
+          </div>
+        </>
+      ),
+      resize: true,
+      width: '45%',
+    },
+    {
+      label: 'Port No.',
+      renderCell: item => <>{item?.port}</>,
+      resize: true,
+      width: '15%',
+    },
+    {
+      label: 'Username',
+      renderCell: item => <>{item?.username}</>,
+      resize: true,
+      width: '25%',
+    },
+    {
+      label: 'Status',
+      renderCell: item => (
+        <StatusRender
+          status={item?.status === 'Active' ? 'Active' : 'Inactive'}
+          redColor="#FF0000"
+        />
+      ),
+      resize: true,
+      width: '10%',
+    },
+  ];
+  const COLUMNS_FOR_DELETE_NODE = [
+    {
+      label: <></>,
+      renderCell: item => (
+        <div className="d-flex justify-content-center">
+          {isEmpty(clusterIdForAnsible) ? (
+            <CheckboxField
+              name="check_delete"
+              checked={item?.hasToDelete}
+              onChange={() => {
+                handleDeleteNodeCheck(item);
               }}
             />
           ) : (
@@ -393,6 +528,16 @@ const ClusterDetailTab = ({
     setValue('configName', '');
     setValue('configVersion', '');
   };
+  useEffect(() => {
+    if (!isEmpty(hostList) && !isEmpty(nodesUpdateAnsbibleClusterId)) {
+      const hostListForDeleteNodes = hostList?.filter(ele => ele?.is_selected);
+      const deleteKeyArray = hostListForDeleteNodes?.map(item => ({
+        ...item,
+        hasToDelete: false,
+      }));
+      setDeleteNodes(deleteKeyArray);
+    }
+  }, [hostList]);
 
   return (
     <>
@@ -458,27 +603,47 @@ const ClusterDetailTab = ({
           />
         </div>
       </div>
-      <div className="col-auto ms-3">
-        <Button
-          size="md"
-          onClick={() =>
-            dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'))
-          }
-          className="w-auto px-3"
-          style={{ minWidth: 'auto' }}
-        >
-          <div
-            className="d-flex "
-            style={{ fontSize: '14px', fontWeight: '750' }}
+      <div className="row mx-auto">
+        <div className="col-auto ms-3">
+          <Button
+            size="md"
+            onClick={() =>
+              dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'))
+            }
+            className="w-auto px-3"
+            style={{ minWidth: 'auto' }}
           >
-            <PlusIcon height={19} width={19} color={'#fff'} />
-            {KDFM.MANAGE_HOST}
+            <div
+              className="d-flex "
+              style={{ fontSize: '14px', fontWeight: '750' }}
+            >
+              <PlusIcon height={19} width={19} color={'#fff'} />
+              {KDFM.MANAGE_HOST}
+            </div>
+          </Button>
+        </div>{' '}
+        {!isEmpty(nodesUpdateAnsbibleClusterId) && (
+          <div className="col-auto ms-1">
+            <Button
+              size="md"
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="w-auto px-3"
+              style={{ minWidth: 'auto' }}
+            >
+              <div
+                className="d-flex "
+                style={{ fontSize: '14px', fontWeight: '750' }}
+              >
+                <DeleteSmallIcon color={'#fff'} height={18} width={18} />
+                Delete Nodes
+              </div>
+            </Button>
           </div>
-        </Button>
+        )}
       </div>
       <div
         className="mt-4 px-3"
-        style={{ height: 'calc(100% - 360px)', overflow: 'auto' }}
+        style={{ height: 'calc(100% - 264px)', overflow: 'auto' }}
       >
         <Table
           data={hostList || []}
@@ -488,6 +653,45 @@ const ClusterDetailTab = ({
         />
       </div>
       <AddHostIPModal />
+      <Modal
+        title="Existing Associated Nodes"
+        isOpen={isDeleteModalOpen}
+        onRequestClose={() => setIsDeleteModalOpen(false)}
+        size="sm"
+        loading={loading}
+        secondaryButtonText="Back"
+        primaryButtonText={'Delete Nodes'}
+        onSubmit={() => {
+          handleDeleteNodes();
+        }}
+        footerAlign="start"
+        contentStyles={{ minWidth: '75%' }}
+        primaryButtonProps={{ id: 'enable-cluster-submit-btn' }}
+      >
+        <div style={{ color: theme.colors.primary }} className="mb-2">
+          *All selected nodes will be deleted
+        </div>
+        <Table
+          data={deleteNodes || []}
+          columns={COLUMNS_FOR_DELETE_NODE}
+          customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
+          tableWithFullHeight={true}
+        />
+      </Modal>{' '}
+      <ModalWithIcon
+        title={'Delete Host IP'}
+        primaryButtonText={'Delete'}
+        secondaryButtonText={'Cancel'}
+        icon={<DeleteDustbinIcon />}
+        isOpen={deleteConfirmationModalOpen}
+        onSubmit={() => {
+          handleConfirmDelete();
+        }}
+        onRequestClose={() => {
+          setDeleteConfirmationModalOpen(false);
+        }}
+        primaryText={`Are you sure you want to delete`}
+      />
     </>
   );
 };

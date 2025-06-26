@@ -70,6 +70,15 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
   const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const COLUMNS = [
     {
+      label: 'Host Name',
+      renderCell: item => (
+        <div className="d-flex gap-2">{item?.host_name || 'N/A'}</div>
+      ),
+
+      resize: true,
+      width: '20%',
+    },
+    {
       label: 'Host IP',
       renderCell: item => (
         <div className="d-flex gap-2">
@@ -93,16 +102,19 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       ),
 
       resize: true,
+      width: '40%',
     },
     {
       label: 'Port No.',
       renderCell: item => <>{item?.port}</>,
       resize: true,
+      width: '10%',
     },
     {
       label: 'Username',
       renderCell: item => <>{item?.username}</>,
       resize: true,
+      width: '10%',
     },
     {
       label: 'Status',
@@ -113,6 +125,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
         />
       ),
       resize: true,
+      width: '10%',
     },
     {
       label: 'Actions',
@@ -141,6 +154,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
         </ActionTd>
       ),
       resize: true,
+      width: '10%',
     },
   ];
   useEffect(() => {
@@ -206,7 +220,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           onRequestClose={() => {
             setIsDeleteModalOpen(false);
           }}
-          primaryText={`Are you sure you want to delete Host IP !`}
+          primaryText={`Are you sure you want to delete Host IP`}
         />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">

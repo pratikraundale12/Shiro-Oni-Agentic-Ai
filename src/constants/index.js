@@ -132,6 +132,12 @@ export const ACTIVITY_EVENTS = [
   { label: 'Validate', value: 'Validate' },
   { label: 'Comparison', value: 'Comparison' },
   { label: 'Add Data Flow Inventory', value: 'Add Data Flow Inventory' },
+  { label: 'Start Cluster', value: 'Start Cluster' },
+  { label: 'Update Nodes', value: 'Update Nodes' },
+  { label: 'Add Nodes', value: 'Add Nodes' },
+  { label: 'Remove Nodes', value: 'Remove Nodes' },
+  { label: 'Upgrade Cluster', value: 'Upgrade Cluster' },
+  { label: 'Associate Registry', value: 'Associate Registry' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
