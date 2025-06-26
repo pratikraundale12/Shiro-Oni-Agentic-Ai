@@ -58,6 +58,7 @@ const UploadWrapper = styled.div`
 export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
   const dispatch = useDispatch();
   const [method, setMethod] = useState('password');
+  const [formData, setFormData] = useState({});
   const isModalOpen = useSelector(ClustersSelectors.getIsAddHostIPModalOpen);
   const isPrimaryBtnDisable = useSelector(
     ClustersSelectors.getAddHostBtnDisable
@@ -114,6 +115,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
   const watchMethodCredentials = watch('methodForCredentials');
 
   const handleTestSubmit = data => {
+    setFormData(data);
     const payload = new FormData();
     payload.append('hostIp', data?.host_ip);
     payload.append('port', data?.port);
@@ -127,7 +129,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
 
   const addIndividualHost = e => {
     const payload = new FormData();
-
+    payload.append('hostName', formData?.hostName);
     payload.append('port', getIndividualHostData?.port);
     payload.append('username', getIndividualHostData?.username);
     payload.append('file', getIndividualHostData?.pfxFile);
@@ -216,6 +218,21 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
               />
             </div>
           </div>
+          <div className="row">
+            <div className="col-12">
+              <InputField
+                name="hostName"
+                type="text"
+                label="Host Name"
+                placeholder="Enter Your Host Name"
+                register={register}
+                errors={errors}
+                icon={<CurvedProfileIcon />}
+                disabled={!isPrimaryBtnDisable}
+              />
+            </div>
+          </div>
+
           <div
             className=" d-flex justify-content-end "
             style={{
