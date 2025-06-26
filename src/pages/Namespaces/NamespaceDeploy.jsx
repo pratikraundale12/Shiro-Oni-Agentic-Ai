@@ -218,6 +218,7 @@ const NamespaceDeploy = ({
     history.push(`/process-group/${deployOrUpgradeDetails?.id}`);
     dispatch(NamespacesActions.setRegistryAllDetails({}));
     dispatch(NamespacesActions.setregistryDetailsFlow(true));
+    dispatch(NamespacesActions.setDeployedModal(false));
   };
   const provideTitle = () => {
     return `Process Group 

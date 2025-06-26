@@ -243,14 +243,15 @@ const FlowControl = () => {
   };
 
   const handleScheduleFlow = type => {
-    dispatch(SchedularActions.setScheduleFromList(true));
     dispatch(NamespacesActions.setScheduleStartFlow(true));
     dispatch(NamespacesActions.setScheduleFlowType(type));
+    dispatch(SchedularActions.setScheduleFromList(true));
     dispatch(
       NamespacesActions.setVersionSelect({
         version: singleNamespaceData1?.version,
       })
     );
+    dispatch(NamespacesActions.setdeployRegistryFlow(false));
     dispatch(NamespacesActions.setDeployByRegistryFlow(false));
     dispatch(
       NamespacesActions.fetchVersionData({
