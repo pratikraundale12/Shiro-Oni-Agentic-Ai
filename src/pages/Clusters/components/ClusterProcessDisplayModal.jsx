@@ -378,22 +378,18 @@ export const ClusterProcessDisplayModal = ({
   );
 
   const onRequestClose = () => {
-    if (!isInitialisaitionPhase && isCompleted) {
-      setIsProcessModalOpen(false);
-      dispatch(ClustersActions.setProgressTrackingModalOpen(false));
-      setSelectedCluster({});
-      dispatch(
-        GridActions.fetchGrid({
-          module: 'clusters',
-          params: { page: 1, limit: 10 },
-          ...(sortingState && {
-            sort: sortingState,
-          }),
-        })
-      );
-    } else {
-      toast.info('Cluster is under process can not close');
-    }
+    setIsProcessModalOpen(false);
+    dispatch(ClustersActions.setProgressTrackingModalOpen(false));
+    setSelectedCluster({});
+    dispatch(
+      GridActions.fetchGrid({
+        module: 'clusters',
+        params: { page: 1, limit: 10 },
+        ...(sortingState && {
+          sort: sortingState,
+        }),
+      })
+    );
   };
 
   useEffect(() => {
@@ -528,7 +524,13 @@ export const ClusterProcessDisplayModal = ({
               ? 'Close'
               : null
         }
-        contentStyles={{ minWidth: '60%' }}
+        contentStyles={{
+          minWidth:
+            (!isInitialisaitionPhase && isCompleted) ||
+            (processExeName == 'delete' && isCompleted)
+              ? '40%'
+              : '60%',
+        }}
         footerAlign="start"
         displayCrossIcon={
           processExeName === 'delete' || processData?.data?.status === 'failed'
@@ -567,9 +569,9 @@ export const ClusterProcessDisplayModal = ({
                   ) : (
                     <div className="d-flex flex-column align-items-center justify-content-center mt-4">
                       <div>
-                        <GreenRightCircleIcon width={200} height={200} />
+                        <GreenRightCircleIcon width={180} height={180} />
                       </div>
-                      <div className="mt-2">
+                      <div className="mt-4">
                         <PercentageHeaderText colorBlack={true}>
                           {getFinalText(processExeName)}
                         </PercentageHeaderText>
