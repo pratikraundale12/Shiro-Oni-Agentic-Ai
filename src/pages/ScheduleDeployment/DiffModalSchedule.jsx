@@ -57,6 +57,8 @@ export const DiffModalScheduleList = props => {
   const sanityCheckData = useSelector(
     SchedularSelectors.getSanityAndDeployStatus
   );
+  // Get isFromDeploySummary from props
+  const isFromDeploySummary = props?.isFromDeploySummary || false;
 
   const renderContent = () => {
     switch (activeTab) {
@@ -164,13 +166,16 @@ export const DiffModalScheduleList = props => {
             >
               {KDFM.CONTROLLER_SERVICE}{' '}
             </Tab>
-            <Tab
-              active={activeTab === 'Local Changes'}
-              onClick={() => handleSetTab('Local Changes')}
-              className="nav-item"
-            >
-              Local Changes
-            </Tab>
+            {/* Conditionally render Local Changes tab */}
+            {!isFromDeploySummary && (
+              <Tab
+                active={activeTab === 'Local Changes'}
+                onClick={() => handleSetTab('Local Changes')}
+                className="nav-item"
+              >
+                Local Changes
+              </Tab>
+            )}
           </TabWrapper>
           <TabContent>{renderContent()}</TabContent>
         </GreyBoxNamespace>

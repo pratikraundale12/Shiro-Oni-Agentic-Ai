@@ -22,6 +22,7 @@ const ScrollSetGrey = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
 `;
+
 const PgHead = styled.div`
   font-family: Red Hat Display;
   font-size: 20px;
@@ -32,12 +33,14 @@ const PgHead = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 `;
+
 const GreyBoxNamespace = styled.div`
   background-color: #f5f7fa;
   padding: 5px 10px 0px 10px;
   border-radius: 15px;
   padding: 20px 15px 20px 15px;
 `;
+
 const TileHeader = styled.div`
   font-family: Red Hat Display;
   font-size: 17px;
@@ -48,6 +51,7 @@ const TileHeader = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 `;
+
 const TileItem = styled.div`
   font-family: Red Hat Display;
   font-size: 16px;
@@ -57,6 +61,7 @@ const TileItem = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 `;
+
 const NoDataText = styled.div`
   color: ${props => props.theme.colors.lightGrey3};
   font-family: ${props => props.theme.fontNato};
@@ -70,6 +75,7 @@ const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
   const data = isFromDeploySummary
     ? csData
     : scheduleDiffData?.diffControllerServices;
+
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -97,23 +103,31 @@ const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
             <div className="mt-4" key={element?.identifier}>
               <PgHead className="mb-2">{element?.name}</PgHead>
               <GreyBoxNamespace>
-                {!isFromDeploySummary && (
-                  <div className="d-flex mb-3">
-                    <TileHeader className="col-3"></TileHeader>
-                    <TileHeader className="col-5">New</TileHeader>
+                {/* Header row - same for both cases */}
+                <div className="d-flex mb-3">
+                  <TileHeader className="col-3"></TileHeader>
+                  <TileHeader className="col-5">New</TileHeader>
+                  <TileHeader className="col-4">Current</TileHeader>
+                </div>
 
-                    <TileHeader className="col-4">Current</TileHeader>
-                  </div>
-                )}
                 {properties?.map(item => {
-                  const value =
-                    item?.value === ''
+                  // Handle different data structures - both cases have new_value and old_value
+                  const newValue =
+                    item?.new_value === ''
                       ? 'Empty String Set'
-                      : item?.value === null
+                      : item?.new_value === null
                         ? 'No Value set'
-                        : item?.value;
+                        : item?.new_value;
+
+                  const oldValue =
+                    item?.old_value === ''
+                      ? 'Empty String Set'
+                      : item?.old_value === null
+                        ? 'No Value set'
+                        : item?.old_value;
+
                   return (
-                    <div className="row  " key={item?.name}>
+                    <div className="row" key={item?.name}>
                       <TileHeader
                         style={{
                           backgroundColor: '#E9ECF1',
@@ -136,16 +150,20 @@ const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
                             }}
                             className="p-2"
                           >
-                            {isFromDeploySummary
-                              ? value
-                              : item?.new_value || 'N/A'}
+                            {newValue || 'N/A'}
                           </div>
                         </TileItem>
-                        {!isFromDeploySummary && (
-                          <TileItem className="col-4 d-flex align-items-center">
-                            {item?.old_value || 'N/A'}
-                          </TileItem>
-                        )}
+                        <TileItem className="col-4">
+                          <div
+                            style={{
+                              backgroundColor: '#E9ECF1',
+                              borderRadius: '12px',
+                            }}
+                            className="p-2"
+                          >
+                            {oldValue || 'N/A'}
+                          </div>
+                        </TileItem>
                       </div>
                     </div>
                   );
@@ -154,6 +172,8 @@ const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
             </div>
           );
         })}
+
+        {/* No data condition - check the selected data source */}
         {isEmpty(data) && (
           <div className="d-flex flex-column align-items-center mt-5">
             <NoDataIcon width={130} />
@@ -164,8 +184,10 @@ const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
     </DataWrapper>
   );
 };
+
 DiffScheduleCS.propTypes = {
   isFromDeploySummary: PropTypes.bool,
   csData: PropTypes.array,
 };
+
 export default DiffScheduleCS;
