@@ -201,6 +201,36 @@ const DiffScheduleParameter = ({
     ? parametersData
     : scheduleDiffData?.diffParameters;
 
+  // Function to check if a parameter is sensitive
+  const isSensitiveParameter = parameterName => {
+    console.log(parameterName, 'asdfg');
+    const sensitiveKeywords = [
+      'password',
+      'secret',
+      'key',
+      'token',
+      'credential',
+      'auth',
+      'api_key',
+      'private',
+      'secure',
+    ];
+
+    return sensitiveKeywords.some(keyword =>
+      parameterName.toLowerCase().includes(keyword)
+    );
+  };
+
+  // Function to mask sensitive values
+  const maskSensitiveValue = (value, parameterName) => {
+    console.log(value, parameterName);
+
+    if (isSensitiveParameter(parameterName)) {
+      return '******';
+    }
+    return value;
+  };
+
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -221,19 +251,23 @@ const DiffScheduleParameter = ({
 
               {element?.parameters?.map(item => {
                 // Handle different data structures
-                const newValue =
+                const rawNewValue =
                   item?.new_value?.value === ''
                     ? 'Empty String Set'
                     : item?.new_value?.value === null
                       ? 'No Value set'
                       : item?.new_value?.value;
 
-                const oldValue =
+                const rawOldValue =
                   item?.old_value?.value === ''
                     ? 'Empty String Set'
                     : item?.old_value?.value === null
                       ? 'No Value set'
                       : item?.old_value?.value;
+
+                // Apply masking for sensitive parameters
+                const newValue = maskSensitiveValue(rawNewValue, item?.name);
+                const oldValue = maskSensitiveValue(rawOldValue, item?.name);
 
                 const newDescription = item?.new_value?.description;
                 const oldDescription = item?.old_value?.description;
@@ -245,7 +279,7 @@ const DiffScheduleParameter = ({
                     </ParameterHeader>
 
                     {/* Value row - same structure for both cases */}
-                    {(newValue || oldValue) && (
+                    {(rawNewValue || rawOldValue) && (
                       <ResponsiveRow className="mb-2">
                         <ColumnLabel className="d-flex align-items-center">
                           Value
