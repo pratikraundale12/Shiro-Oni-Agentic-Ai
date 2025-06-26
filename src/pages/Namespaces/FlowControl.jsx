@@ -45,7 +45,7 @@ const CustomNine = styled.div`
   }
 `;
 const ActiveButtonContainer = styled.div`
- row-gap: 8px;
+  row-gap: 8px;
   .text_info {
     border-left: 5px solid #ff7a00;
     padding: 1rem;
@@ -84,19 +84,19 @@ const TextsvgDiv = styled.div`
   display: flex;
   align-items: center;
 `;
-const IconsvgDiv = styled.div`
-`;
+const IconsvgDiv = styled.div``;
 const ActiveButtonDiv = styled.div`
-  /* height: 48px; */
-  /* width: 48px;
-  max-width: 48px; */
   width: 100%;
   gap: 12px;
   max-height: 48px;
   min-height: 48px;
   padding: 8px;
-  /* min-width: 48px; */
-  border: 1px solid #dde4f0;
+  border: 1px solid
+    ${({ className, activeColor }) => {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      return '#dde4f0';
+    }};
   border-radius: 8px;
   background-color: #f5f7fa;
   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
@@ -104,10 +104,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
 
   & span {
     position: absolute;
@@ -119,7 +115,6 @@ const ActiveButtonDiv = styled.div`
     line-height: 23px;
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
-
   svg path {
     fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
@@ -152,16 +147,16 @@ const IconCover = styled.div`
   justify-content: center;
   background-color: white;
   border-radius: 4px;
-  border: 1px solid #DDE4F0;
+  border: 1px solid #dde4f0;
 `;
 
-const TextDetails = styled.div` 
-font-weight: 700;
-font-size: 16px;
-line-height: 100%;
-text-transform: capitalize;
-color: #444445;
-margin-bottom: 25px;
+const TextDetails = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  text-transform: capitalize;
+  color: #444445;
+  margin-bottom: 25px;
 `;
 const FlowControl = () => {
   const dispatch = useDispatch();
@@ -251,15 +246,6 @@ const FlowControl = () => {
     dispatch(SchedularActions.setScheduleFromList(true));
     dispatch(NamespacesActions.setScheduleStartFlow(true));
     dispatch(NamespacesActions.setScheduleFlowType(type));
-    dispatch(NamespacesActions.setFlowPath(singleNamespaceData1?.flowId));
-    dispatch(
-      NamespacesActions.setSelectedNamespace({
-        label: singleNamespaceData1?.name,
-        value: singleNamespaceData1?.id,
-        ...singleNamespaceData1,
-      })
-    );
-    dispatch(NamespacesActions.setSelectedNameSpaceForDetail({}));
     dispatch(
       NamespacesActions.setVersionSelect({
         version: singleNamespaceData1?.version,
@@ -286,15 +272,14 @@ const FlowControl = () => {
       },
     });
   };
-  
 
   return (
     <DataWrapper>
       <FullPageLoader loading={loading} />
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        <IconsvgDiv className='row'>
+        <IconsvgDiv className="row">
           <CustomNine className="col-md-6 mb-3">
-            <TextDetails className='col-lg-12'>Processor Details</TextDetails>
+            <TextDetails className="col-lg-12">Processor Details</TextDetails>
             <ActiveButtonContainer className="row">
               <TextDiv className="col-lg-6">
                 <CountDiv
@@ -359,59 +344,61 @@ const FlowControl = () => {
               </TextDiv>
             </ActiveButtonContainer>
           </CustomNine>
-          <div className='col-md-6'>
-            <TextDetails className='col-lg-12'>Control Action</TextDetails>
+          <div className="col-md-6">
+            <TextDetails className="col-lg-12">Control Action</TextDetails>
             <ActiveButtonContainer className="row ">
-            {!(
-              sigleNamespaceData?.runningCount === 0 &&
-              sigleNamespaceData?.stoppedCount === 0
-            ) ? (
-              <>
-                {selectedNamespaceForDetail?.is_active_schedule === false || singleNamespaceData1?.is_active_schedule === false ? (
-                  <TextsvgDiv className="col-lg-6">
-                    <ActiveButtonDiv
-                      disabled={
-                        !canWrite ||
-                        (sigleNamespaceData?.runningCount > 0 &&
-                          sigleNamespaceData?.stoppedCount === 0)
-                      }
-                      className="div-btn-1"
-                      isActive={activeButton === 'RUNNING'}
-                      activeColor="#58e715"
-                      hoverColor="#58e715"
-                      activeTextColor="#fff"
-                      data-tooltip-id="runningProcessor"
-                      onClick={() => {
-                        if (
+              {!(
+                sigleNamespaceData?.runningCount === 0 &&
+                sigleNamespaceData?.stoppedCount === 0
+              ) ? (
+                <>
+                  {selectedNamespaceForDetail?.is_active_schedule === false ||
+                  singleNamespaceData1?.is_active_schedule === false ? (
+                    <TextsvgDiv className="col-lg-6">
+                      <ActiveButtonDiv
+                        disabled={
                           !canWrite ||
                           (sigleNamespaceData?.runningCount > 0 &&
                             sigleNamespaceData?.stoppedCount === 0)
-                        ) {
-                          return;
                         }
-                        handleUpdateStatus('RUNNING');
-                      }}
-                    >
-                      <IconCover><TriangleIcons color="#B5BDC8" /></IconCover>
-                       <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                    </ActiveButtonDiv>
-                  </TextsvgDiv>
-                ) : (
-                  <div className="text-message mb-3">
-                    The process group has been successfully deployed and is
-                    scheduled to start automatically at the specified date and
-                    time.
-                  </div>
-                )}
-                <TextsvgDiv className="col-lg-6">
-                  
+                        className="div-btn-1"
+                        isActive={activeButton === 'RUNNING'}
+                        activeColor="#58e715"
+                        hoverColor="#58e715"
+                        activeTextColor="#fff"
+                        data-tooltip-id="runningProcessor"
+                        onClick={() => {
+                          if (
+                            !canWrite ||
+                            (sigleNamespaceData?.runningCount > 0 &&
+                              sigleNamespaceData?.stoppedCount === 0)
+                          ) {
+                            return;
+                          }
+                          handleUpdateStatus('RUNNING');
+                        }}
+                      >
+                        <IconCover>
+                          <TriangleIcons color="#B5BDC8" />
+                        </IconCover>
+                        <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                      </ActiveButtonDiv>
+                    </TextsvgDiv>
+                  ) : (
+                    <div className="text-message mb-3">
+                      The process group has been successfully deployed and is
+                      scheduled to start automatically at the specified date and
+                      time.
+                    </div>
+                  )}
+                  <TextsvgDiv className="col-lg-6">
                     <ActiveButtonDiv
                       disabled={
                         !canWrite ||
                         (sigleNamespaceData?.runningCount === 0 &&
                           sigleNamespaceData?.stoppedCount > 0)
                       }
-                      className="div-btn-1"
+                      className="div-btn-2"
                       isActive={activeButton === 'STOPPED'}
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
@@ -433,48 +420,77 @@ const FlowControl = () => {
                       </IconCover>
                       <div>{KDFM.STOPPED_FLOW}</div>
                     </ActiveButtonDiv>
-                </TextsvgDiv>{' '}
+                  </TextsvgDiv>
+                </>
+              ) : (
+                <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
+              )}
+              <>
                 {singleNamespaceData1?.flowName && (
                   <>
-                  {(selectedNamespaceForDetail?.is_active_schedule === false || singleNamespaceData1?.is_active_schedule === false)
-                      && (
+                    {(selectedNamespaceForDetail?.is_active_schedule ===
+                      false ||
+                      singleNamespaceData1?.is_active_schedule === false) && (
                       <>
                         {/* Schedule Start Flow Button */}
                         <TextsvgDiv className="col-lg-6">
-                          
-                            <ActiveButtonDiv
-                              data-tooltip-id="scheduleStartFlow"
-                              onClick={() => handleScheduleFlow('RUNNING')}
-                            >
-                             <IconCover>
-                               <ScheduleStartIcon />
-                             </IconCover>
-                               <div className="mr-2">Schedule Start Flow</div>
-                            </ActiveButtonDiv>
+                          <ActiveButtonDiv
+                            className="div-btn-1"
+                            data-tooltip-id="scheduleStartFlow"
+                            onClick={
+                              !(
+                                !canWrite ||
+                                (sigleNamespaceData?.runningCount > 0 &&
+                                  sigleNamespaceData?.stoppedCount === 0)
+                              )
+                                ? () => handleScheduleFlow('RUNNING')
+                                : undefined
+                            }
+                            disabled={
+                              !canWrite ||
+                              (sigleNamespaceData?.runningCount > 0 &&
+                                sigleNamespaceData?.stoppedCount === 0)
+                            }
+                          >
+                            <IconCover>
+                              <ScheduleStartIcon />
+                            </IconCover>
+                            <div className="mr-2">Schedule Start Flow</div>
+                          </ActiveButtonDiv>
                         </TextsvgDiv>
 
                         {/* Schedule Stop Flow Button */}
                         <TextsvgDiv className="col-lg-6">
-                         
-                            <ActiveButtonDiv
-                              data-tooltip-id="scheduleStopFlow"
-                              onClick={() => handleScheduleFlow('STOPPED')}
-                            >
-                             <IconCover>
-                               <ScheduleStopIcon />
-                             </IconCover>
-                              <div>Schedule Stop Flow</div>
-                            </ActiveButtonDiv>
+                          <ActiveButtonDiv
+                            className="div-btn-2"
+                            data-tooltip-id="scheduleStopFlow"
+                            onClick={
+                              !(
+                                !canWrite ||
+                                (sigleNamespaceData?.runningCount === 0 &&
+                                  sigleNamespaceData?.stoppedCount > 0)
+                              )
+                                ? () => handleScheduleFlow('STOPPED')
+                                : undefined
+                            }
+                            disabled={
+                              !canWrite ||
+                              (sigleNamespaceData?.runningCount === 0 &&
+                                sigleNamespaceData?.stoppedCount > 0)
+                            }
+                          >
+                            <IconCover>
+                              <ScheduleStopIcon />
+                            </IconCover>
+                            <div>Schedule Stop Flow</div>
+                          </ActiveButtonDiv>
                         </TextsvgDiv>
                       </>
                     )}
                   </>
                 )}
               </>
-            ) : (
-              <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
-            )}
-          </ActiveButtonContainer>
+            </ActiveButtonContainer>
           </div>
         </IconsvgDiv>
         <ModalWithIcon

@@ -67,6 +67,7 @@ const StyledDateRangePickerInput = ({ value, handleChange, customRanges }) => {
           editable={false}
           showTime={false}
           format="MM/dd/yyyy"
+          disabledDate={date => date.getTime() > new Date().getTime()}
         />
       </ContainerRangePicker>
     </>

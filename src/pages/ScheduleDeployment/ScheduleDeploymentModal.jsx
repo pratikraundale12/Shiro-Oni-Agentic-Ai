@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
 
+import { toast } from 'react-toastify';
 import {
   CrossIcon,
   LinkIcon,
@@ -28,7 +29,6 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
-import { toast } from 'react-toastify';
 
 const Container = styled.div`
   height: 350px;
@@ -40,7 +40,12 @@ const ActiveButtonDiv = styled.div`
   max-height: 48px;
   min-height: 48px;
   min-width: 48px;
-  border: 1px solid #dde4f0;
+  border: 1px solid
+    ${({ className }) => {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      return '#dde4f0';
+    }};
   border-radius: 8px;
   background-color: #f5f7fa;
   cursor: pointer;
@@ -48,10 +53,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
 
   & span {
     position: absolute;
@@ -63,7 +64,6 @@ const ActiveButtonDiv = styled.div`
     line-height: 23px;
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
-
   svg path {
     fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
@@ -276,7 +276,7 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
                   <TextsvgDiv className="d-flex">
                     <ActiveButtonDiv className="div-btn-2 mr-2">
                       <ActiveButtonDiv
-                        className="div-btn-1"
+                        className="div-btn-2"
                         isActive={activeButton === 'STOPPED'}
                         activeColor="#c52b2b"
                         hoverColor="#c52b2b"
@@ -293,7 +293,7 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
                     <TextsvgDiv className="d-flex ml-4">
                       <ActiveButtonDiv className="div-btn-2 mr-2">
                         <ActiveButtonDiv
-                          className="div-btn-1"
+                          className="div-btn-2"
                           onClick={() => {
                             setActiveButton(null);
                           }}

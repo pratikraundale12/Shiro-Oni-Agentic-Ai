@@ -378,6 +378,12 @@ const LoginBtnContainer = styled.div`
     width: 89% !important;
   }
 `;
+
+const LogoImg = styled.img`
+  width: 160px;
+  height: 90px;
+  margin-bottom: 15px;
+`;
 export const Layout = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
@@ -528,7 +534,7 @@ export const Layout = ({ children }) => {
             {!image ? (
               <KsolvesDataFlowIcon width={160} height={110} />
             ) : (
-              <img src={image} alt="Logo" width={200} height={80} />
+              <LogoImg src={image} alt="Logo" />
             )}
             <UserBtnContainer>
               {(isUserLogin || isAdminLogin) && (
@@ -646,7 +652,7 @@ export const Layout = ({ children }) => {
                     Terms Of Use
                   </RedirectionText>
                 </PolicyContainer>
-                <LabelSelect>Version 2.1.20</LabelSelect>
+                <LabelSelect>Version 2.1.21</LabelSelect>
               </RightSection>
             ) : (
               <RightSectionreset>
@@ -676,7 +682,7 @@ export const Layout = ({ children }) => {
                     Terms Of Use
                   </RedirectionText>
                 </PolicyContainer>
-                <LabelSelect>Version 2.1.20</LabelSelect>
+                <LabelSelect>Version 2.1.21</LabelSelect>
               </RightSectionreset>
             )}
           </RightWrapper>

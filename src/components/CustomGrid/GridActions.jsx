@@ -233,6 +233,8 @@ export const GridActions = ({
   setSortingState,
   setCurrentPage,
   onItemsPerPageChange,
+  scheduleType,
+  setScheduleType,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -269,7 +271,6 @@ export const GridActions = ({
   const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const clusters = useSelector(ClustersSelectors.getAllClustersList);
-  const [scheduleType, setScheduleType] = useState(null);
 
   useEffect(() => {
     setIsButtonDisabled(isEmpty(selectedCluster?.value));

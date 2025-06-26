@@ -91,6 +91,7 @@ export const MODULE_LIST_MAP = [
   { label: 'Parameter Context', value: 'Parameter Context' },
   { label: 'Variable', value: 'Variable' },
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
+  { label: 'Local Changes', value: 'Local Changes' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -119,6 +120,10 @@ export const ACTIVITY_EVENTS = [
   { label: 'Approve', value: 'Approve' },
   { label: 'Enable', value: 'Enable' },
   { label: 'Disable', value: 'Disable' },
+  { label: 'Revert', value: 'Revert' },
+  { label: 'Schedule Stop', value: 'Schedule Stop' },
+  { label: 'Schedule Start', value: 'Schedule Start' },
+  { label: 'Sanity Check', value: 'Sanity Check' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },

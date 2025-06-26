@@ -144,6 +144,7 @@ export const Grid = ({
   const [clusterSelectedValue, setClusterSelectedValue] = useState(null);
   const [selectEvent, setSelectEvent] = useState(null);
   const [selectEntity, setSelectEntity] = useState(null);
+  const [scheduleType, setScheduleType] = useState(null);
 
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
@@ -281,6 +282,10 @@ export const Grid = ({
               clusterSelectedValue?.label !== 'All' && {
                 clusterName: clusterSelectedValue?.label,
               }),
+            ...(location?.pathname?.includes('schedule-deployment') &&
+              scheduleType?.value !== 'all' && {
+                type: scheduleType?.value,
+              }),
             ...(location?.pathname?.includes('activity-history') &&
               selectEvent?.value !== 'all' && {
                 event: selectEvent?.value,
@@ -326,6 +331,10 @@ export const Grid = ({
             clusterSelectedValue?.label !== 'All' && {
               clusterName: clusterSelectedValue?.label,
             }),
+          ...(location?.pathname?.includes('schedule-deployment') &&
+            scheduleType?.value !== 'all' && {
+              type: scheduleType?.value,
+            }),
           ...(location?.pathname?.includes('activity-history') &&
             selectEvent?.value !== 'all' && {
               event: selectEvent?.value,
@@ -368,6 +377,7 @@ export const Grid = ({
     selectEvent,
     selectEntity,
     itemsPerPage,
+    scheduleToken,
   ]);
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
@@ -465,6 +475,8 @@ export const Grid = ({
         setSortingState={setSortingState}
         setCurrentPage={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
+        scheduleType={scheduleType}
+        setScheduleType={setScheduleType}
       />
       {module === 'nodes' && !loading && (
         <>
@@ -590,4 +602,6 @@ Grid.propTypes = {
   state: PropTypes.object.isRequired,
   sortingState: PropTypes.string,
   setSortingState: PropTypes.func,
+  scheduleType: PropTypes.string,
+  setScheduleType: PropTypes.func,
 };

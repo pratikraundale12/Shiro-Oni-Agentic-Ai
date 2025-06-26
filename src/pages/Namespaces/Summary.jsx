@@ -193,16 +193,17 @@ const ActiveButtonContainer = styled.div`
 `;
 
 const ActiveButtonDiv = styled.div`
-  /* height: 48px; */
-  /* width: 48px;
-  max-width: 48px; */
   width: 100%;
   gap: 12px;
   max-height: 48px;
   min-height: 48px;
-   padding: 8px 60px 8px 8px;
-  /* min-width: 48px; */
-  border: 1px solid #dde4f0;
+  padding: 8px 60px 8px 8px;
+  border: 1px solid
+    ${({ className, activeColor }) => {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      return '#dde4f0';
+    }};
   border-radius: 8px;
   background-color: #f5f7fa;
   cursor: pointer;
@@ -210,10 +211,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
 
   & span {
     position: absolute;
@@ -226,11 +223,11 @@ const ActiveButtonDiv = styled.div`
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
 
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
-  }
   .div-btn-1.disabled {
     cursor: not-allowed;
+  }
+  svg path {
+    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
 `;
 const BottomButtonDiv = styled.div`
@@ -328,15 +325,15 @@ const IconCover = styled.div`
   justify-content: center;
   background-color: white;
   border-radius: 4px;
-  border: 1px solid #DDE4F0;
+  border: 1px solid #dde4f0;
 `;
-const TextDetails = styled.div` 
-font-weight: 700;
-font-size: 16px;
-line-height: 100%;
-text-transform: capitalize;
-color: #444445;
-margin-bottom: 25px;
+const TextDetails = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  text-transform: capitalize;
+  color: #444445;
+  margin-bottom: 25px;
 `;
 export const scheduleSchema = yup.object().shape({
   approver_ids: yup.array().required('Approver is required'),
@@ -1093,7 +1090,7 @@ const Summary = () => {
         namespaceId: checkDestCluster?.id,
         registryId: registryData?.id,
         bucketId: selectedNameSpace?.bucketId,
-        namespaceStatus: flowControlSelectedScheduleStored,
+        namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
         payload: {
           namespaceId: checkDestCluster?.value,
           oldVariablesData: orignalVariables,
@@ -1105,10 +1102,11 @@ const Summary = () => {
         previousVersion: selectedNameSpace?.version || 1,
         flowName: selectedNameSpace?.flowName,
         isScheduled: true,
-        mode: 'upgrade',
-        type: type,
+        mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
+        type: scheduleStartFlow ? scheduleflowtypeMethod : type,
         nameSpaceName: selectedNameSpace?.name,
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
+        revert_local_changes: shouldRevertChanges,
         position: {
           x: XcordUpdated || registryDetailsData?.positions[0]?.x,
           y: YcordUpdated || registryDetailsData?.positions[0]?.y,
@@ -1133,6 +1131,13 @@ const Summary = () => {
       ? 'stop'
       : scheduleFlowType === 'RUNNING'
         ? 'start'
+        : '';
+
+  const scheduleafterDeploy =
+    scheduleFlowType === 'STOPPED'
+      ? 'STOPPED'
+      : scheduleFlowType === 'RUNNING'
+        ? 'RUNNING'
         : '';
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
@@ -1294,6 +1299,146 @@ const Summary = () => {
   };
 
   const selectedFlowNameProvider = getSelectedFlowName();
+
+  // Helper to merge old and new variables for diff modal (only changed)
+  const getMergedVariablesData = (original, updated) => {
+    if (!original || !updated) return [];
+    const updatedMap = updated.reduce((acc, item) => {
+      acc[item.pgId] = item;
+      return acc;
+    }, {});
+    return original
+      .map(origPg => {
+        const updPg = updatedMap[origPg.pgId];
+        if (!updPg) return null;
+        // Map variable name to value for old and new
+        const updVarMap = (updPg.variables || []).reduce((acc, v) => {
+          acc[v.name] = v.value;
+          return acc;
+        }, {});
+        const origVarMap = (origPg.variables || []).reduce((acc, v) => {
+          acc[v.name] = v.value;
+          return acc;
+        }, {});
+        // Only include changed variables
+        const changedNames = Object.keys(updVarMap).filter(
+          name =>
+            origVarMap[name] !== undefined &&
+            updVarMap[name] !== origVarMap[name]
+        );
+        if (changedNames.length === 0) return null;
+        return {
+          pgId: origPg.pgId,
+          pgName: origPg.pgName,
+          variables: changedNames.map(name => ({
+            name,
+            old_value: origVarMap[name],
+            new_value: updVarMap[name],
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  // Helper to merge old and new parameters for diff modal (only changed)
+  const getMergedParametersData = (original, updated) => {
+    if (!original || !updated) return [];
+    return original
+      .map(origGroup => {
+        const updGroup = updated.find(
+          g => g.parameterName === origGroup.parameterName
+        );
+        if (!updGroup) return null;
+        // Map param name to value/desc for old and new
+        const updParamMap = (updGroup.parameters || []).reduce((acc, p) => {
+          acc[p.name] = { value: p.value, description: p.description };
+          return acc;
+        }, {});
+        const origParamMap = (origGroup.parameters || []).reduce((acc, p) => {
+          acc[p.name] = { value: p.value, description: p.description };
+          return acc;
+        }, {});
+        // Only include changed parameters
+        const changedNames = Object.keys(updParamMap).filter(name => {
+          const oldVal = origParamMap[name];
+          const newVal = updParamMap[name];
+          return (
+            oldVal &&
+            (oldVal.value !== newVal.value ||
+              oldVal.description !== newVal.description)
+          );
+        });
+        if (changedNames.length === 0) return null;
+        return {
+          parameterName: origGroup.parameterName,
+          parameters: changedNames.map(name => ({
+            name,
+            old_value: origParamMap[name],
+            new_value: updParamMap[name],
+            description:
+              updParamMap[name]?.description || origParamMap[name]?.description,
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  // Helper to merge old and new controller service properties for diff modal (only changed)
+  const getMergedControllerServicesData = (original, updated) => {
+    if (!original || !updated) return [];
+    // Flatten original to map by identifier
+    const origMap = (original || [])
+      .flatMap(item => item?.controllerData || [])
+      .reduce((acc, cs) => {
+        acc[cs.identifier] = cs;
+        return acc;
+      }, {});
+    return (updated || [])
+      .map(service => {
+        const orig = origMap[service.identifier];
+        if (!orig) return null;
+        // Map property name to value for old and new
+        const updPropMap = (service.properties || []).reduce((acc, p) => {
+          acc[p.name] = p.value;
+          return acc;
+        }, {});
+        const origPropMap = (orig.properties || []).reduce((acc, p) => {
+          acc[p.name] = p.value;
+          return acc;
+        }, {});
+        // Only include changed properties
+        const changedNames = Object.keys(updPropMap).filter(
+          name =>
+            origPropMap[name] !== undefined &&
+            updPropMap[name] !== origPropMap[name]
+        );
+        if (changedNames.length === 0) return null;
+        return {
+          identifier: service.identifier,
+          name: service.name,
+          properties: changedNames.map(name => ({
+            name,
+            old_value: origPropMap[name],
+            new_value: updPropMap[name],
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  const mergedVariablesData = getMergedVariablesData(
+    registryAllDetails?.variablesData,
+    variblesReduxData
+  );
+  const mergedParametersData = getMergedParametersData(
+    currentParametersData,
+    updatedParametersData
+  );
+  const mergedControllerServicesData = getMergedControllerServicesData(
+    registryAllDetails?.controllerServicesData?.localServices,
+    controllerServiceReduxData?.localServicesData
+  );
+
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -1470,7 +1615,7 @@ const Summary = () => {
                           {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {versionSelected.version || ''}
+                          {versionSelected?.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -1566,7 +1711,9 @@ const Summary = () => {
                             {KDFM.FLOW_STATE_AFTER_DEPLOY}
                           </SummaryDetailsHFourTag>
                           <SummaryDetailsPtag className="mb-0">
-                            {flowControlSelectedScheduleStored || 'N/A'}
+                            {scheduleStartFlow
+                              ? scheduleafterDeploy
+                              : flowControlSelectedScheduleStored || 'N/A'}
                           </SummaryDetailsPtag>
                         </div>
                       </UseColXl>
@@ -1630,7 +1777,9 @@ const Summary = () => {
                 !sanityCheckAfterDeploy && (
                   <CustomNine className="col-4 mb-3">
                     <ActiveButtonContainer className="d-flex ">
-                      <TextDetails className='col-lg-12'>Processor Details</TextDetails>
+                      <TextDetails className="col-lg-12">
+                        Processor Details
+                      </TextDetails>
                       <TextDiv className="d-flex">
                         <CountDiv
                           className="div-btn-1 mr-2"
@@ -1688,61 +1837,66 @@ const Summary = () => {
                 !scheduleUpgradeFromList &&
                 !sanityCheckAfterDeploy && (
                   <ActiveButtonContainer className="d-flex ">
-                    <TextDetails className='col-lg-12'>Control Action</TextDetails>
+                    <TextDetails className="col-lg-12">
+                      Control Action
+                    </TextDetails>
                     {!(
                       processStatus?.runningCount === 0 &&
                       processStatus?.stoppedCount === 0
                     ) ? (
                       <>
                         <TextsvgDiv className="d-flex">
-                         
-                            <ActiveButtonDiv
-                              className="div-btn-1"
-                              isActive={activeButton === 'RUNNING'}
-                              data-tooltip-id="runningProcessor"
-                              activeColor="#58e715"
-                              hoverColor="#58e715"
-                              activeTextColor="#fff"
-                              onClick={() => {
-                                handleUpdateStatus('RUNNING');
-                              }}
-                            >
-                            <IconCover><TriangleIcons color="#B5BDC8" /></IconCover>
-                               <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                            </ActiveButtonDiv>
+                          <ActiveButtonDiv
+                            className="div-btn-1"
+                            isActive={activeButton === 'RUNNING'}
+                            data-tooltip-id="runningProcessor"
+                            activeColor="#58e715"
+                            hoverColor="#58e715"
+                            activeTextColor="#fff"
+                            onClick={() => {
+                              handleUpdateStatus('RUNNING');
+                            }}
+                          >
+                            <IconCover>
+                              <TriangleIcons color="#B5BDC8" />
+                            </IconCover>
+                            <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                          </ActiveButtonDiv>
                         </TextsvgDiv>
                         <TextsvgDiv className="d-flex">
-                          
-                            <ActiveButtonDiv
-                              className="div-btn-2"
-                              isActive={activeButton === 'STOPPED'}
-                              activeColor="#c52b2b"
-                              hoverColor="#c52b2b"
-                              activeTextColor="#fff"
-                              data-tooltip-id="stoppedProcessor"
-                              onClick={() => {
-                                handleUpdateStatus('STOPPED');
-                              }}
-                            >
-                            <IconCover><SquareBoxIcon color="#B5BDC8" /></IconCover>
-                              <div>{KDFM.STOPPED_FLOW}</div>
-                            </ActiveButtonDiv>
+                          <ActiveButtonDiv
+                            className="div-btn-2"
+                            isActive={activeButton === 'STOPPED'}
+                            activeColor="#c52b2b"
+                            hoverColor="#c52b2b"
+                            activeTextColor="#fff"
+                            data-tooltip-id="stoppedProcessor"
+                            onClick={() => {
+                              handleUpdateStatus('STOPPED');
+                            }}
+                          >
+                            <IconCover>
+                              <SquareBoxIcon color="#B5BDC8" />
+                            </IconCover>
+                            <div>{KDFM.STOPPED_FLOW}</div>
+                          </ActiveButtonDiv>
                         </TextsvgDiv>
                         {activeButton && (
                           <TextsvgDiv className="d-flex">
-                              <ActiveButtonDiv
-                                className="div-btn-3"
-                                activeTextColor="#fff"
-                                onClick={() => {
-                                  setActiveButton(null);
-                                  setFlowControlState(null);
-                                }}
-                              >
-                              
-                              <IconCover>  <CrossIcon color="#B5BDC8" /> </IconCover>
+                            <ActiveButtonDiv
+                              className="div-btn-3"
+                              activeTextColor="#fff"
+                              onClick={() => {
+                                setActiveButton(null);
+                                setFlowControlState(null);
+                              }}
+                            >
+                              <IconCover>
+                                {' '}
+                                <CrossIcon color="#B5BDC8" />{' '}
+                              </IconCover>
                               <div>Reset Flow</div>
-                              </ActiveButtonDiv>
-                            
+                            </ActiveButtonDiv>
                           </TextsvgDiv>
                         )}
                       </>
@@ -1906,9 +2060,9 @@ const Summary = () => {
                 : checkDestCluster?.version || 'N/A'
             }`}
             isFromDeploySummary={true}
-            parametersData={newParametersData}
-            variablesData={variblesReduxData}
-            csData={updatedLocalCsPayloadOnDeploy}
+            parametersData={mergedParametersData}
+            variablesData={mergedVariablesData}
+            csData={mergedControllerServicesData}
           />
         )}
         <SanityCheckDeployModal />

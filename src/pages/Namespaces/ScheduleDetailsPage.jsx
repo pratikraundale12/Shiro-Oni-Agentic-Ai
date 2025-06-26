@@ -37,16 +37,17 @@ const ActiveButtonContainer = styled.div`
 `;
 
 const ActiveButtonDiv = styled.div`
-  /* height: 48px; */
-  /* width: 48px;
-  max-width: 48px; */
   width: 100%;
   gap: 12px;
   max-height: 48px;
   min-height: 48px;
   padding: 8px 60px 8px 8px;
-  /* min-width: 48px; */
-  border: 1px solid #dde4f0;
+  border: 1px solid
+    ${({ className }) => {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      return '#dde4f0';
+    }};
   border-radius: 8px;
   background-color: #f5f7fa;
   cursor: pointer;
@@ -54,10 +55,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
 
   & span {
     position: absolute;
@@ -69,7 +66,6 @@ const ActiveButtonDiv = styled.div`
     line-height: 23px;
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
-
   svg path {
     fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
@@ -183,6 +179,10 @@ const ScheduleDeploymentTab = ({
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+
+  const sigleNamespaceData = useSelector(
+    NamespacesSelectors.getFlowControlData
+  );
   const { control, reset } = useForm({});
 
   useEffect(() => {
@@ -244,40 +244,68 @@ const ScheduleDeploymentTab = ({
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-1 mr-2"
-                    count={selectedNameSpace?.runningCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.runningCount
+                        : selectedNameSpace?.runningCount || 0
+                    }
                     activeColor="#58e715"
                   >
                     <TriangleIcons color="#B5BDC8" />
-                    <span>{selectedNameSpace?.runningCount || 0}</span>
+                    <span>
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.runningCount
+                        : selectedNameSpace?.runningCount || 0}
+                    </span>
                   </CountDiv>
                   <div>{KDFM.RUNNING_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-2 mr-2"
-                    count={selectedNameSpace?.stoppedCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.stoppedCount
+                        : selectedNameSpace?.stoppedCount || 0
+                    }
                     activeColor="#c52b2b"
                   >
                     <SquareBoxIcon color="#B5BDC8" />
-                    <span>{selectedNameSpace?.stoppedCount || 0}</span>
+                    <span>
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.stoppedCount
+                        : selectedNameSpace?.stoppedCount || 0}
+                    </span>
                   </CountDiv>
                   <div>{KDFM.STOPPED_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-3 mr-2"
-                    count={selectedNameSpace?.invalidCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.invalidCount
+                        : selectedNameSpace?.invalidCount || 0
+                    }
                     activeColor="#CF9F5D"
                   >
                     <TriangleExclamationMarkIcon color="#B5BDC8" />
-                    <span>{selectedNameSpace?.invalidCount || 0}</span>
+                    <span>
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.invalidCount
+                        : selectedNameSpace?.invalidCount || 0}
+                    </span>
                   </CountDiv>
                   <div>{KDFM.INVALID_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-4 mr-2"
-                    count={selectedNameSpace?.disabledCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.disabledCount
+                        : selectedNameSpace?.disabledCount || 0
+                    }
                     activeColor="#2c7cf3"
                   >
                     <SmallNotThunderIcon
@@ -286,7 +314,9 @@ const ScheduleDeploymentTab = ({
                       color="#B5BDC8"
                     />
                     <StyledSpan>
-                      {selectedNameSpace?.disabledCount || 0}
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.disabledCount
+                        : selectedNameSpace?.disabledCount || 0}
                     </StyledSpan>
                   </CountDiv>
                   <div>{KDFM.DISABLED_PROCESSORS}</div>
@@ -296,7 +326,6 @@ const ScheduleDeploymentTab = ({
           )}
           {
             <ActiveButtonContainer className="d-flex ">
-              <TextDetails className="col-lg-12">Control Action</TextDetails>
               {!(
                 selectedNameSpace?.runningCount === 0 &&
                 selectedNameSpace?.stoppedCount === 0
@@ -305,6 +334,9 @@ const ScheduleDeploymentTab = ({
                   <>
                     {scheduleStartFlow === false && (
                       <>
+                        <TextDetails className="col-lg-12">
+                          Control Action
+                        </TextDetails>
                         {/* RUNNING Button */}
                         <TextsvgDiv className="d-flex align-items-center mb-2">
                           <ActiveButtonDiv
