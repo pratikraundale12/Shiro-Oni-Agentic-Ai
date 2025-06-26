@@ -19,6 +19,7 @@ import { history } from '../../helpers/history';
 import { InputField, Modal } from '../../shared';
 import {
   ClustersSelectors,
+  GridSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
@@ -154,6 +155,9 @@ export const ListNamespaces = () => {
   const getDeleteNamespaceDetails = useSelector(
     NamespacesSelectors.getDeleteNamespaceDetails
   );
+  const registryData = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
@@ -201,7 +205,14 @@ export const ListNamespaces = () => {
       });
     }
   }, [settingsData?.username, selectedClusterObj, parsedSelectedCluster]);
+
   const handleScheduleClick = item => {
+    if (isEmpty(registryData)) {
+      toast.error(
+        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
+      );
+      return;
+    }
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
   };
@@ -571,6 +582,12 @@ export const ListNamespaces = () => {
   ];
 
   const handleSelect = item => {
+    if (isEmpty(registryData)) {
+      toast.error(
+        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
+      );
+      return;
+    }
     dispatch(NamespacesActions.setFlowPath(item.flowId));
     dispatch(
       NamespacesActions.setSelectedNamespace({

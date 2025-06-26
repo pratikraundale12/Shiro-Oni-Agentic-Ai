@@ -63,6 +63,7 @@ import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../FullPageLoader';
+import { toast } from 'react-toastify';
 
 const Flex = styled.div`
   display: flex;
@@ -466,7 +467,16 @@ export const GridActions = ({
     }
   }, [gridPermissions]);
 
+   const registryData = useSelector(state =>
+      GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+    );
+    
+
   const handleClick = () => {
+    if(isEmpty(registryData)){
+      toast.error('Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration');
+      return;
+    }
     history.push('/process-group/DeployPage');
     dispatch(NamespacesActions.setdeployRegistryFlow(true));
   };
@@ -474,6 +484,10 @@ export const GridActions = ({
     LoadingSelectors.getLoading(state, 'fetchDashboard')
   );
   const handleScheduleClick = () => {
+    if(isEmpty(registryData)){
+      toast.error('Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration');
+      return;
+    }
     history.push('/process-group/DeployPage');
     dispatch(NamespacesActions.setdeployRegistryFlow(false));
     dispatch(NamespacesActions.setScheduleByRegistry(true));
