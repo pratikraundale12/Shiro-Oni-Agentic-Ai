@@ -258,7 +258,7 @@ export const EmailConfigurationSettings = () => {
         value.from_email !== settingData?.from_email ||
         value.smtp_service !== settingData?.smtp_service ||
         value.smtp_host !== settingData?.smtp_host ||
-        value.smtp_port !== settingData?.smtp_port ||
+        String(value.smtp_port) !== String(settingData?.smtp_port) ||
         value.smtp_user !== settingData?.smtp_user ||
         value.smtp_pass !== settingData?.smtp_pass;
       setIsChanged(isModified);
