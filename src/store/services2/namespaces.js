@@ -355,6 +355,9 @@ export const namespacesAPI = api => {
     return api.get(`/last-sanity-report/${namespaceId}`);
   };
 
+  const refreshControllerService = ({ clusterId, controllerId }) =>
+    api.get(`controller-services/${clusterId}/service/${controllerId}`);
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -398,5 +401,6 @@ export const namespacesAPI = api => {
     fetchSanityReportAuditLog,
     getDeleteNamespaceDetails,
     fetchLastSanityReport,
+    refreshControllerService,
   };
 };

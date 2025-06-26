@@ -255,6 +255,10 @@ export const NamespacesActions = {
   ),
   setScheduleStartFlow: createAction(`${prefix}setScheduleStartFlow`),
   setScheduleFlowType: createAction(`${prefix}setScheduleFlowType`),
+  refreshControllerService: createAction(`${prefix}refreshControllerService`),
+  refreshControllerServiceSuccess: createAction(
+    `${prefix}refreshControllerServiceSuccess`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -1205,6 +1209,13 @@ const fetchLastSanityReportSuccess = (state, { payload }) => {
   };
 };
 
+const refreshControllerServiceSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    refreshedControllerService: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1491,6 +1502,10 @@ export const namespacesReducer = createReducer(
         fetchLastSanityReportSuccess
       )
       .addCase(NamespacesActions.setScheduleStartFlow, setScheduleStartFlow)
-      .addCase(NamespacesActions.setScheduleFlowType, setScheduleFlowType);
+      .addCase(NamespacesActions.setScheduleFlowType, setScheduleFlowType)
+      .addCase(
+        NamespacesActions.refreshControllerServiceSuccess,
+        refreshControllerServiceSuccess
+      );
   }
 );
