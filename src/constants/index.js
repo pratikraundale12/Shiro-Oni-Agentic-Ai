@@ -30,6 +30,7 @@ export const Cluster_STATUS_OPTIONS = [
   { value: 'connected', label: 'Connected' },
   { value: 'disconnected', label: 'Disconnected' },
   { value: 'deactivated', label: 'Deactivated' },
+  { value: 'failed', label: 'Failed' },
 ];
 
 export const REFRESH_OPTIONS = [
