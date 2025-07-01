@@ -145,7 +145,6 @@ const EXCLUDE_ADD_PERMISSION = ['namespace', 'history', 'user'];
 const EXCLUDE_EDIT_PERMISSION = ['cluster', 'namespace', 'history', 'user'];
 const EXCLUDE_DELETE_PERMISSION = [
   'cluster',
-  'namespace',
   'permission',
   'ldap',
   'history',
@@ -213,6 +212,13 @@ export const ModuleAccess = () => {
       ['view_cluster', 'add_cluster'].includes(element?.name)
     );
 
+  const namespacePolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['view_namespace', 'delete_namespace'].includes(element?.name)
+    );
+
   const viewClusterPolicy =
     policies &&
     policies.length > 0 &&
@@ -267,6 +273,11 @@ export const ModuleAccess = () => {
     policies &&
     policies.length > 0 &&
     policies?.filter(element => ['view_ldap'].includes(element?.name));
+
+  const viewNamespacePolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element => ['view_namespace'].includes(element?.name));
 
   useEffect(() => {
     dispatch(RolesActions.setIsRoleListModalOpen(false));
@@ -395,12 +406,15 @@ export const ModuleAccess = () => {
     const clusterPolicies = ['add_cluster'];
     const ldapPolicies = ['add_ldap', 'edit_ldap'];
     const rolesPolicies = ['add_permission', 'edit_permission'];
+    const namespacePolicy = ['delete_namespace'];
     handlePolicyCheck(controllerPolicies, 'view_controller_services');
     handlePolicyCheck(userPolicies, 'view_user');
     handlePolicyCheck(clusterPolicies, 'view_cluster');
     handlePolicyCheck(ldapPolicies, 'view_ldap');
     handlePolicyCheck(rolesPolicies, 'view_permission');
+    handlePolicyCheck(namespacePolicy, 'view_namespace');
   };
+
   const handleChange = (checked, value) => {
     if (isEmpty(selectedRole)) {
       toast.error('Please select a role');
@@ -412,6 +426,7 @@ export const ModuleAccess = () => {
       [viewControllerServicePolicy?.[0]?.id]: controllerServicePolicy,
       [viewRoleandPermissionPolicy?.[0]?.id]: roleandPermissionPolicy,
       [viewldapPolicy?.[0]?.id]: ldapPolicy,
+      [viewNamespacePolicy?.[0]?.id]: namespacePolicy,
     };
 
     setUpdatedRolePolicies(prev => {

@@ -18,6 +18,7 @@ import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { InputField, Modal } from '../../shared';
 import {
+  AuthenticationSelectors,
   ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
@@ -158,6 +159,7 @@ export const ListNamespaces = () => {
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
@@ -535,22 +537,23 @@ export const ListNamespaces = () => {
               />
             </>
           )}
-          {item?.permissions?.canWrite && (
-            <button
-              onClick={e => handleDeleteClick(item, e)}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-              }}
-              data-tooltip-id={`tooltip-delete-${item.id}`}
-            >
-              <IconButton>
-                <DeleteSmallIcon width={14} height={14} />
-              </IconButton>
-            </button>
-          )}
+          {item?.permissions?.canWrite &&
+            currentUser?.permissions?.includes('delete_namespace') && (
+              <button
+                onClick={e => handleDeleteClick(item, e)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                }}
+                data-tooltip-id={`tooltip-delete-${item.id}`}
+              >
+                <IconButton>
+                  <DeleteSmallIcon width={14} height={14} />
+                </IconButton>
+              </button>
+            )}
           <ReactTooltip
             id={`tooltip-delete-${item.id}`}
             place="right"
