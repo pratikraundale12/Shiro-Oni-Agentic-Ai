@@ -13,11 +13,12 @@ import {
   NoDataIcon,
   PencilIcon,
   RefrenceIcon,
+  RefreshIcon,
   SettingSmallIcon,
   SmallSearchIcon,
   TriangleExclamationMarkIcon,
 } from '../../assets';
-import { FullPageLoader, Table, TextRender } from '../../components';
+import { FullPageLoader, Spinner, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { ModalWithIcon } from '../../shared';
 import {
@@ -544,6 +545,20 @@ const ControllerServiceTab = ({
     isStateChangeResponse,
     isNewlyAddedExternalServiceResponse,
   ]);
+  
+   const [refreshingRowId, setRefreshingRowId] = useState(null);
+
+    const handleRefreshClick = item => {
+      setRefreshingRowId(item?.controllerService[0]?.id);
+      const result = dispatch(
+        NamespacesActions.refreshControllerService({ controllerId: item?.controllerService[0]?.id })
+      );
+      if (result && typeof result.finally === 'function') {
+        result.finally(() => setRefreshingRowId(null));
+      } else {
+        setTimeout(() => setRefreshingRowId(null), 1000);
+      }
+    };
 
   const COLUMNS = [
     {
@@ -761,6 +776,24 @@ const ControllerServiceTab = ({
                   }}
                 />
               </>
+            )}
+
+ {(item?.state === 'ENABLING' || item?.state === 'DISABLING') && (
+              <button
+                className="border-0 bg-white ms-1"
+                onClick={event => {
+                  handleRefreshClick(item);
+                  event.currentTarget.blur();
+                }}
+                data-tooltip-id={'Delete'}
+                disabled={refreshingRowId === item.id}
+              >
+                {refreshingRowId === item.id ? (
+                  <Spinner size={20} color={theme.colors.primary} />
+                ) : (
+                  <RefreshIcon color="black" height="28" />
+                )}
+              </button>
             )}
 
             {/* Re-Configure Button */}
@@ -1059,6 +1092,23 @@ const ControllerServiceTab = ({
               </>
             )}
 
+ {(item?.state === 'ENABLING' || item?.state === 'DISABLING') && (
+              <button
+                className="border-0 bg-white ms-1"
+                onClick={event => {
+                  handleRefreshClick(item);
+                  event.currentTarget.blur();
+                }}
+                data-tooltip-id={'Delete'}
+                disabled={refreshingRowId === item.id}
+              >
+                {refreshingRowId === item.id ? (
+                  <Spinner size={20} color={theme.colors.primary} />
+                ) : (
+                  <RefreshIcon color="black" height="28" />
+                )}
+              </button>
+            )}
             {/* Re-Configure Button */}
             {item.updatedValue && !item?.configured && (
               <React.Fragment>

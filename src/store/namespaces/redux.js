@@ -515,6 +515,8 @@ export const NamespacesSelectors = {
   getScheduleStartFlow: state => state.namespaces.scheduleStartFlow,
   getScheduleFlowType: state => state.namespaces.scheduleFlowType,
   getLastSanityReportData: state => state.namespaces.lastSanityReportData,
+  getRefreshedControllerService: state =>
+    state.namespaces.refreshedControllerService,
 };
 
 /* ------------- REDUCERS ------------------- */

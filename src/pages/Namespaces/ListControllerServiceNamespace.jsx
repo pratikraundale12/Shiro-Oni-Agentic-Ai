@@ -10,11 +10,12 @@ import {
   FlashCutIcon,
   FlashIcon,
   RefrenceIcon,
+  RefreshIcon,
   SettingSmallIcon,
   SmallSearchIcon,
   TriangleExclamationMarkIcon,
 } from '../../assets';
-import { FullPageLoader, Table, TextRender } from '../../components';
+import { FullPageLoader, Spinner, Table, TextRender } from '../../components';
 import { ModalWithIcon, FieldErrorMessage } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -168,6 +169,7 @@ export const ListControllerService = () => {
   const [search, setSearch] = useState('');
   const [searchText, setSearchText] = useState('');
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
+  const [refreshingRowId, setRefreshingRowId] = useState(null);
   const filteredModulesData = listData?.filter(
     module =>
       module?.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -242,6 +244,17 @@ export const ListControllerService = () => {
   const permissions = singleNamespaceData?.permissions;
   const { canWrite } = permissions || {};
 
+  const handleRefreshClick = item => {
+    setRefreshingRowId(item.id);
+    const result = dispatch(
+      NamespacesActions.refreshControllerService({ controllerId: item?.id })
+    );
+    if (result && typeof result.finally === 'function') {
+      result.finally(() => setRefreshingRowId(null));
+    } else {
+      setTimeout(() => setRefreshingRowId(null), 1000);
+    }
+  };
   const COLUMNS = [
     {
       label: 'Name',
@@ -468,6 +481,23 @@ export const ListControllerService = () => {
                   </button>
                 </>
               )}
+            {(item?.state === 'ENABLING' || item?.state === 'DISABLING') && (
+              <button
+                className="border-0 bg-white ms-1"
+                onClick={event => {
+                  handleRefreshClick(item);
+                  event.currentTarget.blur();
+                }}
+                data-tooltip-id={'Delete'}
+                disabled={refreshingRowId === item.id}
+              >
+                {refreshingRowId === item.id ? (
+                  <Spinner size={20} color={theme.colors.primary} />
+                ) : (
+                  <RefreshIcon color="black" height="28" />
+                )}
+              </button>
+            )}
           </>
         );
       },

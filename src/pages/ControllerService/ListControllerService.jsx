@@ -16,7 +16,9 @@ import {
   TriangleExclamationMarkIcon,
 } from '../../assets';
 
-import { FullPageLoader, Table, TextRender } from '../../components';
+import { isEmpty } from 'lodash';
+import { FullPageLoader, Spinner, Table, TextRender } from '../../components';
+import { SEARCH_INPUT_ERROR } from '../../constants';
 import { Button, FieldErrorMessage, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -30,9 +32,6 @@ import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
-import { isEmpty } from 'lodash';
-import { SEARCH_INPUT_ERROR } from '../../constants';
-import { toast } from 'react-toastify';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -180,8 +179,6 @@ export const ListControllerService = () => {
   );
   const [isUserCanWrite, setIsUserCanWrite] = useState(listData?.[0]?.canWrite);
 
-  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-
   useEffect(() => {
     if (isEmpty(selectedCluster?.value)) {
       toast.info('Please login to cluster');
@@ -196,7 +193,8 @@ export const ListControllerService = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
-
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const [refreshingRowId, setRefreshingRowId] = useState(null);
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
     setIsEnableModalOpen(true);
@@ -238,6 +236,18 @@ export const ListControllerService = () => {
   const controllerPermissions = useSelector(
     AuthenticationSelectors.getPermissions
   );
+
+  const handleRefreshClick = item => {
+    setRefreshingRowId(item.id);
+    const result = dispatch(
+      NamespacesActions.refreshControllerService({ controllerId: item?.id })
+    );
+    if (result && typeof result.finally === 'function') {
+      result.finally(() => setRefreshingRowId(null));
+    } else {
+      setTimeout(() => setRefreshingRowId(null), 1000);
+    }
+  };
 
   const COLUMNS = [
     {
@@ -467,6 +477,24 @@ export const ListControllerService = () => {
                   />
                 </>
               )}
+
+            {(item?.state === 'ENABLING' || item?.state === 'DISABLING') && (
+              <button
+                className="border-0 bg-white ms-1"
+                onClick={event => {
+                  handleRefreshClick(item);
+                  event.currentTarget.blur();
+                }}
+                data-tooltip-id={'Delete'}
+                disabled={refreshingRowId === item.id}
+              >
+                {refreshingRowId === item.id ? (
+                  <Spinner size={20} color={theme.colors.primary} />
+                ) : (
+                  <RefreshIcon color="black" height="28" />
+                )}
+              </button>
+            )}
           </>
         );
       },
