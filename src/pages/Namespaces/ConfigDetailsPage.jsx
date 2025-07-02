@@ -352,7 +352,7 @@ const ConfigDetailsPage = () => {
           :
           <MainTitleHfour className="mb-0">
             {!isUpgrade
-              ? selectedNameSpace.label
+              ? selectedNameSpace?.label
               : formDataRegistry?.selectedFlowName}
           </MainTitleHfour>
         </MainTitleDiv>

@@ -18,7 +18,9 @@ import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { InputField, Modal } from '../../shared';
 import {
+  AuthenticationSelectors,
   ClustersSelectors,
+  GridSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
@@ -154,6 +156,10 @@ export const ListNamespaces = () => {
   const getDeleteNamespaceDetails = useSelector(
     NamespacesSelectors.getDeleteNamespaceDetails
   );
+  const registryData = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
@@ -201,7 +207,14 @@ export const ListNamespaces = () => {
       });
     }
   }, [settingsData?.username, selectedClusterObj, parsedSelectedCluster]);
+
   const handleScheduleClick = item => {
+    if (isEmpty(registryData)) {
+      toast.error(
+        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
+      );
+      return;
+    }
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
   };
@@ -524,22 +537,23 @@ export const ListNamespaces = () => {
               />
             </>
           )}
-          {item?.permissions?.canWrite && (
-            <button
-              onClick={e => handleDeleteClick(item, e)}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-              }}
-              data-tooltip-id={`tooltip-delete-${item.id}`}
-            >
-              <IconButton>
-                <DeleteSmallIcon width={14} height={14} />
-              </IconButton>
-            </button>
-          )}
+          {item?.permissions?.canWrite &&
+            currentUser?.permissions?.includes('delete_namespace') && (
+              <button
+                onClick={e => handleDeleteClick(item, e)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                }}
+                data-tooltip-id={`tooltip-delete-${item.id}`}
+              >
+                <IconButton>
+                  <DeleteSmallIcon width={14} height={14} />
+                </IconButton>
+              </button>
+            )}
           <ReactTooltip
             id={`tooltip-delete-${item.id}`}
             place="right"
@@ -571,6 +585,12 @@ export const ListNamespaces = () => {
   ];
 
   const handleSelect = item => {
+    if (isEmpty(registryData)) {
+      toast.error(
+        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
+      );
+      return;
+    }
     dispatch(NamespacesActions.setFlowPath(item.flowId));
     dispatch(
       NamespacesActions.setSelectedNamespace({
