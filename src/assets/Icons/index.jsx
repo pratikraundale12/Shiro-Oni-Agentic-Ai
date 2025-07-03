@@ -162,3 +162,4 @@ export * from './ScheduleStopIcon';
 export * from './ScheduleUpgrade';
 export * from './SccheduleDeployIcon';
 export * from './ScheduleDowngradeIcon';
+export * from './DownloadIcon';

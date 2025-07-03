@@ -9,6 +9,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { ActivityHistoryActions } from '../../store/activityHistory';
 import { useDispatch } from 'react-redux';
 import { InfoModalActivityHistory } from './InfoModal';
+import { StatusText } from '../ScheduleDeployment/StatusText';
 
 const ActionTd = styled.div`
   display: flex;
@@ -177,7 +178,8 @@ export const ActvityHistory = () => {
       width: '8%',
       resize: true,
       renderCell: item => (
-        <StatusRender status={item.status || KDFM.NA} redColor="#FF0000" />
+        // <StatusRender status={item.status || KDFM.NA} redColor="#FF0000" />
+        <StatusText text={item?.status?.replace(/_/g, ' ')} item={item} />
       ),
     },
     {
@@ -242,7 +244,7 @@ export const ActvityHistory = () => {
         title={KDFM.ACTIVITY_LIST}
         columns={COLUMNS}
         placeholder={KDFM.ACTIVITY_HISTORY_SEARCH_PLACEHOLDER}
-        statusOptions={ACTIVITY_STATUS_OPTIONS}
+        // statusOptions={ACTIVITY_STATUS_OPTIONS}
         sortFns={sortFns}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}

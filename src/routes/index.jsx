@@ -68,6 +68,7 @@ import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 import SummarySanityCheck from '../pages/Namespaces/SummarySanityCheck.jsx';
 import InvalidProcessorDetails from '../pages/Namespaces/InvalidProcessorDetails.jsx';
+// import DeploymentStatistics from '../pages/Dashboard/DeploymentStatistics.jsx';
 
 export const ROUTES_MENU = [
   {

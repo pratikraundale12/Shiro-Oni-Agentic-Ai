@@ -3,11 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-
 import { FullPageLoader, Table } from '../../components';
 import { SelectField } from '../../shared';
 import { theme } from '../../styles';
 import { FlowMetrics, InsightContainer } from './components';
+import DeploymentStatistics from './DeploymentStatistics';
+import { toast } from 'react-toastify';
 
 import {
   ActiveThreadIcon,
@@ -41,12 +42,6 @@ const TopSection = styled.div`
   gap: 20px;
 `;
 
-const QuickInsightHeading = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
 const QuickInsightHeadingText = styled.h4`
   font-family: Noto Sans;
   font-size: 20px;
@@ -60,7 +55,7 @@ const QuickInsightHeadingText = styled.h4`
 
 const InsightIconContiner = styled.div`
   padding-top: 5px;
-  margin-bottom: 0.5rem;
+  /* margin-bottom: 0.5rem; */
   display: flex;
   align-items: start;
   gap: 16px;
@@ -207,6 +202,44 @@ const RefreshIocn = styled.div`
   border-radius: 4px;
 `;
 
+const TabsContainer = styled.div`
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+`;
+const TabWrapper = styled.div`
+  display: flex;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(221, 228, 240, 1);
+  flex-wrap: nowrap;
+  align-items: center;
+  min-width: max-content;
+`;
+const Tab = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s;
+  font: Red Hat Display;
+  font-weight: 600;
+  font-size: 16px;
+  color: ${props =>
+    props.active ? 'rgba(255, 122, 0, 1)' : 'rgba(68, 68, 69, 1)'};
+  border-color: ${props =>
+    props.active ? 'rgba(255, 122, 0, 1)' : 'transparent'};
+  &:hover {
+    color: rgba(255, 122, 0, 1);
+  }
+`;
+
 export const Dashboard = () => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
@@ -217,6 +250,7 @@ export const Dashboard = () => {
     LoadingSelectors.getLoading(state, 'fetchDashboard')
   );
   const [updatedErrors, setUpdatedErrors] = useState([]);
+  const [activeTab, setActiveTab] = useState('QuickInsights');
   // const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
 
   const COLUMNS = [
@@ -327,158 +361,197 @@ export const Dashboard = () => {
   };
   let ClusterActivated = localStorage.getItem('clusters');
 
+  const handleDeploymentStatisticsClick = () => {
+    if (!selectedCluster?.value) {
+      toast.error('Please login to your cluster first');
+      return;
+    }
+    setActiveTab('DeploymentStatistics');
+  };
+
   return (
     <>
       <Loader loading={loading} />
-      <TopSection>
-        <QuickInsightHeading>
-          <InsightIconContiner>
-            <LensIcon />
-          </InsightIconContiner>
-          <QuickInsightHeadingText>Quick Insights</QuickInsightHeadingText>
-        </QuickInsightHeading>
-        <DropdownWrapper>
-          <DropdownContainer
-            disabled={!ClusterActivated}
-            style={{
-              cursor:
-                selectedCluster?.value && !isEmpty(selectedCluster?.value)
-                  ? 'pointer'
-                  : 'not-allowed',
-            }}
-          >
-            <SelectField
-              options={
-                Array.isArray(namespaces)
-                  ? [
-                      ClusterActivated ? { value: '', label: 'All' } : [],
-                      ...namespaces
-                        .filter(space => !space.isProcessor)
-                        .map(({ id, name }) => ({
-                          value: id,
-                          label: name,
-                        })),
-                    ]
-                  : []
-              }
-              onChange={onNamespaceSelect}
-              placeholder="Select Process Group" // TODO: change it to Process Group
-              title="Select Process Group"
-              backgroundColor={theme.colors.lightGrey}
-              size="sm"
-              disabled={!selectedCluster?.value}
-            />
-          </DropdownContainer>
-          <RefreshIocn
-            onClick={handleRefresh}
-            data-tooltip-id={`tooltip-group-dashboard-refresh`}
-            style={{
-              cursor:
-                selectedCluster?.value && !isEmpty(selectedCluster?.value)
-                  ? 'pointer'
-                  : 'not-allowed',
-            }}
-          >
-            {' '}
-            <RefreshIcon
-              style={{
-                cursor:
-                  selectedCluster?.value && !isEmpty(selectedCluster?.value)
-                    ? 'pointer'
-                    : 'not-allowed',
+      <TabsContainer>
+        <TabWrapper className="justify-content-between w-100">
+          <div className="d-flex align-items-center">
+            <Tab
+              active={activeTab === 'QuickInsights'}
+              onClick={() => {
+                setActiveTab('QuickInsights');
               }}
+            >
+              <InsightIconContiner>
+                <LensIcon />
+              </InsightIconContiner>
+              <QuickInsightHeadingText>Quick Insights</QuickInsightHeadingText>
+            </Tab>
+            <Tab
+              active={activeTab === 'DeploymentStatistics'}
+              onClick={handleDeploymentStatisticsClick}
+            >
+              <InsightIconContiner>
+                <LensIcon />
+              </InsightIconContiner>
+              <QuickInsightHeadingText>
+                Deployment Statistics
+              </QuickInsightHeadingText>
+            </Tab>
+          </div>
+          <TopSection>
+            <DropdownWrapper>
+              {activeTab === 'QuickInsights' && (
+                <DropdownContainer
+                  disabled={!ClusterActivated}
+                  style={{
+                    cursor:
+                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                        ? 'pointer'
+                        : 'not-allowed',
+                  }}
+                >
+                  <SelectField
+                    options={
+                      Array.isArray(namespaces)
+                        ? [
+                            ClusterActivated ? { value: '', label: 'All' } : [],
+                            ...namespaces
+                              .filter(space => !space.isProcessor)
+                              .map(({ id, name }) => ({
+                                value: id,
+                                label: name,
+                              })),
+                          ]
+                        : []
+                    }
+                    onChange={onNamespaceSelect}
+                    placeholder="Select Process Group" // TODO: change it to Process Group
+                    title="Select Process Group"
+                    backgroundColor={theme.colors.lightGrey}
+                    size="sm"
+                    disabled={!selectedCluster?.value}
+                  />
+                </DropdownContainer>
+              )}
+              <RefreshIocn
+                onClick={handleRefresh}
+                data-tooltip-id={`tooltip-group-dashboard-refresh`}
+                style={{
+                  cursor:
+                    selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                      ? 'pointer'
+                      : 'not-allowed',
+                }}
+              >
+                {' '}
+                <RefreshIcon
+                  style={{
+                    cursor:
+                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                        ? 'pointer'
+                        : 'not-allowed',
+                  }}
+                />
+              </RefreshIocn>
+              <ReactTooltip
+                id={`tooltip-group-dashboard-refresh`}
+                place="left"
+                content={
+                  selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                    ? 'Refresh'
+                    : 'Login to Cluster'
+                }
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </DropdownWrapper>
+          </TopSection>
+        </TabWrapper>
+      </TabsContainer>
+      {activeTab === 'QuickInsights' && (
+        <>
+          <InsightDataContiner>
+            <InsightContainer
+              backgroundCss="#F1F5FF"
+              icon={TotalProcessorIcon}
+              count={dashboardData?.total_processors || '0'}
+              text="Total Processors"
+              selectedNamespace={selectedNamespace}
             />
-          </RefreshIocn>
-          <ReactTooltip
-            id={`tooltip-group-dashboard-refresh`}
-            place="left"
-            content={
-              selectedCluster?.value && !isEmpty(selectedCluster?.value)
-                ? 'Refresh'
-                : 'Login to Cluster'
-            }
-            style={{
-              width: 'auto',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
-        </DropdownWrapper>
-      </TopSection>
-      <InsightDataContiner>
-        <InsightContainer
-          backgroundCss="#F1F5FF"
-          icon={TotalProcessorIcon}
-          count={dashboardData?.total_processors || '0'}
-          text="Total Processors"
-          selectedNamespace={selectedNamespace}
-        />
-        <InsightContainer
-          backgroundCss="#FEFBEC"
-          icon={RunningProcessorIcon}
-          count={dashboardData?.running_processors || '0'}
-          text="Running Processors"
-          selectedNamespace={selectedNamespace}
-        />
+            <InsightContainer
+              backgroundCss="#FEFBEC"
+              icon={RunningProcessorIcon}
+              count={dashboardData?.running_processors || '0'}
+              text="Running Processors"
+              selectedNamespace={selectedNamespace}
+            />
 
-        <InsightContainer
-          backgroundCss="#EEF9FB"
-          icon={StoppedProcessorIcon}
-          count={dashboardData?.stopped_processors || '0'}
-          text="Stopped Processors"
-          selectedNamespace={selectedNamespace}
-        />
-        <InsightContainer
-          backgroundCss="#FDF3FC"
-          icon={DisabledProcessorIcon}
-          count={dashboardData?.disabled_processors || '0'}
-          text="Disabled Processors"
-          selectedNamespace={selectedNamespace}
-        />
-        <InsightContainer
-          backgroundCss="#FFF7ED"
-          icon={InvalidProcessorIcon}
-          count={dashboardData?.invalid_count || '0'}
-          text="Invalid Processors"
-          selectedNamespace={selectedNamespace}
-        />
-        <InsightContainer
-          backgroundCss="#F0F0F2"
-          icon={ActiveThreadIcon}
-          count={dashboardData?.active_thread_count || '0'}
-          text="Active Threads"
-          selectedNamespace={selectedNamespace}
-        />
-        <InsightContainer
-          backgroundCss="#EEF8FF"
-          icon={TotalQuedIcon}
-          count={dashboardData?.queued_size || '0 MB'}
-          text="Total Queued"
-          selectedNamespace={selectedNamespace}
-        />
-        <InsightContainer
-          backgroundCss="#EEF0F4"
-          icon={FlowFiledQuedIcon}
-          count={dashboardData?.flow_files_queued || '0'}
-          text="Flow Files Queued"
-          selectedNamespace={selectedNamespace}
-        />
-      </InsightDataContiner>
-      <FlowMetricContainer>
-        <FlowMetricHeader>
-          <FlowMetricHeaderIcon />
-          <HeaderText>Flow Metrics</HeaderText>
-        </FlowMetricHeader>
-        <FlowMetrics
-          flowMetricsDataDynamic={dashboardData?.flowMetrixYData || [0, 0, 0]}
-        />
-      </FlowMetricContainer>
-      <ErrorsHeader>
-        <ErrorIcon />
+            <InsightContainer
+              backgroundCss="#EEF9FB"
+              icon={StoppedProcessorIcon}
+              count={dashboardData?.stopped_processors || '0'}
+              text="Stopped Processors"
+              selectedNamespace={selectedNamespace}
+            />
+            <InsightContainer
+              backgroundCss="#FDF3FC"
+              icon={DisabledProcessorIcon}
+              count={dashboardData?.disabled_processors || '0'}
+              text="Disabled Processors"
+              selectedNamespace={selectedNamespace}
+            />
+            <InsightContainer
+              backgroundCss="#FFF7ED"
+              icon={InvalidProcessorIcon}
+              count={dashboardData?.invalid_count || '0'}
+              text="Invalid Processors"
+              selectedNamespace={selectedNamespace}
+            />
+            <InsightContainer
+              backgroundCss="#F0F0F2"
+              icon={ActiveThreadIcon}
+              count={dashboardData?.active_thread_count || '0'}
+              text="Active Threads"
+              selectedNamespace={selectedNamespace}
+            />
+            <InsightContainer
+              backgroundCss="#EEF8FF"
+              icon={TotalQuedIcon}
+              count={dashboardData?.queued_size || '0 MB'}
+              text="Total Queued"
+              selectedNamespace={selectedNamespace}
+            />
+            <InsightContainer
+              backgroundCss="#EEF0F4"
+              icon={FlowFiledQuedIcon}
+              count={dashboardData?.flow_files_queued || '0'}
+              text="Flow Files Queued"
+              selectedNamespace={selectedNamespace}
+            />
+          </InsightDataContiner>
+          <FlowMetricContainer>
+            <FlowMetricHeader>
+              <FlowMetricHeaderIcon />
+              <HeaderText>Flow Metrics</HeaderText>
+            </FlowMetricHeader>
+            <FlowMetrics
+              flowMetricsDataDynamic={
+                dashboardData?.flowMetrixYData || [0, 0, 0]
+              }
+            />
+          </FlowMetricContainer>
+          <ErrorsHeader>
+            <ErrorIcon />
 
-        <HeaderText>Errors</HeaderText>
-      </ErrorsHeader>
-      <StyledTable data={updatedErrors || []} columns={COLUMNS} />
+            <HeaderText>Errors</HeaderText>
+          </ErrorsHeader>
+          <StyledTable data={updatedErrors || []} columns={COLUMNS} />
+        </>
+      )}
+      {activeTab === 'DeploymentStatistics' && <DeploymentStatistics />}
     </>
   );
 };

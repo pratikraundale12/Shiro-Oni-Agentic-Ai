@@ -21,6 +21,8 @@ const statusColors = {
   'STOPPED WITH ERRORS': 'red',
   REJECTED: 'red',
   'TIME LAPSED': '#F2891F',
+  Success: '#0cbf59',
+  Failed: 'red',
 };
 
 const StatusTexts = styled.div`
@@ -60,12 +62,12 @@ export const StatusText = ({ text = '', item }) => {
     <>
       <StatusTexts
         color={color}
-        data-tooltip-id={item?.state || 'status-tooltip'}
+        data-tooltip-id={item?.state || item?.status || 'status-tooltip'}
       >
         {displayText}
       </StatusTexts>
       <ReactTooltip
-        id={item?.state || 'status-tooltip'}
+        id={item?.state || item?.status || 'status-tooltip'}
         content={formatText(item?.state || text)}
         place="left"
       />

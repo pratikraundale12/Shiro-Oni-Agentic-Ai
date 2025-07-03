@@ -29,11 +29,28 @@ export function* fetchActivityHistory(api) {
   });
 }
 
+export function* fetchEmailReportSaga(api, action) {
+  const queryParams = action.payload?.queryParams || {};
+
+  yield call(requestSaga, {
+    errorSection: 'fetchEmailReport',
+    loadingSection: 'fetchEmailReport',
+    apiMethod: api.fetchEmailReport,
+    apiParams: [{ queryParams }],
+    successAction: ActivityHistoryActions.fetchEmailReportSuccess,
+  });
+}
+
 export function* activityHistorySagas(api) {
   yield all([
     takeLatest(
       ActivityHistoryActions.fetchActivityHistory,
       fetchActivityHistory,
+      api
+    ),
+    takeLatest(
+      ActivityHistoryActions.fetchEmailReport,
+      fetchEmailReportSaga,
       api
     ),
   ]);
