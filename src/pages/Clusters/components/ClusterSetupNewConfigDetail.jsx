@@ -511,6 +511,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
         logback_xml: allNifiProperties?.logback_xml,
         loginProvider: 'single-user-provider',
         nifiVersion: nifiVersion,
+        directory: './state/local',
+        partitions: 16,
+        root_node: '/nifi',
+        session_timeout: '10 seconds',
+        checkpoint_interval: '2 mins',
         ...nifiPropertiesDefaultValues,
       });
     }
@@ -878,30 +883,15 @@ const ClusterSetupNewConfigDetailsPage = () => {
   }, [dispatch]);
 
   const onError = errors => {
-    if (
-      errors?.nifi_cluster_node_protocol_max_threads ||
-      errors?.nifi_web_https_port ||
-      errors?.nifi_cluster_node_protocol_port ||
-      errors?.nifi_cluster_load_balance_port ||
-      errors?.nifi_administrative_yield_duration ||
-      errors?.nifi_analytics_connection_model_implementation ||
-      errors?.nifi_zookeeper_connect_string ||
-      errors?.nifi_cluster_node_address ||
-      errors?.nifi_cluster_load_balance_host ||
-      errors?.nifi_remote_input_host ||
-      errors?.nifi_remote_input_http_transaction_ttl ||
-      errors?.nifi_remote_input_secure ||
-      errors?.nifi_remote_input_socket_port ||
-      errors?.nifi_cluster_flow_election_max_wait_time ||
-      errors?.nifi_cluster_is_node ||
-      errors?.nifi_security_truststore ||
-      errors?.nifi_security_truststoreType ||
-      errors?.nifi_security_user_authorizer ||
-      errors?.nifi_security_user_login_identity_provider ||
-      errors?.nifi_security_keystoreType ||
-      errors?.nifi_web_https_host ||
-      errors?.nifi_web_proxy_host
-    ) {
+    const mandatoryFields = allNifiProperties?.nifi_properties?.filter(
+      ele =>
+        (ele?.type === 'string' || ele?.type === 'number') &&
+        ele?.required === 'true'
+    );
+    const hasAnyError = (fieldsArray, errors) => {
+      return fieldsArray.some(field => errors?.[field.name]);
+    };
+    if (hasAnyError(mandatoryFields, errors)) {
       setSelectedProperty('nifi_properties');
       return;
     }

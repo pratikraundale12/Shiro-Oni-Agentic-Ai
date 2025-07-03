@@ -40,52 +40,13 @@ const NifiConfigTabFieldsContainer = ({
               name={input.name}
               type="text"
               placeholder={input.placeholder}
-              required={input.required}
+              required={input.required === 'true'}
               register={register}
               errors={errors}
               icon={<NotePadIcon />}
             />
           </div>
         ))}
-        {/* {inputObject.map((input, index) => (
-          <div className="col-6" key={index}>
-            <InputField
-              label={input.label}
-              name={input.name}
-              type="text"
-              placeholder={input.placeholder}
-              required={input.required}
-              register={register}
-              errors={errors}
-              icon={input.icon}
-            />
-          </div>
-        ))} */}
-        {/* {passwordObject.map((password, index) => (
-          <div className="col-6" key={index}>
-            <PasswordField
-              label={password.label}
-              name={password.name}
-              placeholder={password.placeholder}
-              required={password.required}
-              register={register}
-              errors={errors}
-              icon={password.icon}
-              watch={watch}
-            />
-          </div>
-        ))}
-        {radioObjectArray?.map(radio => (
-          <div className="col-5" key={radio?.name}>
-            <RadioSelectField
-              name={radio?.name}
-              options={TRUE_FALSE_OPTIONS}
-              label={radio?.label}
-              register={register}
-              defaultValue={'false'}
-            />
-          </div>
-        ))} */}
         {inputBooleanFields?.map(radio => (
           <div className="col-5" key={radio?.name}>
             <RadioSelectField
