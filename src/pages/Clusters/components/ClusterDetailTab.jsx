@@ -324,6 +324,12 @@ const ClusterDetailTab = ({
       width: '45%',
     },
     {
+      label: 'Host',
+      renderCell: item => <>{item?.host_name || 'N/A'}</>,
+      resize: true,
+      width: '10%',
+    },
+    {
       label: 'Port No.',
       renderCell: item => <>{item?.port}</>,
       resize: true,
@@ -333,7 +339,7 @@ const ClusterDetailTab = ({
       label: 'Username',
       renderCell: item => <>{item?.username}</>,
       resize: true,
-      width: '25%',
+      width: '15%',
     },
     {
       label: 'Status',

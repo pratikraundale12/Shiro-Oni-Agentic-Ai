@@ -110,6 +110,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
       setValue('host_ip', hostToEdit?.host_ip);
       setValue('port', hostToEdit?.port);
       setValue('username', hostToEdit?.username);
+      setValue('hostName', hostToEdit?.host_name);
     }
   }, [hostToEdit]);
   const watchMethodCredentials = watch('methodForCredentials');
