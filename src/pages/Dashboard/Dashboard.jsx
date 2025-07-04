@@ -4,14 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { FullPageLoader, Table } from '../../components';
-import { SelectField } from '../../shared';
+import { DateRangePickerInput, SelectField } from '../../shared';
 import { theme } from '../../styles';
 import { FlowMetrics, InsightContainer } from './components';
 import DeploymentStatistics from './DeploymentStatistics';
 import { toast } from 'react-toastify';
+import { subHours, isAfter } from 'date-fns';
 
 import {
   ActiveThreadIcon,
+  DeploymentStaticsIcon,
   DisabledProcessorIcon,
   ErrorIcon,
   FlowFiledQuedIcon,
@@ -158,7 +160,7 @@ const DropdownContainer = styled.div`
 `;
 const DropdownWrapper = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 20px;
   @media (max-width: 1040px) {
     width: 100%;
   }
@@ -232,7 +234,7 @@ const Tab = styled.div`
   font-weight: 600;
   font-size: 16px;
   color: ${props =>
-    props.active ? 'rgba(255, 122, 0, 1)' : 'rgba(68, 68, 69, 1)'};
+    props.active ? 'rgb(255, 122, 0)' : 'rgba(68, 68, 69, 1)'};
   border-color: ${props =>
     props.active ? 'rgba(255, 122, 0, 1)' : 'transparent'};
   &:hover {
@@ -244,6 +246,7 @@ export const Dashboard = () => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedNamespace, setSelectedNamespace] = useState(null);
+  const [selectedRange, setSelectedRange] = useState(null); // Add selectedRange state
   const namespaces = useSelector(NamespacesSelectors.getNamespaces);
   const dashboardData = useSelector(DashboardSelectors.getDashboardData);
   const loading = useSelector(state =>
@@ -251,7 +254,31 @@ export const Dashboard = () => {
   );
   const [updatedErrors, setUpdatedErrors] = useState([]);
   const [activeTab, setActiveTab] = useState('QuickInsights');
-  // const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
+
+  const now = new Date();
+
+  const customRanges = [
+    {
+      label: 'Last 1 hour',
+      value: [subHours(now, 1), now],
+      placement: 'left',
+    },
+    {
+      label: 'Last 7 Days',
+      value: [subHours(now, 24 * 7), now],
+      placement: 'left',
+    },
+    {
+      label: 'Last Month',
+      value: [subHours(now, 24 * 30), now],
+      placement: 'left',
+    },
+    {
+      label: 'Last 6 Months',
+      value: [subHours(now, 24 * 30 * 6), now],
+      placement: 'left',
+    },
+  ];
 
   const COLUMNS = [
     {
@@ -313,6 +340,33 @@ export const Dashboard = () => {
   const onNamespaceSelect = selectedItem => {
     setSelectedNamespace(selectedItem);
   };
+
+  const handleDateRangeChange = dateRange => {
+    if (dateRange && dateRange.length === 2) {
+      const [startDate, endDate] = dateRange;
+      const now = new Date();
+
+      if (isAfter(startDate, now) || isAfter(endDate, now)) {
+        toast.error(
+          'Future dates are not allowed. Please select a date range up to now.'
+        );
+        return;
+      }
+
+      setSelectedRange(dateRange);
+
+      if (!isEmpty(selectedCluster)) {
+        dispatch(
+          DashboardActions.fetchDashboard({
+            payload: { selectedNamespace, dateRange },
+          })
+        );
+      }
+    } else {
+      setSelectedRange(null);
+    }
+  };
+
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {
       const payload = {
@@ -348,6 +402,7 @@ export const Dashboard = () => {
       setUpdatedErrors(updatedError);
     }
   }, [dashboardData]);
+
   const handleRefresh = () => {
     if (selectedCluster && selectedNamespace) {
       dispatch(
@@ -359,6 +414,7 @@ export const Dashboard = () => {
       dispatch(DashboardActions.fetchDashboard());
     }
   };
+
   let ClusterActivated = localStorage.getItem('clusters');
 
   const handleDeploymentStatisticsClick = () => {
@@ -377,27 +433,35 @@ export const Dashboard = () => {
           <div className="d-flex align-items-center">
             <Tab
               active={activeTab === 'QuickInsights'}
-              onClick={() => {
-                setActiveTab('QuickInsights');
-              }}
+              onClick={() => setActiveTab('QuickInsights')}
             >
-              <InsightIconContiner>
-                <LensIcon />
+              <InsightIconContiner active={activeTab === 'QuickInsights'}>
+                <LensIcon
+                  color={activeTab === 'QuickInsights' ? '#f0701a' : '#6c757d'}
+                />
               </InsightIconContiner>
               <QuickInsightHeadingText>Quick Insights</QuickInsightHeadingText>
             </Tab>
+
             <Tab
               active={activeTab === 'DeploymentStatistics'}
               onClick={handleDeploymentStatisticsClick}
             >
-              <InsightIconContiner>
-                <LensIcon />
+              <InsightIconContiner
+                active={activeTab === 'DeploymentStatistics'}
+              >
+                <DeploymentStaticsIcon
+                  color={
+                    activeTab === 'DeploymentStatistics' ? '#f0701a' : '#6c757d'
+                  }
+                />
               </InsightIconContiner>
               <QuickInsightHeadingText>
                 Deployment Statistics
               </QuickInsightHeadingText>
             </Tab>
           </div>
+
           <TopSection>
             <DropdownWrapper>
               {activeTab === 'QuickInsights' && (
@@ -425,13 +489,23 @@ export const Dashboard = () => {
                         : []
                     }
                     onChange={onNamespaceSelect}
-                    placeholder="Select Process Group" // TODO: change it to Process Group
+                    placeholder="Select Process Group"
                     title="Select Process Group"
                     backgroundColor={theme.colors.lightGrey}
                     size="sm"
                     disabled={!selectedCluster?.value}
                   />
                 </DropdownContainer>
+              )}
+              {activeTab === 'DeploymentStatistics' && (
+                <DateRangePickerInput
+                  value={selectedRange}
+                  handleChange={handleDateRangeChange}
+                  customRanges={customRanges}
+                  showTime={{ format: 'hh:mm A' }}
+                  format="YYYY-MM-DD hh:mm A"
+                  placeholder={['Start Time', 'End Time']}
+                />
               )}
               <RefreshIocn
                 onClick={handleRefresh}
@@ -551,7 +625,9 @@ export const Dashboard = () => {
           <StyledTable data={updatedErrors || []} columns={COLUMNS} />
         </>
       )}
-      {activeTab === 'DeploymentStatistics' && <DeploymentStatistics />}
+      {activeTab === 'DeploymentStatistics' && (
+        <DeploymentStatistics selectedRange={selectedRange} />
+      )}
     </>
   );
 };

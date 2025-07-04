@@ -3,6 +3,7 @@ import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
 import { ActivityHistoryActions, ActivityHistorySelectors } from './redux';
+import { toast } from 'react-toastify';
 
 export function* fetchActivityHistory(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -32,13 +33,18 @@ export function* fetchActivityHistory(api) {
 export function* fetchEmailReportSaga(api, action) {
   const queryParams = action.payload?.queryParams || {};
 
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'fetchEmailReport',
     loadingSection: 'fetchEmailReport',
     apiMethod: api.fetchEmailReport,
     apiParams: [{ queryParams }],
     successAction: ActivityHistoryActions.fetchEmailReportSuccess,
   });
+  if (response?.error) {
+    toast.error('Failed to fetch email report.');
+  } else {
+    toast.success('Email report fetched successfully!');
+  }
 }
 
 export function* activityHistorySagas(api) {

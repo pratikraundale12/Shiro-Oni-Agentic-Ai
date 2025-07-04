@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Bar,
   BarChart,
@@ -23,6 +23,9 @@ import {
   TotalQuedIcon,
 } from '../../assets';
 import { DeploymentInsightContainer } from './components/DeploymentInsightContainer';
+import { DashboardActions, DashboardSelectors } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { FullPageLoader } from '../../components';
 
 // Styled container for insight cards
 const InsightDataContainer = styled.div`
@@ -98,74 +101,109 @@ CustomDeploymentTooltip.propTypes = {
 };
 
 // Main Component
-const DeploymentStatistics = () => {
+const DeploymentStatistics = ({ selectedRange }) => {
+  const dispatch = useDispatch();
+
+  const deploymentMetrics = useSelector(
+    DashboardSelectors.getDeploymentMetrics
+  );
+  const dataMetrics = deploymentMetrics?.result;
+  console.log(deploymentMetrics, 'deploymentMetrics');
+
+  useEffect(() => {
+    dispatch(
+      DashboardActions.fetchDeploymentMetrics({
+        ...(selectedRange &&
+          selectedRange[0] &&
+          selectedRange[1] && {
+            start_date: selectedRange[0].toISOString(),
+            end_date: selectedRange[1].toISOString(),
+          }),
+      })
+    );
+  }, [dispatch, selectedRange]);
+
   const deploymentStats = [
-    { name: 'Deployed', success: 200, error: 50 },
-    { name: 'Downgraded', success: 4, error: 74 },
-    { name: 'Upgraded', success: 85, error: 36 },
-    { name: 'Failed', error: 37 },
+    {
+      name: 'Deployed',
+      success: dataMetrics?.deployed || 0,
+      error: dataMetrics?.deployed_with_error || 0,
+    },
+    {
+      name: 'Downgraded',
+      success: dataMetrics?.downgraded || 0,
+      error: dataMetrics?.downgraded_with_errors || 0,
+    },
+    {
+      name: 'Upgraded',
+      success: dataMetrics?.upgraded || 0,
+      error: dataMetrics?.upgraded_with_errors || 0,
+    },
+    {
+      name: 'Failed',
+      success: 0,
+      error: dataMetrics?.failed || 0,
+    },
   ];
 
   const successFailureData = [
     {
       name: 'Rates',
-      successRate: 25,
-      failureRate: 8,
+      successRate: dataMetrics?.successRate,
+      failureRate: dataMetrics?.failureRate,
     },
   ];
 
   // Flow count vs CR number data for line chart
-  const flowCrData = [
-    { crCount: 10, crNumber: 101 },
-    { crCount: 20, crNumber: 104 },
-    { crCount: 30, crNumber: 109 },
-    { crCount: 40, crNumber: 115 },
-    { crCount: 50, crNumber: 122 },
-  ];
+  const flowCrData = deploymentMetrics?.changeRequestData?.map(item => ({
+    crCount: item?.totalCount || 0,
+    crNumber: Number(item.changeRequest),
+  }));
 
   return (
     <div>
+      <FullPageLoader />
       <InsightDataContainer>
         <DeploymentInsightContainer
           backgroundCss="#F1F5FF"
           icon={TotalProcessorIcon}
-          count="200"
+          count={dataMetrics?.deployed || 0}
           text="Deployed"
         />
         <DeploymentInsightContainer
           backgroundCss="#FEFBEC"
           icon={RunningProcessorIcon}
-          count="3"
+          count={dataMetrics?.deployed_with_error || 0}
           text="Deployed with Errors"
         />
         <DeploymentInsightContainer
           backgroundCss="#EEF9FB"
           icon={StoppedProcessorIcon}
-          count="4"
+          count={dataMetrics?.downgraded || 0}
           text="Downgraded"
         />
         <DeploymentInsightContainer
           backgroundCss="#FDF3FC"
           icon={DisabledProcessorIcon}
-          count="4"
+          count={dataMetrics?.downgraded_with_errors || 0}
           text="Downgraded with Errors"
         />
         <DeploymentInsightContainer
           backgroundCss="#FFF7ED"
           icon={InvalidProcessorIcon}
-          count="5"
+          count={dataMetrics?.upgraded || 0}
           text="Upgraded"
         />
         <DeploymentInsightContainer
           backgroundCss="#F0F0F2"
           icon={ActiveThreadIcon}
-          count="6"
+          count={dataMetrics?.upgraded_with_errors || 0}
           text="Upgraded with Errors"
         />
         <DeploymentInsightContainer
           backgroundCss="#EEF8FF"
           icon={TotalQuedIcon}
-          count="7"
+          count={dataMetrics?.failed || 0}
           text="Failed"
         />
       </InsightDataContainer>
@@ -180,8 +218,8 @@ const DeploymentStatistics = () => {
               <YAxis allowDecimals={false} />
               <Tooltip content={<CustomDeploymentTooltip />} />
               <Legend />
-              <Bar dataKey="success" name="Successful Count" fill="#4CAF50" />
-              <Bar dataKey="error" name="Error Count" fill="#F44336" />
+              <Bar dataKey="success" name="Deployments" fill="#2dff7b" />
+              <Bar dataKey="error" name="Failed" fill="#ff6d7f" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -198,7 +236,7 @@ const DeploymentStatistics = () => {
               <Bar
                 dataKey="successRate"
                 name="Success Rate"
-                fill="#4CAF50"
+                fill="#2dff7b"
                 barSize={40}
                 isAnimationActive={false}
                 label={{ position: 'top', formatter: value => `${value}%` }}
@@ -206,7 +244,7 @@ const DeploymentStatistics = () => {
               <Bar
                 dataKey="failureRate"
                 name="Failure Rate"
-                fill="#F44336"
+                fill="#ff6d7f"
                 barSize={40}
                 isAnimationActive={false}
                 label={{ position: 'top', formatter: value => `${value}%` }}
@@ -216,31 +254,23 @@ const DeploymentStatistics = () => {
         </div>
       </div>
 
-      {/* New Line Chart for Flow Count vs CR Number */}
+      {/* New Line Chart for Change Request Count vs CR Number */}
       <div style={{ width: '100%', height: 300, marginTop: 40 }}>
         <ResponsiveContainer>
           <LineChart data={flowCrData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="crCount"
-              label={{
-                value: 'Flow Count',
-                position: 'insideBottom',
-                offset: -5,
-              }}
+            <XAxis dataKey="crNumber" />
+            <YAxis dataKey="crCount" allowDecimals={false} />
+            <Tooltip
+              formatter={value => [`${value}`, 'Total Count']}
+              labelFormatter={label => `Change Request Number: ${label}`}
             />
-            <YAxis
-              dataKey="crNumber"
-              label={{ value: 'CR Number', angle: -90, position: 'insideLeft' }}
-              allowDecimals={false}
-            />
-            <Tooltip />
             <Legend />
             <Line
               type="monotone"
-              dataKey="crNumber"
-              name="CR Number"
-              stroke="#2196F3"
+              dataKey="crCount"
+              name="Change Request Graph"
+              stroke="#E4842B"
               activeDot={{ r: 8 }}
             />
           </LineChart>
@@ -248,6 +278,10 @@ const DeploymentStatistics = () => {
       </div>
     </div>
   );
+};
+
+DeploymentStatistics.propTypes = {
+  selectedRange: PropTypes.any, // Change 'any' to the appropriate type if known
 };
 
 export default DeploymentStatistics;

@@ -163,3 +163,4 @@ export * from './ScheduleUpgrade';
 export * from './SccheduleDeployIcon';
 export * from './ScheduleDowngradeIcon';
 export * from './DownloadIcon';
+export * from './DeploymentStaticsIcon';
