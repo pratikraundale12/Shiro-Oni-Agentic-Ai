@@ -60,7 +60,48 @@ const ButtonDiv = styled.div`
   gap: 1rem;
 `;
 
-export const settingSchema = yup.object().shape({});
+export const settingSchema = yup
+  .object()
+  .shape({
+    username: yup
+      .string()
+      .nullable()
+      .transform(value => (value === '' ? null : value))
+      .test(
+        'not-empty',
+        'Username cannot be an empty',
+        value => value === null || value.trim().length > 0
+      ),
+
+    password: yup
+      .string()
+      .transform(value => (value === '' ? null : value))
+      .nullable()
+      .test(
+        'not-empty',
+        'Password cannot be an empty',
+        value => value === null || value.trim().length > 0
+      ),
+  })
+  .test(
+    'username-password-pair',
+    'If one of username or password is filled, the other is required.',
+    function (value) {
+      const { username, password } = value || {};
+      const hasUsername = !!username;
+      const hasPassword = !!password;
+
+      if ((hasUsername && !hasPassword) || (!hasUsername && hasPassword)) {
+        return this.createError({
+          path: !hasPassword ? 'password' : 'username',
+          message: 'Both username and password must be filled together',
+        });
+      }
+
+      return true;
+    }
+  );
+
 export const ServiceAccountSettings = () => {
   const {
     handleSubmit,
@@ -74,7 +115,18 @@ export const ServiceAccountSettings = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
-
+  const username = watch('username');
+  const password = watch('password');
+  useEffect(() => {
+    if (username === '') {
+      setValue('username', null);
+    }
+  }, [username, setValue]);
+  useEffect(() => {
+    if (password === '') {
+      setValue('password', null);
+    }
+  }, [password, setValue]);
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
@@ -132,12 +184,12 @@ export const ServiceAccountSettings = () => {
   }, [settingData, setValue, dispatch]);
 
   useEffect(() => {
-    const subscription = watch(value => {
+    const subscription = watch(currentValues => {
+      const normalize = val => (val === '' ? null : val);
       const isModified =
-        value.username !== settingData?.username ||
-        value.password !== settingData?.password ||
-        value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh);
+        normalize(currentValues.username) !== settingData?.username ||
+        normalize(currentValues.password) !== settingData?.password;
+
       setIsChanged(isModified);
     });
 
@@ -178,12 +230,10 @@ export const ServiceAccountSettings = () => {
                 register={register}
                 errors={errors}
                 icon={<CurvedProfileIcon height={24} width={24} />}
-                required
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
               <PasswordField
-                required
                 name="password"
                 register={register}
                 errors={errors}
