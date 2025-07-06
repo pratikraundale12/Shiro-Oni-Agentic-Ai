@@ -14,18 +14,19 @@ import {
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import {
-  ActiveThreadIcon,
-  DisabledProcessorIcon,
-  InvalidProcessorIcon,
-  RunningProcessorIcon,
-  StoppedProcessorIcon,
-  TotalProcessorIcon,
-  TotalQuedIcon,
+  DeployedIcon,
+  DeployedWithErrorIcon,
+  DownGradeIcon,
+  DowngradeWithErrorIcon,
+  FailureIcon,
+  UpgradeIcon,
+  UpgradeWithErrorIcon,
 } from '../../assets';
 import { DeploymentInsightContainer } from './components/DeploymentInsightContainer';
 import { DashboardActions, DashboardSelectors } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { FullPageLoader } from '../../components';
+import { isEmpty } from 'lodash';
 
 // Styled container for insight cards
 const InsightDataContainer = styled.div`
@@ -166,43 +167,43 @@ const DeploymentStatistics = ({ selectedRange }) => {
       <InsightDataContainer>
         <DeploymentInsightContainer
           backgroundCss="#F1F5FF"
-          icon={TotalProcessorIcon}
+          icon={DeployedIcon}
           count={dataMetrics?.deployed || 0}
           text="Deployed"
         />
         <DeploymentInsightContainer
           backgroundCss="#FEFBEC"
-          icon={RunningProcessorIcon}
+          icon={DeployedWithErrorIcon}
           count={dataMetrics?.deployed_with_error || 0}
           text="Deployed with Errors"
         />
         <DeploymentInsightContainer
           backgroundCss="#EEF9FB"
-          icon={StoppedProcessorIcon}
+          icon={DownGradeIcon}
           count={dataMetrics?.downgraded || 0}
           text="Downgraded"
         />
         <DeploymentInsightContainer
           backgroundCss="#FDF3FC"
-          icon={DisabledProcessorIcon}
+          icon={DowngradeWithErrorIcon}
           count={dataMetrics?.downgraded_with_errors || 0}
           text="Downgraded with Errors"
         />
         <DeploymentInsightContainer
           backgroundCss="#FFF7ED"
-          icon={InvalidProcessorIcon}
+          icon={UpgradeIcon}
           count={dataMetrics?.upgraded || 0}
           text="Upgraded"
         />
         <DeploymentInsightContainer
           backgroundCss="#F0F0F2"
-          icon={ActiveThreadIcon}
+          icon={UpgradeWithErrorIcon}
           count={dataMetrics?.upgraded_with_errors || 0}
           text="Upgraded with Errors"
         />
         <DeploymentInsightContainer
           backgroundCss="#EEF8FF"
-          icon={TotalQuedIcon}
+          icon={FailureIcon}
           count={dataMetrics?.failed || 0}
           text="Failed"
         />
@@ -254,28 +255,30 @@ const DeploymentStatistics = ({ selectedRange }) => {
         </div>
       </div>
 
-      {/* New Line Chart for Change Request Count vs CR Number */}
-      <div style={{ width: '100%', height: 300, marginTop: 40 }}>
-        <ResponsiveContainer>
-          <LineChart data={flowCrData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="crNumber" />
-            <YAxis dataKey="crCount" allowDecimals={false} />
-            <Tooltip
-              formatter={value => [`${value}`, 'Total Count']}
-              labelFormatter={label => `Change Request Number: ${label}`}
-            />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="crCount"
-              name="Change Request Graph"
-              stroke="#E4842B"
-              activeDot={{ r: 8 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      {!isEmpty(deploymentMetrics?.changeRequestData) && (
+        // New Line Chart for Change Request Count vs CR Number
+        <div style={{ width: '100%', height: 300, marginTop: 40 }}>
+          <ResponsiveContainer>
+            <LineChart data={flowCrData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="crNumber" />
+              <YAxis dataKey="crCount" allowDecimals={false} />
+              <Tooltip
+                formatter={value => [`${value}`, 'Total Count']}
+                labelFormatter={label => `Change Request Number: ${label}`}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="crCount"
+                name="Change Request Graph"
+                stroke="#E4842B"
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 };
