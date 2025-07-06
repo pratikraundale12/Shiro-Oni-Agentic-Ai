@@ -14,7 +14,7 @@ const statusColors = {
   'N/A': '#b5b5bd',
   CANCELLED: 'red',
   FAILED: 'red',
-  'DEPLOYED WITH ERROR': 'red',
+  'DEPLOYED WITH ERRORS': 'red',
   'UPGRADED WITH ERRORS': 'red',
   'DOWNGRADED WITH ERRORS': 'red',
   'STARTED WITH ERRORS': 'red',

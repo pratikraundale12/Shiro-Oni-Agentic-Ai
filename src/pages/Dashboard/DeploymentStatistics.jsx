@@ -155,10 +155,9 @@ const DeploymentStatistics = ({ selectedRange }) => {
     },
   ];
 
-  // Flow count vs CR number data for line chart
   const flowCrData = deploymentMetrics?.changeRequestData?.map(item => ({
     crCount: item?.totalCount || 0,
-    crNumber: Number(item.changeRequest),
+    crNumber: String(item.changeRequest), // Always treat as string
   }));
 
   return (
