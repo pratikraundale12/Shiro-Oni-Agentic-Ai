@@ -1,15 +1,16 @@
 /*eslint-disable*/
 import React, { useState } from 'react';
 import { OpenEyeIcon, SortDownIcon, SortUpIcon } from '../../assets';
-import { Grid, IconButton, StatusRender, TextRender } from '../../components';
+import { Grid, IconButton, StatusRender, Table, TextRender } from '../../components';
 import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 import styled from 'styled-components';
 import { theme } from '../../styles';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { ActivityHistoryActions } from '../../store/activityHistory';
-import { useDispatch } from 'react-redux';
+import { ActivityHistoryActions, ActivityHistorySelectors } from '../../store/activityHistory';
+import { useDispatch, useSelector } from 'react-redux';
 import { InfoModalActivityHistory } from './InfoModal';
 import { StatusText } from '../ScheduleDeployment/StatusText';
+import { Modal } from '../../shared';
 
 const ActionTd = styled.div`
   display: flex;
@@ -22,6 +23,11 @@ export const ActvityHistory = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('');
+    const [isDownloadModalOpen, setDownloadModalOpen] = useState(false);
+
+    const downLoadReport = useSelector(ActivityHistorySelectors.getDownloadReportData);
+
+    
   const toggleSorting = column => {
     setSortingState(prevState =>
       prevState === column ? `-${column}` : column
@@ -223,6 +229,40 @@ export const ActvityHistory = () => {
     },
   ];
 
+     const COLUMNS_ONE = [
+    {
+      label: 'Event',
+      renderCell: item => item?.filters?.event || 'N/A',
+      width: '20%',
+      resize: true,
+    },
+    {
+      label: 'Entity',
+      renderCell: item => item?.filters?.entity || 'N/A',
+      width: '20%',
+      resize: true,
+    },
+    {
+      label: 'Status',
+      renderCell: item =>item?.filters?.status || 'N/A',
+      width: '20%',
+      resize: true,
+    },
+    {
+      label: 'Created By',
+      renderCell: item => item?.user_name || 'N/A',
+      width: '20%',
+      resize: true,
+    },
+    {
+      label: 'Created At',
+      renderCell: item =>convertDateTime(item?.created_at || 'N/A'),
+      width: '20%',
+      resize: true,
+    },
+  ];
+
+
   const sortFns = {
     namespace: data =>
       data.sort((a, b) =>
@@ -235,6 +275,7 @@ export const ActvityHistory = () => {
         (a, b) => new Date(a?.timestamp || 0) - new Date(b?.timestamp || 0)
       ),
   };
+  
 
   return (
     <>
@@ -250,7 +291,27 @@ export const ActvityHistory = () => {
         setCurrentPage={setCurrentPage}
         sortingState={sortingState}
         setSortingState={setSortingState}
+        setDownloadModalOpen={setDownloadModalOpen}
+        isDownloadModalOpen={isDownloadModalOpen}
       />
+       {/* === Download Modal === */}
+                  <Modal
+                    title="Download Report"
+                    isOpen={isDownloadModalOpen}
+                    onRequestClose={() => setDownloadModalOpen(false)}
+                    size="lg"
+                    secondaryButtonText="Cancel"
+                    onSubmit={() => {
+                      console.log('Downloading...');
+                      setDownloadModalOpen(false);
+                    }}
+                    footerAlign="start"
+                    contentStyles={{ minWidth: '80%', minHeight: '80%' }}
+                  >
+                    <div>
+                      <Table data={downLoadReport} columns={COLUMNS_ONE} className={'customTable'} />
+                    </div>
+                  </Modal>
     </>
   );
 };

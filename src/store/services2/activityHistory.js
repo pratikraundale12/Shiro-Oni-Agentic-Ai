@@ -4,11 +4,21 @@ export const activityHistoryAPI = api => {
   };
 
   const fetchEmailReport = ({ queryParams = {} }) => {
-    return api.post('/audit/email-report', { params: queryParams });
+    const queryString = new URLSearchParams(queryParams).toString();
+    const url = queryString
+      ? `/audit/email-report?${queryString}`
+      : '/audit/email-report';
+
+    return api.post(url);
+  };
+
+  const fetchDownloadReport = () => {
+    return api.get('/audit/downloads');
   };
 
   return {
     fetchActivityHistory,
     fetchEmailReport,
+    fetchDownloadReport,
   };
 };

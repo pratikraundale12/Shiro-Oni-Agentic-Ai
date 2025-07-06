@@ -241,6 +241,8 @@ export const GridActions = ({
   setScheduleType,
   selectStatus,
   setSelectStatus,
+  isDownloadModalOpen,
+  setDownloadModalOpen,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -716,10 +718,28 @@ export const GridActions = ({
 
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
+    const handleExportReport = () => {
+      dispatch(
+        ActivityHistoryActions.fetchEmailReport({
+          queryParams: {
+            status: selectStatus.map(status => status.value).join(','),
+            event: selectEvent.map(event => event.value).join(','),
+            entity: selectEntity.map(entity => entity.value).join(','),
+          },
+        })
+      );
+    };
+  
+    const loading = useSelector(state =>
+      LoadingSelectors.getLoading(state, 'fetchEmailReport')
+    );
+
+
   return (
     <>
       <Flex className="flex-wrap gap-2">
         <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
+        <FullPageLoader loading={loading} />
         <Flex>
           <ImageContainer>
             <TodoIcon width={22} height={24} />
@@ -856,6 +876,22 @@ export const GridActions = ({
           )}
           {module === 'activityHistory' && (
             <>
+             <div className="d-flex align-items-center gap-2">
+                          <div>
+                            <Button
+                              onClick={() => {
+                                setDownloadModalOpen(true);
+                                
+                                dispatch(ActivityHistoryActions.fetchDownloadReport());
+                              }}
+                            >
+                              Download
+                            </Button>
+                          </div>
+                          <div>
+                            <Button onClick={handleExportReport}>Export Report</Button>
+                          </div>
+                        </div>
               <div>
                 <MultiSelectField
                   name="activityStatus"

@@ -15,6 +15,10 @@ export const ActivityHistoryActions = {
   setIsInfoModalOpen: createAction(`${prefix}setIsInfoModalOpen`),
   fetchEmailReport: createAction(`${prefix}fetchEmailReport`),
   fetchEmailReportSuccess: createAction(`${prefix}fetchEmailReportSuccess`),
+  fetchDownloadReport: createAction(`${prefix}fetchDownloadReport`),
+  fetchDownloadReportSuccess: createAction(
+    `${prefix}fetchDownloadReportSuccess`
+  ),
 };
 
 /* ------------- Initial State ------------------ */
@@ -24,6 +28,7 @@ export const ACTIVITY_HISTORY_INITIAL_STATE = {
   selectedItem: null,
   isInfoModalOpen: false,
   emailReportData: [],
+  downloadReportData: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -33,6 +38,7 @@ export const ActivityHistorySelectors = {
   getSelectedItem: state => state.activityHistory.selectedItem,
   getIsInfoModalOpen: state => state.activityHistory.isInfoModalOpen,
   getEmailReportData: state => state.activityHistory.emailReportData,
+  getDownloadReportData: state => state.activityHistory.downloadReportData,
 };
 
 /* ------------- Reducers ------------------ */
@@ -74,6 +80,14 @@ const fetchEmailReportSuccess = (state, { payload }) => {
     emailReportData: payload?.data || [],
   };
 };
+
+const fetchDownloadReportSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    downloadReportData: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const activityHistoryReducer = createReducer(
   ACTIVITY_HISTORY_INITIAL_STATE,
@@ -90,6 +104,10 @@ export const activityHistoryReducer = createReducer(
       .addCase(
         ActivityHistoryActions.fetchEmailReportSuccess,
         fetchEmailReportSuccess
+      )
+      .addCase(
+        ActivityHistoryActions.fetchDownloadReportSuccess,
+        fetchDownloadReportSuccess
       );
   }
 );

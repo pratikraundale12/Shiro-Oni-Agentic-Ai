@@ -1,4 +1,4 @@
-import { all, call, select, takeLatest } from 'redux-saga/effects';
+import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
@@ -47,6 +47,27 @@ export function* fetchEmailReportSaga(api, action) {
   }
 }
 
+export function* fetchDownloadReportSaga(api, action) {
+  const queryParams = action.payload?.queryParams || {};
+
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchDownloadReport',
+    loadingSection: 'fetchDownloadReport',
+    apiMethod: api.fetchDownloadReport,
+    apiParams: [{ queryParams }],
+    successAction: ActivityHistoryActions.fetchDownloadReportSuccess,
+  });
+
+  if (response?.error) {
+    toast.error('Failed to download report.');
+  } else {
+    yield put(
+      ActivityHistoryActions.fetchDownloadReportSuccess(response?.data)
+    );
+    toast.success('Download report fetched successfully!');
+  }
+}
+
 export function* activityHistorySagas(api) {
   yield all([
     takeLatest(
@@ -57,6 +78,11 @@ export function* activityHistorySagas(api) {
     takeLatest(
       ActivityHistoryActions.fetchEmailReport,
       fetchEmailReportSaga,
+      api
+    ),
+    takeLatest(
+      ActivityHistoryActions.fetchDownloadReport,
+      fetchDownloadReportSaga,
       api
     ),
   ]);
