@@ -4,6 +4,7 @@ import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
 import { ActivityHistoryActions, ActivityHistorySelectors } from './redux';
 import { toast } from 'react-toastify';
+import { history } from '../../helpers/history';
 
 export function* fetchActivityHistory(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -43,6 +44,7 @@ export function* fetchEmailReportSaga(api, action) {
   if (response?.error) {
     toast.error('Failed to fetch email report.');
   } else {
+    history.push('/activity-history/download-history');
     toast.success(
       'Export request received. The report will be emailed once ready and can also be accessed via the Download History'
     );
@@ -70,7 +72,6 @@ export function* fetchDownloadReportSaga(api, action) {
     yield put(
       ActivityHistoryActions.fetchDownloadReportSuccess(response?.data)
     );
-    toast.success('Download history fetched successfully!');
   }
 }
 
