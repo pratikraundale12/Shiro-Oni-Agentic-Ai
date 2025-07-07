@@ -880,12 +880,10 @@ export const GridActions = ({
                           <div>
                             <Button
                               onClick={() => {
-                                setDownloadModalOpen(true);
-                                
-                                dispatch(ActivityHistoryActions.fetchDownloadReport());
+                                history.push('/activity-history/download-history');
                               }}
                             >
-                              Download
+                              Download History
                             </Button>
                           </div>
                           <div>

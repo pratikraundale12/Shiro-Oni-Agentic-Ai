@@ -207,11 +207,11 @@ const RefreshIocn = styled.div`
 const TabsContainer = styled.div`
   display: flex;
   width: 100%;
-  overflow-x: auto;
+  /* overflow-x: auto; */
   &::-webkit-scrollbar {
     display: none;
   }
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
 `;
 const TabWrapper = styled.div`
   display: flex;

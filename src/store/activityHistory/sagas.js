@@ -48,13 +48,17 @@ export function* fetchEmailReportSaga(api, action) {
 }
 
 export function* fetchDownloadReportSaga(api, action) {
-  const queryParams = action.payload?.queryParams || {};
+  const {
+    status = [],
+    event = [],
+    entity = [],
+  } = action.payload?.queryParams || {};
 
   const response = yield call(requestSaga, {
     errorSection: 'fetchDownloadReport',
     loadingSection: 'fetchDownloadReport',
     apiMethod: api.fetchDownloadReport,
-    apiParams: [{ queryParams }],
+    apiParams: [status, event, entity], // 👈 Corrected!
     successAction: ActivityHistoryActions.fetchDownloadReportSuccess,
   });
 

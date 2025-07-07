@@ -22,12 +22,7 @@ const ActionTd = styled.div`
 export const ActvityHistory = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortingState, setSortingState] = useState('');
-    const [isDownloadModalOpen, setDownloadModalOpen] = useState(false);
-
-    const downLoadReport = useSelector(ActivityHistorySelectors.getDownloadReportData);
-
-    
+  const [sortingState, setSortingState] = useState('');    
   const toggleSorting = column => {
     setSortingState(prevState =>
       prevState === column ? `-${column}` : column
@@ -229,38 +224,6 @@ export const ActvityHistory = () => {
     },
   ];
 
-     const COLUMNS_ONE = [
-    {
-      label: 'Event',
-      renderCell: item => item?.filters?.event || 'N/A',
-      width: '20%',
-      resize: true,
-    },
-    {
-      label: 'Entity',
-      renderCell: item => item?.filters?.entity || 'N/A',
-      width: '20%',
-      resize: true,
-    },
-    {
-      label: 'Status',
-      renderCell: item =>item?.filters?.status || 'N/A',
-      width: '20%',
-      resize: true,
-    },
-    {
-      label: 'Created By',
-      renderCell: item => item?.user_name || 'N/A',
-      width: '20%',
-      resize: true,
-    },
-    {
-      label: 'Created At',
-      renderCell: item =>convertDateTime(item?.created_at || 'N/A'),
-      width: '20%',
-      resize: true,
-    },
-  ];
 
 
   const sortFns = {
@@ -291,27 +254,7 @@ export const ActvityHistory = () => {
         setCurrentPage={setCurrentPage}
         sortingState={sortingState}
         setSortingState={setSortingState}
-        setDownloadModalOpen={setDownloadModalOpen}
-        isDownloadModalOpen={isDownloadModalOpen}
       />
-       {/* === Download Modal === */}
-                  <Modal
-                    title="Download Report"
-                    isOpen={isDownloadModalOpen}
-                    onRequestClose={() => setDownloadModalOpen(false)}
-                    size="lg"
-                    secondaryButtonText="Cancel"
-                    onSubmit={() => {
-                      console.log('Downloading...');
-                      setDownloadModalOpen(false);
-                    }}
-                    footerAlign="start"
-                    contentStyles={{ minWidth: '80%', minHeight: '80%' }}
-                  >
-                    <div>
-                      <Table data={downLoadReport} columns={COLUMNS_ONE} className={'customTable'} />
-                    </div>
-                  </Modal>
     </>
   );
 };
