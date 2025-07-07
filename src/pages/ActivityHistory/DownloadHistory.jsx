@@ -163,7 +163,7 @@ const DownloadHistory = () => {
       label: 'Activity History',
       path: '/activity-history',
     },
-    { label: 'Download History' },
+    { label: 'Download Activity History' },
   ];
 
   useEffect(() => {
@@ -189,7 +189,7 @@ const DownloadHistory = () => {
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2">
             <TodoIcon width={22} height={24} />
-            <HeadingStyle>Download History</HeadingStyle>
+            <HeadingStyle>Download Activity History</HeadingStyle>
           </div>
         </div>
         {/* Filter Section */}

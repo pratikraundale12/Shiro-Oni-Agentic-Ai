@@ -119,6 +119,7 @@ export const Grid = ({
   setSortingState,
   setDownloadModalOpen,
   isDownloadModalOpen,
+  removeSearch,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -503,6 +504,7 @@ export const Grid = ({
         setScheduleType={setScheduleType}
         isDownloadModalOpen={isDownloadModalOpen}
         setDownloadModalOpen={setDownloadModalOpen}
+        removeSearch={removeSearch}
       />
       {module === 'nodes' && !loading && (
         <>
@@ -638,4 +640,5 @@ Grid.propTypes = {
   setScheduleType: PropTypes.func,
   setDownloadModalOpen: PropTypes.func,
   isDownloadModalOpen: PropTypes.bool,
+  removeSearch: PropTypes.bool,
 };

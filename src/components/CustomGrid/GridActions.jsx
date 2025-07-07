@@ -66,6 +66,7 @@ import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../FullPageLoader';
+import { use } from 'react';
 
 const Flex = styled.div`
   display: flex;
@@ -243,6 +244,7 @@ export const GridActions = ({
   setSelectStatus,
   isDownloadModalOpen,
   setDownloadModalOpen,
+  removeSearch = false,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -255,6 +257,11 @@ export const GridActions = ({
   );
   const { setState } = useGlobalContext();
   const [searchValue, setSearchValue] = useState('');
+  useEffect(() => {
+    if(removeSearch && module === 'namespaces') {
+      setSearchValue('');
+    }
+  },[removeSearch])
   const uniqueRoles = useMemo(() => {
     return Array.from(new Set(roles.map(role => role.name))).map(name => {
       return roles.find(role => role.name === name);
@@ -883,7 +890,7 @@ export const GridActions = ({
                                 history.push('/activity-history/download-history');
                               }}
                             >
-                              Download History
+                              Download Activity History
                             </Button>
                           </div>
                           <div>
