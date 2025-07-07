@@ -68,6 +68,8 @@ import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 import SummarySanityCheck from '../pages/Namespaces/SummarySanityCheck.jsx';
 import InvalidProcessorDetails from '../pages/Namespaces/InvalidProcessorDetails.jsx';
+import DownloadHistory from '../pages/ActivityHistory/DownloadHistory.jsx';
+// import DeploymentStatistics from '../pages/Dashboard/DeploymentStatistics.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -225,6 +227,10 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ActvityHistory />,
+      },
+      {
+        path: 'download-history',
+        component: <DownloadHistory />,
       },
     ],
     permission: 'view_history',

@@ -13,6 +13,12 @@ export const ActivityHistoryActions = {
   resetActivityHistory: createAction(`${prefix}resetActivityHistory`),
   setSelectedItem: createAction(`${prefix}setSelectedItem`),
   setIsInfoModalOpen: createAction(`${prefix}setIsInfoModalOpen`),
+  fetchEmailReport: createAction(`${prefix}fetchEmailReport`),
+  fetchEmailReportSuccess: createAction(`${prefix}fetchEmailReportSuccess`),
+  fetchDownloadReport: createAction(`${prefix}fetchDownloadReport`),
+  fetchDownloadReportSuccess: createAction(
+    `${prefix}fetchDownloadReportSuccess`
+  ),
 };
 
 /* ------------- Initial State ------------------ */
@@ -21,6 +27,8 @@ export const ACTIVITY_HISTORY_INITIAL_STATE = {
   selectedEvent: null,
   selectedItem: null,
   isInfoModalOpen: false,
+  emailReportData: [],
+  downloadReportData: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -29,6 +37,8 @@ export const ActivityHistorySelectors = {
   getSelectedEvent: state => state.activityHistory.selectedEvent,
   getSelectedItem: state => state.activityHistory.selectedItem,
   getIsInfoModalOpen: state => state.activityHistory.isInfoModalOpen,
+  getEmailReportData: state => state.activityHistory.emailReportData,
+  getDownloadReportData: state => state.activityHistory.downloadReportData,
 };
 
 /* ------------- Reducers ------------------ */
@@ -64,6 +74,20 @@ const setIsInfoModalOpen = (state, { payload }) => {
   };
 };
 
+const fetchEmailReportSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    emailReportData: payload?.data || [],
+  };
+};
+
+const fetchDownloadReportSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    downloadReportData: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const activityHistoryReducer = createReducer(
   ACTIVITY_HISTORY_INITIAL_STATE,
@@ -76,6 +100,14 @@ export const activityHistoryReducer = createReducer(
       .addCase(
         ActivityHistoryActions.resetActivityHistory,
         resetActivityHistory
+      )
+      .addCase(
+        ActivityHistoryActions.fetchEmailReportSuccess,
+        fetchEmailReportSuccess
+      )
+      .addCase(
+        ActivityHistoryActions.fetchDownloadReportSuccess,
+        fetchDownloadReportSuccess
       );
   }
 );

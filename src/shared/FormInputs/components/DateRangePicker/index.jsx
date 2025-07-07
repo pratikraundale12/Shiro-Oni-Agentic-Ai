@@ -7,6 +7,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 const ContainerRangePicker = styled.div`
   & div {
     cursor: pointer;
+    width: 300px !important;
   }
   cursor: pointer;
   div > div {

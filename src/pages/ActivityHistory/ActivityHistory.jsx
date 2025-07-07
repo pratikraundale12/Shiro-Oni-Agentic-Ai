@@ -1,14 +1,16 @@
 /*eslint-disable*/
 import React, { useState } from 'react';
 import { OpenEyeIcon, SortDownIcon, SortUpIcon } from '../../assets';
-import { Grid, IconButton, StatusRender, TextRender } from '../../components';
+import { Grid, IconButton, StatusRender, Table, TextRender } from '../../components';
 import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 import styled from 'styled-components';
 import { theme } from '../../styles';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { ActivityHistoryActions } from '../../store/activityHistory';
-import { useDispatch } from 'react-redux';
+import { ActivityHistoryActions, ActivityHistorySelectors } from '../../store/activityHistory';
+import { useDispatch, useSelector } from 'react-redux';
 import { InfoModalActivityHistory } from './InfoModal';
+import { StatusText } from '../ScheduleDeployment/StatusText';
+import { Modal } from '../../shared';
 
 const ActionTd = styled.div`
   display: flex;
@@ -20,7 +22,7 @@ const ActionTd = styled.div`
 export const ActvityHistory = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortingState, setSortingState] = useState('');
+  const [sortingState, setSortingState] = useState('');    
   const toggleSorting = column => {
     setSortingState(prevState =>
       prevState === column ? `-${column}` : column
@@ -177,7 +179,8 @@ export const ActvityHistory = () => {
       width: '8%',
       resize: true,
       renderCell: item => (
-        <StatusRender status={item.status || KDFM.NA} redColor="#FF0000" />
+        // <StatusRender status={item.status || KDFM.NA} redColor="#FF0000" />
+        <StatusText text={item?.status?.replace(/_/g, ' ')} item={item} />
       ),
     },
     {
@@ -221,6 +224,8 @@ export const ActvityHistory = () => {
     },
   ];
 
+
+
   const sortFns = {
     namespace: data =>
       data.sort((a, b) =>
@@ -233,6 +238,7 @@ export const ActvityHistory = () => {
         (a, b) => new Date(a?.timestamp || 0) - new Date(b?.timestamp || 0)
       ),
   };
+  
 
   return (
     <>
@@ -242,7 +248,7 @@ export const ActvityHistory = () => {
         title={KDFM.ACTIVITY_LIST}
         columns={COLUMNS}
         placeholder={KDFM.ACTIVITY_HISTORY_SEARCH_PLACEHOLDER}
-        statusOptions={ACTIVITY_STATUS_OPTIONS}
+        // statusOptions={ACTIVITY_STATUS_OPTIONS}
         sortFns={sortFns}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
