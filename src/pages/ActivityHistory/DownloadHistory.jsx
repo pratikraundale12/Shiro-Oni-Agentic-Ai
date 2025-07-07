@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DownloadIcon, TodoIcon } from '../../assets';
+import { DownloadIcon, InfoIcon, TodoIcon } from '../../assets';
 import styled from 'styled-components';
 import { Table, TextRender } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,6 +16,7 @@ import {
   MODULE_LIST_MAP,
 } from '../../constants';
 import Breadcrumb from '../../shared/Breadcrumb';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const HeadingStyle = styled.h3`
   font-family: 'Nato Sans', sans-serif;
@@ -34,6 +35,14 @@ const BreadcrumbContainer = styled.div`
   letter-spacing: -0.01em;
   color: #444445;
   align-items: center;
+`;
+const SpanEle = styled.span`
+  width: 100%;
+  cursor: pointer;
+  color: #ff7a00;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const DownloadHistory = () => {
@@ -108,20 +117,45 @@ const DownloadHistory = () => {
     },
     {
       label: 'Action',
-      renderCell: item => (
-        <button
-          onClick={() => {
-            item?.download_link;
-            console.log(item?.download_link, 'aaaaaaaaaaaaaaaaaaaa');
-          }}
-        >
-          <DownloadIcon color="black" />
-        </button>
-      ),
+      renderCell: item =>
+        item?.download_link ? (
+          <button
+            onClick={() => {
+              const link = document.createElement('a');
+              link.href = item.download_link;
+              link.download = ''; // Optional: provide filename here
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+          >
+            <DownloadIcon color="black" />
+          </button>
+        ) : (
+          <>
+            <span
+              data-tooltip-id="download-tooltip"
+              style={{ cursor: 'default' }}
+            >
+              <InfoIcon color="orange" />
+            </span>
+            <ReactTooltip
+              id="download-tooltip"
+              place="left"
+              style={{
+                width: 'auto',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+              content="The report is being prepared. A download link will be available soon, and a copy will also be sent to your registered email."
+            />
+          </>
+        ),
       width: '10%',
       resize: true,
     },
   ];
+
   const dispatch = useDispatch();
 
   const path = [
@@ -143,6 +177,12 @@ const DownloadHistory = () => {
       })
     );
   }, [dispatch, selectStatus, selectEvent, selectEntity]);
+
+  const handleClearFilter = () => {
+    setSelectStatus([]);
+    setSelectEvent([]);
+    setSelectEntity([]);
+  };
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center">
@@ -207,6 +247,9 @@ const DownloadHistory = () => {
               enableCheckboxes={true}
               hideMultipleOptions={true}
             />
+          </div>
+          <div>
+            <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
           </div>
         </div>
       </div>

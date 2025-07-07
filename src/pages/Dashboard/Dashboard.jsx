@@ -498,14 +498,16 @@ export const Dashboard = () => {
                 </DropdownContainer>
               )}
               {activeTab === 'DeploymentStatistics' && (
-                <DateRangePickerInput
-                  value={selectedRange}
-                  handleChange={handleDateRangeChange}
-                  customRanges={customRanges}
-                  showTime={{ format: 'hh:mm A' }}
-                  format="YYYY-MM-DD hh:mm A"
-                  placeholder={['Start Time', 'End Time']}
-                />
+                <div className="me-4">
+                  <DateRangePickerInput
+                    value={selectedRange}
+                    handleChange={handleDateRangeChange}
+                    customRanges={customRanges}
+                    showTime={{ format: 'hh:mm A' }}
+                    format="YYYY-MM-DD hh:mm A"
+                    placeholder={['Start Time', 'End Time']}
+                  />
+                </div>
               )}
               <RefreshIocn
                 onClick={handleRefresh}

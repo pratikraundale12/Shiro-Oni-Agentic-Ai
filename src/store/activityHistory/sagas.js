@@ -43,7 +43,9 @@ export function* fetchEmailReportSaga(api, action) {
   if (response?.error) {
     toast.error('Failed to fetch email report.');
   } else {
-    toast.success('Email report fetched successfully!');
+    toast.success(
+      'Export request received. The report will be emailed once ready and can also be accessed via the Download History'
+    );
   }
 }
 
@@ -63,12 +65,12 @@ export function* fetchDownloadReportSaga(api, action) {
   });
 
   if (response?.error) {
-    toast.error('Failed to download report.');
+    toast.error('Failed to download history.');
   } else {
     yield put(
       ActivityHistoryActions.fetchDownloadReportSuccess(response?.data)
     );
-    toast.success('Download report fetched successfully!');
+    toast.success('Download history fetched successfully!');
   }
 }
 
