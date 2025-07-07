@@ -67,7 +67,7 @@ export function* fetchDownloadReportSaga(api, action) {
   });
 
   if (response?.error) {
-    toast.error('Failed to download history.');
+    toast.error('Failed to download Activity History.');
   } else {
     yield put(
       ActivityHistoryActions.fetchDownloadReportSuccess(response?.data)

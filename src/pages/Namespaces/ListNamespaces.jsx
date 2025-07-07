@@ -153,6 +153,7 @@ export const ListNamespaces = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
+  const [removeSearch, setRemoveSearch] = useState(false);
   const getDeleteNamespaceDetails = useSelector(
     NamespacesSelectors.getDeleteNamespaceDetails
   );
@@ -616,6 +617,7 @@ export const ListNamespaces = () => {
   };
 
   const handleDeleteClick = (item, e) => {
+    setRemoveSearch(false);
     setItemToDelete(item);
     setDeleteModalOpen(true);
     e.currentTarget.blur();
@@ -632,6 +634,7 @@ export const ListNamespaces = () => {
       setDeleteModalOpen(false);
       setItemToDelete(null);
       setDeleteConfirmationText('');
+      setRemoveSearch(true);
     }
   };
 
@@ -658,6 +661,7 @@ export const ListNamespaces = () => {
         state={state}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        removeSearch={removeSearch}
       />
 
       <Modal

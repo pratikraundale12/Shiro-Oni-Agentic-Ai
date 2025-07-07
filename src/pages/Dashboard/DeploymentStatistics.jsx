@@ -218,8 +218,12 @@ const DeploymentStatistics = ({ selectedRange }) => {
               <YAxis allowDecimals={false} />
               <Tooltip content={<CustomDeploymentTooltip />} />
               <Legend />
-              <Bar dataKey="success" name="Deployments" fill="green" />
-              <Bar dataKey="error" name="Failed" fill="red" />
+              <Bar dataKey="success" name="Success Deployments" fill="green" />
+              <Bar
+                dataKey="error"
+                name="Failed Deployments or with Errors"
+                fill="red"
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
