@@ -15,6 +15,7 @@ import {
   KDFM,
   MODULE_LIST_MAP,
 } from '../../constants';
+import Breadcrumb from '../../shared/Breadcrumb';
 
 const HeadingStyle = styled.h3`
   font-family: 'Nato Sans', sans-serif;
@@ -26,12 +27,19 @@ const HeadingStyle = styled.h3`
   margin: 0;
 `;
 
+const BreadcrumbContainer = styled.div`
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: -0.01em;
+  color: #444445;
+  align-items: center;
+`;
+
 const DownloadHistory = () => {
   const [selectStatus, setSelectStatus] = useState([]);
   const [selectEvent, setSelectEvent] = useState([]);
   const [selectEntity, setSelectEntity] = useState([]);
-
-  console.log(selectStatus, selectEvent, selectEntity);
 
   const { control } = useForm();
 
@@ -101,7 +109,12 @@ const DownloadHistory = () => {
     {
       label: 'Action',
       renderCell: item => (
-        <button onClick={() => console.log('Action clicked for:', item)}>
+        <button
+          onClick={() => {
+            item?.download_link;
+            console.log(item?.download_link, 'aaaaaaaaaaaaaaaaaaaa');
+          }}
+        >
           <DownloadIcon color="black" />
         </button>
       ),
@@ -111,8 +124,15 @@ const DownloadHistory = () => {
   ];
   const dispatch = useDispatch();
 
+  const path = [
+    {
+      label: 'Activity History',
+      path: '/activity-history',
+    },
+    { label: 'Download History' },
+  ];
+
   useEffect(() => {
-    console.log('Selected filters:', selectStatus, selectEvent, selectEntity);
     dispatch(
       ActivityHistoryActions.fetchDownloadReport({
         queryParams: {
@@ -190,6 +210,9 @@ const DownloadHistory = () => {
           </div>
         </div>
       </div>
+      <BreadcrumbContainer className="d-flex  mb-3 mt-3">
+        <Breadcrumb module="path" path={path} />
+      </BreadcrumbContainer>
       <div className="mt-3">
         <Table
           data={downLoadReport}
