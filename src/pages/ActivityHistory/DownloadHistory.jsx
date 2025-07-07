@@ -1,8 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { SmallSearchIcon, TodoIcon } from '../../assets';
-import { theme } from '../../styles';
+import React, { useState, useEffect } from 'react';
+import { DownloadIcon, TodoIcon } from '../../assets';
 import styled from 'styled-components';
-import { Table } from '../../components';
+import { Table, TextRender } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   ActivityHistoryActions,
@@ -13,36 +12,10 @@ import MultiSelectField from '../../shared/FormInputs/components/MultiSelectFiel
 import {
   ACTIVITY_EVENTS,
   ACTIVITY_STATUS_OPTIONS,
+  KDFM,
   MODULE_LIST_MAP,
 } from '../../constants';
 
-const SearchContainer = styled.div`
-  position: relative;
-
-  svg {
-    position: absolute;
-    top: 50%;
-    left: 16px;
-    transform: translateY(-50%);
-  }
-`;
-const Search = styled.input`
-  width: 100%;
-  border-radius: 2px;
-  padding: 12px 12px 12px 40px;
-  font-size: 16px;
-  margin: 14px 0;
-  font-family: ${props => props.theme.fontRedHat};
-  border: 1px solid ${props => props.theme.colors.border};
-  background-color: ${props => props.theme.colors.lightGrey};
-
-  &:focus-visible {
-    outline: none;
-  }
-  @media screen and (max-width: 1400px) {
-    font-size: 14px !important;
-  }
-`;
 const HeadingStyle = styled.h3`
   font-family: 'Nato Sans', sans-serif;
   font-weight: 500;
@@ -54,7 +27,6 @@ const HeadingStyle = styled.h3`
 `;
 
 const DownloadHistory = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectStatus, setSelectStatus] = useState([]);
   const [selectEvent, setSelectEvent] = useState([]);
   const [selectEntity, setSelectEntity] = useState([]);
@@ -95,88 +67,45 @@ const DownloadHistory = () => {
     });
   };
 
-  // Filter data based on search term and selected filters
-  const filteredData = useMemo(() => {
-    if (!downLoadReport) return [];
-
-    let filtered = downLoadReport;
-
-    // Apply search filter
-    if (searchTerm.trim()) {
-      const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(item => {
-        const event = (item?.filters?.event || '').toLowerCase();
-        const entity = (item?.filters?.entity || '').toLowerCase();
-        const status = (item?.filters?.status || '').toLowerCase();
-
-        return (
-          event.includes(searchLower) ||
-          entity.includes(searchLower) ||
-          status.includes(searchLower)
-        );
-      });
-    }
-
-    // Apply status filter
-    if (selectStatus.length > 0) {
-      const statusValues = selectStatus.map(s => s.value);
-      filtered = filtered.filter(item =>
-        statusValues.includes(item?.filters?.status)
-      );
-    }
-
-    // Apply event filter
-    if (selectEvent.length > 0) {
-      const eventValues = selectEvent.map(e => e.value);
-      filtered = filtered.filter(item =>
-        eventValues.includes(item?.filters?.event)
-      );
-    }
-
-    // Apply entity filter
-    if (selectEntity.length > 0) {
-      const entityValues = selectEntity.map(e => e.value);
-      filtered = filtered.filter(item =>
-        entityValues.includes(item?.filters?.entity)
-      );
-    }
-
-    return filtered;
-  }, [downLoadReport, searchTerm, selectStatus, selectEvent, selectEntity]);
-
-  const handleSearchChange = e => {
-    setSearchTerm(e.target.value);
-  };
-
   const COLUMNS_ONE = [
     {
       label: 'Event',
-      renderCell: item => item?.event || 'N/A',
+      renderCell: item => <TextRender text={item?.event || KDFM.NA} />,
       width: '20%',
       resize: true,
     },
     {
       label: 'Entity',
-      renderCell: item => item?.entity || 'N/A',
+      renderCell: item => <TextRender text={item?.entity || KDFM.NA} />,
       width: '20%',
       resize: true,
     },
     {
       label: 'Status',
-      renderCell: item => item?.status || 'N/A',
+      renderCell: item => <TextRender text={item?.status || KDFM.NA} />,
       width: '20%',
       resize: true,
     },
     {
       label: 'Created By',
-      renderCell: item => item?.user_name || 'N/A',
-      width: '20%',
+      renderCell: item => <TextRender text={item.user_name || KDFM.NA} />,
+      width: '10%',
       resize: true,
     },
     {
       label: 'Created At',
       renderCell: item => convertDateTime(item?.created_at || 'N/A'),
       width: '20%',
+      resize: true,
+    },
+    {
+      label: 'Action',
+      renderCell: item => (
+        <button onClick={() => console.log('Action clicked for:', item)}>
+          <DownloadIcon color="black" />
+        </button>
+      ),
+      width: '10%',
       resize: true,
     },
   ];
@@ -261,26 +190,14 @@ const DownloadHistory = () => {
           </div>
         </div>
       </div>
-
-      <SearchContainer>
-        <SmallSearchIcon
-          width={18}
-          height={18}
-          color={theme.colors.darkGrey1}
+      <div className="mt-3">
+        <Table
+          data={downLoadReport}
+          columns={COLUMNS_ONE}
+          className={'customTable'}
+          showPagination={true}
         />
-        <Search
-          type="search"
-          placeholder="Search by Event, Entity, or Status"
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-      </SearchContainer>
-      <Table
-        data={filteredData}
-        columns={COLUMNS_ONE}
-        className={'customTable'}
-        showPagination={true}
-      />
+      </div>
     </div>
   );
 };

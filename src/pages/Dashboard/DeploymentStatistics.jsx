@@ -128,7 +128,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
     {
       name: 'Deployed',
       success: dataMetrics?.deployed || 0,
-      error: dataMetrics?.deployed_with_error || 0,
+      error: dataMetrics?.deployed_with_errors || 0,
     },
     {
       name: 'Downgraded',
@@ -173,7 +173,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
         <DeploymentInsightContainer
           backgroundCss="#FEFBEC"
           icon={DeployedWithErrorIcon}
-          count={dataMetrics?.deployed_with_error || 0}
+          count={dataMetrics?.deployed_with_errors || 0}
           text="Deployed with Errors"
         />
         <DeploymentInsightContainer
@@ -218,8 +218,8 @@ const DeploymentStatistics = ({ selectedRange }) => {
               <YAxis allowDecimals={false} />
               <Tooltip content={<CustomDeploymentTooltip />} />
               <Legend />
-              <Bar dataKey="success" name="Deployments" fill="#2dff7b" />
-              <Bar dataKey="error" name="Failed" fill="#ff6d7f" />
+              <Bar dataKey="success" name="Deployments" fill="green" />
+              <Bar dataKey="error" name="Failed" fill="red" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -236,7 +236,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
               <Bar
                 dataKey="successRate"
                 name="Success Rate"
-                fill="#2dff7b"
+                fill="green"
                 barSize={40}
                 isAnimationActive={false}
                 label={{ position: 'top', formatter: value => `${value}%` }}
@@ -244,7 +244,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
               <Bar
                 dataKey="failureRate"
                 name="Failure Rate"
-                fill="#ff6d7f"
+                fill="red"
                 barSize={40}
                 isAnimationActive={false}
                 label={{ position: 'top', formatter: value => `${value}%` }}
