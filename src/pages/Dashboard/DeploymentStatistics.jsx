@@ -192,7 +192,7 @@ const D3PieChart = ({ data }) => {
     const pieData = [
       { name: 'Success Rate', value: Number(data.successRate) || 0 },
       { name: 'Error Rate', value: Number(data.errorRate) || 0 },
-      { name: 'Failure Rate', value: Number(data.errorRate) || 0 },
+      { name: 'Failure Rate', value: Number(data.failureRate) || 0 },
     ].filter(d => d.value > 0);
 
     const arcs = g
