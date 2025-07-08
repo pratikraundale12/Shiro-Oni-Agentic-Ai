@@ -23,6 +23,8 @@ const statusColors = {
   'TIME LAPSED': '#F2891F',
   Success: '#0cbf59',
   Failed: 'red',
+  DOWNGRADED: '#0cbf59',
+  UPGRADED: '#0cbf59',
 };
 
 const StatusTexts = styled.div`

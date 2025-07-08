@@ -35,9 +35,21 @@ export const activityHistoryAPI = api => {
     return api.get(`/audit/downloads?${queryParams.toString()}`);
   };
 
+  const deleteDownloadReport = ({ start_date, end_date }) => {
+    const params = new URLSearchParams();
+
+    if (start_date) params.append('start_date', start_date);
+    if (end_date) params.append('end_date', end_date);
+
+    const url = `/settings/audit-downloads?${params.toString()}`;
+
+    return api.delete(url);
+  };
+
   return {
     fetchActivityHistory,
     fetchEmailReport,
     fetchDownloadReport,
+    deleteDownloadReport,
   };
 };

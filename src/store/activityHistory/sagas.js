@@ -50,6 +50,23 @@ export function* fetchEmailReportSaga(api, action) {
     );
   }
 }
+export function* deleteDownloadReport(api, action) {
+  const { start_date, end_date } = action.payload || {};
+
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteDownloadReport',
+    loadingSection: 'deleteDownloadReport',
+    apiMethod: api.deleteDownloadReport,
+    apiParams: [{ start_date, end_date }],
+    successAction: ActivityHistoryActions.deleteDownloadReport,
+  });
+  if (response?.error) {
+    toast.error('Failed to delete report.');
+  } else {
+    toast.success('Report deleted successfully');
+    history.push('/activity-history/download-history');
+  }
+}
 
 export function* fetchDownloadReportSaga(api, action) {
   const {
@@ -90,6 +107,11 @@ export function* activityHistorySagas(api) {
     takeLatest(
       ActivityHistoryActions.fetchDownloadReport,
       fetchDownloadReportSaga,
+      api
+    ),
+    takeLatest(
+      ActivityHistoryActions.deleteDownloadReport,
+      deleteDownloadReport,
       api
     ),
   ]);
