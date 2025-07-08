@@ -19,7 +19,7 @@ import {
 } from '../../assets';
 import { useDispatch } from 'react-redux';
 import { SettingsActions } from '../../store/settings';
-import DeleteDownloadHistory from './DeleteDownloadHistory';
+// import DeleteDownloadHistory from './DeleteDownloadHistory';
 
 const GreyBoxNamespace = styled.div`
   background-color: #ffffff;
@@ -115,8 +115,8 @@ const SettingTab = () => {
         return <SSOLoginSettings />;
       case 'ExportLogSettings':
         return <ExportLogSettings />;
-      case 'DeleteDownloadHistorySettings':
-        return <DeleteDownloadHistory />;
+      // case 'DeleteDownloadHistorySettings':
+      //   return <DeleteDownloadHistory />;
     }
   };
   return (
@@ -224,7 +224,7 @@ const SettingTab = () => {
               </IconContent>
               Log Export
             </Tab>
-            <Tab
+            {/* <Tab
               active={activeTab === 'DeleteDownloadHistorySettings'}
               onClick={() => setActiveTab('DeleteDownloadHistorySettings')}
               className="nav-item d-flex"
@@ -239,7 +239,7 @@ const SettingTab = () => {
                 />
               </IconContent>
               Manage Download Activity History
-            </Tab>
+            </Tab> */}
           </TabWrapper>
         </TabsContainer>
         <TabContent>{renderContent()}</TabContent>
