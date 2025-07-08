@@ -39,11 +39,31 @@ const CustomOptionContainer = styled.div`
   color: ${props => props.theme.colors.darker};
 `;
 
-const CustomOption = ({ children, isSelected, innerProps }) => (
-  <CustomOptionContainer>
-    <CheckboxField checked={isSelected} label={children} {...innerProps} />
-  </CustomOptionContainer>
-);
+const SelectAllOptionContainer = styled.div`
+  padding: 0.5rem;
+  border-bottom: 2px solid ${props => props.theme.colors.darkGrey};
+  font-weight: 700;
+  font-size: 14px;
+  color: ${props => props.theme.colors.darker};
+  background-color: ${props => props.theme.colors.lightGrey || '#f8f9fa'};
+`;
+
+const CustomOption = ({ children, isSelected, innerProps, data }) => {
+  // Check if this is the "Select All" option
+  if (data?.isSelectAll) {
+    return (
+      <SelectAllOptionContainer>
+        <CheckboxField checked={isSelected} label={children} {...innerProps} />
+      </SelectAllOptionContainer>
+    );
+  }
+
+  return (
+    <CustomOptionContainer>
+      <CheckboxField checked={isSelected} label={children} {...innerProps} />
+    </CustomOptionContainer>
+  );
+};
 
 const CustomValueContainer = ({ getValue, hasValue, ...props }) => {
   const selected = getValue();
@@ -55,6 +75,27 @@ const CustomValueContainer = ({ getValue, hasValue, ...props }) => {
         ? `${count} item${count > 1 ? 's' : ''} selected`
         : props.selectProps.placeholder}
     </components.ValueContainer>
+  );
+};
+
+// ✅ Custom Control with stable menu toggle
+const CustomControl = props => {
+  const { children, innerRef, innerProps, selectProps } = props;
+
+  return (
+    <components.Control
+      {...props}
+      innerRef={innerRef}
+      innerProps={{
+        ...innerProps,
+        onMouseDown: e => {
+          e.preventDefault(); // Prevent blur and default close
+          selectProps.setMenuIsOpen(prev => !prev); // Toggle open/close
+        },
+      }}
+    >
+      {children}
+    </components.Control>
   );
 };
 
@@ -73,6 +114,8 @@ const MultiSelectField = ({
   customOnChange,
   customValue,
   customWidth,
+  enableSelectAll = false, // New prop to enable/disable select all
+  selectAllLabel = 'Select All', // Customizable select all label
   ...props
 }) => {
   const theme = useTheme();
@@ -88,6 +131,18 @@ const MultiSelectField = ({
     )
       ? arr
       : [];
+
+  // Create select all option
+  const selectAllOption = {
+    label: selectAllLabel,
+    value: '__select_all__',
+    isSelectAll: true,
+  };
+
+  // Add select all option to the beginning if enabled
+  const enhancedOptions = enableSelectAll
+    ? [selectAllOption, ...options]
+    : options;
 
   const customStyles = {
     indicatorSeparator: () => ({ display: 'none' }),
@@ -107,7 +162,78 @@ const MultiSelectField = ({
     multiValue: base => ({ ...base, display: 'none' }),
   };
 
-  // Close dropdown when clicking outside
+  // ✅ Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
+        setMenuIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Handle select all logic
+  const handleSelectAllChange = (onChange, selectedValues, actionMeta) => {
+    if (!enableSelectAll) {
+      // If select all is disabled, use normal behavior
+      return isFunction(customOnChange)
+        ? customOnChange(onChange, selectedValues, actionMeta)
+        : onChange(selectedValues, actionMeta);
+    }
+
+    const isSelectAllClicked = actionMeta.option?.isSelectAll;
+    const regularOptions = options.filter(option => !option.isSelectAll);
+
+    if (isSelectAllClicked) {
+      // If "Select All" was clicked
+      const currentRegularValues = selectedValues.filter(
+        val => !val.isSelectAll
+      );
+      const areAllSelected =
+        currentRegularValues.length === regularOptions.length;
+
+      if (areAllSelected) {
+        // If all are selected, deselect all
+        const result = isFunction(customOnChange)
+          ? customOnChange(onChange, [], actionMeta)
+          : onChange([], actionMeta);
+        return result;
+      } else {
+        // If not all are selected, select all
+        const result = isFunction(customOnChange)
+          ? customOnChange(onChange, regularOptions, actionMeta)
+          : onChange(regularOptions, actionMeta);
+        return result;
+      }
+    } else {
+      // Normal option was clicked, filter out select all option
+      const filteredValues = selectedValues.filter(val => !val.isSelectAll);
+      const result = isFunction(customOnChange)
+        ? customOnChange(onChange, filteredValues, actionMeta)
+        : onChange(filteredValues, actionMeta);
+      return result;
+    }
+  };
+
+  // Check if all options are selected (for checkbox state)
+  const isAllSelected = currentValue => {
+    if (!enableSelectAll) return false;
+    const regularOptions = options.filter(option => !option.isSelectAll);
+    const currentRegularValues = currentValue.filter(val => !val.isSelectAll);
+    return (
+      regularOptions.length > 0 &&
+      currentRegularValues.length === regularOptions.length
+    );
+  };
+
+  // ✅ Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = event => {
       if (
@@ -152,12 +278,10 @@ const MultiSelectField = ({
               <Select
                 ref={ref}
                 value={data}
-                onChange={(...args) =>
-                  isFunction(customOnChange)
-                    ? customOnChange(onChange, ...args)
-                    : onChange(...args)
+                onChange={(selectedValues, actionMeta) =>
+                  handleSelectAllChange(onChange, selectedValues, actionMeta)
                 }
-                options={options}
+                options={enhancedOptions}
                 isMulti
                 isSearchable
                 isClearable
@@ -175,12 +299,23 @@ const MultiSelectField = ({
                 menuIsOpen={menuIsOpen}
                 onMenuOpen={() => setMenuIsOpen(true)}
                 onMenuClose={() => setMenuIsOpen(false)}
-                onFocus={() => setMenuIsOpen(true)} // 👈 Open on focus
-                onClick={() => setMenuIsOpen(true)} // 👈 Open on click anywhere
                 components={{
+                  Control: CustomControl,
                   ValueContainer: CustomValueContainer,
-                  Option: enableCheckboxes ? CustomOption : undefined,
+                  Option: enableCheckboxes
+                    ? props => (
+                        <CustomOption
+                          {...props}
+                          isSelected={
+                            props.data?.isSelectAll
+                              ? isAllSelected(data)
+                              : props.isSelected
+                          }
+                        />
+                      )
+                    : undefined,
                 }}
+                setMenuIsOpen={setMenuIsOpen} // 👈 Pass to custom Control
                 {...props}
               />
               {hasError && (

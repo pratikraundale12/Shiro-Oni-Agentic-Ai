@@ -913,6 +913,8 @@ export const GridActions = ({
                   customWidth="275px"
                   enableCheckboxes={true}
                    hideMultipleOptions={true}
+                   enableSelectAll={true}  // Enable select all
+                   selectAllLabel="Select All"
                 />
               </div>
               <div>
@@ -930,7 +932,9 @@ export const GridActions = ({
                   wrapperCustomClass="entity-dropdown"
                   customWidth="275px"
                   enableCheckboxes={true}
+                  selectAllLabel="Select All"
                   hideMultipleOptions={true}
+                  enableSelectAll={true}  // Enable select all
                 />
               </div>
               <div>
@@ -941,6 +945,8 @@ export const GridActions = ({
                   placeholder={KDFM.SELECT_ENTITY}
                   options={MODULE_LIST_MAP}
                   customValue={selectEntity}
+                  enableSelectAll={true}  // Enable select all
+                  selectAllLabel="Select All"
                   customOnChange={(onChange, selectedOptions) => {
                     handleEntityChange(selectedOptions);
                     onChange(selectedOptions);

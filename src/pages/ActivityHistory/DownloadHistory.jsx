@@ -106,7 +106,7 @@ const DownloadHistory = () => {
     {
       label: 'Created By',
       renderCell: item => <TextRender text={item.user_name || KDFM.NA} />,
-      width: '10%',
+      width: '15%',
       resize: true,
     },
     {
@@ -116,7 +116,7 @@ const DownloadHistory = () => {
       resize: true,
     },
     {
-      label: 'Action',
+      label: '',
       renderCell: item =>
         item?.download_link ? (
           <button
@@ -151,7 +151,7 @@ const DownloadHistory = () => {
             />
           </>
         ),
-      width: '10%',
+      width: '5%',
       resize: true,
     },
   ];
@@ -210,6 +210,8 @@ const DownloadHistory = () => {
               customWidth="275px"
               enableCheckboxes={true}
               hideMultipleOptions={true}
+              enableSelectAll={true} // Enable select all
+              selectAllLabel="Select All"
             />
           </div>
           <div className="ml-2">
@@ -228,6 +230,8 @@ const DownloadHistory = () => {
               customWidth="275px"
               enableCheckboxes={true}
               hideMultipleOptions={true}
+              enableSelectAll={true} // Enable select all
+              selectAllLabel="Select All"
             />
           </div>
           <div className="ml-2">
@@ -246,9 +250,11 @@ const DownloadHistory = () => {
               customWidth="275px"
               enableCheckboxes={true}
               hideMultipleOptions={true}
+              enableSelectAll={true} // Enable select all
+              selectAllLabel="Select All"
             />
           </div>
-          <div>
+          <div className="ml-2">
             <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
           </div>
         </div>
