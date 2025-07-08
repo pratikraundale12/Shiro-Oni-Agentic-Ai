@@ -6,7 +6,6 @@ import { OpenEyeIcon, SortDownIcon, SortUpIcon } from '../../assets';
 import {
   FullPageLoader,
   IconButton,
-  StatusRender,
   Table,
   TextRender,
 } from '../../components';
@@ -18,6 +17,7 @@ import {
 } from '../../store';
 import SanityCheckAuditLogReportModal from './SanityCheckAuditLogReportModal';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { StatusText } from '../ScheduleDeployment/StatusText';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -139,7 +139,7 @@ const AuditLog = () => {
     {
       label: KDFM.STATUS,
       renderCell: item => (
-        <StatusRender status={item.status || KDFM.NA} redColor="#FF0000" />
+        <StatusText text={item?.status?.replace(/_/g, ' ')} item={item} />
       ),
       width: '8%',
       resize: true,

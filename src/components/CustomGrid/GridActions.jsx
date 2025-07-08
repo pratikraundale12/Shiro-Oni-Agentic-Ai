@@ -327,6 +327,13 @@ export const GridActions = ({
     return [start, end];
   }
 
+    const gridData = useSelector(state =>
+      GridSelectors.getGridData(state, 'activityHistory')
+    );
+
+    console.log(gridData, 'gridData');
+    
+
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
     setState(prev => ({ ...prev, search: null }));
@@ -887,7 +894,10 @@ export const GridActions = ({
                             </Button>
                           </div> */}
                           <div>
-                            <Button onClick={handleExportReport}>Export Report</Button>
+                            {!isEmpty(gridData) && (
+                              <Button onClick={handleExportReport}>Export Report</Button>
+                            )}
+                            
                           </div>
                         </div>
               <div>

@@ -433,7 +433,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
         {/* Success and Failure Rate Pie Chart */}
         <PieChartContainer>
           <h4 style={{ marginBottom: '20px', textAlign: 'center' }}>
-            Deployment Process Groups Rates
+            Deployment Rates
           </h4>
           <D3PieChart data={successFailureData} />
         </PieChartContainer>
@@ -455,7 +455,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
               <Legend />
               <Bar
                 dataKey="crCount"
-                name="Change Request Count"
+                name="Number of Deployments per Change Request"
                 fill="#E4842B"
               />
             </BarChart>

@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { InfoModalActivityHistory } from './InfoModal';
 import { StatusText } from '../ScheduleDeployment/StatusText';
 import { Modal, ModalWithIcon } from '../../shared';
+import { useGlobalContext } from '../../utils';
 
 const ActionTd = styled.div`
   display: flex;
@@ -27,6 +28,12 @@ export const ActvityHistory = () => {
   const [selectEvent, setSelectEvent] = useState([]);
   const [selectEntity, setSelectEntity] = useState([]);
   const [selectStatus, setSelectStatus] = useState([]);
+
+  const {
+      state: { search },
+      setState,
+    } = useGlobalContext();
+    
   const toggleSorting = column => {
     setSortingState(prevState =>
       prevState === column ? `-${column}` : column
@@ -183,7 +190,6 @@ export const ActvityHistory = () => {
       width: '8%',
       resize: true,
       renderCell: item => (
-        // <StatusRender status={item.status || KDFM.NA} redColor="#FF0000" />
         <StatusText text={item?.status?.replace(/_/g, ' ')} item={item} />
       ),
     },
@@ -244,18 +250,18 @@ export const ActvityHistory = () => {
   };
   
 const handleExportReport= () =>{
-  console.log("handleExportReport");
   dispatch(
      ActivityHistoryActions.fetchEmailReport({
-            queryParams: {
-              status: selectStatus.map(status => status.value).join(','),
-              event: selectEvent.map(event => event.value).join(','),
-              entity: selectEntity.map(entity => entity.value).join(','),
-            },
-          })
-        );
-        setIsExportReportOpen(false);
-  }
+       queryParams: {
+       status: selectStatus.map(status => status.value).join(','),
+       event: selectEvent.map(event => event.value).join(','),
+       entity: selectEntity.map(entity => entity.value).join(','),
+       search: search,
+      },
+    })
+ );
+ setIsExportReportOpen(false);
+}
 
   return (
     <>
