@@ -245,6 +245,7 @@ export const GridActions = ({
   isDownloadModalOpen,
   setDownloadModalOpen,
   removeSearch = false,
+  setIsExportReportOpen,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -726,15 +727,7 @@ export const GridActions = ({
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
     const handleExportReport = () => {
-      dispatch(
-        ActivityHistoryActions.fetchEmailReport({
-          queryParams: {
-            status: selectStatus.map(status => status.value).join(','),
-            event: selectEvent.map(event => event.value).join(','),
-            entity: selectEntity.map(entity => entity.value).join(','),
-          },
-        })
-      );
+      setIsExportReportOpen(true);
     };
   
     const loading = useSelector(state =>
@@ -1131,4 +1124,5 @@ GridActions.propTypes = {
   sortingState: PropTypes.string,
   setValue: PropTypes.func,
   onItemsPerPageChange: PropTypes.func.isRequired,
+  setIsExportReportOpen: PropTypes.func,
 };

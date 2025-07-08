@@ -41,16 +41,10 @@ export function* fetchEmailReportSaga(api, action) {
     apiParams: [{ queryParams }],
     successAction: ActivityHistoryActions.fetchEmailReportSuccess,
   });
-
-  console.log('response', response);
-  console.log('wwwwww', response.headers['content-disposition']);
   const contentType = response?.headers?.['content-type'];
   if (response?.error) {
     toast.error('Failed to fetch email report.');
   } else if (contentType && contentType.includes('text/csv')) {
-    // Check if content type is CSV
-    // const isCSV = contentType && contentType.includes('text/csv');
-
     // 🧠 Try to get the filename from the headers
     const disposition = response.headers['content-disposition'];
     const filenameMatch = /filename="?(.+?)"?$/.exec(disposition || '');
@@ -70,11 +64,6 @@ export function* fetchEmailReportSaga(api, action) {
     // ✅ Show success toast
     toast.success('Report downloaded successfully');
   } else {
-<<<<<<< Updated upstream
-=======
-    console.log(response);
-    // history.push('/activity-history/download-history');
->>>>>>> Stashed changes
     toast.success(
       'Export request received. The report will be emailed once ready and can also be accessed via the Download History'
     );

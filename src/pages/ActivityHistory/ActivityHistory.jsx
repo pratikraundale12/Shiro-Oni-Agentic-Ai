@@ -1,6 +1,6 @@
 /*eslint-disable*/
 import React, { useState } from 'react';
-import { OpenEyeIcon, SortDownIcon, SortUpIcon } from '../../assets';
+import { DeleteDustbinIcon, OpenEyeIcon, SortDownIcon, SortUpIcon } from '../../assets';
 import { Grid, IconButton, StatusRender, Table, TextRender } from '../../components';
 import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 import styled from 'styled-components';
@@ -10,7 +10,7 @@ import { ActivityHistoryActions, ActivityHistorySelectors } from '../../store/ac
 import { useDispatch, useSelector } from 'react-redux';
 import { InfoModalActivityHistory } from './InfoModal';
 import { StatusText } from '../ScheduleDeployment/StatusText';
-import { Modal } from '../../shared';
+import { Modal, ModalWithIcon } from '../../shared';
 
 const ActionTd = styled.div`
   display: flex;
@@ -22,7 +22,11 @@ const ActionTd = styled.div`
 export const ActvityHistory = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortingState, setSortingState] = useState('');    
+  const [sortingState, setSortingState] = useState('');  
+  const [isExportReportOpen, setIsExportReportOpen] = useState(false);
+  const [selectEvent, setSelectEvent] = useState([]);
+  const [selectEntity, setSelectEntity] = useState([]);
+  const [selectStatus, setSelectStatus] = useState([]);
   const toggleSorting = column => {
     setSortingState(prevState =>
       prevState === column ? `-${column}` : column
@@ -239,6 +243,19 @@ export const ActvityHistory = () => {
       ),
   };
   
+const handleExportReport= () =>{
+  console.log("handleExportReport");
+  dispatch(
+     ActivityHistoryActions.fetchEmailReport({
+            queryParams: {
+              status: selectStatus.map(status => status.value).join(','),
+              event: selectEvent.map(event => event.value).join(','),
+              entity: selectEntity.map(entity => entity.value).join(','),
+            },
+          })
+        );
+        setIsExportReportOpen(false);
+  }
 
   return (
     <>
@@ -248,13 +265,31 @@ export const ActvityHistory = () => {
         title={KDFM.ACTIVITY_LIST}
         columns={COLUMNS}
         placeholder={KDFM.ACTIVITY_HISTORY_SEARCH_PLACEHOLDER}
-        // statusOptions={ACTIVITY_STATUS_OPTIONS}
         sortFns={sortFns}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         sortingState={sortingState}
         setSortingState={setSortingState}
+        setIsExportReportOpen={setIsExportReportOpen}
+        selectEvent={selectEvent}
+        setSelectEvent={setSelectEvent}
+        selectEntity={selectEntity}
+        setSelectEntity={setSelectEntity}
+        selectStatus={selectStatus}
+        setSelectStatus={setSelectStatus}
       />
+       <ModalWithIcon
+          title="Export Report"
+          primaryButtonText="Confirm"
+          secondaryButtonText="Cancel"
+          icon={<DeleteDustbinIcon height={125} width={125} color="#444445" />}
+          primaryText="Do you want to export activity history records?"
+          secondaryText="This will download a CSV file containing the activity history data."
+          isOpen={isExportReportOpen}
+          onSubmit={handleExportReport}
+          onRequestClose={() => setIsExportReportOpen(false)}
+          contentStyles={{ maxWidth: '45%', maxHeight: '80%' }}
+        />
     </>
   );
 };
