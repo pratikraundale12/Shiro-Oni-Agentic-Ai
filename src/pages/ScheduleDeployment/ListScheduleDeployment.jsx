@@ -917,6 +917,13 @@ export const ListScheduleDeployment = () => {
     { value: 'FAILED', label: 'Failed' },
     { value: 'IN_PROGRESS', label: 'In Progress' },
     { value: 'TIME_LAPSED', label: 'Time Lapsed' },
+    { value: 'DEPLOYED_WITH_ERRORS', label: ' Deployed with errors' },
+    { value: 'UPGRADED_WITH_ERRORS', label: 'Upgraded with errors' },
+    { value: 'DOWNGRADED_WITH_ERRORS', label: 'Downgraded with errors' },
+    { value: 'STARTED_WITH_ERRORS', label: 'Started with errors' },
+    { value: 'STOPPED_WITH_ERRORS', label: 'Stopped with errors' },
+    { value: 'UPGRADED', label: 'Upgraded' },
+    { value: 'DOWNGRADED', label: 'Downgraded' },
   ];
 
   const sortFns = {
