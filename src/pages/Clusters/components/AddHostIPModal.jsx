@@ -81,13 +81,27 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
   ];
 
   const schemaPasswrd = yup.object().shape({
-    host_ip: yup.string().required('Host IP is required'),
+    host_ip: yup
+      .string()
+      .required('Host IP is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Host IP must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
     port: yup.string().required('Port is required'),
     username: yup.string().required('Username is required'),
     password: yup.string().required('Password is required'),
   });
   const schemaPrivateKey = yup.object().shape({
-    host_ip: yup.string().required('Host IP is required'),
+    host_ip: yup
+      .string()
+      .required('Host IP is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Host IP must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
     port: yup.string().required('Port is required'),
     username: yup.string().required('Username is required'),
     pfxFile: yup.mixed().required('File is required'),
