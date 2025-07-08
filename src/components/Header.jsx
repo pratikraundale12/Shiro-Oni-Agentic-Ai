@@ -362,9 +362,6 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
       dispatch(RolesActions.setSelectedRole({}));
       dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
     }
-    if (location.pathname !== '/controller-service') {
-      dispatch(NamespacesActions.getRootControllerServiceNamespace([]));
-    }
   }, [dispatch, GridActions, window?.location?.pathname]);
 
   useEffect(() => {

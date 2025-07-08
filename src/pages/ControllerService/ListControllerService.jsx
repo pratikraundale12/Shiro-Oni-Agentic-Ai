@@ -466,6 +466,9 @@ export const ListControllerService = () => {
     },
   ];
   useEffect(() => {
+    dispatch(NamespacesActions.getRootControllerServiceNamespace([]));
+  }, []);
+  useEffect(() => {
     if (!modalOpenState && selectedCluster?.value) {
       dispatch(NamespacesActions.getControllerServiceList());
     }
