@@ -4,7 +4,7 @@ import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
 import { ActivityHistoryActions, ActivityHistorySelectors } from './redux';
 import { toast } from 'react-toastify';
-import { history } from '../../helpers/history';
+// import { history } from '../../helpers/history';
 
 export function* fetchActivityHistory(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -41,9 +41,40 @@ export function* fetchEmailReportSaga(api, action) {
     apiParams: [{ queryParams }],
     successAction: ActivityHistoryActions.fetchEmailReportSuccess,
   });
+
+  console.log('response', response);
+  console.log('wwwwww', response.headers['content-disposition']);
+  const contentType = response?.headers?.['content-type'];
   if (response?.error) {
     toast.error('Failed to fetch email report.');
+  } else if (contentType && contentType.includes('text/csv')) {
+    // Check if content type is CSV
+    // const isCSV = contentType && contentType.includes('text/csv');
+
+    // 🧠 Try to get the filename from the headers
+    const disposition = response.headers['content-disposition'];
+    const filenameMatch = /filename="?(.+?)"?$/.exec(disposition || '');
+    const filename = filenameMatch ? filenameMatch[1] : 'audit-report.csv';
+
+    // ⬇️ Trigger download
+    const blob = new Blob([response.data], { type: contentType });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    // ✅ Show success toast
+    toast.success('Report downloaded successfully');
   } else {
+<<<<<<< Updated upstream
+=======
+    console.log(response);
+    // history.push('/activity-history/download-history');
+>>>>>>> Stashed changes
     toast.success(
       'Export request received. The report will be emailed once ready and can also be accessed via the Download History'
     );
