@@ -19,6 +19,10 @@ export const ActivityHistoryActions = {
   fetchDownloadReportSuccess: createAction(
     `${prefix}fetchDownloadReportSuccess`
   ),
+  deleteDownloadReport: createAction(`${prefix}deleteDownloadReport`),
+  deleteDownloadReportSuccess: createAction(
+    `${prefix}deleteDownloadReportSuccess`
+  ),
 };
 
 /* ------------- Initial State ------------------ */
@@ -88,6 +92,13 @@ const fetchDownloadReportSuccess = (state, { payload }) => {
   };
 };
 
+const deleteDownloadReportSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    downloadReportData: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const activityHistoryReducer = createReducer(
   ACTIVITY_HISTORY_INITIAL_STATE,
@@ -108,6 +119,10 @@ export const activityHistoryReducer = createReducer(
       .addCase(
         ActivityHistoryActions.fetchDownloadReportSuccess,
         fetchDownloadReportSuccess
+      )
+      .addCase(
+        ActivityHistoryActions.deleteDownloadReportSuccess,
+        deleteDownloadReportSuccess
       );
   }
 );

@@ -66,6 +66,7 @@ import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../FullPageLoader';
+import { use } from 'react';
 
 const Flex = styled.div`
   display: flex;
@@ -243,6 +244,7 @@ export const GridActions = ({
   setSelectStatus,
   isDownloadModalOpen,
   setDownloadModalOpen,
+  removeSearch = false,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -255,6 +257,11 @@ export const GridActions = ({
   );
   const { setState } = useGlobalContext();
   const [searchValue, setSearchValue] = useState('');
+  useEffect(() => {
+    if(removeSearch && module === 'namespaces') {
+      setSearchValue('');
+    }
+  },[removeSearch])
   const uniqueRoles = useMemo(() => {
     return Array.from(new Set(roles.map(role => role.name))).map(name => {
       return roles.find(role => role.name === name);
@@ -877,15 +884,15 @@ export const GridActions = ({
           {module === 'activityHistory' && (
             <>
              <div className="d-flex align-items-center gap-2">
-                          <div>
+                          {/* <div>
                             <Button
                               onClick={() => {
                                 history.push('/activity-history/download-history');
                               }}
                             >
-                              Download History
+                              Download Activity History
                             </Button>
-                          </div>
+                          </div> */}
                           <div>
                             <Button onClick={handleExportReport}>Export Report</Button>
                           </div>
@@ -906,6 +913,8 @@ export const GridActions = ({
                   customWidth="275px"
                   enableCheckboxes={true}
                    hideMultipleOptions={true}
+                   enableSelectAll={true}  // Enable select all
+                   selectAllLabel="Select All"
                 />
               </div>
               <div>
@@ -923,7 +932,9 @@ export const GridActions = ({
                   wrapperCustomClass="entity-dropdown"
                   customWidth="275px"
                   enableCheckboxes={true}
+                  selectAllLabel="Select All"
                   hideMultipleOptions={true}
+                  enableSelectAll={true}  // Enable select all
                 />
               </div>
               <div>
@@ -934,6 +945,8 @@ export const GridActions = ({
                   placeholder={KDFM.SELECT_ENTITY}
                   options={MODULE_LIST_MAP}
                   customValue={selectEntity}
+                  enableSelectAll={true}  // Enable select all
+                  selectAllLabel="Select All"
                   customOnChange={(onChange, selectedOptions) => {
                     handleEntityChange(selectedOptions);
                     onChange(selectedOptions);

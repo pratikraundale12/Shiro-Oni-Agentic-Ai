@@ -106,7 +106,7 @@ const DownloadHistory = () => {
     {
       label: 'Created By',
       renderCell: item => <TextRender text={item.user_name || KDFM.NA} />,
-      width: '10%',
+      width: '15%',
       resize: true,
     },
     {
@@ -116,7 +116,7 @@ const DownloadHistory = () => {
       resize: true,
     },
     {
-      label: 'Action',
+      label: '',
       renderCell: item =>
         item?.download_link ? (
           <button
@@ -151,7 +151,7 @@ const DownloadHistory = () => {
             />
           </>
         ),
-      width: '10%',
+      width: '5%',
       resize: true,
     },
   ];
@@ -163,7 +163,7 @@ const DownloadHistory = () => {
       label: 'Activity History',
       path: '/activity-history',
     },
-    { label: 'Download History' },
+    { label: 'Download Activity History' },
   ];
 
   useEffect(() => {
@@ -189,7 +189,7 @@ const DownloadHistory = () => {
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2">
             <TodoIcon width={22} height={24} />
-            <HeadingStyle>Download History</HeadingStyle>
+            <HeadingStyle>Download Activity History</HeadingStyle>
           </div>
         </div>
         {/* Filter Section */}
@@ -210,6 +210,8 @@ const DownloadHistory = () => {
               customWidth="275px"
               enableCheckboxes={true}
               hideMultipleOptions={true}
+              enableSelectAll={true} // Enable select all
+              selectAllLabel="Select All"
             />
           </div>
           <div className="ml-2">
@@ -228,6 +230,8 @@ const DownloadHistory = () => {
               customWidth="275px"
               enableCheckboxes={true}
               hideMultipleOptions={true}
+              enableSelectAll={true} // Enable select all
+              selectAllLabel="Select All"
             />
           </div>
           <div className="ml-2">
@@ -246,9 +250,11 @@ const DownloadHistory = () => {
               customWidth="275px"
               enableCheckboxes={true}
               hideMultipleOptions={true}
+              enableSelectAll={true} // Enable select all
+              selectAllLabel="Select All"
             />
           </div>
-          <div>
+          <div className="ml-2">
             <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
           </div>
         </div>

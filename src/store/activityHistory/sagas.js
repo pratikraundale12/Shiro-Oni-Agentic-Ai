@@ -44,10 +44,26 @@ export function* fetchEmailReportSaga(api, action) {
   if (response?.error) {
     toast.error('Failed to fetch email report.');
   } else {
-    history.push('/activity-history/download-history');
     toast.success(
       'Export request received. The report will be emailed once ready and can also be accessed via the Download History'
     );
+  }
+}
+export function* deleteDownloadReport(api, action) {
+  const { start_date, end_date } = action.payload || {};
+
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteDownloadReport',
+    loadingSection: 'deleteDownloadReport',
+    apiMethod: api.deleteDownloadReport,
+    apiParams: [{ start_date, end_date }],
+    successAction: ActivityHistoryActions.deleteDownloadReport,
+  });
+  if (response?.error) {
+    toast.error('Failed to delete report.');
+  } else {
+    toast.success('Report deleted successfully');
+    history.push('/activity-history/download-history');
   }
 }
 
@@ -67,7 +83,7 @@ export function* fetchDownloadReportSaga(api, action) {
   });
 
   if (response?.error) {
-    toast.error('Failed to download history.');
+    toast.error('Failed to download Activity History.');
   } else {
     yield put(
       ActivityHistoryActions.fetchDownloadReportSuccess(response?.data)
@@ -90,6 +106,11 @@ export function* activityHistorySagas(api) {
     takeLatest(
       ActivityHistoryActions.fetchDownloadReport,
       fetchDownloadReportSaga,
+      api
+    ),
+    takeLatest(
+      ActivityHistoryActions.deleteDownloadReport,
+      deleteDownloadReport,
       api
     ),
   ]);
