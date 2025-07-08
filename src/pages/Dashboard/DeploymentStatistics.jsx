@@ -38,33 +38,8 @@ const InsightDataContainer = styled.div`
 
 // Custom Tooltip Component for deployment statistics
 const CustomDeploymentTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length > 1) {
+  if (active && payload && payload.length > 0) {
     const data = payload[0].payload;
-
-    let successLabel = '';
-    let errorLabel = '';
-
-    switch (label) {
-      case 'Deployed':
-        successLabel = 'Deployed';
-        errorLabel = 'Deployed with Errors';
-        break;
-      case 'Downgraded':
-        successLabel = 'Downgraded';
-        errorLabel = 'Downgraded with Errors';
-        break;
-      case 'Upgraded':
-        successLabel = 'Upgraded';
-        errorLabel = 'Upgraded with Errors';
-        break;
-      case 'Failed':
-        successLabel = 'Failed';
-        errorLabel = 'Failed';
-        break;
-      default:
-        successLabel = 'Count';
-        errorLabel = 'Errors';
-    }
 
     return (
       <div
@@ -76,17 +51,40 @@ const CustomDeploymentTooltip = ({ active, payload, label }) => {
         }}
       >
         <p className="label" style={{ fontWeight: 'bold' }}>
-          {label}
+          {label} Process Group
         </p>
-        {data.success > 0 && (
-          <p
-            style={{ color: payload[0].color }}
-          >{`${successLabel}: ${data.success}`}</p>
+
+        {/* Handle Failed deployments separately */}
+        {label === 'Failed' && data.failed > 0 && (
+          <p style={{ color: 'red' }}>{`Failed: ${data.failed}`}</p>
         )}
-        {data.error > 0 && (
-          <p
-            style={{ color: payload[1].color }}
-          >{`${errorLabel}: ${data.error}`}</p>
+
+        {/* Handle other deployment types */}
+        {label !== 'Failed' && (
+          <>
+            {data.success > 0 && (
+              <p
+                style={{
+                  color:
+                    payload.find(p => p.dataKey === 'success')?.color ||
+                    'green',
+                }}
+              >
+                {`${label}: ${data.success}`}
+              </p>
+            )}
+            {data.error > 0 && (
+              <p
+                style={{
+                  color:
+                    payload.find(p => p.dataKey === 'error')?.color ||
+                    '#C3F53C',
+                }}
+              >
+                {`${label} with Errors: ${data.error}`}
+              </p>
+            )}
+          </>
         )}
       </div>
     );
@@ -101,6 +99,38 @@ CustomDeploymentTooltip.propTypes = {
   label: PropTypes.string,
 };
 
+// Custom Tooltip Component for Success/Failure Rate Chart
+const CustomRateTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length > 0) {
+    return (
+      <div
+        style={{
+          backgroundColor: '#fff',
+          padding: '10px',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+        }}
+      >
+        <p className="label" style={{ fontWeight: 'bold' }}>
+          {label}
+        </p>
+        {payload.map((entry, index) => (
+          <p key={index} style={{ color: entry.color }}>
+            {`${entry.name}: ${entry.value}%`}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+CustomRateTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.array,
+  label: PropTypes.string,
+};
+
 // Main Component
 const DeploymentStatistics = ({ selectedRange }) => {
   const dispatch = useDispatch();
@@ -109,7 +139,6 @@ const DeploymentStatistics = ({ selectedRange }) => {
     DashboardSelectors.getDeploymentMetrics
   );
   const dataMetrics = deploymentMetrics?.result;
-  console.log(deploymentMetrics, 'deploymentMetrics');
 
   useEffect(() => {
     dispatch(
@@ -129,35 +158,40 @@ const DeploymentStatistics = ({ selectedRange }) => {
       name: 'Deployed',
       success: dataMetrics?.deployed || 0,
       error: dataMetrics?.deployed_with_errors || 0,
+      failed: 0,
     },
     {
       name: 'Downgraded',
       success: dataMetrics?.downgraded || 0,
       error: dataMetrics?.downgraded_with_errors || 0,
+      failed: 0,
     },
     {
       name: 'Upgraded',
       success: dataMetrics?.upgraded || 0,
       error: dataMetrics?.upgraded_with_errors || 0,
+      failed: 0,
     },
     {
       name: 'Failed',
       success: 0,
-      error: dataMetrics?.failed || 0,
+      error: 0,
+      failed: dataMetrics?.failed || 0,
     },
   ];
 
   const successFailureData = [
     {
-      name: 'Rates',
+      name: 'Deployment Process Groups Rates',
       successRate: dataMetrics?.successRate,
       failureRate: dataMetrics?.failureRate,
+      errorRate: dataMetrics?.errorRate,
     },
   ];
 
   const flowCrData = deploymentMetrics?.changeRequestData?.map(item => ({
     crCount: item?.totalCount || 0,
-    crNumber: String(item.changeRequest), // Always treat as string
+    crNumber: String(item.changeRequest),
   }));
 
   return (
@@ -212,18 +246,19 @@ const DeploymentStatistics = ({ selectedRange }) => {
         {/* Deployment success vs error bar chart */}
         <div style={{ width: '50%', height: 300, marginTop: 40 }}>
           <ResponsiveContainer>
-            <BarChart data={deploymentStats}>
+            <BarChart data={deploymentStats} barGap={15} barCategoryGap="20%">
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis allowDecimals={false} />
               <Tooltip content={<CustomDeploymentTooltip />} />
               <Legend />
-              <Bar dataKey="success" name="Success Deployments" fill="green" />
               <Bar
-                dataKey="error"
-                name="Failed Deployments or with Errors"
-                fill="red"
+                dataKey="success"
+                name="Success Deployments"
+                fill="#50C878"
               />
+              <Bar dataKey="error" name="Error Deployments" fill="#FDDA0D" />
+              <Bar dataKey="failed" name="Failed Deployments" fill="#C41E3A" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -231,16 +266,28 @@ const DeploymentStatistics = ({ selectedRange }) => {
         {/* Success and Failure Rate Chart */}
         <div style={{ width: '50%', height: 300, marginTop: 40 }}>
           <ResponsiveContainer>
-            <BarChart data={successFailureData}>
+            <BarChart
+              data={successFailureData}
+              barGap={25}
+              barCategoryGap="20%"
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis domain={[0, 100]} unit="%" />
-              <Tooltip />
+              <Tooltip content={<CustomRateTooltip />} />
               <Legend />
               <Bar
                 dataKey="successRate"
                 name="Success Rate"
-                fill="green"
+                fill="#50C878"
+                barSize={40}
+                isAnimationActive={false}
+                label={{ position: 'top', formatter: value => `${value}%` }}
+              />
+              <Bar
+                dataKey="errorRate"
+                name="Error Rate"
+                fill="#FDDA0D"
                 barSize={40}
                 isAnimationActive={false}
                 label={{ position: 'top', formatter: value => `${value}%` }}
@@ -248,7 +295,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
               <Bar
                 dataKey="failureRate"
                 name="Failure Rate"
-                fill="red"
+                fill="#C41E3A"
                 barSize={40}
                 isAnimationActive={false}
                 label={{ position: 'top', formatter: value => `${value}%` }}
@@ -267,7 +314,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
               <XAxis dataKey="crNumber" />
               <YAxis dataKey="crCount" allowDecimals={false} />
               <Tooltip
-                formatter={value => [`${value}`, 'Total Count']}
+                formatter={value => [`${value}`, 'Deplyed Process Group Count']}
                 labelFormatter={label => `Change Request Number: ${label}`}
               />
               <Legend />
