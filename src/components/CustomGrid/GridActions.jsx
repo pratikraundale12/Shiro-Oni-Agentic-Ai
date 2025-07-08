@@ -884,7 +884,7 @@ export const GridActions = ({
           {module === 'activityHistory' && (
             <>
              <div className="d-flex align-items-center gap-2">
-                          <div>
+                          {/* <div>
                             <Button
                               onClick={() => {
                                 history.push('/activity-history/download-history');
@@ -892,7 +892,7 @@ export const GridActions = ({
                             >
                               Download Activity History
                             </Button>
-                          </div>
+                          </div> */}
                           <div>
                             <Button onClick={handleExportReport}>Export Report</Button>
                           </div>

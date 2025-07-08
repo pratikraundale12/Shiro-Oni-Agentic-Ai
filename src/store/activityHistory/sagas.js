@@ -44,7 +44,6 @@ export function* fetchEmailReportSaga(api, action) {
   if (response?.error) {
     toast.error('Failed to fetch email report.');
   } else {
-    history.push('/activity-history/download-history');
     toast.success(
       'Export request received. The report will be emailed once ready and can also be accessed via the Download History'
     );
