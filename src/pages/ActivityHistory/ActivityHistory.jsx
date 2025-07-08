@@ -1,6 +1,6 @@
 /*eslint-disable*/
 import React, { useState } from 'react';
-import { DeleteDustbinIcon, OpenEyeIcon, SortDownIcon, SortUpIcon } from '../../assets';
+import { FileDownloadIcon, OpenEyeIcon, SortDownIcon, SortUpIcon } from '../../assets';
 import { Grid, IconButton, StatusRender, Table, TextRender } from '../../components';
 import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 import styled from 'styled-components';
@@ -288,7 +288,7 @@ const handleExportReport= () =>{
           title="Export Report"
           primaryButtonText="Confirm"
           secondaryButtonText="Cancel"
-          icon={<DeleteDustbinIcon height={125} width={125} color="#444445" />}
+          icon={<FileDownloadIcon height={125} width={125} color="#444445" />}
           primaryText="Do you want to export activity history records?"
           secondaryText="This will download a CSV file containing the activity history data."
           isOpen={isExportReportOpen}
