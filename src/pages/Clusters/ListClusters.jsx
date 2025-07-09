@@ -158,6 +158,8 @@ export const ListClusters = () => {
   const [unInstallNiFi, setUninstallNiFi] = useState(false);
 
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
+  const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
+
   const [selectedCluster, setSelectedCluster] = useState({});
   const toggleSorting = column => {
     setSortingState(prevState => {
@@ -551,7 +553,7 @@ export const ListClusters = () => {
           params: {
             page: 1,
             sort: 'name',
-            limit: 10,
+            limit: itemPerClusterList || 10,
             ...(state?.search && { search: state?.search }),
             ...(statusData !== '' && { status: statusData }),
           },
@@ -596,7 +598,7 @@ export const ListClusters = () => {
             params: {
               page: 1,
               sort: 'name',
-              limit: 10,
+              limit: itemPerClusterList || 10,
               ...(state?.search && { search: state?.search }),
               ...(statusData !== '' && { status: statusData }),
             },
