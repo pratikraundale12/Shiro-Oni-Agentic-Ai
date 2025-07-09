@@ -488,24 +488,34 @@ export const ListControllerService = () => {
   const handleSettingClick = item => {
     const filteredData =
       !isEmpty(item?.properties) &&
-      item?.properties?.filter(
-        item =>
-          isEmpty(item?.dependencies) ||
-          item?.dependencies?.every(dep =>
-            item?.properties?.some(
-              obj =>
-                obj?.name === dep?.propertyName &&
-                dep?.dependentValues?.includes(obj?.value)
+      item?.properties
+        ?.filter(
+          item =>
+            isEmpty(item?.dependencies) ||
+            item?.dependencies?.every(dep =>
+              item?.properties?.some(
+                obj =>
+                  obj?.name === dep?.propertyName &&
+                  dep?.dependentValues?.includes(obj?.value)
+              )
             )
-          )
-      );
+        )
+        .map(item => ({
+          ...item,
+          old_val: item?.value,
+        }));
     setListPropertTableData(filteredData);
-    setReferenceListPropertyTableData(item?.properties);
+    const properties = item?.properties?.map(item => ({
+      ...item,
+      old_val: item?.value,
+    }));
+    setReferenceListPropertyTableData(properties);
     setSelectedItemFromList(item);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
   const handleCloseModal = () => {
+    setUpdatedData([]);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
   };
 

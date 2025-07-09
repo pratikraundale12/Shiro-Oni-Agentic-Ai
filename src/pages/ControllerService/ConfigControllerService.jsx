@@ -323,7 +323,18 @@ export const ConfigControllerService = ({
     }
     setUpdatedData([]);
   };
+  useEffect(() => {
+    const filteredUpdatedData = updatedData.filter(updatedItem => {
+      const existsInOriginal = listPropertyTableData.some(
+        originalItem =>
+          originalItem?.name === updatedItem?.name &&
+          originalItem?.old_val === updatedItem?.value
+      );
+      return !existsInOriginal;
+    });
 
+    setUpdatedData(filteredUpdatedData);
+  }, [listPropertyTableData]);
   useEffect(() => {
     reset({
       name: selectedItemFromList?.name || '',
@@ -340,6 +351,7 @@ export const ConfigControllerService = ({
       footerAlign="start"
       contentStyles={{ maxWidth: '60%', maxHeight: '70%' }}
       secondaryButtonText="Back"
+      primaryButtonDisabled={isEmpty(updatedData)}
     >
       <ModalBody className="modal-body">
         <div className=" row d-flex justify-content-between">
