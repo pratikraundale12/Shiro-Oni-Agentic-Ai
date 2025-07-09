@@ -1528,20 +1528,29 @@ const ControllerServiceTab = ({
   const handleSettingClick = item => {
     const filteredData =
       !isEmpty(item?.properties) &&
-      item?.properties?.filter(
-        item =>
-          isEmpty(item?.dependencies) ||
-          item?.dependencies?.every(dep =>
-            item?.properties?.some(
-              obj =>
-                obj?.name === dep?.propertyName &&
-                dep?.dependentValues?.includes(obj?.value)
+      item?.properties
+        ?.filter(
+          item =>
+            isEmpty(item?.dependencies) ||
+            item?.dependencies?.every(dep =>
+              item?.properties?.some(
+                obj =>
+                  obj?.name === dep?.propertyName &&
+                  dep?.dependentValues?.includes(obj?.value)
+              )
             )
-          )
-      );
+        )
+        .map(item => ({
+          ...item,
+          old_val: item?.value,
+        }));
     setSelectedItemFromList(item);
     setListPropertTableData(filteredData);
-    setReferenceListPropertyTableData(item?.properties);
+    const properties = item?.properties?.map(item => ({
+      ...item,
+      old_val: item?.value,
+    }));
+    setReferenceListPropertyTableData(properties);
     setIsPropertyResponse(true);
     setIsNewlyAddedExternalServiceResponse(false);
     setIsStateChangeResponse(false);
@@ -1641,6 +1650,7 @@ const ControllerServiceTab = ({
   };
 
   const handleCloseModal = () => {
+    setUpdatedData([]);
     dispatch(NamespacesActions.setNewlyAddVariables([]));
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
   };
@@ -2105,7 +2115,9 @@ const ControllerServiceTab = ({
       <FullPageLoader loading={statusLoading} />
       <DataWrapper>
         <ScrollSetGrey className="scroll-set-grey pe-1">
-          {localServices?.length || externalControllerServices?.length || !isEmpty(lsForUpgrade) ? (
+          {localServices?.length ||
+          externalControllerServices?.length ||
+          !isEmpty(lsForUpgrade) ? (
             collapsibles &&
             collapsibles?.map((item, index) => (
               <Collapsible
