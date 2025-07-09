@@ -290,7 +290,7 @@ const handleExportReport= () =>{
           secondaryButtonText="Cancel"
           icon={<FileDownloadIcon height={125} width={125} color="#444445" />}
           primaryText="Do you want to export activity history records?"
-          secondaryText="This will download a CSV file containing the activity history data."
+          secondaryText="If the activity history contains fewer than 20,000 records, the CSV will download immediately, for larger datasets, a download link will be sent to your email."
           isOpen={isExportReportOpen}
           onSubmit={handleExportReport}
           onRequestClose={() => setIsExportReportOpen(false)}

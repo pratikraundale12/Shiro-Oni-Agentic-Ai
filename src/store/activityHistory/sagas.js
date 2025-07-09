@@ -62,10 +62,10 @@ export function* fetchEmailReportSaga(api, action) {
     link.remove();
 
     // ✅ Show success toast
-    toast.success('Report downloaded successfully');
+    toast.success('Activity HistoryReport downloaded successfully');
   } else {
     toast.success(
-      'Export request received. The report will be emailed once ready and can also be accessed via the Download History'
+      'Export request received. The report will be emailed once ready'
     );
   }
 }
