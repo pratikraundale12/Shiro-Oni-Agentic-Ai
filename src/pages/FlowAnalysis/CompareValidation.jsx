@@ -1,8 +1,9 @@
 import { isEmpty } from 'lodash';
-import React, { useEffect } from 'react'; // ✅ Add useState
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { toast } from 'react-toastify'; // Add toast import
 import { CompareIcon, NoDataIcon, TodoIcon } from '../../assets';
 import { CompareValidationIcon } from '../../assets/Icons/CompareValidationIcon';
 import { FullPageLoader, Table } from '../../components';
@@ -80,6 +81,15 @@ const CompareValidation = () => {
   const compareResult = useSelector(FlowValidationSelectors.getCompareResult);
   const selectedVersionA = watch('select_version_A');
   const selectedVersionB = watch('select_version_B');
+
+  // Check for single version and show toast
+  useEffect(() => {
+    if (versionOptions.length === 1) {
+      toast.info(
+        'Only one version is available. Please add more versions to compare.'
+      );
+    }
+  }, [versionOptions.length]);
 
   const getFilteredOptions = (currentValue, otherValue) => {
     return versionOptions.filter(
@@ -171,6 +181,7 @@ const CompareValidation = () => {
               options={getFilteredOptions(selectedVersionA, selectedVersionB)}
               control={control}
               sortAlphabetically={false}
+              disabled={versionOptions.length === 1} // Disable if only one version
             />
           </div>
           <div className="col-md-3">
@@ -181,12 +192,17 @@ const CompareValidation = () => {
               options={getFilteredOptions(selectedVersionB, selectedVersionA)}
               control={control}
               sortAlphabetically={false}
+              disabled={versionOptions.length === 1} // Disable if only one version
             />
           </div>
           <div className="col-md-auto">
             <Button
               onClick={handleCompareFlow}
-              disabled={!selectedVersionA || !selectedVersionB}
+              disabled={
+                !selectedVersionA ||
+                !selectedVersionB ||
+                versionOptions.length === 1
+              }
               icon={
                 <CompareValidationIcon
                   width="18px"
@@ -202,7 +218,11 @@ const CompareValidation = () => {
         {!selectedVersionA || !selectedVersionB ? (
           <div className="d-flex flex-column align-items-center mt-5">
             <NoDataIcon width={130} />
-            <NoDataText>No Data Found!!</NoDataText>
+            <NoDataText>
+              {versionOptions.length === 1
+                ? 'Only one version available. Cannot compare.'
+                : 'No Data Found!!'}
+            </NoDataText>
           </div>
         ) : !isEmpty(compareResult?.data) ? (
           <>
