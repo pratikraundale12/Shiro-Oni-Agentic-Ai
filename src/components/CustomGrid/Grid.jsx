@@ -120,6 +120,13 @@ export const Grid = ({
   setDownloadModalOpen,
   isDownloadModalOpen,
   removeSearch,
+  setIsExportReportOpen,
+  selectEvent,
+  setSelectEvent,
+  selectEntity,
+  setSelectEntity,
+  selectStatus,
+  setSelectStatus,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -145,9 +152,6 @@ export const Grid = ({
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedRole, setSelectedRole] = useState(null);
   const [clusterSelectedValue, setClusterSelectedValue] = useState(null);
-  const [selectEvent, setSelectEvent] = useState([]);
-  const [selectEntity, setSelectEntity] = useState([]);
-  const [selectStatus, setSelectStatus] = useState([]);
   const [scheduleType, setScheduleType] = useState(null);
 
   const { watch, control, setValue } = useForm();
@@ -505,6 +509,7 @@ export const Grid = ({
         isDownloadModalOpen={isDownloadModalOpen}
         setDownloadModalOpen={setDownloadModalOpen}
         removeSearch={removeSearch}
+        setIsExportReportOpen={setIsExportReportOpen}
       />
       {module === 'nodes' && !loading && (
         <>
@@ -641,4 +646,11 @@ Grid.propTypes = {
   setDownloadModalOpen: PropTypes.func,
   isDownloadModalOpen: PropTypes.bool,
   removeSearch: PropTypes.bool,
+  setIsExportReportOpen: PropTypes.func,
+  selectEntity: PropTypes.string,
+  setSelectEntity: PropTypes.func,
+  selectStatus: PropTypes.string,
+  setSelectStatus: PropTypes.func,
+  selectEvent: PropTypes.string,
+  setSelectEvent: PropTypes.func,
 };
