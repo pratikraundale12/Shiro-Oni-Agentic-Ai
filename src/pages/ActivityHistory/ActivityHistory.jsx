@@ -20,6 +20,12 @@ const ActionTd = styled.div`
   gap: 6px;
 `;
 
+const BoldMessage = styled.span`
+font-size: 16px;
+font-weight: 900;
+`;
+
+
 export const ActvityHistory = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -285,17 +291,21 @@ const handleExportReport= () =>{
         setSelectStatus={setSelectStatus}
       />
        <ModalWithIcon
-          title="Export Report"
-          primaryButtonText="Confirm"
-          secondaryButtonText="Cancel"
-          icon={<FileDownloadIcon height={125} width={125} color="#444445" />}
-          primaryText="Do you want to export activity history records?"
-          secondaryText="If the activity history contains fewer than 20,000 records, the CSV will download immediately, for larger datasets, a download link will be sent to your email."
-          isOpen={isExportReportOpen}
-          onSubmit={handleExportReport}
-          onRequestClose={() => setIsExportReportOpen(false)}
-          contentStyles={{ maxWidth: '45%', maxHeight: '80%' }}
-        />
+  title="Export Report"
+  primaryButtonText="Confirm"
+  secondaryButtonText="Cancel"
+  icon={<FileDownloadIcon height={125} width={125} color="#444445" />}
+  primaryText="Do you want to export activity history records?"
+  secondaryText={
+  <>
+    If the activity history contains fewer than <BoldMessage>20,000 records</BoldMessage>, the CSV will download immediately, for larger datasets, a download link will be sent to your email.
+  </>
+}
+  isOpen={isExportReportOpen}
+  onSubmit={handleExportReport}
+  onRequestClose={() => setIsExportReportOpen(false)}
+  contentStyles={{ maxWidth: '45%', maxHeight: '80%' }}
+/>
     </>
   );
 };
