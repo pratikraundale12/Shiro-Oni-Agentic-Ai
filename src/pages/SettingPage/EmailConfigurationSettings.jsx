@@ -459,7 +459,6 @@ export const EmailConfigurationSettings = () => {
             <StyledVerifyEmailBtn
               type="button"
               onClick={() => handleVerifyEmail()}
-              isBtnDisable={!isChanged}
             >
               <ButtonText>{'Verify Email'}</ButtonText>
             </StyledVerifyEmailBtn>

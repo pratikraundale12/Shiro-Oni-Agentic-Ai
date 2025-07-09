@@ -330,8 +330,6 @@ export const GridActions = ({
     const gridData = useSelector(state =>
       GridSelectors.getGridData(state, 'activityHistory')
     );
-
-    console.log(gridData, 'gridData');
     
 
   const handleRefresh = () => {
