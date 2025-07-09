@@ -25,6 +25,8 @@ const statusColors = {
   Failed: 'red',
   DOWNGRADED: '#0cbf59',
   UPGRADED: '#0cbf59',
+  STARTED: '#0cbf59',
+  STOPPED: '#0cbf59',
 };
 
 const StatusTexts = styled.div`

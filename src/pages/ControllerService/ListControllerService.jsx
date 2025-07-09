@@ -32,6 +32,7 @@ import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
 import { isEmpty } from 'lodash';
 import { SEARCH_INPUT_ERROR } from '../../constants';
+import { toast } from 'react-toastify';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -178,6 +179,14 @@ export const ListControllerService = () => {
     [listData, search]
   );
   const [isUserCanWrite, setIsUserCanWrite] = useState(listData?.[0]?.canWrite);
+
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
+  useEffect(() => {
+    if (isEmpty(selectedCluster?.value)) {
+      toast.info('Please login to cluster');
+    }
+  }, [selectedCluster]);
   useEffect(() => {
     setIsUserCanWrite(listData?.[0]?.canWrite);
   }, [listData]);
@@ -187,7 +196,7 @@ export const ListControllerService = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
-  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
     setIsEnableModalOpen(true);

@@ -245,6 +245,7 @@ export const GridActions = ({
   isDownloadModalOpen,
   setDownloadModalOpen,
   removeSearch = false,
+  setIsExportReportOpen,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -325,6 +326,11 @@ export const GridActions = ({
     // Different days → keep exact
     return [start, end];
   }
+
+    const gridData = useSelector(state =>
+      GridSelectors.getGridData(state, 'activityHistory')
+    );
+    
 
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
@@ -726,15 +732,7 @@ export const GridActions = ({
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
     const handleExportReport = () => {
-      dispatch(
-        ActivityHistoryActions.fetchEmailReport({
-          queryParams: {
-            status: selectStatus.map(status => status.value).join(','),
-            event: selectEvent.map(event => event.value).join(','),
-            entity: selectEntity.map(entity => entity.value).join(','),
-          },
-        })
-      );
+      setIsExportReportOpen(true);
     };
   
     const loading = useSelector(state =>
@@ -894,7 +892,10 @@ export const GridActions = ({
                             </Button>
                           </div> */}
                           <div>
-                            <Button onClick={handleExportReport}>Export Report</Button>
+                            {!isEmpty(gridData) && (
+                              <Button onClick={handleExportReport}>Export Report</Button>
+                            )}
+                            
                           </div>
                         </div>
               <div>
@@ -1131,4 +1132,5 @@ GridActions.propTypes = {
   sortingState: PropTypes.string,
   setValue: PropTypes.func,
   onItemsPerPageChange: PropTypes.func.isRequired,
+  setIsExportReportOpen: PropTypes.func,
 };

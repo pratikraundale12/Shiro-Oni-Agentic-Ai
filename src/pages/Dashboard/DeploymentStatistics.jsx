@@ -150,6 +150,7 @@ CustomCRTooltip.propTypes = {
 };
 
 // D3 Pie Chart Component
+// Enhanced D3 Pie Chart Component with improved tooltips
 const D3PieChart = ({ data }) => {
   const svgRef = useRef();
   const tooltipRef = useRef();
@@ -163,15 +164,15 @@ const D3PieChart = ({ data }) => {
     // Clear previous content
     svg.selectAll('*').remove();
 
-    const width = 400;
+    const width = 500; // Increased width to accommodate legend
     const height = 250;
-    const radius = Math.min(width, height) / 2 - 20;
+    const radius = Math.min(width - 160, height) / 2 - 20; // Reduced radius to leave space for legend
 
     const g = svg
       .attr('width', width)
       .attr('height', height)
       .append('g')
-      .attr('transform', `translate(${width / 2}, ${height / 2})`);
+      .attr('transform', `translate(${(width - 160) / 2}, ${height / 2})`); // Center the pie chart in available space
 
     // Color scale
     const color = d3
@@ -187,6 +188,10 @@ const D3PieChart = ({ data }) => {
 
     // Arc generator
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
+    const arcHover = d3
+      .arc()
+      .innerRadius(0)
+      .outerRadius(radius + 10);
 
     // Create pie data with proper number conversion
     const pieData = [
@@ -194,6 +199,9 @@ const D3PieChart = ({ data }) => {
       { name: 'Error Rate', value: Number(data.errorRate) || 0 },
       { name: 'Failure Rate', value: Number(data.failureRate) || 0 },
     ].filter(d => d.value > 0);
+
+    // Calculate total for percentage calculation
+    const total = pieData.reduce((sum, d) => sum + d.value, 0);
 
     const arcs = g
       .selectAll('.arc')
@@ -209,31 +217,42 @@ const D3PieChart = ({ data }) => {
       .style('fill', d => color(d.data.name))
       .style('stroke', '#fff')
       .style('stroke-width', '2px')
+      .style('cursor', 'pointer')
       .on('mouseover', function (event, d) {
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .attr('transform', function () {
-            const centroid = arc.centroid(d);
-            return `translate(${centroid[0] * 0.1}, ${centroid[1] * 0.1})`;
-          });
+        // Hover effect - slightly expand the slice
+        d3.select(this).transition().duration(200).attr('d', arcHover);
 
+        // Show tooltip
         tooltip.transition().duration(200).style('opacity', 0.9);
+
+        // Enhanced tooltip content
+        const percentage = ((d.data.value / total) * 100).toFixed(1);
+        const tooltipContent = `
+          <div style="font-weight: bold; margin-bottom: 5px;">${d.data.name}</div>
+          <div>Value: ${d.data.value.toFixed(1)}%</div>
+          <div>Share: ${percentage}% of total</div>
+        `;
+
         tooltip
-          .html(`${d.data.name}: ${Number(d.data.value).toFixed(1)}%`)
+          .html(tooltipContent)
+          .style('left', event.pageX + 10 + 'px')
+          .style('top', event.pageY - 28 + 'px');
+      })
+      .on('mousemove', function (event) {
+        // Update tooltip position as mouse moves
+        tooltip
           .style('left', event.pageX + 10 + 'px')
           .style('top', event.pageY - 28 + 'px');
       })
       .on('mouseout', function () {
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .attr('transform', 'translate(0,0)');
+        // Reset hover effect
+        d3.select(this).transition().duration(200).attr('d', arc);
 
+        // Hide tooltip
         tooltip.transition().duration(500).style('opacity', 0);
       });
 
-    // Add percentage labels
+    // Add percentage labels on slices
     arcs
       .append('text')
       .attr('transform', d => `translate(${arc.centroid(d)})`)
@@ -241,17 +260,18 @@ const D3PieChart = ({ data }) => {
       .style('text-anchor', 'middle')
       .style('font-size', '12px')
       .style('font-weight', 'bold')
-      .style('fill', '#fff')
+      .style('fill', 'black')
+      .style('pointer-events', 'none') // Prevent text from interfering with hover
       .text(d => {
         const value = Number(d.data.value);
-        return value > 0 ? `${value.toFixed(1)}%` : '';
+        return value > 5 ? `${value.toFixed(1)}%` : ''; // Only show label if slice is large enough
       });
 
-    // Add legend
+    // Add legend - positioned to avoid overlap
     const legend = svg
       .append('g')
       .attr('class', 'legend')
-      .attr('transform', `translate(20, 20)`);
+      .attr('transform', `translate(${width - 150}, 20)`); // Position on the right side
 
     const legendItems = legend
       .selectAll('.legend-item')
@@ -259,7 +279,8 @@ const D3PieChart = ({ data }) => {
       .enter()
       .append('g')
       .attr('class', 'legend-item')
-      .attr('transform', (d, i) => `translate(0, ${i * 20})`);
+      .attr('transform', (d, i) => `translate(0, ${i * 25})`) // Increase spacing between items
+      .style('cursor', 'pointer');
 
     legendItems
       .append('rect')
@@ -272,25 +293,77 @@ const D3PieChart = ({ data }) => {
       .attr('x', 18)
       .attr('y', 9)
       .attr('dy', '0.35em')
-      .style('font-size', '12px')
-      .text(d => d.name);
+      .style('font-size', '11px') // Slightly smaller font
+      .style('font-weight', '500')
+      .text(d => `${d.name}: ${d.value.toFixed(1)}%`);
+
+    // Add legend hover effects
+    legendItems
+      .on('mouseover', function (event, d) {
+        // Highlight corresponding pie slice
+        const correspondingSlice = arcs.filter(
+          sliceData => sliceData.data.name === d.name
+        );
+        correspondingSlice
+          .select('path')
+          .transition()
+          .duration(200)
+          .attr('d', arcHover);
+
+        // Show tooltip
+        tooltip.transition().duration(200).style('opacity', 0.9);
+        const percentage = ((d.value / total) * 100).toFixed(1);
+        const tooltipContent = `
+          <div style="font-weight: bold; margin-bottom: 5px;">${d.name}</div>
+          <div>Value: ${d.value.toFixed(1)}%</div>
+          <div>Share: ${percentage}% of total</div>
+        `;
+
+        tooltip
+          .html(tooltipContent)
+          .style('left', event.pageX + 10 + 'px')
+          .style('top', event.pageY - 28 + 'px');
+      })
+      .on('mousemove', function (event) {
+        tooltip
+          .style('left', event.pageX + 10 + 'px')
+          .style('top', event.pageY - 28 + 'px');
+      })
+      .on('mouseout', function (event, d) {
+        // Reset pie slice
+        const correspondingSlice = arcs.filter(
+          sliceData => sliceData.data.name === d.name
+        );
+        correspondingSlice
+          .select('path')
+          .transition()
+          .duration(200)
+          .attr('d', arc);
+
+        // Hide tooltip
+        tooltip.transition().duration(500).style('opacity', 0);
+      });
   }, [data]);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', overflow: 'hidden' }}>
       <svg ref={svgRef}></svg>
       <div
         ref={tooltipRef}
         style={{
           position: 'absolute',
-          padding: '8px',
-          background: 'rgba(0, 0, 0, 0.8)',
+          padding: '10px',
+          background: 'rgba(0, 0, 0, 0.9)',
           color: '#fff',
-          borderRadius: '4px',
+          borderRadius: '6px',
           pointerEvents: 'none',
           opacity: 0,
-          fontSize: '12px',
+          fontSize: '13px',
           zIndex: 1000,
+          boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          minWidth: '140px',
+          lineHeight: '1.4',
         }}
       />
     </div>
@@ -310,6 +383,8 @@ const DeploymentStatistics = ({ selectedRange }) => {
   );
   const dataMetrics = deploymentMetrics?.result;
 
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
   useEffect(() => {
     dispatch(
       DashboardActions.fetchDeploymentMetrics({
@@ -321,7 +396,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
           }),
       })
     );
-  }, [dispatch, selectedRange]);
+  }, [dispatch, selectedRange, selectedCluster]);
 
   const deploymentStats = [
     {
@@ -432,9 +507,15 @@ const DeploymentStatistics = ({ selectedRange }) => {
 
         {/* Success and Failure Rate Pie Chart */}
         <PieChartContainer>
-          <h4 style={{ marginBottom: '20px', textAlign: 'center' }}>
-            Deployment Process Groups Rates
-          </h4>
+          {!(
+            successFailureData?.successRate === '0.00' &&
+            successFailureData?.failureRate === '0.00' &&
+            successFailureData?.errorRate === '0.00'
+          ) && (
+            <h4 style={{ marginBottom: '20px', textAlign: 'center' }}>
+              Deployment Rates
+            </h4>
+          )}
           <D3PieChart data={successFailureData} />
         </PieChartContainer>
       </div>
@@ -455,7 +536,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
               <Legend />
               <Bar
                 dataKey="crCount"
-                name="Change Request Count"
+                name="Number of Deployments per Change Request"
                 fill="#E4842B"
               />
             </BarChart>

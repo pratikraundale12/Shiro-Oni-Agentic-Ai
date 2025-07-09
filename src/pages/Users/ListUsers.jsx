@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DeleteDustbinIcon, SortDownIcon, SortUpIcon } from '../../assets';
 import {
   Grid,
@@ -9,14 +9,19 @@ import {
 } from '../../components';
 import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { ModalWithIcon } from '../../shared';
-import { RolesActions } from '../../store';
+import { GridSelectors, RolesActions } from '../../store';
 import { useGlobalContext } from '../../utils';
+import { isEmpty } from 'lodash';
 
 export const ListUsers = () => {
   const { state, setState } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('');
   const dispatch = useDispatch();
+
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'users')
+  );
 
   const toggleSorting = column => {
     setSortingState(prevState => {
@@ -133,8 +138,10 @@ export const ListUsers = () => {
   ];
 
   useEffect(() => {
-    dispatch(RolesActions.fetchRoles());
-  }, [dispatch]);
+    if (!isEmpty(gridData)) {
+      dispatch(RolesActions.fetchRoles());
+    }
+  }, [dispatch, gridData]);
 
   return (
     <>
