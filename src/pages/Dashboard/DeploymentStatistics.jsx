@@ -310,6 +310,8 @@ const DeploymentStatistics = ({ selectedRange }) => {
   );
   const dataMetrics = deploymentMetrics?.result;
 
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
   useEffect(() => {
     dispatch(
       DashboardActions.fetchDeploymentMetrics({
@@ -321,7 +323,7 @@ const DeploymentStatistics = ({ selectedRange }) => {
           }),
       })
     );
-  }, [dispatch, selectedRange]);
+  }, [dispatch, selectedRange, selectedCluster]);
 
   const deploymentStats = [
     {
@@ -432,9 +434,15 @@ const DeploymentStatistics = ({ selectedRange }) => {
 
         {/* Success and Failure Rate Pie Chart */}
         <PieChartContainer>
-          <h4 style={{ marginBottom: '20px', textAlign: 'center' }}>
-            Deployment Rates
-          </h4>
+          {!(
+            successFailureData?.successRate === '0.00' &&
+            successFailureData?.failureRate === '0.00' &&
+            successFailureData?.errorRate === '0.00'
+          ) && (
+            <h4 style={{ marginBottom: '20px', textAlign: 'center' }}>
+              Deployment Rates
+            </h4>
+          )}
           <D3PieChart data={successFailureData} />
         </PieChartContainer>
       </div>

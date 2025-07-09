@@ -255,6 +255,11 @@ export const Dashboard = () => {
   const [updatedErrors, setUpdatedErrors] = useState([]);
   const [activeTab, setActiveTab] = useState('QuickInsights');
 
+  // Reset selectedRange when cluster changes
+  useEffect(() => {
+    setSelectedRange(null);
+  }, [selectedCluster]);
+
   const now = new Date();
 
   const customRanges = [
