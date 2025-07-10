@@ -118,6 +118,12 @@ export const ClustersActions = {
     `${prefix}setProgressTrackingModalOpen`
   ),
   setLastVisitedTab: createAction(`${prefix}setLastVisitedTab`),
+  fetchAllConfigPropertiesWithValue: createAction(
+    `${prefix}fetchAllConfigPropertiesWithValue`
+  ),
+  setAllConfigPropertiesAndValue: createAction(
+    `${prefix}setAllConfigPropertiesAndValue`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -164,6 +170,7 @@ export const CLUSTERS_INITIAL_STATE = {
   ansibleClusterCreationResponseData: {},
   progressTrackingModalOpen: false,
   lastVisitedTab: 'clusters',
+  allConfigPropertiesAndValue: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -222,6 +229,8 @@ export const ClustersSelectors = {
   getProgressTrackingModalOpen: state =>
     state.clusters.progressTrackingModalOpen,
   getlastVisitedTab: state => state.clusters.lastVisitedTab,
+  getAllConfigPropertiesAndValue: state =>
+    state.clusters.allConfigPropertiesAndValue,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -497,6 +506,12 @@ const setLastVisitedTab = (state, { payload }) => {
     lastVisitedTab: payload,
   };
 };
+const setAllConfigPropertiesAndValue = (state, { payload }) => {
+  return {
+    ...state,
+    allConfigPropertiesAndValue: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -619,6 +634,10 @@ export const clustersReducer = createReducer(
         ClustersActions.setProgressTrackingModalOpen,
         setProgressTrackingModalOpen
       )
-      .addCase(ClustersActions.setLastVisitedTab, setLastVisitedTab);
+      .addCase(ClustersActions.setLastVisitedTab, setLastVisitedTab)
+      .addCase(
+        ClustersActions.setAllConfigPropertiesAndValue,
+        setAllConfigPropertiesAndValue
+      );
   }
 );
