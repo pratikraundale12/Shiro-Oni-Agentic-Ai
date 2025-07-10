@@ -398,10 +398,32 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .matches(/^\S+$/, 'Root node cannot contain spaces'),
     ...schemaObjectForStringInputs,
     ...schemaObjectForNumberInputs,
-    bootstrap_config: yup.string().required('Bootstrap config is required'),
-    authorizers_xml: yup.string().required('Authorizers.xml is required'),
-    logback_xml: yup.string().required('logback.xml is required'),
+    bootstrap_config: yup
+      .string()
+      .required('Bootstrap config is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Bootstrap config must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
+    authorizers_xml: yup
+      .string()
+      .required('Authorizers.xml is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Authorizers.xml must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
+    logback_xml: yup
+      .string()
+      .required('logback.xml is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Logback.xml must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
   });
+  //
   const schemaLDAPlogin = yup.object().shape({
     configName: yup
       .string()
@@ -431,9 +453,30 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .matches(/^\S+$/, 'Root node cannot contain spaces'),
     ...schemaObjectForStringInputs,
     ...schemaObjectForNumberInputs,
-    bootstrap_config: yup.string().required('Bootstrap config is required'),
-    authorizers_xml: yup.string().required('Authorizers.xml is required'),
-    logback_xml: yup.string().required('logback.xml is required'),
+    bootstrap_config: yup
+      .string()
+      .required('Bootstrap config is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Bootstrap config must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
+    authorizers_xml: yup
+      .string()
+      .required('Authorizers.xml is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Authorizers.xml must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
+    logback_xml: yup
+      .string()
+      .required('logback.xml is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'logback.xml must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
   });
   const schemaConnectionCheck = yup.object().shape({
     url: yup.string().required('LDAP URL is required'),
