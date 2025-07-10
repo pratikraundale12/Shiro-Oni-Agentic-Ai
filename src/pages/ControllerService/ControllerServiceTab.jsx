@@ -778,7 +778,7 @@ const ControllerServiceTab = ({
               </>
             )}
 
- {(item?.state === 'ENABLING' || item?.state === 'DISABLING') && (
+           {(stateItem?.state === 'ENABLING' || stateItem?.state === 'DISABLING') && (
               <button
                 className="border-0 bg-white ms-1"
                 onClick={event => {
@@ -1007,6 +1007,7 @@ const ControllerServiceTab = ({
           : item?.configuredData
             ? item?.configuredData
             : item;
+            
         const state = stateItem?.state;
         const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
         const isButtonVisible = state ? true : false;
@@ -1092,7 +1093,7 @@ const ControllerServiceTab = ({
               </>
             )}
 
- {(item?.state === 'ENABLING' || item?.state === 'DISABLING') && (
+           {(stateItem?.state === 'ENABLING' || stateItem?.state === 'DISABLING') && (
               <button
                 className="border-0 bg-white ms-1"
                 onClick={event => {
