@@ -423,7 +423,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
         value => value === value?.trim()
       ),
   });
-  //
   const schemaLDAPlogin = yup.object().shape({
     configName: yup
       .string()
