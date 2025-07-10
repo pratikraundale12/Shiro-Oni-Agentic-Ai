@@ -206,7 +206,7 @@ const RectangleGraph = ({
 
            <div style="padding:10px;">
               ${dataForBox?.bucketName ? `<div><strong>Bucket Name:</strong> ${dataForBox.bucketName}</div>` : ''}
-              ${dataForBox?.id ? `<div><strong>Namespace Id:</strong> ${dataForBox.id}</div>` : ''}
+              ${dataForBox?.id ? `<div><strong>Process Group Id:</strong> ${dataForBox.id}</div>` : ''}
               ${dataForBox?.registryId ? `<div><strong>Registry Id:</strong> ${dataForBox.registryId}</div>` : ''}
               <div>${
                 dataForBox?.runningCount !== undefined
