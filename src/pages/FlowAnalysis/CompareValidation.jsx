@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { toast } from 'react-toastify'; // Add toast import
 import { CompareIcon, NoDataIcon, TodoIcon } from '../../assets';
 import { CompareValidationIcon } from '../../assets/Icons/CompareValidationIcon';
-import { FullPageLoader, Table } from '../../components';
+import { FullPageLoader, Table, TextRender } from '../../components';
 import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
 import { history } from '../../helpers/history';
 import { Button, SelectField } from '../../shared';
@@ -16,6 +16,7 @@ import {
   FlowValidationActions,
   FlowValidationSelectors,
 } from '../../store/flowValidation';
+import { KDFM } from '../../constants';
 
 const HeadingStyle = styled.h3`
   font-family: 'Nato Sans', sans-serif;
@@ -115,6 +116,21 @@ const CompareValidation = () => {
     );
   };
 
+  const convertDateTime = dateString => {
+    if (!dateString) return 'No date provided';
+
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
+  };
+
   const path = [
     {
       label: 'Flow Analysis List',
@@ -125,23 +141,32 @@ const CompareValidation = () => {
   const COLUMNS = [
     {
       label: 'Type',
-      renderCell: item => <div>{item?.componentType || 'N/A'}</div>,
+      renderCell: item => <TextRender text={item?.componentType || KDFM.NA} />,
       width: '20%',
     },
     {
       label: 'Name',
-      renderCell: item => <div>{item.componentName || 'N/A'}</div>,
+      renderCell: item => <TextRender text={item?.componentName || KDFM.NA} />,
       width: '20%',
     },
     {
       label: 'ID',
-      renderCell: item => <div>{item?.componentId || 'N/A'}</div>,
-      width: '30%',
+      renderCell: item => <TextRender text={item?.componentId || KDFM.NA} />,
+      width: '20%',
     },
     {
       label: 'Message',
-      renderCell: item => <div>{item?.differenceTypeDescription || 'N/A'}</div>,
-      width: '30%',
+      renderCell: item => (
+        <TextRender text={item?.differenceTypeDescription || KDFM.NA} />
+      ),
+      width: '20%',
+    },
+    {
+      label: 'Last Updated At',
+      renderCell: item => (
+        <TextRender text={convertDateTime(item?.lastUpdatedAt) || KDFM.NA} />
+      ),
+      width: '20%',
     },
   ];
   const loading = useSelector(state =>
