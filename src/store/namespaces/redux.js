@@ -259,6 +259,7 @@ export const NamespacesActions = {
   refreshControllerServiceSuccess: createAction(
     `${prefix}refreshControllerServiceSuccess`
   ),
+  setCsPermissions: createAction(`${prefix}setCsPermissions`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -383,6 +384,7 @@ export const NAMESPACES_INITIAL_STATE = {
   scheduleStartFlow: false,
   scheduleFlowType: null,
   lastSanityReportData: {},
+  csPermissions: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -517,6 +519,7 @@ export const NamespacesSelectors = {
   getLastSanityReportData: state => state.namespaces.lastSanityReportData,
   getRefreshedControllerService: state =>
     state.namespaces.refreshedControllerService,
+  getCsPermissions: state => state.namespaces.csPermissions,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1219,6 +1222,13 @@ const refreshControllerServiceSuccess = (state, { payload }) => {
   };
 };
 
+const setCsPermissions = (state, { payload }) => {
+  return {
+    ...state,
+    csPermissions: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1506,6 +1516,7 @@ export const namespacesReducer = createReducer(
       )
       .addCase(NamespacesActions.setScheduleStartFlow, setScheduleStartFlow)
       .addCase(NamespacesActions.setScheduleFlowType, setScheduleFlowType)
+      .addCase(NamespacesActions.setCsPermissions, setCsPermissions)
       .addCase(
         NamespacesActions.refreshControllerServiceSuccess,
         refreshControllerServiceSuccess

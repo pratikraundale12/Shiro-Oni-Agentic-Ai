@@ -772,12 +772,16 @@ export function* getControllerServiceList(api, action) {
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
   });
-  if (response.ok)
+  if (response.ok) {
     yield put(
-      NamespacesActions.getRootControllerServiceNamespace(response?.data)
+      NamespacesActions.getRootControllerServiceNamespace(
+        response?.data?.services
+      )
     );
-  else if (!response.ok) {
+    yield put(NamespacesActions.setCsPermissions(response?.data?.permissions));
+  } else if (!response.ok) {
     yield put(NamespacesActions.getRootControllerServiceNamespace([]));
+    yield put(NamespacesActions.setCsPermissions({}));
     toast.error(response.data.message);
   }
 }
