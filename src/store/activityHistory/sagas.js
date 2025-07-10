@@ -63,10 +63,12 @@ export function* fetchEmailReportSaga(api, action) {
 
     // ✅ Show success toast
     toast.success('Activity History report downloaded successfully');
-  } else {
+  } else if (response.ok) {
     toast.success(
       'Export request received. The report will be emailed once ready'
     );
+  } else {
+    toast.error(response?.data?.message);
   }
 }
 export function* deleteDownloadReport(api, action) {
