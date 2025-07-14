@@ -551,7 +551,7 @@ export const ListClusters = () => {
         GridActions.fetchGrid({
           module: 'clusters',
           params: {
-            page: 1,
+            page: currentPage || 1,
             sort: 'name',
             limit: itemPerClusterList || 10,
             ...(state?.search && { search: state?.search }),
@@ -596,7 +596,7 @@ export const ListClusters = () => {
           GridActions.fetchGrid({
             module: 'clusters',
             params: {
-              page: 1,
+              page: currentPage || 1,
               sort: 'name',
               limit: itemPerClusterList || 10,
               ...(state?.search && { search: state?.search }),
