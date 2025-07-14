@@ -1034,19 +1034,9 @@ export const GridActions = ({
             {['namespaces'].includes(module) && (
               <>
                 <RefreshIocn
-                 onClick={
-                   selectedCluster?.value && !isEmpty(selectedCluster?.value)
-                   ? handleRefresh
-                   : undefined
-                 }
+                  onClick={handleRefresh}
                   data-tooltip-id={`tooltip-group-namespace-refresh-`}
-                   style={{
-                          cursor:
-                          selectedCluster?.value && !isEmpty(selectedCluster?.value)
-                            ? 'pointer'
-                            : 'not-allowed',
-                   }}
-                  >
+                >
                   <RefreshIcon
                     style={{
                       cursor:
