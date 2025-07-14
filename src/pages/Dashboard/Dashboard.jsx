@@ -254,6 +254,7 @@ export const Dashboard = () => {
   );
   const [updatedErrors, setUpdatedErrors] = useState([]);
   const [activeTab, setActiveTab] = useState('QuickInsights');
+  const cluster = JSON.parse(localStorage.getItem('selected_cluster') || '{}');
 
   // Reset selectedRange when cluster changes
   useEffect(() => {
@@ -424,11 +425,19 @@ export const Dashboard = () => {
 
   const handleDeploymentStatisticsClick = () => {
     if (!selectedCluster?.value) {
-      toast.error('Please login to your cluster first');
+      toast.info('Please login to cluster');
       return;
     }
     setActiveTab('DeploymentStatistics');
   };
+
+  useEffect(() => {
+    const noClusterSelected = isEmpty(cluster?.value);
+    const isQuickInsightsTab = activeTab === 'QuickInsights';
+    if (noClusterSelected && isQuickInsightsTab) {
+      toast.info('Please login to cluster');
+    }
+  }, [cluster, activeTab]);
 
   return (
     <>
@@ -503,7 +512,7 @@ export const Dashboard = () => {
                 </DropdownContainer>
               )}
               {activeTab === 'DeploymentStatistics' && (
-                <div className="me-4">
+                <div>
                   <DateRangePickerInput
                     value={selectedRange}
                     handleChange={handleDateRangeChange}
