@@ -695,6 +695,8 @@ const ControllerServiceTab = ({
         const state = stateItem?.state;
         const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
         const isButtonVisible = state ? true : false;
+        console.log('line 698');
+        
 
         const isBtnDisabled =
           !item.updatedValue ||
@@ -784,6 +786,8 @@ const ControllerServiceTab = ({
                 onClick={event => {
                   handleRefreshClick(item);
                   event.currentTarget.blur();
+                  console.log('Refresh Clicked', item,stateItem?.state);
+                  
                 }}
                 data-tooltip-id={'Delete'}
                 disabled={refreshingRowId === item.id}
@@ -1099,6 +1103,7 @@ const ControllerServiceTab = ({
                 onClick={event => {
                   handleRefreshClick(item);
                   event.currentTarget.blur();
+                   console.log('Refresh Clickedasdf', item,stateItem?.state);
                 }}
                 data-tooltip-id={'Delete'}
                 disabled={refreshingRowId === item.id}
