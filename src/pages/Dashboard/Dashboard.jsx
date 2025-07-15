@@ -36,6 +36,7 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { SettingsActions } from '../../store/settings';
+import { KDFM } from '../../constants';
 
 const TopSection = styled.div`
   display: flex;
@@ -425,7 +426,7 @@ export const Dashboard = () => {
 
   const handleDeploymentStatisticsClick = () => {
     if (!selectedCluster?.value) {
-      toast.info('Please login to cluster');
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER);
       return;
     }
     setActiveTab('DeploymentStatistics');
@@ -435,7 +436,7 @@ export const Dashboard = () => {
     const noClusterSelected = isEmpty(cluster?.value);
     const isQuickInsightsTab = activeTab === 'QuickInsights';
     if (noClusterSelected && isQuickInsightsTab) {
-      toast.info('Please login to cluster');
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER);
     }
   }, [cluster, activeTab]);
 
