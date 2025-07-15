@@ -22,8 +22,11 @@ import { theme } from '../../../styles';
 import {
   ACCESS_CONTROL_OPTIONS,
   CHECKPOINT_INTERVAL_OPTIONS,
+  CLUSTER_ANSIBLE_DEFAULT_CONFIGURATION_VALUE,
   FLOW_ELECTION_MAX_WAIT_OPTIONS,
   KDFM,
+  loginIdentityStrategy,
+  scopeOptions,
   SESSION_TIMEOUT_OPTIONS,
   TRUE_FALSE_OPTIONS,
   ZOOKEEPER_CONNECTION_TIMEOUT,
@@ -40,6 +43,10 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { testConfigApi } from '../../../store/apis/ldap';
 import { SuccessTestModal } from './SuccessTestModal';
 import { toast } from 'react-toastify';
+import BootstrapConfig from './BootstrapConfig';
+import AuthorizersXml from './AuthorizersXml';
+import LogbackXml from './LogbackXml';
+import NifiConfigTabFieldsContainer from './NifiConfigTabFieldsConatiner';
 
 const StyledSelectField = styled(SelectField)`
   /* Container styling */
@@ -288,6 +295,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
   const dispatch = useDispatch();
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
+  const allNifiProperties = useSelector(
+    ClustersSelectors.getAllConfigPropertiesAndValue
+  );
+
   const configToEdit = useSelector(
     ClustersSelectors.getUpdateConfigClusterSetupData
   );
@@ -301,6 +312,45 @@ const ClusterSetupNewConfigDetailsPage = () => {
       value: ele?.nifi_version,
     }));
 
+  const inputStringFields = allNifiProperties?.nifi_properties?.filter(
+    ele => ele?.type === 'string'
+  );
+  const schemaObjectForStringInputs = inputStringFields?.reduce(
+    (acc, field) => {
+      if (field.required === 'true') {
+        acc[field.name] = yup.string().required(`${field.label} is required`);
+      } else {
+        acc[field.name] = yup.string();
+      }
+
+      return acc;
+    },
+    {}
+  );
+
+  const inputNumberFields = allNifiProperties?.nifi_properties?.filter(
+    ele => ele?.type === 'number'
+  );
+  const schemaObjectForNumberInputs = inputNumberFields?.reduce(
+    (acc, field) => {
+      let rule = yup.string();
+
+      if (field.required === 'true') {
+        rule = rule.required(`${field.label} is required`);
+      }
+
+      if (field.regex) {
+        rule = rule.matches(
+          new RegExp(field.regex),
+          `${field.label} must be a valid number`
+        );
+      }
+
+      acc[field.name] = rule;
+      return acc;
+    },
+    {}
+  );
   const schemaUserPassword = yup.object().shape({
     configName: yup
       .string()
@@ -318,23 +368,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'no-leading-trailing-spaces',
         'Username must not start or end with a space',
         value => value === value?.trim()
-      ),
-    nifi_cluster_node_protocol_max_threads: yup
-      .number()
-      .typeError('Protocol Max thread must be a number')
-      .integer('Protocol Max thread must be an integer')
-      .positive('Protocol Max thread must be a positive number')
-      .required('Protocol Max thread is required'),
-    nifi_web_https_port: yup
-      .number()
-      .typeError('Web http port must be a number')
-      .integer('Web http port must be an integer')
-      .positive('Web http port must be a positive number')
-      .required('Web http port is required')
-      .test(
-        'len',
-        'Port must be between 4 and 5 digits',
-        val => val && val.toString().length >= 4 && val.toString().length <= 5
       ),
     username: yup
       .string()
@@ -354,23 +387,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
         value => value === value?.trim()
       )
       .min(10, 'Password must be minimum 10 in length'),
-    java_arg_2: yup
-      .number()
-      .transform((value, originalValue) =>
-        originalValue === '' ? undefined : value
-      )
-      .typeError('Must be a number')
-      .positive('Must be a positive number')
-      .required('Initial heap size is required'),
-    java_arg_3: yup
-      .number()
-      .typeError('Must be a number')
-      .positive('Must be a positive number')
-      .required('Maximum heap size is required')
-      .min(
-        initialHeapSize,
-        `Maximum heap size must be at least ${initialHeapSize}`
-      ),
     directory: yup
       .string()
       .required('Directory is required')
@@ -380,6 +396,32 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .string()
       .required('Root node is required')
       .matches(/^\S+$/, 'Root node cannot contain spaces'),
+    ...schemaObjectForStringInputs,
+    ...schemaObjectForNumberInputs,
+    bootstrap_config: yup
+      .string()
+      .required('Bootstrap config is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Bootstrap config must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
+    authorizers_xml: yup
+      .string()
+      .required('Authorizers.xml is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Authorizers.xml must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
+    logback_xml: yup
+      .string()
+      .required('logback.xml is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Logback.xml must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
   });
   const schemaLDAPlogin = yup.object().shape({
     configName: yup
@@ -399,57 +441,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Username must not start or end with a space',
         value => value === value?.trim()
       ),
-    nifi_cluster_node_protocol_max_threads: yup
-      .number()
-      .typeError('Protocol Max thread must be a number')
-      .integer('Protocol Max thread must be an integer')
-      .positive('Protocol Max thread must be a positive number')
-      .required('Protocol Max thread is required'),
-    nifi_web_https_port: yup
-      .number()
-      .typeError('Web http port must be a number')
-      .integer('Web http port must be an integer')
-      .positive('Web http port must be a positive number')
-      .required('Web http port is required')
-      .test(
-        'len',
-        'Port must be between 4 and 5 digits',
-        val => val && val.toString().length >= 4 && val.toString().length <= 5
-      ),
-    groupDn: yup.string().required('Groups DN is required'),
-    userDn: yup.string().required('Users DN is required'),
-    userUniqueIdentifier: yup
-      .string()
-      .required('User Unique Identifier is required'),
-    groupUniqueIdentifier: yup
-      .string()
-      .required('Group Unique Identifier is required'),
-    usernameIdentifier: yup
-      .string()
-      .required('Username Identifier is required'),
-    InitialAdminIdentity: yup
-      .string()
-      .required('Username Identifier is required'),
-    ldap_login_user_filter: yup
-      .string()
-      .required('Username Identifier is required'),
-    java_arg_2: yup
-      .number()
-      .transform((value, originalValue) =>
-        originalValue === '' ? undefined : value
-      )
-      .typeError('Must be a number')
-      .positive('Must be a positive number')
-      .required('Initial heap size is required'),
-    java_arg_3: yup
-      .number()
-      .typeError('Must be a number')
-      .positive('Must be a positive number')
-      .required('Maximum heap size is required')
-      .min(
-        initialHeapSize,
-        `Maximum heap size must be at least ${initialHeapSize}`
-      ),
     directory: yup
       .string()
       .required('Directory is required')
@@ -459,6 +450,32 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .string()
       .required('Root node is required')
       .matches(/^\S+$/, 'Root node cannot contain spaces'),
+    ...schemaObjectForStringInputs,
+    ...schemaObjectForNumberInputs,
+    bootstrap_config: yup
+      .string()
+      .required('Bootstrap config is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Bootstrap config must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
+    authorizers_xml: yup
+      .string()
+      .required('Authorizers.xml is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Authorizers.xml must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
+    logback_xml: yup
+      .string()
+      .required('logback.xml is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'logback.xml must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
   });
   const schemaConnectionCheck = yup.object().shape({
     url: yup.string().required('LDAP URL is required'),
@@ -517,48 +534,34 @@ const ClusterSetupNewConfigDetailsPage = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      nifi_cluster_flow_election_max_wait_time: '5 mins',
-      nifi_zookeeper_connect_timeout: '10 secs',
-      nifi_web_https_port: 8443,
-      directory: './state/local',
-      partitions: 16,
-      root_node: '/nifi',
-      session_timeout: '10 seconds',
-      checkpoint_interval: '2 mins',
-      java_arg_2: 0,
-      java_arg_3: 0,
-      always_sync: 'false',
-      access_control: 'Open',
-      loginProvider: 'single-user-provider',
-      ldap_login_identity_strategy: 'USE_USERNAME',
-      scope: 'SUBTREE',
+      ...CLUSTER_ANSIBLE_DEFAULT_CONFIGURATION_VALUE,
     },
   });
+  const nifiVersion = watch('nifiVersion');
 
-  const scopeOptions = [
-    {
-      label: 'Subtree',
-      value: 'SUBTREE',
-    },
-    {
-      label: 'One Level',
-      value: 'ONE_LEVEL',
-    },
-    {
-      label: 'Object',
-      value: 'OBJECT',
-    },
-  ];
-  const loginIdentityStrategy = [
-    {
-      label: 'USE_USERNAME',
-      value: 'USE_USERNAME',
-    },
-    {
-      label: 'USE_DN',
-      value: 'USE_DN',
-    },
-  ];
+  useEffect(() => {
+    if (!isEmpty(allNifiProperties) && isEmpty(configToEdit)) {
+      const nifiPropertiesDefaultValues =
+        allNifiProperties?.nifi_properties?.reduce((acc, curr) => {
+          acc[curr.name] = curr.value;
+          return acc;
+        }, {});
+
+      reset({
+        bootstrap_config: allNifiProperties?.bootstrap_conf,
+        authorizers_xml: allNifiProperties?.authorizers_xml,
+        logback_xml: allNifiProperties?.logback_xml,
+        loginProvider: 'single-user-provider',
+        nifiVersion: nifiVersion,
+        directory: './state/local',
+        partitions: 16,
+        root_node: '/nifi',
+        session_timeout: '10 seconds',
+        checkpoint_interval: '2 mins',
+        ...nifiPropertiesDefaultValues,
+      });
+    }
+  }, [allNifiProperties]);
   const handleKeyDown = e => {
     const value = e.target.value.trim();
 
@@ -658,6 +661,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
       icon: CheckListIcon,
     },
     {
+      name: 'Authorizers.xml',
+      path: 'authorizers_xml',
+      icon: CheckListIcon,
+    },
+    {
+      name: 'Logback.xml',
+      path: 'logback_xml',
+      icon: CheckListIcon,
+    },
+    {
       name: 'State-management.xml',
       path: 'state_management_xml',
       icon: CheckListIcon,
@@ -685,12 +698,22 @@ const ClusterSetupNewConfigDetailsPage = () => {
       bootstrap,
       login_identity_providers,
       state_management,
+      authorizers,
+      lockback,
     } = configToEdit;
 
+    dispatch(
+      ClustersActions.fetchAllConfigPropertiesWithValue({
+        version: nifi_version,
+      })
+    );
+
     const nifiProps = safeParseJSON(nifi_properties) || {};
-    const bootstrapProps = safeParseJSON(bootstrap) || {};
+    const bootstrapConfig = bootstrap || '';
     const loginProviders = safeParseJSON(login_identity_providers) || {};
     const stateManagement = safeParseJSON(state_management) || {};
+    const authorizersXml = authorizers || '';
+    const logbackXml = lockback || '';
 
     setValue('configName', config_name);
     setValue('nifiVersion', nifi_version);
@@ -704,6 +727,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifi_zookeeper_connect_timeout,
       nifi_web_https_port,
     } = nifiProps;
+
+    Object.entries(nifiProps).forEach(([key, value]) => {
+      setValue(key, value);
+    });
 
     const isLdapProvider = nifi_user_login_provider === 'ldap-provider';
 
@@ -722,9 +749,9 @@ const ClusterSetupNewConfigDetailsPage = () => {
     );
     setValue('nifi_zookeeper_connect_timeout', nifi_zookeeper_connect_timeout);
     setValue('nifi_web_https_port', nifi_web_https_port);
-
-    setValue('java_arg_2', getMemoryValue(bootstrapProps.java_arg_2));
-    setValue('java_arg_3', getMemoryValue(bootstrapProps.java_arg_3));
+    setValue('bootstrap_config', bootstrapConfig);
+    setValue('authorizers_xml', authorizersXml);
+    setValue('logback_xml', logbackXml);
 
     if (isLdapProvider) {
       const groupObjectClass =
@@ -818,25 +845,23 @@ const ClusterSetupNewConfigDetailsPage = () => {
       toast.error('Please test LDAP credentials before Proceeding');
       return;
     }
+    const resultObject = allNifiProperties?.nifi_properties?.reduce(
+      (acc, field) => {
+        acc[field.name] = data?.[field.name];
+        return acc;
+      },
+      {}
+    );
     const nifiPropertyPayload = {
-      nifi_cluster_is_node: data?.nifi_cluster_is_node,
-      nifi_cluster_node_protocol_max_threads:
-        data?.nifi_cluster_node_protocol_max_threads,
-      nifi_cluster_flow_election_max_wait_time:
-        data?.nifi_cluster_flow_election_max_wait_time,
-      nifi_state_management_embedded_zookeeper_start:
-        data?.nifi_cluster_is_node,
-      nifi_zookeeper_connect_timeout: data?.nifi_zookeeper_connect_timeout,
-      nifi_web_https_port: data?.nifi_web_https_port,
+      ...resultObject,
       nifi_user_login_provider:
         methodForLoginIdentity === 'single-user-provider'
           ? 'single-user-provider'
           : 'ldap-provider',
     };
-    const bootstrapPayload = {
-      java_arg_2: `-Xms${data?.java_arg_2}g`,
-      java_arg_3: `-Xmx${data?.java_arg_3}g`,
-    };
+    const bootstrapPayload = data?.bootstrap_config;
+    const authorizersXmlPayload = data?.authorizers_xml;
+    const logbackXmlPayload = data?.logback_xml;
     const loginLDAPdata = {
       ldap_login_dn: ldapConnectionData?.loginDn,
       ldap_login_password: ldapConnectionData?.password2,
@@ -873,14 +898,15 @@ const ClusterSetupNewConfigDetailsPage = () => {
       session_timeout: data?.session_timeout,
       access_control: data?.access_control?.value || data?.access_control,
     };
-
     const payload = new FormData();
     payload.append('configName', data?.configName);
     payload.append('nifiVersion', data?.nifiVersion);
     payload.append('comments', data?.comments);
     payload.append('nifi_properties', JSON.stringify(nifiPropertyPayload));
-    payload.append('bootstrap_configuration', JSON.stringify(bootstrapPayload));
+    payload.append('bootstrap_configuration', bootstrapPayload);
     payload.append('login_identity_provider', JSON.stringify(loginPayload));
+    payload.append('authorizers_xml', authorizersXmlPayload);
+    payload.append('logback_xml', logbackXmlPayload);
     payload.append('state_management', JSON.stringify(statePayload));
     if (isEmpty(configToEdit)) {
       dispatch(ClustersActions.addConfigClusterSetup(payload));
@@ -899,14 +925,19 @@ const ClusterSetupNewConfigDetailsPage = () => {
   }, [dispatch]);
 
   const onError = errors => {
-    if (
-      errors?.nifi_cluster_node_protocol_max_threads ||
-      errors?.nifi_web_https_port
-    ) {
+    const mandatoryFields = allNifiProperties?.nifi_properties?.filter(
+      ele =>
+        (ele?.type === 'string' || ele?.type === 'number') &&
+        ele?.required === 'true'
+    );
+    const hasAnyError = (fieldsArray, errors) => {
+      return fieldsArray.some(field => errors?.[field.name]);
+    };
+    if (hasAnyError(mandatoryFields, errors)) {
       setSelectedProperty('nifi_properties');
       return;
     }
-    if (errors?.java_arg_2 || errors?.java_arg_3) {
+    if (errors?.bootstrap_config) {
       setSelectedProperty('bootstrap_config');
       return;
     }
@@ -914,13 +945,22 @@ const ClusterSetupNewConfigDetailsPage = () => {
       setSelectedProperty('login_identity_provider');
       return;
     }
+    if (errors?.authorizers_xml) {
+      setSelectedProperty('authorizers_xml');
+      return;
+    }
+    if (errors?.logback_xml) {
+      setSelectedProperty('logback_xml');
+      return;
+    }
+
     if (errors?.directory || errors?.partitions || errors?.root_node) {
       setSelectedProperty('state_management_xml');
       return;
     }
   };
   const methodForLogin = watch('loginProvider');
-
+  const bootstrapConfig = watch('bootstrap_config');
   useEffect(() => {
     if (methodForLogin) {
       // Store current form state before changing authentication method
@@ -1036,6 +1076,15 @@ const ClusterSetupNewConfigDetailsPage = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    if (!isEmpty(nifiVersion) && isEmpty(configToEdit)) {
+      dispatch(
+        ClustersActions.fetchAllConfigPropertiesWithValue({
+          version: nifiVersion,
+        })
+      );
+    }
+  }, [nifiVersion]);
 
   return (
     <Wrapper>
@@ -1080,6 +1129,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
               placeholder={KDFM.SELECT_NIFI_VERSION}
               height="54px"
               labelMargin="0px"
+              disabled={!isEmpty(configToEdit)}
             />
           </div>
           <div className="col-4">
@@ -1133,148 +1183,23 @@ const ClusterSetupNewConfigDetailsPage = () => {
             <SectionHeading>{selectedTitle?.[0]?.name}</SectionHeading>
             {selectedProperty === 'nifi_properties' && (
               <div>
-                <div>
-                  <TitleTabWrapper className="mt-3">
-                    <TitleTab className="ms-3">Core Configuration</TitleTab>
-                  </TitleTabWrapper>
-                  <div className="row mt-3">
-                    <div className="col-5">
-                      <InputField
-                        label="Protocol Max Threads"
-                        name="nifi_cluster_node_protocol_max_threads"
-                        type="text"
-                        placeholder="Enter Protocol Max Threads"
-                        required
-                        register={register}
-                        errors={errors}
-                        defaultValue={50}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                    <div className="col-5">
-                      <StyledSelectField
-                        label="Flow Election Max Wait Time"
-                        name="nifi_cluster_flow_election_max_wait_time"
-                        icon={<QRIcons />}
-                        size="lg"
-                        errors={errors}
-                        control={control}
-                        options={FLOW_ELECTION_MAX_WAIT_OPTIONS}
-                        placeholder="Select Flow Election Max Wait Time"
-                        sortAlphabetically={false}
-                        defaultValue="5"
-                        height="54px"
-                        labelMargin="0px"
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-2">
-                      <RadioSelectField
-                        name="nifi_cluster_is_node"
-                        options={TRUE_FALSE_OPTIONS}
-                        label="NiFi Cluster Node"
-                        register={register}
-                        defaultValue={'false'}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <TitleTabWrapper className="mt-2">
-                    <TitleTab className="ms-3">
-                      Zookeeper Configuration
-                    </TitleTab>
-                  </TitleTabWrapper>
-                  <div className="row mt-3">
-                    <div className="col-5">
-                      <StyledSelectField
-                        label="Zookeeper Connection Timeout"
-                        name="nifi_zookeeper_connect_timeout"
-                        icon={<QRIcons />}
-                        errors={errors}
-                        control={control}
-                        options={ZOOKEEPER_CONNECTION_TIMEOUT}
-                        placeholder="Select Zookeeper Connection Timeout"
-                        sortAlphabetically={false}
-                        height="54px"
-                        labelMargin="0px"
-                      />
-                    </div>{' '}
-                  </div>
-                </div>
-
-                <div>
-                  <TitleTabWrapper className="mt-3">
-                    <TitleTab className="ms-3">
-                      Web Server Configuration
-                    </TitleTab>
-                  </TitleTabWrapper>
-                  <div className="row mt-3">
-                    <div className="col-5">
-                      <InputField
-                        label="Web Http Port"
-                        name="nifi_web_https_port"
-                        type="text"
-                        placeholder="Enter Http Port"
-                        required
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                  </div>
-                </div>
+                <NifiConfigTabFieldsContainer
+                  register={register}
+                  errors={errors}
+                  control={control}
+                  watch={watch}
+                  allNifiProperties={allNifiProperties}
+                />
               </div>
             )}
             {selectedProperty === 'bootstrap_config' && (
               <div>
-                <div>
-                  <TitleTabWrapper className="mt-3">
-                    <TitleTab className="ms-3">Java Memory Settings</TitleTab>
-                  </TitleTabWrapper>
-                  <div className="row mt-3">
-                    <div className="col-4">
-                      <LabelSelect className="ms-1 row">
-                        Java.arg.2
-                        <LabelWarning>
-                          (Initial Heap Size in GB)
-                          <span className="text-danger">*</span>
-                        </LabelWarning>
-                      </LabelSelect>
-
-                      <InputField
-                        name="java_arg_2"
-                        type="number"
-                        placeholder="Enter java.arg.2"
-                        required
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                    <div className="col-4">
-                      <LabelSelect className="row">
-                        Java.arg.3
-                        <LabelWarning>
-                          (Maximum Heap Size in GB)
-                          <span className="text-danger">*</span>
-                        </LabelWarning>
-                      </LabelSelect>
-
-                      <InputField
-                        name="java_arg_3"
-                        type="number"
-                        placeholder="Enter java.arg.3"
-                        required
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                  </div>
-                </div>
+                <BootstrapConfig
+                  register={register}
+                  errors={errors}
+                  rows={21}
+                  control={control}
+                />
               </div>
             )}
             {selectedProperty === 'login_identity_provider' && (
@@ -1591,6 +1516,20 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </div>
                 )}
               </div>
+            )}
+            {selectedProperty === 'authorizers_xml' && (
+              <AuthorizersXml
+                register={register}
+                errors={errors}
+                control={control}
+              />
+            )}
+            {selectedProperty === 'logback_xml' && (
+              <LogbackXml
+                register={register}
+                errors={errors}
+                control={control}
+              />
             )}
             {selectedProperty === 'state_management_xml' && (
               <div>

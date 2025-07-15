@@ -362,3 +362,43 @@ export const SESSION_TIMEOUT_OPTIONS = [
   { label: '50 seconds', value: '50 seconds' },
   { label: '60 seconds', value: '60 seconds' },
 ];
+
+export const CLUSTER_ANSIBLE_DEFAULT_CONFIGURATION_VALUE = {
+  nifi_cluster_flow_election_max_wait_time: '5 mins',
+  nifi_zookeeper_connect_timeout: '10 secs',
+  nifi_web_https_port: 8443,
+  directory: './state/local',
+  partitions: 16,
+  root_node: '/nifi',
+  session_timeout: '10 seconds',
+  checkpoint_interval: '2 mins',
+  always_sync: 'false',
+  access_control: 'Open',
+  loginProvider: 'single-user-provider',
+  ldap_login_identity_strategy: 'USE_USERNAME',
+  scope: 'SUBTREE',
+};
+export const scopeOptions = [
+  {
+    label: 'Subtree',
+    value: 'SUBTREE',
+  },
+  {
+    label: 'One Level',
+    value: 'ONE_LEVEL',
+  },
+  {
+    label: 'Object',
+    value: 'OBJECT',
+  },
+];
+export const loginIdentityStrategy = [
+  {
+    label: 'USE_USERNAME',
+    value: 'USE_USERNAME',
+  },
+  {
+    label: 'USE_DN',
+    value: 'USE_DN',
+  },
+];

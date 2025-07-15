@@ -97,6 +97,10 @@ export const clustersAPI = api => {
       `/clusters/${clusterId}/ansible-logs?process_id=${process_id}&process_name=${process_name}`
     );
   };
+  const fetchAllConfigPropertiesWithValue = ({ version }) => {
+    return api.post(`/clusters/config-properties/${version}`);
+  };
+
   return {
     fetchClusters,
     fetchClusterList,
@@ -127,5 +131,6 @@ export const clustersAPI = api => {
     updateNodesAnsibleCluster,
     deleteAnsibleClusterHard,
     fetchAnsibleCLusterProcessData,
+    fetchAllConfigPropertiesWithValue,
   };
 };

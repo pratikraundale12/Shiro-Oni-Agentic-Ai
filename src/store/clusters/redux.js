@@ -119,6 +119,12 @@ export const ClustersActions = {
   ),
   setLastVisitedTab: createAction(`${prefix}setLastVisitedTab`),
   setclusterListItems: createAction(`${prefix}setclusterListItems`),
+  fetchAllConfigPropertiesWithValue: createAction(
+    `${prefix}fetchAllConfigPropertiesWithValue`
+  ),
+  setAllConfigPropertiesAndValue: createAction(
+    `${prefix}setAllConfigPropertiesAndValue`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -166,6 +172,7 @@ export const CLUSTERS_INITIAL_STATE = {
   progressTrackingModalOpen: false,
   lastVisitedTab: 'clusters',
   clusterListItems: 10,
+  allConfigPropertiesAndValue: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -225,6 +232,8 @@ export const ClustersSelectors = {
     state.clusters.progressTrackingModalOpen,
   getlastVisitedTab: state => state.clusters.lastVisitedTab,
   getClusterListItems: state => state.clusters.clusterListItems,
+  getAllConfigPropertiesAndValue: state =>
+    state.clusters.allConfigPropertiesAndValue,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -507,6 +516,13 @@ const setclusterListItems = (state, { payload }) => {
   };
 };
 
+const setAllConfigPropertiesAndValue = (state, { payload }) => {
+  return {
+    ...state,
+    allConfigPropertiesAndValue: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -629,6 +645,10 @@ export const clustersReducer = createReducer(
         setProgressTrackingModalOpen
       )
       .addCase(ClustersActions.setLastVisitedTab, setLastVisitedTab)
-      .addCase(ClustersActions.setclusterListItems, setclusterListItems);
+      .addCase(ClustersActions.setclusterListItems, setclusterListItems)
+      .addCase(
+        ClustersActions.setAllConfigPropertiesAndValue,
+        setAllConfigPropertiesAndValue
+      );
   }
 );

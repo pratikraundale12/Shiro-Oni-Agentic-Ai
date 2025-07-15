@@ -537,6 +537,23 @@ export function* fetchAnsibleCLusterProcessData(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
+export function* fetchAllConfigPropertiesWithValue(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchAllConfigPropertiesWithValue',
+    loadingSection: 'fetchAllConfigPropertiesWithValue',
+    apiMethod: api.fetchAllConfigPropertiesWithValue,
+    apiParams: [
+      {
+        version: payload?.version,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setAllConfigPropertiesAndValue(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
 
 export function* clustersSagas(api) {
   yield all([
@@ -623,6 +640,11 @@ export function* clustersSagas(api) {
     takeLatest(
       ClustersActions.fetchAnsibleCLusterProcessData,
       fetchAnsibleCLusterProcessData,
+      api
+    ),
+    takeLatest(
+      ClustersActions.fetchAllConfigPropertiesWithValue,
+      fetchAllConfigPropertiesWithValue,
       api
     ),
   ]);

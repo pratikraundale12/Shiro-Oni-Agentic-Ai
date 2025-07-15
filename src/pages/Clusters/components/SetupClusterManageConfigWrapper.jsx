@@ -138,6 +138,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   ];
   useEffect(() => {
     dispatch(ClustersActions.getConfigList());
+    dispatch(ClustersActions.setAllConfigPropertiesAndValue({}));
     return () => {
       dispatch(ClustersActions.setLastVisitedTab('manage_config'));
     };

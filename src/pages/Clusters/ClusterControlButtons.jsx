@@ -77,7 +77,6 @@ const ClusterControlButtons = () => {
   const runningStatusData = useSelector(ClustersSelectors.getRunningStatusData);
 
   const handleStartClick = () => {
-    setSelectedMethod('start');
     setStartInitiated(true);
     dispatch(
       ClustersActions.changeClusterActionState({
@@ -88,7 +87,6 @@ const ClusterControlButtons = () => {
   };
 
   const handleStopClick = () => {
-    setSelectedMethod('stop');
     setStopInitiated(true);
     dispatch(
       ClustersActions.changeClusterActionState({
@@ -99,7 +97,6 @@ const ClusterControlButtons = () => {
   };
 
   const handleRestartClick = () => {
-    setSelectedMethod('restart');
     setRestartInitiated(true);
     dispatch(
       ClustersActions.changeClusterActionState({
