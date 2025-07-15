@@ -916,7 +916,11 @@ export const Add = () => {
               <Button
                 id="registry-details-continue-btn"
                 onClick={handleRegistry}
-                disabled={!selectedRegistryId}
+                disabled={
+                  !isEmpty(data)
+                    ? data?.registry_id == selectedRegistryId
+                    : isEmpty(selectedRegistryId)
+                }
               >
                 {KDFM.CONTINUE}
               </Button>
