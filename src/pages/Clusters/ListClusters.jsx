@@ -137,6 +137,7 @@ export const ListClusters = () => {
     ClustersSelectors.getOriginalClusterName
   );
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
+  const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -363,9 +364,9 @@ export const ListClusters = () => {
         GridActions.fetchGrid({
           module: 'clusters',
           params: {
-            page: 1,
+            page: currentPage || 1,
             sort: 'name',
-            limit: 10,
+            limit: itemPerClusterList || 10,
             ...(statusData !== '' && { status: statusData }),
           },
         })
@@ -433,9 +434,9 @@ export const ListClusters = () => {
           GridActions.fetchGrid({
             module: 'clusters',
             params: {
-              page: 1,
+              page: currentPage || 1,
               sort: 'name',
-              limit: 10,
+              limit: itemPerClusterList || 10,
               ...(statusData !== '' && { status: statusData }),
             },
           })
