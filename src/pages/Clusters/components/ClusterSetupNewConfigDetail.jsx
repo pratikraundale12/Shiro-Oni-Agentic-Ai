@@ -558,6 +558,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
         root_node: '/nifi',
         session_timeout: '10 seconds',
         checkpoint_interval: '2 mins',
+        always_sync: 'false',
+        access_control: 'Open',
         ...nifiPropertiesDefaultValues,
       });
     }
