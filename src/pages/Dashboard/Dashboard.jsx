@@ -154,7 +154,9 @@ const DropdownContainer = styled.div`
 
   .react-select__option {
     max-width: 175px;
-    word-break: break-all;
+    overflow-wrap: break-word;
+    word-break: normal;
+    white-space: normal;
     overflow: hidden;
   }
 `;
