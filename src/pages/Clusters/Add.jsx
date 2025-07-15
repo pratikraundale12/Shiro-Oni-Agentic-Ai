@@ -163,7 +163,7 @@ export const Add = () => {
   const hostToEdit = clusterData?.clusterName || clusterId;
 
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
-
+  const clusterDataRedux = useSelector(ClustersSelectors.getAddEditClusterData);
   // Add this state to track if it's a copy operation
   const [isCopyOperation, setIsCopyOperation] = useState(false);
 
@@ -254,12 +254,6 @@ export const Add = () => {
       ),
   });
 
-  useEffect(() => {
-    if (clusterData) {
-      dispatch(ClustersActions.addEditClusterData(clusterData));
-    }
-  }, [clusterData]);
-
   const [registryData, setRegistryData] = useState({
     registryName: '',
     is_registry_authenticated: true,
@@ -314,25 +308,6 @@ export const Add = () => {
   };
 
   const selectedRegistryId = watch('registry');
-  const handleBack = () => {
-    setIsCertificateOpen(false);
-    setIsCredOpen(false);
-    setTestSuccess(false);
-    setDataFill(false);
-    setIsEditDetails(false);
-
-    setTest(true);
-    if (activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry) {
-      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
-      setNewRegistry(false);
-    } else if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
-      history.push('/clusters');
-    } else if (activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT) {
-      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
-    } else {
-      setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
-    }
-  };
 
   const editClusterData = async () => {
     try {
@@ -428,6 +403,45 @@ export const Add = () => {
     'tags',
     'is_registry_authenticated',
   ]);
+  useEffect(() => {
+    if (
+      !isEmpty(clusterData?.clusterName) ||
+      !isEmpty(clusterData?.nifiUrl) ||
+      !isEmpty(clusterData?.metrics_url) ||
+      !isEmpty(clusterData?.logs_url)
+    ) {
+      dispatch(ClustersActions.addEditClusterData(clusterData));
+    }
+  }, [clusterData]);
+
+  const setClusterFormData = () => {
+    reset({
+      clusterName: clusterDataRedux?.clusterName,
+      metrics_url: clusterDataRedux?.metrics_url || '',
+      logs_url: clusterDataRedux?.logs_url || '',
+      nifiUrl: clusterDataRedux?.nifiUrl,
+    });
+  };
+  const handleBack = () => {
+    setIsCertificateOpen(false);
+    setIsCredOpen(false);
+    setTestSuccess(false);
+    setDataFill(false);
+    setIsEditDetails(false);
+
+    setTest(true);
+    if (activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry) {
+      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
+      setNewRegistry(false);
+    } else if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
+      history.push('/clusters');
+    } else if (activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT) {
+      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
+    } else {
+      setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
+      setClusterFormData();
+    }
+  };
 
   const checkDuplicate = filteredGridData?.some(
     reg => reg.nifi_url === watchedFields?.[1]
@@ -775,6 +789,7 @@ export const Add = () => {
           setNewRegistry={setNewRegistry}
           isRegistryDetailDisable={isRegistryDetailDisable()}
           data={data}
+          setClusterFormData={setClusterFormData}
         />
 
         {activeTab === CLUSTER_MODULE_TABS.CLUSTER && (
