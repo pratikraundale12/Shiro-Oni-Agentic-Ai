@@ -1240,6 +1240,13 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   const selectedRegistryId = yield select(
     NamespacesSelectors.getSelectedRegistryOnDeploy
   );
+  const scheduleStartFlow = yield select(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+  // Extract ID from current URL
+  const currentPath = window.location.pathname;
+  const urlId = currentPath.split('/').pop();
+
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1265,7 +1272,11 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
       {
         clusterId: selectedCluster?.value,
         registriesId: localRegistryIdArr?.[0]?.localRegistryId,
-        namespaceId: !isUpgrade ? selectedNamespace?.id : null,
+        namespaceId: scheduleStartFlow
+          ? urlId
+          : !isUpgrade
+            ? selectedNamespace?.id
+            : null,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,
         version: payload?.version,
@@ -1421,6 +1432,7 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  const formDataRegistry = yield select(NamespacesSelectors.getDeployFormData);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
 
@@ -1430,7 +1442,7 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
     apiMethod: api.fetchDuplicateScheduleData,
     apiParams: [
       {
-        flowId: payload?.flowId,
+        flowId: payload?.flowId || formDataRegistry?.flow_name,
       },
     ],
   });
@@ -1543,6 +1555,7 @@ export function* revertLocalChanges(api) {
 
   if (response?.ok) {
     yield put(NamespacesActions.setSelectedNamespace(response?.data));
+    toast.success('Local changes reverted successfully');
   } else {
     toast.error(response?.message || response?.data?.message);
   }

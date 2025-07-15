@@ -117,6 +117,18 @@ const List = styled.div`
     // width: 100%;
   }
 `;
+
+const NoapproverText = styled.div`
+  font-family: 'Red Hat Display', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  text-align: left;
+  color: rgb(181, 181, 189);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+`;
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -361,32 +373,34 @@ export const ListScheduleDeployment = () => {
             wordWrap: 'break-word',
           }}
         />
-        {item?.mode === 'deploy' && item?.has_sanity_permission === true && (
-          <IconButton
-            onClick={event => {
-              dispatch(SchedularActions.setSanityAndDeployStatus(null));
-              dispatch(NamespacesActions.setSanityReportAuditData(null));
-              dispatch(
-                SchedularActions.setIsScheduleSanityCheckModalOpen(true)
-              );
-              dispatch(SchedularActions.setSelectedSchedule(item));
-              event.currentTarget.blur();
-              if (item?.last_sanity_check_id === null) {
+        {item?.state !== 'DEPLOYED' &&
+          item?.mode === 'deploy' &&
+          item?.has_sanity_permission === true && (
+            <IconButton
+              onClick={event => {
                 dispatch(SchedularActions.setSanityAndDeployStatus(null));
-              }
-              if (item?.last_sanity_check_id) {
+                dispatch(NamespacesActions.setSanityReportAuditData(null));
                 dispatch(
-                  NamespacesActions.fetchSanityReportAuditLog(
-                    sanityCheckData?.id || item?.last_sanity_check_id
-                  )
+                  SchedularActions.setIsScheduleSanityCheckModalOpen(true)
                 );
-              }
-            }}
-            data-tooltip-id={`tooltip-group-sanity-check`}
-          >
-            <SanityCheckIcon />
-          </IconButton>
-        )}
+                dispatch(SchedularActions.setSelectedSchedule(item));
+                event.currentTarget.blur();
+                if (item?.last_sanity_check_id === null) {
+                  dispatch(SchedularActions.setSanityAndDeployStatus(null));
+                }
+                if (item?.last_sanity_check_id) {
+                  dispatch(
+                    NamespacesActions.fetchSanityReportAuditLog(
+                      sanityCheckData?.id || item?.last_sanity_check_id
+                    )
+                  );
+                }
+              }}
+              data-tooltip-id={`tooltip-group-sanity-check`}
+            >
+              <SanityCheckIcon />
+            </IconButton>
+          )}
 
         <ReactTooltip
           id={`tooltip-group-sanity-check`}
@@ -850,7 +864,7 @@ export const ListScheduleDeployment = () => {
       label: 'Approver group/Approver',
       renderCell: item =>
         item?.action_by === 'NO_APPROVER_REQUIRED' ? (
-          <StatusText text={'No Approver Required'} item={item} />
+          <NoapproverText>No Approver Required</NoapproverText>
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
@@ -903,6 +917,13 @@ export const ListScheduleDeployment = () => {
     { value: 'FAILED', label: 'Failed' },
     { value: 'IN_PROGRESS', label: 'In Progress' },
     { value: 'TIME_LAPSED', label: 'Time Lapsed' },
+    { value: 'DEPLOYED_WITH_ERRORS', label: ' Deployed with errors' },
+    { value: 'UPGRADED_WITH_ERRORS', label: 'Upgraded with errors' },
+    { value: 'DOWNGRADED_WITH_ERRORS', label: 'Downgraded with errors' },
+    { value: 'STARTED_WITH_ERRORS', label: 'Started with errors' },
+    { value: 'STOPPED_WITH_ERRORS', label: 'Stopped with errors' },
+    { value: 'UPGRADED', label: 'Upgraded' },
+    { value: 'DOWNGRADED', label: 'Downgraded' },
   ];
 
   const sortFns = {

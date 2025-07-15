@@ -126,6 +126,7 @@ const ParameterContext = ({
     singleNamespaceData?.parameterContextId,
     deployOrUpgradeDetails?.parameterContextId,
   ]);
+  console.log('schduleParameterData', schduleParameterData);
 
   useEffect(() => {
     if (schedularFromList) {
@@ -384,7 +385,7 @@ const ParameterContext = ({
         setTableStateData(updatedData);
       }
     } else if (schedularFromList) {
-      const updatedData = schduleParameterData.map(copyItem => {
+      const updatedData = schduleParameterData?.map(copyItem => {
         const match = newlyAddParameters.find(
           newItem => newItem.name.toLowerCase() === copyItem.name.toLowerCase()
         );
@@ -427,6 +428,9 @@ const ParameterContext = ({
       return a?.parentParameterId - b?.parentParameterId;
     });
   };
+
+  console.log(tableStateData, 'tableStateData');
+
   return (
     <>
       <FullPageLoader loading={pcLoading || pcEditLoading} />

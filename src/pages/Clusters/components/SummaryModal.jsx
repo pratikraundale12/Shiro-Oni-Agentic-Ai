@@ -17,7 +17,7 @@ import {
   createCluster,
   createRegistry,
   updateCluster,
-  updateRegistry,
+  // updateRegistry,
 } from '../../../store/index1';
 import { FullPageLoader } from '../../../components';
 import { isEmpty } from 'lodash';
@@ -329,9 +329,9 @@ export const SummaryModal = ({
 
                     {/*  */}
                     {data?.elements?.map(ele => (
-                      <Col>
+                      <Col key={ele?.id || ele?.name}>
                         <Info width="50%">
-                          <ClusterName> {ele?.name}</ClusterName>
+                          <ClusterName>{ele?.name}</ClusterName>
                         </Info>
                         <Info width={data?.width || '40%'}>
                           <Flex className="d-flex align-items-center">

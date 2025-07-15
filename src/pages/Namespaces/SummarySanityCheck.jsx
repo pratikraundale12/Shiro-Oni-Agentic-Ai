@@ -117,7 +117,7 @@ const SummarySanityCheck = () => {
             {isEmpty(sanityCheckData) && (
               <div className="d-flex flex-column align-items-center mt-5">
                 <NoDataText>
-                  Sanity check has been performed successfully, with no issues
+                  Sanity check has been performed successfully, with no errors
                   detected
                 </NoDataText>
               </div>

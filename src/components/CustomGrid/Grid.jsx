@@ -117,6 +117,16 @@ export const Grid = ({
   setCurrentPage = () => {},
   sortingState,
   setSortingState,
+  setDownloadModalOpen,
+  isDownloadModalOpen,
+  removeSearch,
+  setIsExportReportOpen,
+  selectEvent,
+  setSelectEvent,
+  selectEntity,
+  setSelectEntity,
+  selectStatus,
+  setSelectStatus,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -142,8 +152,7 @@ export const Grid = ({
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedRole, setSelectedRole] = useState(null);
   const [clusterSelectedValue, setClusterSelectedValue] = useState(null);
-  const [selectEvent, setSelectEvent] = useState(null);
-  const [selectEntity, setSelectEntity] = useState(null);
+  const [scheduleType, setScheduleType] = useState(null);
 
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
@@ -281,13 +290,26 @@ export const Grid = ({
               clusterSelectedValue?.label !== 'All' && {
                 clusterName: clusterSelectedValue?.label,
               }),
-            ...(location?.pathname?.includes('activity-history') &&
-              selectEvent?.value !== 'all' && {
-                event: selectEvent?.value,
+            ...(location?.pathname?.includes('schedule-deployment') &&
+              scheduleType?.value !== 'all' && {
+                type: scheduleType?.value,
               }),
             ...(location?.pathname?.includes('activity-history') &&
-              selectEntity?.value !== 'all' && {
-                entity: selectEntity?.value,
+              selectEvent &&
+              selectEvent.length > 0 && {
+                event: selectEvent.map(event => event.value).join(','),
+              }),
+
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEntity &&
+              selectEntity.length > 0 && {
+                entity: selectEntity.map(entity => entity.value).join(','),
+              }),
+
+            ...(location?.pathname?.includes('activity-history') &&
+              selectStatus &&
+              selectStatus.length > 0 && {
+                status: selectStatus.map(status => status.value).join(','),
               }),
 
             ...(location?.pathname?.match(
@@ -326,13 +348,26 @@ export const Grid = ({
             clusterSelectedValue?.label !== 'All' && {
               clusterName: clusterSelectedValue?.label,
             }),
-          ...(location?.pathname?.includes('activity-history') &&
-            selectEvent?.value !== 'all' && {
-              event: selectEvent?.value,
+          ...(location?.pathname?.includes('schedule-deployment') &&
+            scheduleType?.value !== 'all' && {
+              type: scheduleType?.value,
             }),
           ...(location?.pathname?.includes('activity-history') &&
-            selectEntity?.value !== 'all' && {
-              entity: selectEntity?.value,
+            selectEvent &&
+            selectEvent.length > 0 && {
+              event: selectEvent.map(event => event.value).join(','),
+            }),
+
+          ...(location?.pathname?.includes('activity-history') &&
+            selectEntity &&
+            selectEntity.length > 0 && {
+              entity: selectEntity.map(entity => entity.value).join(','),
+            }),
+
+          ...(location?.pathname?.includes('activity-history') &&
+            selectStatus &&
+            selectStatus.length > 0 && {
+              status: selectStatus.map(status => status.value).join(','),
             }),
 
           ...(location?.pathname?.match(
@@ -368,6 +403,8 @@ export const Grid = ({
     selectEvent,
     selectEntity,
     itemsPerPage,
+    scheduleToken,
+    selectStatus,
   ]);
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
@@ -462,9 +499,17 @@ export const Grid = ({
         selectEvent={selectEvent}
         selectEntity={selectEntity}
         setSelectEntity={setSelectEntity}
+        setSelectStatus={setSelectStatus}
+        selectStatus={selectStatus}
         setSortingState={setSortingState}
         setCurrentPage={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
+        scheduleType={scheduleType}
+        setScheduleType={setScheduleType}
+        isDownloadModalOpen={isDownloadModalOpen}
+        setDownloadModalOpen={setDownloadModalOpen}
+        removeSearch={removeSearch}
+        setIsExportReportOpen={setIsExportReportOpen}
       />
       {module === 'nodes' && !loading && (
         <>
@@ -565,6 +610,12 @@ export const Grid = ({
           next={next}
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={setItemsPerPage}
+          selectEntity={selectEntity}
+          setSelectEntity={setSelectEntity}
+          setSelectStatus={setSelectStatus}
+          selectStatus={selectStatus}
+          selectEvent={selectEvent}
+          setSelectEvent={setSelectEvent}
         />
       )}
     </Container>
@@ -598,4 +649,16 @@ Grid.propTypes = {
   state: PropTypes.object.isRequired,
   sortingState: PropTypes.string,
   setSortingState: PropTypes.func,
+  scheduleType: PropTypes.string,
+  setScheduleType: PropTypes.func,
+  setDownloadModalOpen: PropTypes.func,
+  isDownloadModalOpen: PropTypes.bool,
+  removeSearch: PropTypes.bool,
+  setIsExportReportOpen: PropTypes.func,
+  selectEntity: PropTypes.string,
+  setSelectEntity: PropTypes.func,
+  selectStatus: PropTypes.string,
+  setSelectStatus: PropTypes.func,
+  selectEvent: PropTypes.string,
+  setSelectEvent: PropTypes.func,
 };

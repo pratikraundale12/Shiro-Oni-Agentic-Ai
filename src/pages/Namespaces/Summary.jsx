@@ -211,10 +211,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
 
   & span {
     position: absolute;
@@ -227,11 +223,11 @@ const ActiveButtonDiv = styled.div`
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
 
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
-  }
   .div-btn-1.disabled {
     cursor: not-allowed;
+  }
+  svg path {
+    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
 `;
 const BottomButtonDiv = styled.div`
@@ -509,6 +505,10 @@ const Summary = () => {
         return rest;
       }),
     }));
+      const singleNamespaceData1 = useSelector(
+        NamespacesSelectors.getSingleNamespaceData
+      );
+      
 
   const newProcessorEC =
     registryAllDetails.controllerServicesData?.externalControllerServices?.filter(
@@ -1097,11 +1097,11 @@ const Summary = () => {
       }));
       const payload = {
         version: versionSelected?.version,
-        flowId: selectedNameSpace?.flowId,
-        namespaceId: checkDestCluster?.id,
-        registryId: registrySelectedId || registryData?.id,
-        bucketId: selectedNameSpace?.bucketId,
-        namespaceStatus: flowControlSelectedScheduleStored,
+       flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
+      namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
+      registryId: registrySelectedId || registryData?.id || singleNamespaceData1?.registryId,
+      bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
+        namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
         payload: {
           namespaceId: checkDestCluster?.value,
           oldVariablesData: orignalVariables,
@@ -1111,12 +1111,13 @@ const Summary = () => {
           },
         },
         previousVersion: selectedNameSpace?.version || 1,
-        flowName: selectedNameSpace?.flowName,
+        flowName: selectedNameSpace?.flowName || singleNamespaceData1?.flowName,
         isScheduled: true,
-        mode: 'upgrade',
-        type: type,
-        nameSpaceName: selectedNameSpace?.name,
+        mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
+        type: scheduleStartFlow ? scheduleflowtypeMethod : type,
+        nameSpaceName: selectedNameSpace?.name || singleNamespaceData1?.name,
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
+        revert_local_changes: shouldRevertChanges,
         position: {
           x: XcordUpdated || registryDetailsData?.positions[0]?.x,
           y: YcordUpdated || registryDetailsData?.positions[0]?.y,
@@ -1142,6 +1143,14 @@ const Summary = () => {
       : scheduleFlowType === 'RUNNING'
         ? 'start'
         : '';
+
+  const scheduleafterDeploy =
+    scheduleFlowType === 'STOPPED'
+      ? 'STOPPED'
+      : scheduleFlowType === 'RUNNING'
+        ? 'RUNNING'
+        : '';
+
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -1149,10 +1158,10 @@ const Summary = () => {
     }));
     const payload = {
       version: versionSelected?.version,
-      flowId: selectedNameSpace?.flowId,
-      namespaceId: checkDestCluster?.id,
-      registryId: registrySelectedId || registryData?.id,
-      bucketId: selectedNameSpace?.bucketId,
+      flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
+      namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
+      registryId: registryData?.id || singleNamespaceData1?.registryId,
+      bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
       namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
       revert_local_changes: shouldRevertChanges,
       payload: {
@@ -1162,10 +1171,10 @@ const Summary = () => {
         previousControllerServices: { localServicesData: filteredCSArrayDiff },
       },
       previousVersion: selectedNameSpace?.version || 1,
-      flowName: selectedNameSpace?.flowName,
+      flowName: selectedNameSpace?.flowName || singleNamespaceData1?.flowName,
       isScheduled: true,
       mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
-      nameSpaceName: selectedNameSpace?.name,
+      nameSpaceName: selectedNameSpace?.name || singleNamespaceData1?.name,
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       position: {
         x: XcordUpdated || selectedNameSpace?.position?.x,
@@ -1302,6 +1311,146 @@ const Summary = () => {
   };
 
   const selectedFlowNameProvider = getSelectedFlowName();
+
+  // Helper to merge old and new variables for diff modal (only changed)
+  const getMergedVariablesData = (original, updated) => {
+    if (!original || !updated) return [];
+    const updatedMap = updated.reduce((acc, item) => {
+      acc[item.pgId] = item;
+      return acc;
+    }, {});
+    return original
+      .map(origPg => {
+        const updPg = updatedMap[origPg.pgId];
+        if (!updPg) return null;
+        // Map variable name to value for old and new
+        const updVarMap = (updPg.variables || []).reduce((acc, v) => {
+          acc[v.name] = v.value;
+          return acc;
+        }, {});
+        const origVarMap = (origPg.variables || []).reduce((acc, v) => {
+          acc[v.name] = v.value;
+          return acc;
+        }, {});
+        // Only include changed variables
+        const changedNames = Object.keys(updVarMap).filter(
+          name =>
+            origVarMap[name] !== undefined &&
+            updVarMap[name] !== origVarMap[name]
+        );
+        if (changedNames.length === 0) return null;
+        return {
+          pgId: origPg.pgId,
+          pgName: origPg.pgName,
+          variables: changedNames.map(name => ({
+            name,
+            old_value: origVarMap[name],
+            new_value: updVarMap[name],
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  // Helper to merge old and new parameters for diff modal (only changed)
+  const getMergedParametersData = (original, updated) => {
+    if (!original || !updated) return [];
+    return original
+      .map(origGroup => {
+        const updGroup = updated.find(
+          g => g.parameterName === origGroup.parameterName
+        );
+        if (!updGroup) return null;
+        // Map param name to value/desc for old and new
+        const updParamMap = (updGroup.parameters || []).reduce((acc, p) => {
+          acc[p.name] = { value: p.value, description: p.description };
+          return acc;
+        }, {});
+        const origParamMap = (origGroup.parameters || []).reduce((acc, p) => {
+          acc[p.name] = { value: p.value, description: p.description };
+          return acc;
+        }, {});
+        // Only include changed parameters
+        const changedNames = Object.keys(updParamMap).filter(name => {
+          const oldVal = origParamMap[name];
+          const newVal = updParamMap[name];
+          return (
+            oldVal &&
+            (oldVal.value !== newVal.value ||
+              oldVal.description !== newVal.description)
+          );
+        });
+        if (changedNames.length === 0) return null;
+        return {
+          parameterName: origGroup.parameterName,
+          parameters: changedNames.map(name => ({
+            name,
+            old_value: origParamMap[name],
+            new_value: updParamMap[name],
+            description:
+              updParamMap[name]?.description || origParamMap[name]?.description,
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  // Helper to merge old and new controller service properties for diff modal (only changed)
+  const getMergedControllerServicesData = (original, updated) => {
+    if (!original || !updated) return [];
+    // Flatten original to map by identifier
+    const origMap = (original || [])
+      .flatMap(item => item?.controllerData || [])
+      .reduce((acc, cs) => {
+        acc[cs.identifier] = cs;
+        return acc;
+      }, {});
+    return (updated || [])
+      .map(service => {
+        const orig = origMap[service.identifier];
+        if (!orig) return null;
+        // Map property name to value for old and new
+        const updPropMap = (service.properties || []).reduce((acc, p) => {
+          acc[p.name] = p.value;
+          return acc;
+        }, {});
+        const origPropMap = (orig.properties || []).reduce((acc, p) => {
+          acc[p.name] = p.value;
+          return acc;
+        }, {});
+        // Only include changed properties
+        const changedNames = Object.keys(updPropMap).filter(
+          name =>
+            origPropMap[name] !== undefined &&
+            updPropMap[name] !== origPropMap[name]
+        );
+        if (changedNames.length === 0) return null;
+        return {
+          identifier: service.identifier,
+          name: service.name,
+          properties: changedNames.map(name => ({
+            name,
+            old_value: origPropMap[name],
+            new_value: updPropMap[name],
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  const mergedVariablesData = getMergedVariablesData(
+    registryAllDetails?.variablesData,
+    variblesReduxData
+  );
+  const mergedParametersData = getMergedParametersData(
+    currentParametersData,
+    updatedParametersData
+  );
+  const mergedControllerServicesData = getMergedControllerServicesData(
+    registryAllDetails?.controllerServicesData?.localServices,
+    controllerServiceReduxData?.localServicesData
+  );
+
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -1327,7 +1476,7 @@ const Summary = () => {
             :
             <MainTitleHfour className="mb-0">
               {!isUpgrade
-                ? selectedNameSpace.label
+                ? selectedNameSpace?.label
                 : formDataRegistry?.selectedFlowName}
             </MainTitleHfour>
           </MainTitleDiv>
@@ -1478,7 +1627,7 @@ const Summary = () => {
                           {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {versionSelected.version || ''}
+                          {versionSelected?.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -1574,7 +1723,9 @@ const Summary = () => {
                             {KDFM.FLOW_STATE_AFTER_DEPLOY}
                           </SummaryDetailsHFourTag>
                           <SummaryDetailsPtag className="mb-0">
-                            {flowControlSelectedScheduleStored || 'N/A'}
+                            {scheduleStartFlow
+                              ? scheduleafterDeploy
+                              : flowControlSelectedScheduleStored || 'N/A'}
                           </SummaryDetailsPtag>
                         </div>
                       </UseColXl>
@@ -1921,9 +2072,9 @@ const Summary = () => {
                 : checkDestCluster?.version || 'N/A'
             }`}
             isFromDeploySummary={true}
-            parametersData={newParametersData}
-            variablesData={variblesReduxData}
-            csData={updatedLocalCsPayloadOnDeploy}
+            parametersData={mergedParametersData}
+            variablesData={mergedVariablesData}
+            csData={mergedControllerServicesData}
           />
         )}
         <SanityCheckDeployModal />

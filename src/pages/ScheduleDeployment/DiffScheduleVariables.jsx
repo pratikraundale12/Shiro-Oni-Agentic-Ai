@@ -136,16 +136,15 @@ const ColumnName = styled(TileItem)`
 `;
 
 const ColumnValue = styled(TileItem)`
-  width: ${props => (props.isDeploySummary ? '75%' : '40%')};
+  width: 40%;
   padding-right: 8px;
 
   @media (max-width: 1024px) {
-    width: ${props => (props.isDeploySummary ? '70%' : '35%')};
+    width: 35%;
   }
 
   @media (max-width: 768px) {
-    width: ${props =>
-      props.stacked ? '100%' : props.isDeploySummary ? '70%' : '35%'};
+    width: ${props => (props.stacked ? '100%' : '35%')};
   }
 `;
 
@@ -197,51 +196,54 @@ const DiffScheduleVariables = ({
           <div key={element?.pgId} className="mt-4">
             <PgHead className="mb-2">{element?.pgName}</PgHead>
             <GreyBoxNamespace>
+              {/* Header row - same for both cases */}
               <HeaderRow>
                 <ColumnName className="d-flex align-items-center">
                   <TileHeader>Name</TileHeader>
                 </ColumnName>
-                <ColumnValue isDeploySummary={isFromDeploySummary}>
-                  <TileHeader>
-                    {isFromDeploySummary ? 'Value' : 'New Value'}
-                  </TileHeader>
+                <ColumnValue>
+                  <TileHeader>New Value</TileHeader>
                 </ColumnValue>
-                {!isFromDeploySummary && (
-                  <ColumnCurrent>
-                    <TileHeader>Current Value</TileHeader>
-                  </ColumnCurrent>
-                )}
+                <ColumnCurrent>
+                  <TileHeader>Current Value</TileHeader>
+                </ColumnCurrent>
               </HeaderRow>
 
               {element?.variables?.map(item => {
-                const value =
-                  item?.value === ''
-                    ? item?.check
-                      ? 'Empty String Set'
-                      : 'No Value set'
-                    : item?.value;
+                // Handle different data structures - both cases have new_value and old_value
+                const newValue =
+                  item?.new_value === ''
+                    ? 'Empty String Set'
+                    : item?.new_value === null
+                      ? 'No Value set'
+                      : item?.new_value;
+
+                const oldValue =
+                  item?.old_value === ''
+                    ? 'Empty String Set'
+                    : item?.old_value === null
+                      ? 'No Value set'
+                      : item?.old_value;
 
                 return (
                   <ResponsiveRow className="mt-2 mb-2" key={item?.name}>
                     <ColumnName className="d-flex align-items-center">
                       {item?.name}
                     </ColumnName>
-                    <ColumnValue isDeploySummary={isFromDeploySummary}>
-                      <ValueBox>
-                        {isFromDeploySummary ? value : item?.new_value || 'N/A'}
-                      </ValueBox>
+                    <ColumnValue>
+                      <ValueBox>{newValue || 'N/A'}</ValueBox>
                     </ColumnValue>
-                    {!isFromDeploySummary && (
-                      <ColumnCurrent>
-                        <ValueBox>{item?.old_value || 'N/A'}</ValueBox>
-                      </ColumnCurrent>
-                    )}
+                    <ColumnCurrent>
+                      <ValueBox>{oldValue || 'N/A'}</ValueBox>
+                    </ColumnCurrent>
                   </ResponsiveRow>
                 );
               })}
             </GreyBoxNamespace>
           </div>
         ))}
+
+        {/* No data condition - check the selected data source */}
         {isEmpty(data) && (
           <div className="d-flex flex-column align-items-center mt-5">
             <NoDataIcon width={130} />

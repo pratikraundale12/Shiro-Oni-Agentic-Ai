@@ -42,7 +42,7 @@ import RegistryFormSection from './components/RegistryFormSection';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
-import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
+import RegistryMultiSelect from '../../shared/FormInputs/components/RegistryMultiSelectField';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -170,6 +170,10 @@ export const Add = () => {
   const hostToEdit = clusterData?.clusterName || clusterId;
 
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
+
+  // Add this state to track if it's a copy operation
+  const [isCopyOperation, setIsCopyOperation] = useState(false);
+
   const isSuperAdmin = currentUserData?.role === 'superadmin';
   const ClusterSchema = yup.object().shape({
     clusterName: yup
@@ -516,6 +520,7 @@ export const Add = () => {
         value: item.value,
       }));
 
+  // Update the useEffect where you check for data
   useEffect(() => {
     if (data?.registry_ids && registries && selectedOptions) {
       reset({
@@ -528,6 +533,11 @@ export const Add = () => {
         registryUrl: registryData?.registry_url || '',
       });
       setClusterId(data?.id);
+
+      // Check if it's a copy operation (data exists but no id)
+      if (!data?.id && data?.name) {
+        setIsCopyOperation(true);
+      }
     }
   }, [activeTab, newRegistry, registries, data]);
 
@@ -666,19 +676,43 @@ export const Add = () => {
     changeRequestEnable,
     approverEnableForStartAndStop,
   ]);
+  // Also update the handleTitleProvider function to handle copy operation
   const handleTitleProvider = data => {
     if (data && location?.pathname === '/clusters/edit') {
       return `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`;
+    } else if (isCopyOperation) {
+      return 'Add New Cluster Details';
     } else {
       return 'Add New Cluster Details';
     }
   };
+  // Update the isRegistryDetailDisable function
   const isRegistryDetailDisable = () => {
-    return (
-      clusterId &&
-      (watchedFields?.[1] !== data?.nifi_url ||
+    // For edit mode (existing cluster with ID)
+    if (clusterId && !isCopyOperation) {
+      return (
+        watchedFields?.[1] !== data?.nifi_url ||
         watchedFields?.[0] !== data?.name ||
-        !checkEditSave())
+        !checkEditSave()
+      );
+    }
+
+    // For copy operation or add new cluster
+    if (isCopyOperation || (!clusterId && data)) {
+      return (
+        !watchedFields?.[0] || // clusterName is empty
+        !watchedFields?.[1] || // nifiUrl is empty
+        hasValidationErrors() || // has form validation errors
+        !testSuccess // cluster test not successful
+      );
+    }
+
+    // For completely new cluster (no data at all)
+    return (
+      !watchedFields?.[0] || // clusterName is empty
+      !watchedFields?.[1] || // nifiUrl is empty
+      hasValidationErrors() || // has form validation errors
+      !testSuccess // cluster test not successful
     );
   };
 
@@ -806,7 +840,7 @@ export const Add = () => {
           <FormContainer>
             <div className="w-100 mb-4">
               <LabelSelect>Select Registry</LabelSelect>
-              <MultiSelectField
+              <RegistryMultiSelect
                 enableCheckboxes
                 control={control}
                 name="registry"

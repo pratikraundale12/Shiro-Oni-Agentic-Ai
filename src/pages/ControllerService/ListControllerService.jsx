@@ -32,6 +32,7 @@ import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
 import { isEmpty } from 'lodash';
 import { SEARCH_INPUT_ERROR } from '../../constants';
+import { toast } from 'react-toastify';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -178,6 +179,14 @@ export const ListControllerService = () => {
     [listData, search]
   );
   const [isUserCanWrite, setIsUserCanWrite] = useState(listData?.[0]?.canWrite);
+
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
+  useEffect(() => {
+    if (isEmpty(selectedCluster?.value)) {
+      toast.info('Please login to cluster');
+    }
+  }, [selectedCluster]);
   useEffect(() => {
     setIsUserCanWrite(listData?.[0]?.canWrite);
   }, [listData]);
@@ -187,7 +196,7 @@ export const ListControllerService = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
-  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
     setIsEnableModalOpen(true);
@@ -466,6 +475,9 @@ export const ListControllerService = () => {
     },
   ];
   useEffect(() => {
+    dispatch(NamespacesActions.getRootControllerServiceNamespace([]));
+  }, []);
+  useEffect(() => {
     if (!modalOpenState && selectedCluster?.value) {
       dispatch(NamespacesActions.getControllerServiceList());
     }
@@ -474,24 +486,34 @@ export const ListControllerService = () => {
   const handleSettingClick = item => {
     const filteredData =
       !isEmpty(item?.properties) &&
-      item?.properties?.filter(
-        item =>
-          isEmpty(item?.dependencies) ||
-          item?.dependencies?.every(dep =>
-            item?.properties?.some(
-              obj =>
-                obj?.name === dep?.propertyName &&
-                dep?.dependentValues?.includes(obj?.value)
+      item?.properties
+        ?.filter(
+          item =>
+            isEmpty(item?.dependencies) ||
+            item?.dependencies?.every(dep =>
+              item?.properties?.some(
+                obj =>
+                  obj?.name === dep?.propertyName &&
+                  dep?.dependentValues?.includes(obj?.value)
+              )
             )
-          )
-      );
+        )
+        .map(item => ({
+          ...item,
+          old_val: item?.value,
+        }));
     setSelectedItemFromList(item);
     setListPropertTableData(filteredData);
-    setReferenceListPropertyTableData(item?.properties);
+    const properties = item?.properties?.map(item => ({
+      ...item,
+      old_val: item?.value,
+    }));
+    setReferenceListPropertyTableData(properties);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
   const handleCloseModal = () => {
+    setUpdatedData([]);
     dispatch(NamespacesActions.setNewlyAddVariables([]));
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
   };

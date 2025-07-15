@@ -647,6 +647,9 @@ const FlowDetailsPage = () => {
                         yStateCoordinate ||
                         selectedNameSpace?.position?.y
                       }
+                      referenceDataArray={
+                        versionListData?.graphData?.data || []
+                      }
                     />
                   }
                 </ColLgSix>

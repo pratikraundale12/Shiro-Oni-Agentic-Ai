@@ -78,7 +78,6 @@ export const CLUSTER_STATUS = {
 };
 
 export const MODULE_LIST_MAP = [
-  { label: 'All', value: 'all' },
   { label: 'Cluster', value: 'Cluster' },
   { label: 'Registry', value: 'Registry' },
   { label: 'Process Group', value: 'Process Group' },
@@ -91,16 +90,26 @@ export const MODULE_LIST_MAP = [
   { label: 'Parameter Context', value: 'Parameter Context' },
   { label: 'Variable', value: 'Variable' },
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
+  { label: 'Local Changes', value: 'Local Changes' },
+  { label: 'Audit', value: 'Audit' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
-  { label: 'All', value: 'all' },
   { label: 'Success', value: 'Success' },
   { label: 'Failed', value: 'Failed' },
+  { label: 'Deployed', value: 'DEPLOYED' },
+  { label: 'Upgraded', value: 'UPGRADED' },
+  { label: 'Downgrade', value: 'DOWNGRADED' },
+  { label: 'Started', value: 'STARTED' },
+  { label: 'Stopped', value: 'STOPPED' },
+  { label: 'Deployed With Errors', value: 'DEPLOYED_WITH_ERRORS' },
+  { label: 'Upgraded With Errors', value: 'UPGRADED_WITH_ERRORS' },
+  { label: 'Downgraded With Errors', value: 'DOWNGRADED_WITH_ERRORS' },
+  { label: 'Started With Errors', value: 'STARTED_WITH_ERRORS' },
+  { label: 'Stopped With Errors', value: 'STOPPED_WITH_ERRORS' },
 ];
 
 export const ACTIVITY_EVENTS = [
-  { label: 'All', value: 'all' },
   { label: 'Add', value: 'Add' },
   { label: 'Edit', value: 'Edit' },
   { label: 'Delete', value: 'Delete' },
@@ -119,6 +128,11 @@ export const ACTIVITY_EVENTS = [
   { label: 'Approve', value: 'Approve' },
   { label: 'Enable', value: 'Enable' },
   { label: 'Disable', value: 'Disable' },
+  { label: 'Revert', value: 'Revert' },
+  { label: 'Schedule Stop', value: 'Schedule Stop' },
+  { label: 'Schedule Start', value: 'Schedule Start' },
+  { label: 'Sanity Check', value: 'Sanity Check' },
+  { label: 'Download', value: 'Download' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
