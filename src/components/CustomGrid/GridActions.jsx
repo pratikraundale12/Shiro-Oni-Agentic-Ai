@@ -259,10 +259,10 @@ export const GridActions = ({
   const { setState } = useGlobalContext();
   const [searchValue, setSearchValue] = useState('');
   useEffect(() => {
-    if(removeSearch && module === 'namespaces') {
+    if (removeSearch && module === 'namespaces') {
       setSearchValue('');
     }
-  },[removeSearch])
+  }, [removeSearch]);
   const uniqueRoles = useMemo(() => {
     return Array.from(new Set(roles.map(role => role.name))).map(name => {
       return roles.find(role => role.name === name);
@@ -327,10 +327,9 @@ export const GridActions = ({
     return [start, end];
   }
 
-    const gridData = useSelector(state =>
-      GridSelectors.getGridData(state, 'activityHistory')
-    );
-    
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'activityHistory')
+  );
 
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
@@ -442,23 +441,23 @@ export const GridActions = ({
                 clusterSelectedValue?.label !== 'All' && {
                   clusterName: clusterSelectedValue?.label,
                 }),
-             ...(location?.pathname?.includes('activity-history') &&
-  selectEvent &&
-  selectEvent.length > 0 && {
-    event: selectEvent.map(event => event.value).join(','),
-  }),
+              ...(location?.pathname?.includes('activity-history') &&
+                selectEvent &&
+                selectEvent.length > 0 && {
+                  event: selectEvent.map(event => event.value).join(','),
+                }),
 
-...(location?.pathname?.includes('activity-history') &&
-  selectEntity &&
-  selectEntity.length > 0 && {
-    entity: selectEntity.map(entity => entity.value).join(','),
-  }),
+              ...(location?.pathname?.includes('activity-history') &&
+                selectEntity &&
+                selectEntity.length > 0 && {
+                  entity: selectEntity.map(entity => entity.value).join(','),
+                }),
 
-...(location?.pathname?.includes('activity-history') &&
-  selectStatus &&
-  selectStatus.length > 0 && {
-    status: selectStatus.map(status => status.value).join(','),
-  }),
+              ...(location?.pathname?.includes('activity-history') &&
+                selectStatus &&
+                selectStatus.length > 0 && {
+                  status: selectStatus.map(status => status.value).join(','),
+                }),
               ...(location?.pathname?.includes('schedule-deployment') &&
                 scheduleType?.value !== 'all' && {
                   type: scheduleType?.value,
@@ -731,14 +730,13 @@ export const GridActions = ({
 
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
-    const handleExportReport = () => {
-      setIsExportReportOpen(true);
-    };
-  
-    const loading = useSelector(state =>
-      LoadingSelectors.getLoading(state, 'fetchEmailReport')
-    );
+  const handleExportReport = () => {
+    setIsExportReportOpen(true);
+  };
 
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchEmailReport')
+  );
 
   return (
     <>
@@ -881,42 +879,12 @@ export const GridActions = ({
           )}
           {module === 'activityHistory' && (
             <>
-             <div className="d-flex align-items-center gap-2">
-                          {/* <div>
-                            <Button
-                              onClick={() => {
-                                history.push('/activity-history/download-history');
-                              }}
-                            >
-                              Download Activity History
-                            </Button>
-                          </div> */}
-                          <div>
-                            {!isEmpty(gridData) && (
-                              <Button onClick={handleExportReport}>Export Report</Button>
-                            )}
-                            
-                          </div>
-                        </div>
-              <div>
-                <MultiSelectField
-                  name="activityStatus"
-                  control={control}
-                  label="Select Status"
-                  placeholder="Select Status"
-                  options={ACTIVITY_STATUS_OPTIONS}
-                  customValue={selectStatus}
-                  customOnChange={(onChange, selectedOptions) => {
-                    handleStatusChange(selectedOptions);
-                    onChange(selectedOptions);
-                  }}
-                  wrapperCustomClass="entity-dropdown"
-                  customWidth="275px"
-                  enableCheckboxes={true}
-                   hideMultipleOptions={true}
-                   enableSelectAll={true}  // Enable select all
-                   selectAllLabel="Select All"
-                />
+              <div className="d-flex align-items-center gap-2">
+                <div>
+                  {!isEmpty(gridData) && (
+                    <Button onClick={handleExportReport}>Export Report</Button>
+                  )}
+                </div>
               </div>
               <div>
                 <MultiSelectField
@@ -935,7 +903,7 @@ export const GridActions = ({
                   enableCheckboxes={true}
                   selectAllLabel="Select All"
                   hideMultipleOptions={true}
-                  enableSelectAll={true}  // Enable select all
+                  enableSelectAll={true} // Enable select all
                 />
               </div>
               <div>
@@ -946,7 +914,7 @@ export const GridActions = ({
                   placeholder={KDFM.SELECT_ENTITY}
                   options={MODULE_LIST_MAP}
                   customValue={selectEntity}
-                  enableSelectAll={true}  // Enable select all
+                  enableSelectAll={true} // Enable select all
                   selectAllLabel="Select All"
                   customOnChange={(onChange, selectedOptions) => {
                     handleEntityChange(selectedOptions);
@@ -955,9 +923,30 @@ export const GridActions = ({
                   wrapperCustomClass="entity-dropdown"
                   customWidth="275px"
                   enableCheckboxes={true}
-                   hideMultipleOptions={true}
+                  hideMultipleOptions={true}
                 />
               </div>
+              <div>
+                <MultiSelectField
+                  name="activityStatus"
+                  control={control}
+                  label="Select Status"
+                  placeholder="Select Status"
+                  options={ACTIVITY_STATUS_OPTIONS}
+                  customValue={selectStatus}
+                  customOnChange={(onChange, selectedOptions) => {
+                    handleStatusChange(selectedOptions);
+                    onChange(selectedOptions);
+                  }}
+                  wrapperCustomClass="entity-dropdown"
+                  customWidth="275px"
+                  enableCheckboxes={true}
+                  hideMultipleOptions={true}
+                  enableSelectAll={true} // Enable select all
+                  selectAllLabel="Select All"
+                />
+              </div>
+
               <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
             </>
           )}
