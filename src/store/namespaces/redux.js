@@ -1212,9 +1212,10 @@ const fetchLastSanityReportSuccess = (state, { payload }) => {
 };
 
 const refreshControllerServiceSuccess = (state, { payload }) => {
+  const { data } = payload;
   return {
     ...state,
-    refreshedControllerService: payload,
+    refreshedControllerService: { data },
   };
 };
 

@@ -138,9 +138,27 @@ export const ListControllerService = () => {
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const dispatch = useDispatch();
-  const listData = useSelector(
-    NamespacesSelectors?.getRootControllerServiceNamespace
+  const controllerServicesList = useSelector(
+    NamespacesSelectors.getRootControllerServiceNamespace
   );
+  const [listData, setListData] = useState(
+    useSelector(NamespacesSelectors?.getRootControllerServiceNamespace)
+  );
+  useEffect(() => {
+    setListData(controllerServicesList);
+  }, [controllerServicesList]);
+  const refreshedControllerService = useSelector(
+    NamespacesSelectors.getRefreshedControllerService
+  );
+  useEffect(() => {
+    setListData(prevList =>
+      prevList.map(item =>
+        item.id === refreshedControllerService?.data?.id
+          ? refreshedControllerService?.data
+          : item
+      )
+    );
+  }, [refreshedControllerService]);
   const [refreshItem, setRefreshItem] = useState(null);
 
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
@@ -391,7 +409,7 @@ export const ListControllerService = () => {
           item?.state === 'DISABLING' ||
           (item?.state === 'DISABLED' && item?.validationStatus === 'INVALID');
         return (
-          <>
+          <div className="d-flex justify-content-center align-items-center">
             {controllerPermissions.includes('edit_controller_services') && (
               <>
                 <button
@@ -482,23 +500,35 @@ export const ListControllerService = () => {
                 </>
               )}
             {(item?.state === 'ENABLING' || item?.state === 'DISABLING') && (
-              <button
-                className="border-0 bg-white ms-1"
-                onClick={event => {
-                  handleRefreshClick(item);
-                  event.currentTarget.blur();
-                }}
-                data-tooltip-id={'Delete'}
-                disabled={refreshingRowId === item.id}
-              >
-                {refreshingRowId === item.id ? (
-                  <Spinner size={20} color={theme.colors.primary} />
-                ) : (
-                  <RefreshIcon color="black" height="28" />
-                )}
-              </button>
+              <>
+                <button
+                  className={`border-0 bg-white ms-1 ${refreshingRowId === item?.id ? 'mt-2' : ''}`}
+                  onClick={event => {
+                    handleRefreshClick(item);
+                    event.currentTarget.blur();
+                  }}
+                  data-tooltip-id={'Refresh'}
+                  disabled={refreshingRowId === item.id}
+                >
+                  {refreshingRowId === item.id ? (
+                    <Spinner size={20} color={theme.colors.primary} />
+                  ) : (
+                    <RefreshIcon color="black" height="28" />
+                  )}
+                </button>
+                <ReactTooltip
+                  id={'Refresh'}
+                  place="left"
+                  content={'Refresh'}
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
             )}
-          </>
+          </div>
         );
       },
       width: '10%',
