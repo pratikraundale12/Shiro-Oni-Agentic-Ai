@@ -36,6 +36,7 @@ const ClusterNavigationTab = ({
   setNewRegistry,
   isRegistryDetailDisable,
   data,
+  setClusterFormData = () => {},
 }) => {
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
   const isSuperAdmin = currentUserData?.role === 'superadmin';
@@ -46,6 +47,7 @@ const ClusterNavigationTab = ({
         onClick={() => {
           setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
           setNewRegistry(false);
+          setClusterFormData();
         }}
       >
         {KDFM.CLUSTER_DETAILS}
@@ -55,7 +57,9 @@ const ClusterNavigationTab = ({
           active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
           onClick={() =>
             Object.keys(data || {})?.length
-              ? data.id ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY): {}
+              ? data.id
+                ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
+                : {}
               : {}
           }
           disabled={isRegistryDetailDisable}
