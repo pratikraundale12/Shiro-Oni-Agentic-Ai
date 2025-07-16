@@ -279,9 +279,6 @@ const FlowControl = () => {
       },
     });
   };
-
-  console.log('sigleNamespaceData', selectedNamespaceForDetail);
-  console.log('singleNamespaceData1', singleNamespaceData1);
   
 
   return (
