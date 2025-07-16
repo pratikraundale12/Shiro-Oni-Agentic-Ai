@@ -1712,6 +1712,36 @@ export function* fetchLastSanityReport(api, { payload }) {
   }
 }
 
+export function* refreshControllerService(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'refreshControllerService',
+    loadingSection: 'refreshControllerService',
+    apiMethod: api.refreshControllerService,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        controllerId: payload.controllerId,
+      },
+    ],
+    successAction: NamespacesActions.refreshControllerServiceSuccess,
+  });
+
+  if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -1859,6 +1889,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.fetchLastSanityReport,
       fetchLastSanityReport,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.refreshControllerService,
+      refreshControllerService,
       api
     ),
   ]);

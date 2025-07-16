@@ -13,11 +13,12 @@ import {
   NoDataIcon,
   PencilIcon,
   RefrenceIcon,
+  RefreshIcon,
   SettingSmallIcon,
   SmallSearchIcon,
   TriangleExclamationMarkIcon,
 } from '../../assets';
-import { FullPageLoader, Table, TextRender } from '../../components';
+import { FullPageLoader, Spinner, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { ModalWithIcon } from '../../shared';
 import {
@@ -197,6 +198,25 @@ const ControllerServiceTab = ({
   const [externalControllerServices, setExternalControllerServices] = useState(
     controllerServicesData?.externalControllerServices
   );
+    const refreshedControllerService = useSelector(
+      NamespacesSelectors.getRefreshedControllerService
+    );
+
+     useEffect(() => {
+  if (!refreshedControllerService?.data?.id) return;
+
+  setExternalControllerServices(prevList =>
+    prevList?.map(item =>
+      item?.updatedValue === refreshedControllerService.data.id || item?.id === refreshedControllerService.data.id
+        ? {
+            ...item,
+            controllerService: [refreshedControllerService.data],
+          }
+        : item
+    )
+  );
+}, [refreshedControllerService]);
+
   const [
     externalControllerServicesTableData,
     setExternalControllerServicesTableData,
@@ -545,6 +565,22 @@ const ControllerServiceTab = ({
     isNewlyAddedExternalServiceResponse,
   ]);
 
+  const [refreshingRowId, setRefreshingRowId] = useState(null);
+  const handleRefreshClick = item => {
+    const serviceId = item?.controllerService?.length ? item?.controllerService[0]?.id : item?.configuredData?.id || item?.id || item?.updatedValue;
+    setRefreshingRowId(serviceId);
+    const result = dispatch(
+      NamespacesActions.refreshControllerService({
+        controllerId: serviceId,
+      })
+    );    
+    if (result && typeof result.finally === 'function') {
+      result.finally(() => setRefreshingRowId(null));
+    } else {
+      setTimeout(() => setRefreshingRowId(null), 1000);
+    }
+  };
+
   const COLUMNS = [
     {
       label: 'Name',
@@ -680,15 +716,16 @@ const ControllerServiceTab = ({
         const state = stateItem?.state;
         const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
         const isButtonVisible = state ? true : false;
-
         const isBtnDisabled =
           !item.updatedValue ||
           state === 'INVALID' ||
           state === 'VALIDATING' ||
           state === 'DISABLING' ||
-          (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
+          (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');  
+        const serviceId = item?.controllerService?.length ? item?.controllerService[0]?.id : item?.id || item?.updatedValue;
+  
         return (
-          <div>
+          <div className="d-flex align-items-center justify-content-center">
             {/* Settings Button */}
             {stateItem?.hasOwnProperty('properties') && (
               <>
@@ -762,7 +799,6 @@ const ControllerServiceTab = ({
                 />
               </>
             )}
-
             {/* Re-Configure Button */}
             {item.updatedValue && !item?.configured && (
               <React.Fragment>
@@ -795,6 +831,36 @@ const ControllerServiceTab = ({
                   {KDFM.CONFIGURE}
                 </ConfigureButton>
               )}
+            {(stateItem?.state === 'ENABLING' ||
+              stateItem?.state === 'DISABLING') && (
+              <>
+                <button
+                  className={`border-0 bg-white ms-1 ${refreshingRowId === serviceId ? 'mt-2' : ''}`}
+                  onClick={event => {
+                    handleRefreshClick(item);
+                    event.currentTarget.blur();
+                  }}
+                  data-tooltip-id={'Refresh'}
+                  disabled={refreshingRowId === serviceId}
+                >
+                  {refreshingRowId === serviceId ? (
+                    <Spinner size={20} color={theme.colors.primary} />
+                  ) : (
+                    <RefreshIcon color="black" height="28" />
+                  )}
+                </button>
+                <ReactTooltip
+                  id={'Refresh'}
+                  place="left"
+                  content={'Refresh'}
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
           </div>
         );
       },
@@ -974,6 +1040,7 @@ const ControllerServiceTab = ({
           : item?.configuredData
             ? item?.configuredData
             : item;
+
         const state = stateItem?.state;
         const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
         const isButtonVisible = state ? true : false;
@@ -982,8 +1049,10 @@ const ControllerServiceTab = ({
           state === 'VALIDATING' ||
           state === 'DISABLING' ||
           (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
+        const serviceId = item?.configuredData ? item?.configuredData?.id : item?.controllerService[0]?.id || item?.id || item?.updatedValue;
+
         return (
-          <div>
+          <div className="d-flex align-items-center justify-content-center">
             {/* Settings Button */}
             {stateItem?.hasOwnProperty('properties') && (
               <>
@@ -1058,7 +1127,6 @@ const ControllerServiceTab = ({
                 />
               </>
             )}
-
             {/* Re-Configure Button */}
             {item.updatedValue && !item?.configured && (
               <React.Fragment>
@@ -1091,6 +1159,35 @@ const ControllerServiceTab = ({
                   {KDFM.CONFIGURE}
                 </ConfigureButton>
               )}
+            {(state === 'ENABLING' || state === 'DISABLING') && (
+              <>
+                <button
+                  className={`border-0 bg-white ms-1 ${refreshingRowId === serviceId ? 'mt-2' : ''}`}
+                  onClick={event => {
+                    handleRefreshClick(item);
+                    event.currentTarget.blur();
+                  }}
+                  data-tooltip-id={'Refresh'}
+                  disabled={refreshingRowId === serviceId}
+                >
+                  {refreshingRowId === serviceId ? (
+                    <Spinner size={20} color={theme.colors.primary} />
+                  ) : (
+                    <RefreshIcon color="black" height="28" />
+                  )}
+                </button>
+                <ReactTooltip
+                  id={'Refresh'}
+                  place="left"
+                  content={'Refresh'}
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
           </div>
         );
       },
@@ -1739,7 +1836,7 @@ const ControllerServiceTab = ({
     );
     setExternalControllerServices(updatedControllerServices);
   }, [externalControllerServicesTableData]);
-
+  
   useEffect(() => {
     const collapsibles = [];
     if (isUpgrade) {
@@ -1870,6 +1967,8 @@ const ControllerServiceTab = ({
     newlyAddedExternalServiceResponse,
     externalControllerServicesTableData,
     lsForUpgradeRedux,
+    refreshingRowId,
+    refreshedControllerService,
   ]);
 
   const checkIfLocalCsConfigured = useSelector(

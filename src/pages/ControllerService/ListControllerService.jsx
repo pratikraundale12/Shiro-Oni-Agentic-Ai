@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -16,7 +17,9 @@ import {
   TriangleExclamationMarkIcon,
 } from '../../assets';
 
-import { FullPageLoader, Table, TextRender } from '../../components';
+import { isEmpty } from 'lodash';
+import { FullPageLoader, Spinner, Table, TextRender } from '../../components';
+import { SEARCH_INPUT_ERROR } from '../../constants';
 import { Button, FieldErrorMessage, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -30,9 +33,6 @@ import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
-import { isEmpty } from 'lodash';
-import { SEARCH_INPUT_ERROR } from '../../constants';
-import { toast } from 'react-toastify';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -150,10 +150,27 @@ export const ListControllerService = () => {
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const dispatch = useDispatch();
-  const listData = useSelector(
-    NamespacesSelectors?.getRootControllerServiceNamespace
+  const controllerServicesList = useSelector(
+    NamespacesSelectors.getRootControllerServiceNamespace
   );
-
+  const [listData, setListData] = useState(
+    useSelector(NamespacesSelectors?.getRootControllerServiceNamespace)
+  );
+  useEffect(() => {
+    setListData(controllerServicesList);
+  }, [controllerServicesList]);
+  const refreshedControllerService = useSelector(
+    NamespacesSelectors.getRefreshedControllerService
+  );
+  useEffect(() => {
+    setListData(prevList =>
+      prevList.map(item =>
+        item.id === refreshedControllerService?.data?.id
+          ? refreshedControllerService?.data
+          : item
+      )
+    );
+  }, [refreshedControllerService]);
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
     useState(false);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
@@ -179,7 +196,6 @@ export const ListControllerService = () => {
     [listData, search]
   );
   const [isUserCanWrite, setIsUserCanWrite] = useState(listData?.[0]?.canWrite);
-
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   useEffect(() => {
@@ -196,7 +212,7 @@ export const ListControllerService = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
-
+  const [refreshingRowId, setRefreshingRowId] = useState(null);
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
     setIsEnableModalOpen(true);
@@ -238,6 +254,18 @@ export const ListControllerService = () => {
   const controllerPermissions = useSelector(
     AuthenticationSelectors.getPermissions
   );
+
+  const handleRefreshClick = item => {
+    setRefreshingRowId(item.id);
+    const result = dispatch(
+      NamespacesActions.refreshControllerService({ controllerId: item?.id })
+    );
+    if (result && typeof result.finally === 'function') {
+      result.finally(() => setRefreshingRowId(null));
+    } else {
+      setTimeout(() => setRefreshingRowId(null), 1000);
+    }
+  };
 
   const COLUMNS = [
     {
@@ -362,7 +390,7 @@ export const ListControllerService = () => {
             item?.validationStatus === 'INVALID') ||
           !controllerPermissions.includes('edit_controller_services');
         return (
-          <>
+          <div className="d-flex justify-content-center align-items-center">
             {controllerPermissions.includes('edit_controller_services') && (
               <>
                 <button
@@ -467,7 +495,39 @@ export const ListControllerService = () => {
                   />
                 </>
               )}
-          </>
+
+            {(item?.state === 'ENABLING' || item?.state === 'DISABLING') && (
+              <>
+                <button
+                  className={`border-0 bg-white ms-1 ${refreshingRowId === item?.id || refreshingRowId === item?.updatedValue ? 'mt-2' : ''}`}
+                  onClick={event => {
+                    handleRefreshClick(item);
+                    event.currentTarget.blur();
+                  }}
+                  data-tooltip-id={'Refresh'}
+                  disabled={refreshingRowId === item.id}
+                >
+                  {refreshingRowId === item.id ? (
+                    <div>
+                      <Spinner size={20} color={theme.colors.primary} />
+                    </div>
+                  ) : (
+                    <RefreshIcon color="black" height="28" />
+                  )}
+                </button>
+                <ReactTooltip
+                  id={'Refresh'}
+                  place="left"
+                  content={'Refresh'}
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
+          </div>
         );
       },
       width: '11%',
@@ -687,7 +747,7 @@ export const ListControllerService = () => {
         listPropertyTableData={listPropertyTableData}
       />
       <ModalWithIcon
-        title={`${selectedItemFromList?.state !== 'DISABLED' || selectedItemFromList?.state !== 'DISABLING' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
+        title={`${selectedItemFromList?.state !== 'DISABLED' && selectedItemFromList?.state !== 'DISABLING' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
         primaryButtonText={
           selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'
         }
