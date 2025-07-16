@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
 import { theme } from '../../styles';
 import { PAGINATION_ITEM_OPTIONS } from '../../constants';
+import { useDispatch } from 'react-redux';
+import { ClustersActions } from '../../store';
 
 const Container = styled.div`
   display: flex;
@@ -84,6 +86,7 @@ const Pagination = ({
   onItemsPerPageChange,
   setPageLoading,
 }) => {
+  const dispatch = useDispatch();
   const totalPage = Math.ceil(count / itemsPerPage);
   const getPageRange = () => {
     const start = (page - 1) * itemsPerPage + 1;
@@ -155,6 +158,10 @@ const Pagination = ({
   useEffect(() => {
     setPageLoading && setPageLoading(false);
   }, [page]);
+
+  useEffect(() => {
+    dispatch(ClustersActions.setclusterListItems(itemsPerPage));
+  }, [itemsPerPage]);
 
   return (
     <Container>

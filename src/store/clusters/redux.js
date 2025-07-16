@@ -118,6 +118,7 @@ export const ClustersActions = {
     `${prefix}setProgressTrackingModalOpen`
   ),
   setLastVisitedTab: createAction(`${prefix}setLastVisitedTab`),
+  setclusterListItems: createAction(`${prefix}setclusterListItems`),
   fetchAllConfigPropertiesWithValue: createAction(
     `${prefix}fetchAllConfigPropertiesWithValue`
   ),
@@ -170,6 +171,7 @@ export const CLUSTERS_INITIAL_STATE = {
   ansibleClusterCreationResponseData: {},
   progressTrackingModalOpen: false,
   lastVisitedTab: 'clusters',
+  clusterListItems: 10,
   allConfigPropertiesAndValue: {},
 };
 
@@ -229,6 +231,7 @@ export const ClustersSelectors = {
   getProgressTrackingModalOpen: state =>
     state.clusters.progressTrackingModalOpen,
   getlastVisitedTab: state => state.clusters.lastVisitedTab,
+  getClusterListItems: state => state.clusters.clusterListItems,
   getAllConfigPropertiesAndValue: state =>
     state.clusters.allConfigPropertiesAndValue,
 };
@@ -506,6 +509,13 @@ const setLastVisitedTab = (state, { payload }) => {
     lastVisitedTab: payload,
   };
 };
+const setclusterListItems = (state, { payload }) => {
+  return {
+    ...state,
+    clusterListItems: payload,
+  };
+};
+
 const setAllConfigPropertiesAndValue = (state, { payload }) => {
   return {
     ...state,
@@ -635,6 +645,7 @@ export const clustersReducer = createReducer(
         setProgressTrackingModalOpen
       )
       .addCase(ClustersActions.setLastVisitedTab, setLastVisitedTab)
+      .addCase(ClustersActions.setclusterListItems, setclusterListItems)
       .addCase(
         ClustersActions.setAllConfigPropertiesAndValue,
         setAllConfigPropertiesAndValue
