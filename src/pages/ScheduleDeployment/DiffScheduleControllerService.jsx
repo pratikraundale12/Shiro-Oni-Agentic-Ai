@@ -101,7 +101,9 @@ const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
             element?.property_differences || element?.properties;
           return (
             <div className="mt-4" key={element?.identifier}>
-              <PgHead className="mb-2">{element?.name}</PgHead>
+              <PgHead className="mb-2">
+                {element?.new_name || element?.name}
+              </PgHead>
               <GreyBoxNamespace>
                 {/* Header row - same for both cases */}
                 <div className="d-flex mb-3">
@@ -109,7 +111,45 @@ const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
                   <TileHeader className="col-5">New</TileHeader>
                   <TileHeader className="col-4">Current</TileHeader>
                 </div>
-
+                {!isEmpty(element?.new_name) && (
+                  <div className="row" key={element?.name}>
+                    <TileHeader
+                      style={{
+                        backgroundColor: '#E9ECF1',
+                        height: '30px',
+                        color: theme.colors.primary,
+                      }}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <span className="">Service Name</span>
+                    </TileHeader>
+                    <div className="d-flex mb-1">
+                      <TileHeader className="col-3 d-flex align-items-center"></TileHeader>
+                      <TileItem className="col-5 me-2">
+                        <div
+                          style={{
+                            backgroundColor: '#E9ECF1',
+                            borderRadius: '12px',
+                          }}
+                          className="p-2"
+                        >
+                          {element?.new_name}
+                        </div>
+                      </TileItem>
+                      <TileItem className="col-4">
+                        <div
+                          style={{
+                            backgroundColor: '#E9ECF1',
+                            borderRadius: '12px',
+                          }}
+                          className="p-2"
+                        >
+                          {element?.name}
+                        </div>
+                      </TileItem>
+                    </div>
+                  </div>
+                )}
                 {properties?.map(item => {
                   // Handle different data structures - both cases have new_value and old_value
                   const newValue =

@@ -1432,10 +1432,17 @@ const Summary = () => {
             origPropMap[name] !== undefined &&
             updPropMap[name] !== origPropMap[name]
         );
-        if (changedNames.length === 0) return null;
+        // Detect name change
+        const nameChanged =
+          service.name !== undefined &&
+          orig.name !== undefined &&
+          service.name !== orig.name;
+
+        if (changedNames.length === 0 && !nameChanged) return null;
         return {
           identifier: service.identifier,
-          name: service.name,
+          name: orig.name,
+          new_name: nameChanged ? service.name : '',
           properties: changedNames.map(name => ({
             name,
             old_value: origPropMap[name],
