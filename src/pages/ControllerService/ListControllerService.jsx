@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -195,6 +196,8 @@ export const ListControllerService = () => {
     [listData, search]
   );
   const [isUserCanWrite, setIsUserCanWrite] = useState(listData?.[0]?.canWrite);
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  console.log('selectedCluster', selectedCluster);
 
   useEffect(() => {
     if (isEmpty(selectedCluster?.value)) {
@@ -210,7 +213,6 @@ export const ListControllerService = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
-  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [refreshingRowId, setRefreshingRowId] = useState(null);
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
