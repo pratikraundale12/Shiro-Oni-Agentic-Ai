@@ -543,7 +543,7 @@ export const Grid = ({
               setState(prevState => ({ ...prevState, eventModal: false }))
             }
             size="md"
-            primaryButtonText={KDFM.CONTINUE}
+            primaryButtonText={'Close'}
             onSubmit={() =>
               setState(prevState => ({ ...prevState, eventModal: false }))
             }
