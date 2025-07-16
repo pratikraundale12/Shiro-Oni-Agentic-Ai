@@ -197,7 +197,6 @@ export const ListControllerService = () => {
   );
   const [isUserCanWrite, setIsUserCanWrite] = useState(listData?.[0]?.canWrite);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  console.log('selectedCluster', selectedCluster);
 
   useEffect(() => {
     if (isEmpty(selectedCluster?.value)) {
@@ -748,7 +747,7 @@ export const ListControllerService = () => {
         listPropertyTableData={listPropertyTableData}
       />
       <ModalWithIcon
-        title={`${selectedItemFromList?.state !== 'DISABLED' || selectedItemFromList?.state !== 'DISABLING' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
+        title={`${selectedItemFromList?.state !== 'DISABLED' && selectedItemFromList?.state !== 'DISABLING' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
         primaryButtonText={
           selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'
         }
