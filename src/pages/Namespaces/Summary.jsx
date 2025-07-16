@@ -28,6 +28,7 @@ import { Button, CheckboxField, Modal, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
+  ClustersActions,
   ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
@@ -395,6 +396,20 @@ const Summary = () => {
   const changeRequestValue = useSelector(NamespacesSelectors.getChangeRequest);
   const [openConfigDetailsModal, setOpenConfigDetailsModal] = useState(false);
   const [isSanityCheckModalOpen, setIsSanityCheckModalOpen] = useState(false);
+  const selectedClusterMethod = useSelector(NamespacesSelectors.getSelectedCluster);
+
+  useEffect(() => {
+    if (!isEmpty(selectedClusterMethod?.value)) {
+      dispatch(ClustersActions.fetchClusters());
+    }
+  }, [dispatch, selectedClusterMethod]);
+
+   const clusters_new_list = useSelector(ClustersSelectors.getAllClustersList);
+   const matchedCluster = clusters_new_list.find(
+    (cluster) => cluster.id === selectedClusterMethod?.value
+   );
+   const hasSanityCheckAccess = matchedCluster?.view_sanity_check;
+    
   const handleSanityCheckModalSubmit = () => {
     setIsSanityCheckModalOpen(false);
     dispatch(NamespacesActions.setSanityCheckAtDeploy(true));
@@ -1648,7 +1663,7 @@ const Summary = () => {
                   {isRegistryDeploy && (
                     <>
                       <UseColXl className="col-xl-4 col-6 mb-4 pb-1 row">
-                        <div className="summary-details d-flex">
+                       { hasSanityCheckAccess === true &&  <div className="summary-details d-flex">
                           <SummaryDetailsHFourTag className="mb-2">
                             <CheckboxField
                               name="check"
@@ -1683,7 +1698,7 @@ const Summary = () => {
                               zIndex: 10000,
                             }}
                           />
-                        </div>
+                        </div>}
                       </UseColXl>
                     </>
                   )}
