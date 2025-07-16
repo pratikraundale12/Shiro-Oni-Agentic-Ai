@@ -267,6 +267,7 @@ export const KDFM = {
   ITEMS_PER_PAGE: 20,
   USER_STORY: 'User Story',
   CHANGE_REQUEST: 'Change Request',
+  PLEASE_LOGIN_TO_CLUSTER: 'Please login to cluster',
 
   // License constants
   TRIAL: 'Trial',

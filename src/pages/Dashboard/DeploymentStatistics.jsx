@@ -150,7 +150,7 @@ CustomCRTooltip.propTypes = {
 };
 
 // D3 Pie Chart Component
-// Enhanced D3 Pie Chart Component with improved tooltips
+// Enhanced D3 Pie Chart Component with NO rounding - displays exact values
 const D3PieChart = ({ data }) => {
   const svgRef = useRef();
   const tooltipRef = useRef();
@@ -164,15 +164,15 @@ const D3PieChart = ({ data }) => {
     // Clear previous content
     svg.selectAll('*').remove();
 
-    const width = 500; // Increased width to accommodate legend
+    const width = 500;
     const height = 250;
-    const radius = Math.min(width - 160, height) / 2 - 20; // Reduced radius to leave space for legend
+    const radius = Math.min(width - 160, height) / 2 - 20;
 
     const g = svg
       .attr('width', width)
       .attr('height', height)
       .append('g')
-      .attr('transform', `translate(${(width - 160) / 2}, ${height / 2})`); // Center the pie chart in available space
+      .attr('transform', `translate(${(width - 160) / 2}, ${height / 2})`);
 
     // Color scale
     const color = d3
@@ -193,7 +193,7 @@ const D3PieChart = ({ data }) => {
       .innerRadius(0)
       .outerRadius(radius + 10);
 
-    // Create pie data with proper number conversion
+    // Create pie data with exact values (NO rounding)
     const pieData = [
       { name: 'Success Rate', value: Number(data.successRate) || 0 },
       { name: 'Error Rate', value: Number(data.errorRate) || 0 },
@@ -225,11 +225,11 @@ const D3PieChart = ({ data }) => {
         // Show tooltip
         tooltip.transition().duration(200).style('opacity', 0.9);
 
-        // Enhanced tooltip content
-        const percentage = ((d.data.value / total) * 100).toFixed(1);
+        // Enhanced tooltip content with exact values (NO rounding)
+        const percentage = (d.data.value / total) * 100;
         const tooltipContent = `
           <div style="font-weight: bold; margin-bottom: 5px;">${d.data.name}</div>
-          <div>Value: ${d.data.value.toFixed(1)}%</div>
+          <div>Value: ${d.data.value}%</div>
           <div>Share: ${percentage}% of total</div>
         `;
 
@@ -252,7 +252,7 @@ const D3PieChart = ({ data }) => {
         tooltip.transition().duration(500).style('opacity', 0);
       });
 
-    // Add percentage labels on slices
+    // Add percentage labels on slices with exact values (NO rounding)
     arcs
       .append('text')
       .attr('transform', d => `translate(${arc.centroid(d)})`)
@@ -261,17 +261,17 @@ const D3PieChart = ({ data }) => {
       .style('font-size', '12px')
       .style('font-weight', 'bold')
       .style('fill', 'black')
-      .style('pointer-events', 'none') // Prevent text from interfering with hover
+      .style('pointer-events', 'none')
       .text(d => {
         const value = Number(d.data.value);
-        return value > 5 ? `${value.toFixed(1)}%` : ''; // Only show label if slice is large enough
+        return value > 5 ? `${value}%` : ''; // Show exact value, no rounding
       });
 
     // Add legend - positioned to avoid overlap
     const legend = svg
       .append('g')
       .attr('class', 'legend')
-      .attr('transform', `translate(${width - 150}, 20)`); // Position on the right side
+      .attr('transform', `translate(${width - 150}, 20)`);
 
     const legendItems = legend
       .selectAll('.legend-item')
@@ -279,7 +279,7 @@ const D3PieChart = ({ data }) => {
       .enter()
       .append('g')
       .attr('class', 'legend-item')
-      .attr('transform', (d, i) => `translate(0, ${i * 25})`) // Increase spacing between items
+      .attr('transform', (d, i) => `translate(0, ${i * 25})`)
       .style('cursor', 'pointer');
 
     legendItems
@@ -293,9 +293,9 @@ const D3PieChart = ({ data }) => {
       .attr('x', 18)
       .attr('y', 9)
       .attr('dy', '0.35em')
-      .style('font-size', '11px') // Slightly smaller font
+      .style('font-size', '11px')
       .style('font-weight', '500')
-      .text(d => `${d.name}: ${d.value.toFixed(1)}%`);
+      .text(d => `${d.name}: ${d.value}%`); // Show exact value, no rounding
 
     // Add legend hover effects
     legendItems
@@ -310,12 +310,12 @@ const D3PieChart = ({ data }) => {
           .duration(200)
           .attr('d', arcHover);
 
-        // Show tooltip
+        // Show tooltip with exact values (NO rounding)
         tooltip.transition().duration(200).style('opacity', 0.9);
-        const percentage = ((d.value / total) * 100).toFixed(1);
+        const percentage = (d.value / total) * 100;
         const tooltipContent = `
           <div style="font-weight: bold; margin-bottom: 5px;">${d.name}</div>
-          <div>Value: ${d.value.toFixed(1)}%</div>
+          <div>Value: ${d.value}%</div>
           <div>Share: ${percentage}% of total</div>
         `;
 

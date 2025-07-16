@@ -36,6 +36,7 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { SettingsActions } from '../../store/settings';
+import { KDFM } from '../../constants';
 
 const TopSection = styled.div`
   display: flex;
@@ -256,6 +257,7 @@ export const Dashboard = () => {
   );
   const [updatedErrors, setUpdatedErrors] = useState([]);
   const [activeTab, setActiveTab] = useState('QuickInsights');
+  const cluster = JSON.parse(localStorage.getItem('selected_cluster') || '{}');
 
   // Reset selectedRange when cluster changes
   useEffect(() => {
@@ -426,11 +428,19 @@ export const Dashboard = () => {
 
   const handleDeploymentStatisticsClick = () => {
     if (!selectedCluster?.value) {
-      toast.error('Please login to your cluster first');
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER);
       return;
     }
     setActiveTab('DeploymentStatistics');
   };
+
+  useEffect(() => {
+    const noClusterSelected = isEmpty(cluster?.value);
+    const isQuickInsightsTab = activeTab === 'QuickInsights';
+    if (noClusterSelected && isQuickInsightsTab) {
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER);
+    }
+  }, [cluster, activeTab]);
 
   return (
     <>
@@ -505,7 +515,7 @@ export const Dashboard = () => {
                 </DropdownContainer>
               )}
               {activeTab === 'DeploymentStatistics' && (
-                <div className="me-4">
+                <div>
                   <DateRangePickerInput
                     value={selectedRange}
                     handleChange={handleDateRangeChange}
