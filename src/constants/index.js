@@ -255,6 +255,10 @@ export const KDFM = {
   SMTP: 'Email Configuration',
   FLOW_CONTROL_WARNING:
     'The "Start" and "Stop" buttons will be hidden if all the processors are either invalid or disabled.',
+  SCHEDULE_FLOW_CONTROL_WARNING:
+    'The "Schedule Start" and "Schedule Stop" buttons will be hidden if all the processors are either invalid or disabled.',
+  SCHEDULE_AUTOMATIC_START_FLOW:
+    'The process group has been successfully deployed and is scheduled to start automatically at the specified date and time.',
 
   CHANGE_CONFIGURATION: 'Change Configuration',
   LAST_SYNC: 'Last Sync Time',
