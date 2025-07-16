@@ -158,6 +158,12 @@ const TextDetails = styled.div`
   color: #444445;
   margin-bottom: 25px;
 `;
+const ShowMessageFlow = styled.div`
+   border-left: 5px solid #ff7a00;
+   padding: 1rem;
+   background: #fff7ed;
+`;
+
 const FlowControl = () => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -274,6 +280,10 @@ const FlowControl = () => {
     });
   };
 
+  console.log('sigleNamespaceData', selectedNamespaceForDetail);
+  console.log('singleNamespaceData1', singleNamespaceData1);
+  
+
   return (
     <DataWrapper>
       <FullPageLoader loading={loading} />
@@ -386,11 +396,9 @@ const FlowControl = () => {
                       </ActiveButtonDiv>
                     </TextsvgDiv>
                   ) : (
-                    <div className="text-message mb-3">
-                      The process group has been successfully deployed and is
-                      scheduled to start automatically at the specified date and
-                      time.
-                    </div>
+                    <ShowMessageFlow>
+                      {KDFM.SCHEDULE_AUTOMATIC_START_FLOW}
+                    </ShowMessageFlow>
                   )}
                   <TextsvgDiv className="col-lg-6">
                     <ActiveButtonDiv
@@ -426,6 +434,12 @@ const FlowControl = () => {
               ) : (
                 <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
               )}
+
+               {!(
+                sigleNamespaceData?.runningCount === 0 &&
+                sigleNamespaceData?.stoppedCount === 0
+              ) ? (
+
               <>
                 {singleNamespaceData1?.flowName && (
                   <>
@@ -491,6 +505,10 @@ const FlowControl = () => {
                   </>
                 )}
               </>
+              ) : (
+                <div className="text_info">{KDFM.SCHEDULE_FLOW_CONTROL_WARNING}</div>
+              )}
+
             </ActiveButtonContainer>
           </div>
         </IconsvgDiv>
