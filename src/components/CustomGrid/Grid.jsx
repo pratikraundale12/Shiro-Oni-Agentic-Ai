@@ -439,7 +439,7 @@ export const Grid = ({
       ? filterClusterView(DATA)
       : DATA;
   useEffect(() => {
-    if (isEmpty(TABLE_DATA?.nodes)) {
+    if (isEmpty(TABLE_DATA?.nodes) && currentPage !== 1) {
       setCurrentPage(1);
     }
   }, [TABLE_DATA]);
