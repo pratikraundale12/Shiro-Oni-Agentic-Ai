@@ -32,6 +32,26 @@ const DateRangePredefinedGlobalStyle = createGlobalStyle`
   div[data-testid='daterange-predefined-side'] {
     overflow-y: scroll !important;
   }
+  
+  /* Alternative global approach to hide time button */
+  .rs-calendar-header-title-time {
+    display: none !important;
+  }
+  
+  /* Add gap between dropdown and input using the correct selector */
+  .rs-picker-popup-daterange {
+    margin-top: 8px !important;
+  }
+  
+  /* Alternative approach using data-testid */
+  div[data-testid="picker-popup"] {
+    margin-top: 8px !important;
+  }
+  
+  /* More specific targeting for placement-bottom-start */
+  .rs-picker-popup.placement-bottom-start {
+    transform: translateY(8px) !important;
+  }
 `;
 
 const DateRangePickerInput = ({ value, handleChange, customRanges }) => {

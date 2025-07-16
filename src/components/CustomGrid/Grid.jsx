@@ -439,7 +439,7 @@ export const Grid = ({
       ? filterClusterView(DATA)
       : DATA;
   useEffect(() => {
-    if (isEmpty(TABLE_DATA?.nodes)) {
+    if (isEmpty(TABLE_DATA?.nodes) && currentPage !== 1) {
       setCurrentPage(1);
     }
   }, [TABLE_DATA]);
@@ -551,7 +551,7 @@ export const Grid = ({
               setState(prevState => ({ ...prevState, eventModal: false }))
             }
             size="md"
-            primaryButtonText={KDFM.CONTINUE}
+            primaryButtonText={'Close'}
             onSubmit={() =>
               setState(prevState => ({ ...prevState, eventModal: false }))
             }

@@ -53,6 +53,7 @@ export const ClustersActions = {
   setTestCredsButtonVisible: createAction(`${prefix}setTestCredsButtonVisible`),
   setCopyClusterModalOpen: createAction(`${prefix}setCopyClusterModalOpen`),
   setCopyClusterData: createAction(`${prefix}setCopyClusterData`),
+  setclusterListItems: createAction(`${prefix}setclusterListItems`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -79,6 +80,7 @@ export const CLUSTERS_INITIAL_STATE = {
   updatingServiceAccountHost: false,
   updateServiceAccountHostError: null,
   isTestCredsButtonVisible: true,
+  clusterListItems: 10,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -109,6 +111,7 @@ export const ClustersSelectors = {
   getUpdateServiceAccountHostError: state =>
     state.clusters.updateServiceAccountHostError,
   isTestCredsButtonVisible: state => state.clusters.isTestCredsButtonVisible,
+  getClusterListItems: state => state.clusters.clusterListItems,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -258,6 +261,13 @@ const setCopyClusterData = (state, { payload }) => ({
   originalClusterName: payload?.originalName ?? null,
 });
 
+const setclusterListItems = (state, { payload }) => {
+  return {
+    ...state,
+    clusterListItems: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -324,6 +334,7 @@ export const clustersReducer = createReducer(
         setTestCredsButtonVisible
       )
       .addCase(ClustersActions.setCopyClusterModalOpen, setCopyClusterModalOpen)
-      .addCase(ClustersActions.setCopyClusterData, setCopyClusterData);
+      .addCase(ClustersActions.setCopyClusterData, setCopyClusterData)
+      .addCase(ClustersActions.setclusterListItems, setclusterListItems);
   }
 );
