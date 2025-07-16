@@ -342,6 +342,9 @@ export const GridActions = ({
     onItemsPerPageChange(10);
 
     if (module === 'namespaces') {
+       if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
+         return;
+        }
       dispatch(
         GridSagsActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
@@ -1033,10 +1036,18 @@ export const GridActions = ({
             )}
             {['namespaces'].includes(module) && (
               <>
-                <RefreshIocn
-                  onClick={handleRefresh}
-                  data-tooltip-id={`tooltip-group-namespace-refresh-`}
-                >
+               <RefreshIocn
+                  onClick={
+                    handleRefresh
+                   }
+                 data-tooltip-id={`tooltip-group-namespace-refresh-`}
+                 style={{
+                  cursor:
+                  selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                   ? 'pointer'
+                   : 'not-allowed',
+                  }}
+                 >
                   <RefreshIcon
                     style={{
                       cursor:
