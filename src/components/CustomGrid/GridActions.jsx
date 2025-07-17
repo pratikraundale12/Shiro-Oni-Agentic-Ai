@@ -341,9 +341,9 @@ export const GridActions = ({
     onItemsPerPageChange(10);
 
     if (module === 'namespaces') {
-       if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
-         return;
-        }
+      if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
+        return;
+      }
       dispatch(
         GridSagsActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
@@ -761,25 +761,6 @@ export const GridActions = ({
           <>
             {
               <ButtonsContainerScheduleList>
-                {selectedCluster?.value && (
-                  <Button
-                    size="md"
-                    onClick={() => history.push('/process-group')}
-                  >
-                    <div
-                      className="d-flex "
-                      style={{ fontSize: '14px', fontWeight: '750' }}
-                    >
-                      <ScheduleDeploymentIcon
-                        height={19}
-                        width={19}
-                        color={'#fff'}
-                      />
-                      Schedule Deployment
-                    </div>
-                  </Button>
-                )}
-
                 <DateRangePickerInput
                   value={selectedRange}
                   handleChange={handleChange}
@@ -827,6 +808,24 @@ export const GridActions = ({
                     backgroundColor={theme.colors.lightGrey}
                   />
                 </DropdownContainer>
+                {/* {selectedCluster?.value && (
+                  <Button
+                    size="md"
+                    onClick={() => history.push('/process-group')}
+                  >
+                    <div
+                      className="d-flex "
+                      style={{ fontSize: '14px', fontWeight: '750' }}
+                    >
+                      <ScheduleDeploymentIcon
+                        height={19}
+                        width={19}
+                        color={'#fff'}
+                      />
+                      Schedule Deployment
+                    </div>
+                  </Button>
+                )} */}
               </ButtonsContainerScheduleList>
             }
           </>
@@ -867,6 +866,30 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
+          {module === 'scheduler' && (
+            <>
+              {' '}
+              {selectedCluster?.value && (
+                <Button
+                  size="md"
+                  onClick={() => history.push('/process-group')}
+                >
+                  <div
+                    className="d-flex "
+                    style={{ fontSize: '14px', fontWeight: '750' }}
+                  >
+                    <ScheduleDeploymentIcon
+                      height={19}
+                      width={19}
+                      color={'#fff'}
+                    />
+                    Schedule Deployment
+                  </div>
+                </Button>
+              )}
+            </>
+          )}
+
           {module === 'users' && (
             <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
           )}
@@ -882,13 +905,6 @@ export const GridActions = ({
           )}
           {module === 'activityHistory' && (
             <>
-              <div className="d-flex align-items-center gap-2">
-                <div>
-                  {!isEmpty(gridData) && (
-                    <Button onClick={handleExportReport}>Export Report</Button>
-                  )}
-                </div>
-              </div>
               <div>
                 <MultiSelectField
                   name="activityEvent"
@@ -949,7 +965,13 @@ export const GridActions = ({
                   selectAllLabel="Select All"
                 />
               </div>
-
+              <div className="d-flex align-items-center gap-2">
+                <div>
+                  {!isEmpty(gridData) && (
+                    <Button onClick={handleExportReport}>Export Report</Button>
+                  )}
+                </div>
+              </div>
               <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
             </>
           )}
@@ -1025,18 +1047,16 @@ export const GridActions = ({
             )}
             {['namespaces'].includes(module) && (
               <>
-               <RefreshIocn
-                  onClick={
-                    handleRefresh
-                   }
-                 data-tooltip-id={`tooltip-group-namespace-refresh-`}
-                 style={{
-                  cursor:
-                  selectedCluster?.value && !isEmpty(selectedCluster?.value)
-                   ? 'pointer'
-                   : 'not-allowed',
+                <RefreshIocn
+                  onClick={handleRefresh}
+                  data-tooltip-id={`tooltip-group-namespace-refresh-`}
+                  style={{
+                    cursor:
+                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                        ? 'pointer'
+                        : 'not-allowed',
                   }}
-                 >
+                >
                   <RefreshIcon
                     style={{
                       cursor:
