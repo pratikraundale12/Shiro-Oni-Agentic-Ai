@@ -428,7 +428,9 @@ export const Dashboard = () => {
 
   const handleDeploymentStatisticsClick = () => {
     if (!selectedCluster?.value) {
-      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER);
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
       return;
     }
     setActiveTab('DeploymentStatistics');
@@ -438,7 +440,9 @@ export const Dashboard = () => {
     const noClusterSelected = isEmpty(cluster?.value);
     const isQuickInsightsTab = activeTab === 'QuickInsights';
     if (noClusterSelected && isQuickInsightsTab) {
-      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER);
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
     }
   }, [cluster, activeTab]);
 
