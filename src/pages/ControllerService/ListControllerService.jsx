@@ -170,7 +170,7 @@ export const ListControllerService = () => {
           : item
       )
     );
-  }, [refreshedControllerService]);
+  }, [refreshedControllerService]);  const csPermission = useSelector(NamespacesSelectors?.getCsPermissions);
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
     useState(false);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
@@ -195,7 +195,8 @@ export const ListControllerService = () => {
         : [],
     [listData, search]
   );
-  const [isUserCanWrite, setIsUserCanWrite] = useState(listData?.[0]?.canWrite);
+  const [isUserCanWrite, setIsUserCanWrite] = useState(csPermission?.canWrite);
+
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   useEffect(() => {
@@ -204,8 +205,8 @@ export const ListControllerService = () => {
     }
   }, [selectedCluster]);
   useEffect(() => {
-    setIsUserCanWrite(listData?.[0]?.canWrite);
-  }, [listData]);
+    setIsUserCanWrite(csPermission?.canWrite);
+  }, [csPermission]);
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
   );
