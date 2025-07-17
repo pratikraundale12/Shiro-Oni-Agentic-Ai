@@ -19,7 +19,7 @@ import {
 
 import { isEmpty } from 'lodash';
 import { FullPageLoader, Spinner, Table, TextRender } from '../../components';
-import { SEARCH_INPUT_ERROR } from '../../constants';
+import { KDFM, SEARCH_INPUT_ERROR } from '../../constants';
 import { Button, FieldErrorMessage, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -202,7 +202,9 @@ export const ListControllerService = () => {
 
   useEffect(() => {
     if (isEmpty(selectedCluster?.value)) {
-      toast.info('Please login to cluster');
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
     }
   }, [selectedCluster]);
   useEffect(() => {

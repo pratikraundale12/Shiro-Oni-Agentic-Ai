@@ -202,8 +202,8 @@ export const ListNamespaces = () => {
       !isEmpty(settingsData?.username) &&
       isEmpty(parsedSelectedCluster?.value)
     ) {
-      toast.info('Please login to cluster', {
-        toastId: 'login-cluster-toast',
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
         autoClose: 5000,
       });
     }
