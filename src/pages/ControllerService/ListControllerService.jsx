@@ -170,7 +170,8 @@ export const ListControllerService = () => {
           : item
       )
     );
-  }, [refreshedControllerService]);  const csPermission = useSelector(NamespacesSelectors?.getCsPermissions);
+  }, [refreshedControllerService]);
+  const csPermission = useSelector(NamespacesSelectors?.getCsPermissions);
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
     useState(false);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
