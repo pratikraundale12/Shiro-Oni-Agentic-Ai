@@ -511,7 +511,11 @@ export const Dashboard = () => {
                     }
                     onChange={onNamespaceSelect}
                     placeholder="Select Process Group"
-                    title="Select Process Group"
+                    title={
+                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                        ? KDFM.SELECT_PROCESS_GROUP
+                        : KDFM.PLEASE_LOGIN_TO_CLUSTER
+                    }
                     backgroundColor={theme.colors.lightGrey}
                     size="sm"
                     disabled={!selectedCluster?.value}
