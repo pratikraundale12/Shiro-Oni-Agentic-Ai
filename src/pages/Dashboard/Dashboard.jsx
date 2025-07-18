@@ -257,7 +257,6 @@ export const Dashboard = () => {
   );
   const [updatedErrors, setUpdatedErrors] = useState([]);
   const [activeTab, setActiveTab] = useState('QuickInsights');
-  const cluster = JSON.parse(localStorage.getItem('selected_cluster') || '{}');
 
   // Reset selectedRange when cluster changes
   useEffect(() => {
@@ -435,16 +434,6 @@ export const Dashboard = () => {
     }
     setActiveTab('DeploymentStatistics');
   };
-
-  useEffect(() => {
-    const noClusterSelected = isEmpty(cluster?.value);
-    const isQuickInsightsTab = activeTab === 'QuickInsights';
-    if (noClusterSelected && isQuickInsightsTab) {
-      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
-        toastId: 'please-login-cluster-toast',
-      });
-    }
-  }, [cluster, activeTab]);
 
   return (
     <>

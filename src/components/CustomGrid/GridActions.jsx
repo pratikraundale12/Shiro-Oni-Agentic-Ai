@@ -250,6 +250,7 @@ export const GridActions = ({
   const dispatch = useDispatch();
   const location = useLocation();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
+  const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
   const accessType = useSelector(RolesSelectors.getAccessType);
   const userModalOpen = useSelector(UsersSelectors.getUserModalOpen);
   const roles = useSelector(RolesSelectors.getRoles);
@@ -425,7 +426,7 @@ export const GridActions = ({
             clusterId,
             params: {
               page: 1,
-              limit: 10,
+              limit: itemPerClusterList || 10,
               id: scheduleToken,
               ...(search && { search: search }),
               ...(watchStatus &&
