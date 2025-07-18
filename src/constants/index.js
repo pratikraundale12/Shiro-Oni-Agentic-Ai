@@ -117,7 +117,10 @@ export const ACTIVITY_EVENTS = [
   { label: 'Deploy', value: 'Deploy' },
   { label: 'Downgrade', value: 'downgrade' },
   { label: 'Schedule Deploy', value: 'Schedule Deploy' },
+  { label: 'Schedule Deploy', value: 'Schedule Deploy' },
   { label: 'Schedule Upgrade', value: 'Schedule upgrade' },
+  { label: 'Schedule Upgraded', value: 'Schedule upgraded' },
+  { label: 'Schedule Downgraded', value: 'Schedule downgraded' },
   { label: 'Schedule Downgrade', value: 'Schedule downgrade' },
   { label: 'Update', value: 'Update' },
   { label: 'Reject', value: 'Reject' },
@@ -133,6 +136,7 @@ export const ACTIVITY_EVENTS = [
   { label: 'Schedule Start', value: 'Schedule Start' },
   { label: 'Sanity Check', value: 'Sanity Check' },
   { label: 'Download', value: 'Download' },
+  { label: 'Schedule Started', value: 'Schedule Started' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },

@@ -168,7 +168,7 @@ export function* fetchDiffScheduleData(api, { payload }) {
     errorSection: 'fetchDiffScheduleData',
     loadingSection: 'fetchDiffScheduleData',
     apiMethod: api.fetchDiffScheduleData,
-    apiParams: [{ schedularId: payload }],
+    apiParams: [{ schedularId: payload?.schedule_id, event: payload?.event }],
   });
   if (response.ok) {
     yield put(SchedularActions.setDiffAllData(response?.data));
