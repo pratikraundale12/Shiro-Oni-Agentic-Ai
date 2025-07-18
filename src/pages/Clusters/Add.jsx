@@ -852,7 +852,9 @@ export const Add = () => {
               options={registries}
               icon={<QRIcons />}
             />
-            <ORText style={{ textAlign: 'center' }}>OR</ORText>
+            <ORText style={{ textAlign: 'center' }} className="mt-3">
+              OR
+            </ORText>
             <div>
               <StyledButton
                 variant="secondary"
