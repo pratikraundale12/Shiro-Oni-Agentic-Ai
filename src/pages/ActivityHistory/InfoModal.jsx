@@ -46,7 +46,7 @@ export const InfoModalActivityHistory = () => {
         </span>
       );
     } else {
-      return <span> {item?.value || 'N/A'}</span>;
+      return <span dangerouslySetInnerHTML={{ __html: item?.value || 'N/A' }} />;
     }
   };
   const COLUMNS = [
@@ -79,7 +79,7 @@ export const InfoModalActivityHistory = () => {
   const handleConfigrationDetails = () => {
     dispatch(SchedularActions.setIsDiffModalOpen(true));
     dispatch(SchedularActions.setSelectedSchedule(null));
-    dispatch(SchedularActions.fetchDiffScheduleData(selectedItem?.schedule_id));
+    dispatch(SchedularActions.fetchDiffScheduleData({ schedule_id: selectedItem?.schedule_id, event: selectedItem?.event }));
   };
   const handleSanityCheck = () => {
     dispatch(
