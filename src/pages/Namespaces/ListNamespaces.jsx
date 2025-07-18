@@ -26,7 +26,7 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
-import { SettingsSelectors } from '../../store/settings';
+import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from './ProcessGroupSorting';
@@ -161,10 +161,17 @@ export const ListNamespaces = () => {
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
+  const settingsAPIdata = useSelector(SettingsSelectors.getSettingsData);
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
+    // dispatch(SettingsActions.fetchSettingsSuccess());
+    dispatch(SettingsActions.fetchSettings());
   }, []);
+  const settingsAPIcall = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchSettings')
+  );
+
   const state = {
     sortKey: 'name',
     reverse: false,
@@ -181,15 +188,17 @@ export const ListNamespaces = () => {
 
   useEffect(() => {
     if (
-      (!isEmpty(settingsData) &&
-        isEmpty(settingsData?.username) &&
+      (!isEmpty(settingsAPIdata) &&
+        isEmpty(settingsAPIdata?.username) &&
         isEmpty(selectedClusterObj) &&
-        isEmpty(parsedSelectedCluster?.value)) ||
-      (!isEmpty(settingsData) &&
-        isEmpty(settingsData?.username) &&
+        isEmpty(parsedSelectedCluster?.value) &&
+        !settingsAPIcall) ||
+      (!isEmpty(settingsAPIdata) &&
+        isEmpty(settingsAPIdata?.username) &&
         !isEmpty(selectedClusterObj) &&
         !selectedClusterObj?.[0]?.has_custom_service_account &&
-        !isEmpty(parsedSelectedCluster?.value))
+        !isEmpty(parsedSelectedCluster?.value) &&
+        !settingsAPIcall)
     ) {
       toast.info(
         isEmpty(selectedCluster?.value)
@@ -198,16 +207,20 @@ export const ListNamespaces = () => {
         { toastId: 'login-service-account-toast', autoClose: 5000 }
       );
     } else if (
-      !isEmpty(settingsData) &&
-      !isEmpty(settingsData?.username) &&
+      !isEmpty(settingsAPIdata) &&
+      !isEmpty(settingsAPIdata?.username) &&
       isEmpty(parsedSelectedCluster?.value)
     ) {
       toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
         toastId: 'please-login-cluster-toast',
         autoClose: 5000,
       });
+      toast.info('ELSE TOAST OPTION', {
+        toastId: 'please-login-cluster-toast8975946',
+        autoClose: 5000,
+      });
     }
-  }, [settingsData?.username, selectedClusterObj, parsedSelectedCluster]);
+  }, [settingsAPIdata?.username, selectedClusterObj, parsedSelectedCluster]);
 
   const handleScheduleClick = item => {
     if (isEmpty(registryData)) {
@@ -249,6 +262,7 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setAlreadyFetchedLsIdentifierForUpgrade([]));
     dispatch(NamespacesActions.setLocalServiceInUpgrade([]));
     dispatch(NamespacesActions.setScheduleStartFlow(false));
+    // dispatch(SettingsActions.fetchSettingsSuccess());
   }, []);
 
   const ListForTooltip = item => {

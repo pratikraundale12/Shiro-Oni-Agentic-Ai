@@ -16,6 +16,7 @@ export const SettingsActions = {
   verifyEmail: createAction(`${prefix}verifyEmail`),
   verifyEmailSuccess: createAction(`${prefix}verifyEmailSuccess`),
   setIsEmailVerified: createAction(`${prefix}setIsEmailVerified`),
+  setSettingsData: createAction(`${prefix}setSettingsData`),
 };
 
 // /* ------------- INITIAL STATE ------------- */
@@ -25,6 +26,7 @@ export const SETTING_INITIAL_STATE = {
   addNewValidationModalOpen: false,
   isDownloading: false,
   emailVerified: false,
+  settingsData: {},
 };
 
 // /* ------------- SELECTORS ------------------ */
@@ -35,6 +37,7 @@ export const SettingsSelectors = {
     state.settings.addNewValidationModalOpen,
   getIsDownloading: state => state.settings.isDownloading,
   getEmailVerified: state => state.settings.emailVerified,
+  getSettingsData: state => state.settings.settingsData,
 };
 
 // /* ------------- REDUCERS ------------------- */
@@ -70,6 +73,12 @@ const setIsEmailVerified = (state, { payload }) => {
     emailVerified: payload,
   };
 };
+const setSettingsData = (state, { payload }) => {
+  return {
+    ...state,
+    settingsData: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
@@ -93,5 +102,6 @@ export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
       state.isDownloading = false;
     })
     .addCase(SettingsActions.verifyEmailSuccess, verifyEmailSuccess)
-    .addCase(SettingsActions.setIsEmailVerified, setIsEmailVerified);
+    .addCase(SettingsActions.setIsEmailVerified, setIsEmailVerified)
+    .addCase(SettingsActions.setSettingsData, setSettingsData);
 });
