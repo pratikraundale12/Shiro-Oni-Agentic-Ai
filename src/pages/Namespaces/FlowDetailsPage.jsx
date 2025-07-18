@@ -36,6 +36,7 @@ import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import LocalChangesModal from './LocalChangesModal';
 import RectangleGraph from './birdEyeViewGraph';
+import { SettingsActions } from '../../store/settings';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -530,6 +531,10 @@ const FlowDetailsPage = () => {
       dispatch(NamespacesActions.setChangeRequest(null));
     }
   }, [dispatch, change_request_var]);
+
+  useEffect(() => {
+    dispatch(SettingsActions.setSettingsData({}));
+  }, [dispatch]);
 
   return (
     <div>

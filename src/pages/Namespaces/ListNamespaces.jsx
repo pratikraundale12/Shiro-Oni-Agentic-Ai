@@ -165,7 +165,6 @@ export const ListNamespaces = () => {
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
-    // dispatch(SettingsActions.fetchSettingsSuccess());
     dispatch(SettingsActions.fetchSettings());
   }, []);
   const settingsAPIcall = useSelector(state =>
@@ -176,7 +175,6 @@ export const ListNamespaces = () => {
     sortKey: 'name',
     reverse: false,
   };
-  const settingsData = useSelector(SettingsSelectors.getSettings);
   const clustersList = useSelector(ClustersSelectors.getAllClustersList);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const selectedClusterObj = clustersList.filter(
@@ -220,7 +218,12 @@ export const ListNamespaces = () => {
         autoClose: 5000,
       });
     }
-  }, [settingsAPIdata?.username, selectedClusterObj, parsedSelectedCluster]);
+  }, [
+    settingsAPIdata?.username,
+    selectedClusterObj,
+    parsedSelectedCluster,
+    settingsAPIcall,
+  ]);
 
   const handleScheduleClick = item => {
     if (isEmpty(registryData)) {
