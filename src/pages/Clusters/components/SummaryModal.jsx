@@ -146,7 +146,7 @@ export const SummaryModal = ({
       notification_enable: notificationEnable,
       approver_enable: approverEnable,
       start_stop_requires_approval: approverEnableForStartAndStop,
-      check_certificate_option: certificateOption,
+      is_certificate_based_service_account: certificateOption,
       change_request_enable: changeRequestEnable,
       ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
       ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
@@ -188,7 +188,7 @@ export const SummaryModal = ({
       notification_enable: notificationEnable,
       approver_enable: approverEnable,
       start_stop_requires_approval: approverEnableForStartAndStop,
-      check_certificate_option: certificateOption,
+      is_certificate_based_service_account: certificateOption,
       change_request_enable: changeRequestEnable,
       registry_id: registry_id,
     };

@@ -329,7 +329,7 @@ export const Add = () => {
         change_request_enable: changeRequestEnable,
         registry_id: selectedRegistryId,
         has_custom_service_account: false,
-        check_certificate_option: certificateOption,
+        is_certificate_based_service_account: certificateOption,
       };
 
       const id = clusterId;
