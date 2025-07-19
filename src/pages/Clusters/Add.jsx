@@ -272,6 +272,10 @@ export const Add = () => {
   const [approverEnableForStartAndStop, setApproverEnableForStartAndStop] =
     useState(data?.start_stop_requires_approval || false);
 
+  const [certificateOption, setCertificateOption] = useState(
+    data?.certificate_option || false
+  );
+
   const [changeRequestEnable, setChangeRequestApproverEnable] = useState(
     data?.change_request_enable || false
   );
@@ -325,6 +329,7 @@ export const Add = () => {
         change_request_enable: changeRequestEnable,
         registry_id: selectedRegistryId,
         has_custom_service_account: false,
+        check_certificate_option: certificateOption,
       };
 
       const id = clusterId;
@@ -664,7 +669,8 @@ export const Add = () => {
       data?.approver_enable === approverEnable &&
       data?.notification_enable === notificationEnable &&
       data?.change_request_enable === changeRequestEnable &&
-      data?.start_stop_requires_approval === approverEnableForStartAndStop
+      data?.start_stop_requires_approval === approverEnableForStartAndStop &&
+      data?.certificate_option === certificateOption
     );
   };
 
@@ -681,6 +687,7 @@ export const Add = () => {
     notificationEnable,
     changeRequestEnable,
     approverEnableForStartAndStop,
+    certificateOption,
   ]);
   // Also update the handleTitleProvider function to handle copy operation
   const handleTitleProvider = data => {
@@ -820,6 +827,8 @@ export const Add = () => {
               changeRequestEnable={changeRequestEnable}
               notificationEnable={notificationEnable}
               approverEnableForStartAndStop={approverEnableForStartAndStop}
+              certificateOption={certificateOption}
+              setCertificateOption={setCertificateOption}
             />
             <ClusterTestSection
               test={test}
@@ -988,6 +997,7 @@ export const Add = () => {
         changeRequestEnable={changeRequestEnable}
         approverEnableForStartAndStop={approverEnableForStartAndStop}
         tags={tags}
+        certificateOption={certificateOption}
       />
       {successModal && (
         <SuccessTestModal

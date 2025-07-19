@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import React from 'react';
 import styled from 'styled-components';
-import { CheckboxField } from '../../../shared';
+import { CheckboxField, RadioSelectField } from '../../../shared';
 
 const CheckBoxFlex = styled.div`
   display: flex;
@@ -10,6 +10,12 @@ const CheckBoxFlex = styled.div`
   justify-content: space-between;
   align-items: flex-start;
 `;
+
+const CERTIFICATE_OPTIONS = [
+  { value: true, label: 'Yes' },
+  { value: false, label: 'No' }
+];
+
 const ClusterCheckBoxSection = ({
   approverEnable,
   setApproverEnable,
@@ -19,9 +25,20 @@ const ClusterCheckBoxSection = ({
   changeRequestEnable,
   notificationEnable,
   approverEnableForStartAndStop,
+  certificateOption,
+  setCertificateOption,
 }) => {
+  
   return (
     <>
+     <RadioSelectField
+            name="certificateOption"
+            label="Do you want to use certificate for this cluster?"
+            options={CERTIFICATE_OPTIONS}
+            value={certificateOption}
+            onChange={value => setCertificateOption(value.target.checked)}
+            defaultValue={false}
+          />
       <CheckBoxFlex>
         <CheckboxField
           name="check"
