@@ -36,12 +36,16 @@ const EnableClusterText = styled.div`
 `;
 
 export const EnableClusterRender = ({ item }) => {
+  console.log('EnableClusterRender item:', item);
+
   const dispatch = useDispatch();
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
 
   const handleClusterAction = () => {
+    console.log('EnableClusterRender handleClusterAction item:', item);
+
     if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
-      if (item?.name === 'Cluster 8443-10') {
+      if (item?.name === 'Production') {
         dispatch(
           ClustersActions.setclusterToLoginWithoutCred({
             label: item.name,
