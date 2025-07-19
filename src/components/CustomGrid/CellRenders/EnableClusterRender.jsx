@@ -41,13 +41,22 @@ export const EnableClusterRender = ({ item }) => {
 
   const handleClusterAction = () => {
     if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
-      dispatch(
-        AuthenticationActions.setClusterLogin({
-          label: item.name,
-          value: item.id,
-        })
-      );
-      dispatch(ClustersActions.fetchClusters());
+      if (item?.name === 'Cluster 8443-10') {
+        dispatch(
+          ClustersActions.setclusterToLoginWithoutCred({
+            label: item.name,
+            value: item.id,
+          })
+        );
+      } else {
+        dispatch(
+          AuthenticationActions.setClusterLogin({
+            label: item.name,
+            value: item.id,
+          })
+        );
+        dispatch(ClustersActions.fetchClusters());
+      }
     } else if (item?.status === CLUSTER_STATUS.CONNECTED) {
       dispatch(
         GridActions.fetchGrid({
