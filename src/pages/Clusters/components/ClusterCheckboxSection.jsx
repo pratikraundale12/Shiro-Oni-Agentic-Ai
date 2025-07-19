@@ -37,7 +37,7 @@ const ClusterCheckBoxSection = ({
             options={CERTIFICATE_OPTIONS}
             value={certificateOption}
             onChange={value => setCertificateOption(value.target.checked)}
-            defaultValue={false}
+            defaultValue={certificateOption}
           />
       <CheckBoxFlex>
         <CheckboxField

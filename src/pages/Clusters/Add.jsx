@@ -273,7 +273,7 @@ export const Add = () => {
     useState(data?.start_stop_requires_approval || false);
 
   const [certificateOption, setCertificateOption] = useState(
-    data?.certificate_option || false
+    data?.is_certificate_based_service_account || false
   );
 
   const [changeRequestEnable, setChangeRequestApproverEnable] = useState(
@@ -670,7 +670,7 @@ export const Add = () => {
       data?.notification_enable === notificationEnable &&
       data?.change_request_enable === changeRequestEnable &&
       data?.start_stop_requires_approval === approverEnableForStartAndStop &&
-      data?.certificate_option === certificateOption
+      data?.is_certificate_based_service_account === certificateOption
     );
   };
 

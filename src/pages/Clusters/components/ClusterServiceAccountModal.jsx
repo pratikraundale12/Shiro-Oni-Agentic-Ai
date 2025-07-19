@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button, SwitchButton } from '../../../shared';
+import { Button, RadioSelectField, SwitchButton } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { InputField, PasswordField } from '../../../shared';
@@ -65,7 +65,7 @@ export const ClusterServiceAccountModal = ({
   const navigate = useNavigate();
 
   const [method, setMethod] = useState(
-    data?.is_certificate_based_service_accounte || false
+    data?.service_account_type || 'username_password'
   );
   const [changeRequestEnabled, setChangeRequestEnabled] = useState(
     data?.has_custom_service_account || false
@@ -234,21 +234,21 @@ export const ClusterServiceAccountModal = ({
 
   const handleSave = async () => {
     const formData = new FormData();
-    const payloadData = {
-      name: clusterData.clusterName,
-      nifi_url: clusterData.nifiUrl,
-      ...(clusterData.registryId && { registry_id: clusterData.registryId }),
-      ...(clusterData.logs_url && { logs_url: clusterData.logs_url }),
-      ...(clusterData.metrics_url && { metrics_url: clusterData.metrics_url }),
-      tag: tags,
-      notification_enable: clusterData.notification_enable || false,
-      has_custom_service_account: changeRequestEnabled ? true : false,
-      service_account_type: 'username_password',
-      service_username: watch('service_username'),
-      service_password: watch('service_password'),
-    };
+    // const payloadData = {
+    //   name: clusterData.clusterName,
+    //   nifi_url: clusterData.nifiUrl,
+    //   ...(clusterData.registryId && { registry_id: clusterData.registryId }),
+    //   ...(clusterData.logs_url && { logs_url: clusterData.logs_url }),
+    //   ...(clusterData.metrics_url && { metrics_url: clusterData.metrics_url }),
+    //   tag: tags,
+    //   notification_enable: clusterData.notification_enable || false,
+    //   has_custom_service_account: changeRequestEnabled ? true : false,
+    //   service_account_type: 'username_password',
+    //   service_username: watch('service_username'),
+    //   service_password: watch('service_password'),
+    // };
 
-    const response = await updateCluster(clusterId, payloadData);
+    const response = await updateCluster(clusterId, formData);
     console.log('Response:', response);
     formData.append('name', clusterData.clusterName);
     formData.append('nifi_url', clusterData.nifiUrl);
@@ -277,10 +277,6 @@ export const ClusterServiceAccountModal = ({
     );
 
     if (changeRequestEnabled) {
-      const saType =
-        method === 'username_password' ? 'username_password' : 'p12';
-      formData.append('service_account_type', saType);
-
       if (method === 'username_password') {
         formData.append('service_username', watch('service_username'));
         formData.append('service_password', watch('service_password'));
@@ -302,7 +298,6 @@ export const ClusterServiceAccountModal = ({
       }
     } else {
       formData.append('has_custom_service_account', 'false');
-      formData.append('service_account_type', 'username_password');
       formData.append('service_username', '');
       formData.append('service_password', '');
       formData.append('service_account_certificate_password', '');
@@ -335,6 +330,11 @@ export const ClusterServiceAccountModal = ({
 
     navigate(-1);
   };
+  const SA_OPTIONS = [
+    { id: 1, value: 'username_password', label: 'Username-Password' },
+    { id: 2, value: 'p12', label: 'P12' },
+  ];
+
   return (
     <>
       <FullPageLoader loading={loading} />
@@ -376,6 +376,15 @@ export const ClusterServiceAccountModal = ({
             checked={changeRequestEnabled}
             onChange={handleChangeRequestToggle}
             isDisabled={loading}
+          />
+        </div>
+        <div className="mt-3">
+          <RadioSelectField
+            name="service_account_type"
+            options={SA_OPTIONS}
+            label="Service Account Mode"
+            register={register}
+            disabled={!changeRequestEnabled || loading}
           />
         </div>
 
@@ -518,6 +527,5 @@ ClusterServiceAccountModal.propTypes = {
       PropTypes.string,
       PropTypes.bool,
     ]),
-    is_certificate_based_service_accounte: PropTypes.bool,
   }),
 };
