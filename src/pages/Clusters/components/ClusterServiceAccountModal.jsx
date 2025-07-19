@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button, SwitchButton } from '../../../shared';
+import { Button, RadioSelectField, SwitchButton } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { InputField, PasswordField } from '../../../shared';
@@ -335,6 +335,10 @@ export const ClusterServiceAccountModal = ({
 
     navigate(-1);
   };
+  const SA_OPTIONS = [
+    { id: 1, value: 'username_password', label: 'Username-Password' },
+    { id: 2, value: 'p12', label: 'P12' },
+  ];
 
   return (
     <>
@@ -377,6 +381,15 @@ export const ClusterServiceAccountModal = ({
             checked={changeRequestEnabled}
             onChange={handleChangeRequestToggle}
             isDisabled={loading}
+          />
+        </div>
+        <div className="mt-3">
+          <RadioSelectField
+            name="service_account_type"
+            options={SA_OPTIONS}
+            label="Service Account Mode"
+            register={register}
+            disabled={!changeRequestEnabled || loading}
           />
         </div>
 

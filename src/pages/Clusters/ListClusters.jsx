@@ -40,6 +40,7 @@ import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { useGlobalContext } from '../../utils';
 import { getNextUniqueName } from '../../utils/CheckUniqueString';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
+import { ClusterLoginWithOutCredModal } from './components/ClusterLoginWithoutCredModal';
 
 const List = styled.div`
   position: absolute;
@@ -552,6 +553,7 @@ export const ListClusters = () => {
         sortingState={sortingState}
       />
       <ClusterSuccessModal />
+      <ClusterLoginWithOutCredModal />
     </>
   );
 };
