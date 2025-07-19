@@ -65,7 +65,7 @@ export const ClusterServiceAccountModal = ({
   const navigate = useNavigate();
 
   const [method, setMethod] = useState(
-    data?.is_certificate_based_service_account || false
+    data?.service_account_type || 'username_password'
   );
   const [changeRequestEnabled, setChangeRequestEnabled] = useState(
     data?.has_custom_service_account || false
@@ -381,7 +381,7 @@ export const ClusterServiceAccountModal = ({
         </div>
 
         <div className="row mb-3 mt-3">
-          {method === false && (
+          {method === 'username_password' && (
             <>
               <div className="col-4">
                 <InputField
@@ -412,7 +412,7 @@ export const ClusterServiceAccountModal = ({
               </div>
             </>
           )}
-          {method === true && (
+          {method === 'p12' && (
             <>
               <div className="col-4">
                 <ModalContainer>
@@ -519,6 +519,5 @@ ClusterServiceAccountModal.propTypes = {
       PropTypes.string,
       PropTypes.bool,
     ]),
-    is_certificate_based_service_account: PropTypes.bool,
   }),
 };
