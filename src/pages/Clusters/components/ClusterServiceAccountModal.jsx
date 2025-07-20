@@ -46,6 +46,10 @@ const UploadWrapper = styled.div`
   &:hover {
     background: #fdfaf5;
   }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 `;
 const FlexWrapper = styled.div`
   display: flex;
@@ -65,7 +69,7 @@ export const ClusterServiceAccountModal = ({
   const navigate = useNavigate();
 
   const [method, setMethod] = useState(
-    data?.service_account_type || 'username_password'
+    data?.is_certificate_based_service_account ? 'p12' : 'username_password'
   );
   const [changeRequestEnabled, setChangeRequestEnabled] = useState(
     data?.has_custom_service_account || false
@@ -115,7 +119,8 @@ export const ClusterServiceAccountModal = ({
       })
     ),
     defaultValues: {
-      service_account_type: data?.service_account_type || 'username_password',
+      is_certificate_based_service_account:
+        data?.is_certificate_based_service_account || false,
       service_username: data?.service_username || '',
       service_password: data?.service_password || '',
       service_account_certificate: data?.service_account_certificate || '',
@@ -153,7 +158,10 @@ export const ClusterServiceAccountModal = ({
       setHasChanges(certificateChanged || certificatePasswordChanged);
     }
 
-    if (method !== (data?.service_account_type || 'username_password')) {
+    if (
+      method !==
+      (data?.is_certificate_based_service_account ? 'p12' : 'username_password')
+    ) {
       setHasChanges(true);
     }
   };
@@ -161,8 +169,8 @@ export const ClusterServiceAccountModal = ({
   useEffect(() => {
     if (!changeRequestEnabled) {
       setValue(
-        'service_account_type',
-        data?.service_account_type === 'p12' ? 'p12' : 'username_password'
+        'is_certificate_based_service_account',
+        data?.is_certificate_based_service_account ? true : false
       );
     }
   }, [changeRequestEnabled]);
@@ -175,7 +183,7 @@ export const ClusterServiceAccountModal = ({
 
     if (!newState) {
       reset({
-        service_account_type: 'username_password',
+        is_certificate_based_service_account: 'username_password',
         service_username: data?.service_username || '',
         service_password: data?.service_password || '',
         service_account_certificate: data?.service_account_certificate || '',
@@ -185,10 +193,11 @@ export const ClusterServiceAccountModal = ({
         has_custom_service_account: false,
       });
       setMethod('username_password');
-      setValue('service_account_type', 'username_password');
+      setValue('is_certificate_based_service_account', false);
     } else {
       reset({
-        service_account_type: data?.service_account_type || 'username_password',
+        is_certificate_based_service_account:
+          data?.is_certificate_based_service_account || 'username_password',
         service_username: data?.service_username || '',
         service_password: data?.service_password || '',
         service_account_certificate: data?.service_account_certificate || '',
@@ -197,9 +206,10 @@ export const ClusterServiceAccountModal = ({
         change_request_enable: data?.change_request_enable || false,
         has_custom_service_account: true,
       });
-      const updatedMethod = data?.service_account_type || 'username_password';
+      const updatedMethod =
+        data?.is_certificate_based_service_account || 'username_password';
       setMethod(updatedMethod);
-      setValue('service_account_type', updatedMethod);
+      setValue('is_certificate_based_service_account', updatedMethod);
     }
   };
 
@@ -219,7 +229,7 @@ export const ClusterServiceAccountModal = ({
     }
   }, [method, data, setValue]);
 
-  const watchedMethod = watch('service_account_type');
+  const watchedMethod = watch('is_certificate_based_service_account');
 
   useEffect(() => {
     if (watchedMethod) {
@@ -477,7 +487,6 @@ ClusterServiceAccountModal.propTypes = {
     notification_enable: PropTypes.bool,
     approver_enable: PropTypes.bool,
     change_request_enable: PropTypes.bool,
-    service_account_type: PropTypes.oneOf(['username_password', 'p12']),
     service_username: PropTypes.string,
     service_password: PropTypes.string,
     service_account_certificate: PropTypes.string,
@@ -505,7 +514,6 @@ ClusterServiceAccountModal.propTypes = {
     notification_enable: PropTypes.bool,
     approver_enable: PropTypes.bool,
     change_request_enable: PropTypes.bool,
-    service_account_type: PropTypes.oneOf(['username_password', 'p12']),
     service_username: PropTypes.string,
     service_password: PropTypes.string,
     service_account_certificate: PropTypes.string,

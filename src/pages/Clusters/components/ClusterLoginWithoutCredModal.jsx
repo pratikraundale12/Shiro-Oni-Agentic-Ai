@@ -132,7 +132,8 @@ export const ClusterLoginWithOutCredModal = () => {
         contentStyles={{ minWidth: '30%' }}
         primaryButtonProps={{ id: 'enable-cluster-submit-btn' }}
       >
-        Cluster Login without Credentials
+        Do you want to connect to the cluster{' '}
+        <strong>{clusterLoginWithoutCred?.label}</strong>?
       </Modal>
     </>
   );

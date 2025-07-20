@@ -16,12 +16,11 @@ const Label = styled.h3`
 
 export const RadioSelectField = ({
   label,
-  register,
   name,
   options,
   errors = {},
   defaultValue,
-  ...props
+  onChange,
 }) => {
   return (
     <>
@@ -33,9 +32,8 @@ export const RadioSelectField = ({
               name={name}
               label={option.label}
               value={option.value}
-              register={register}
-              defaultChecked={defaultValue === option.value ?? false}
-              {...props}
+              onChange={onChange}
+              defaultChecked={defaultValue === option.value}
             />
           </div>
         ))}
@@ -52,6 +50,7 @@ RadioSelectField.propTypes = {
   options: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   errors: PropTypes.shape({}),
   defaultValue: PropTypes.any,
+  onChange: PropTypes.func,
 };
 
 export default RadioSelectField;

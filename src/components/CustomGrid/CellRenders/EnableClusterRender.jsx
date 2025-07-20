@@ -45,7 +45,7 @@ export const EnableClusterRender = ({ item }) => {
     console.log('EnableClusterRender handleClusterAction item:', item);
 
     if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
-      if (item?.name === 'Production') {
+      if (item?.is_certificate_based_service_account) {
         dispatch(
           ClustersActions.setclusterToLoginWithoutCred({
             label: item.name,
