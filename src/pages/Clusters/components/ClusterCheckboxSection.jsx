@@ -2,6 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { CheckboxField, RadioSelectField } from '../../../shared';
+import CertificateRadioSelect from './CertificateRadioSelect';
 
 const CheckBoxFlex = styled.div`
   display: flex;
@@ -13,7 +14,7 @@ const CheckBoxFlex = styled.div`
 
 const CERTIFICATE_OPTIONS = [
   { value: true, label: 'Yes' },
-  { value: false, label: 'No' }
+  { value: false, label: 'No' },
 ];
 
 const ClusterCheckBoxSection = ({
@@ -30,15 +31,13 @@ const ClusterCheckBoxSection = ({
 }) => {
   return (
     <>
-      <RadioSelectField
+      <CertificateRadioSelect
         name="certificateOption"
         label="Do you want to use certificate for this cluster?"
         options={CERTIFICATE_OPTIONS}
         value={certificateOption}
-        onChange={val => {
-          setCertificateOption(val);
-        }}
         defaultValue={certificateOption}
+        onChange={val => setCertificateOption(val)}
       />
       <CheckBoxFlex>
         <CheckboxField

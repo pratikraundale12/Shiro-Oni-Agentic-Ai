@@ -60,28 +60,13 @@ const RadioInput = styled.input.attrs({ type: 'radio' })`
   }
 `;
 
-const RadioField = ({
-  name,
-  register,
-  label,
-  refName = null,
-  value,
-  onChange = () => {},
-  ...props
-}) => {
-  const handleChange = () => {
-    if (onChange) {
-      onChange(value); // Send boolean value directly
-    }
-  };
+const RadioField = ({ name, register, label, refName = null, ...props }) => {
   return (
     <Wrapper ref={refName}>
       <RadioInput
         type="radio"
         name={name}
         id={label}
-        value={String(value)} // Set string for HTML, but…
-        onChange={handleChange} // …send actual boolean to parent
         {...props}
         {...(typeof register === 'function' && register(name))}
       />
@@ -95,8 +80,6 @@ RadioField.propTypes = {
   register: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
   refName: PropTypes.string,
-  value: PropTypes.bool.isRequired,
-  onChange: PropTypes.func,
 };
 
 export default RadioField;
