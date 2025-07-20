@@ -19,7 +19,6 @@ import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
-import { updateCluster } from '../../../store/index1';
 import { theme } from '../../../styles';
 
 const Container = styled.div``;
@@ -257,7 +256,6 @@ export const ClusterServiceAccountModal = ({
     //   service_password: watch('service_password'),
     // };
 
-    const response = await updateCluster(clusterId, formData);
     formData.append('name', clusterData.clusterName);
     formData.append('nifi_url', clusterData.nifiUrl);
 

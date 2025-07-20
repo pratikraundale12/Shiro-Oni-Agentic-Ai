@@ -830,19 +830,21 @@ export const Add = () => {
               certificateOption={certificateOption}
               setCertificateOption={setCertificateOption}
             />
-            <ClusterTestSection
-              test={test}
-              setIsCertificateOpen={setIsCertificateOpen}
-              testSuccess={testSuccess}
-              dataFill={dataFill}
-              checkDuplicate={checkDuplicate}
-              checkDuplicateName={checkDuplicateName}
-              setIsCredOpen={setIsCredOpen}
-              testData={testData}
-              watchedFields={watchedFields}
-              data={data}
-            />
-            {testSuccess && !successModal && (
+            {!certificateOption && (
+              <ClusterTestSection
+                test={test}
+                setIsCertificateOpen={setIsCertificateOpen}
+                testSuccess={testSuccess}
+                dataFill={dataFill}
+                checkDuplicate={checkDuplicate}
+                checkDuplicateName={checkDuplicateName}
+                setIsCredOpen={setIsCredOpen}
+                testData={testData}
+                watchedFields={watchedFields}
+                data={data}
+              />
+            )}
+            {testSuccess && !successModal && !certificateOption && (
               <CertificateTextDisplay
                 clusterModule={true}
                 activeTab={activeTab}
