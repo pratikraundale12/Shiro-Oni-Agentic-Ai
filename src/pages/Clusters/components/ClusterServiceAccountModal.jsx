@@ -46,10 +46,8 @@ const UploadWrapper = styled.div`
   &:hover {
     background: #fdfaf5;
   }
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 `;
 const FlexWrapper = styled.div`
   display: flex;
@@ -88,7 +86,6 @@ export const ClusterServiceAccountModal = ({
   );
 
   const loading = isChecking || isAdding || isUpdating;
-
   const {
     register,
     watch,
@@ -174,7 +171,6 @@ export const ClusterServiceAccountModal = ({
       );
     }
   }, [changeRequestEnabled]);
-
   const handleChangeRequestToggle = () => {
     const newState = !changeRequestEnabled;
     setChangeRequestEnabled(newState);
@@ -206,8 +202,9 @@ export const ClusterServiceAccountModal = ({
         change_request_enable: data?.change_request_enable || false,
         has_custom_service_account: true,
       });
-      const updatedMethod =
-        data?.is_certificate_based_service_account || 'username_password';
+      const updatedMethod = data?.is_certificate_based_service_account
+        ? 'p12'
+        : 'username_password';
       setMethod(updatedMethod);
       setValue('is_certificate_based_service_account', updatedMethod);
     }
@@ -233,7 +230,9 @@ export const ClusterServiceAccountModal = ({
 
   useEffect(() => {
     if (watchedMethod) {
-      setMethod(watchedMethod);
+      setMethod('p12');
+    } else {
+      setMethod('username_password');
     }
   }, [watchedMethod]);
 
@@ -259,7 +258,6 @@ export const ClusterServiceAccountModal = ({
     // };
 
     const response = await updateCluster(clusterId, formData);
-    console.log('Response:', response);
     formData.append('name', clusterData.clusterName);
     formData.append('nifi_url', clusterData.nifiUrl);
 
@@ -427,7 +425,13 @@ export const ClusterServiceAccountModal = ({
                     watch={watch}
                     control={control}
                     required
-                    rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                    rightIcon={
+                      <UploadWrapper
+                        disabled={!changeRequestEnabled || loading}
+                      >
+                        Upload File
+                      </UploadWrapper>
+                    }
                     placeholder={KDFM.UPLOAD_P12_FILE}
                     errors={errors}
                     fileLable="P12 file"
