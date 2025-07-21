@@ -31,56 +31,87 @@ export const ClusterLoginWithOutCredModal = () => {
     ClustersSelectors.getclusterToLoginWithoutCred
   );
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  console.log(selectedCluster, 'selectedCluster');
+
   const [loading, setLoading] = useState(false);
-  const { handleSubmit, watch, reset } = useForm({
+  const { handleSubmit, reset } = useForm({
     defaultValues: DEFAULT_VALUES,
   });
-  const clusterId = watch('cluster_id');
+  // const clusterId = watch('cluster_id');
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
+  const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
 
   const onSubmit = async () => {
     setLoading(true);
+
+    // Load cluster data from local storage or use empty array
     const clusterData = JSON.parse(
       localStorage.getItem(CLUSTERS_TOKEN) || '[]'
     );
 
+    // Ensure the payload is valid
     const payload = {
       cluster_id: clusterLoginWithoutCred?.value,
     };
+
+    console.log('Submitting with payload:', payload);
+
     try {
       const response = await getClusterToken(payload);
-      if (response.cluster_id) {
+      console.log('API response:', response);
+
+      // Check for valid response
+      if (response && response.cluster_id) {
         const newCluster = {
-          id: response?.cluster_id,
-          name: response?.cluster_name,
-          token: response?.token,
+          id: response.cluster_id,
+          name: response.cluster_name,
+          token: response.token,
         };
+
+        // Save cluster to local storage
         clusterData.push(newCluster);
         localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(clusterData));
+
+        // Clear cluster without credentials
         dispatch(ClustersActions.setclusterToLoginWithoutCred({}));
 
-        if (!destinationFlag) {
-          dispatch(
-            NamespacesActions.setSelectedCluster({
-              label: response?.cluster_name,
-              value: response?.cluster_id,
+        // Set selected cluster if not deployed
+        if (!clusterLogin?.is_deploy) {
+          localStorage.setItem(
+            'selected_cluster',
+            JSON.stringify({
+              label: response.cluster_name,
+              value: response.cluster_id,
             })
           );
         }
-        setLoading(false);
+
+        // Set namespace cluster if not going to destination
+        if (!destinationFlag) {
+          dispatch(
+            NamespacesActions.setSelectedCluster({
+              label: response.cluster_name,
+              value: response.cluster_id,
+            })
+          );
+        }
+
+        // Destination cluster handling
         if (destinationFlag) {
           dispatch(AuthenticationActions.setDestinationFlag());
           dispatch(
             NamespacesActions.setSelectedDestCluster({
-              label: response?.cluster_name,
-              value: response?.cluster_id,
+              label: response.cluster_name,
+              value: response.cluster_id,
             })
           );
           dispatch(NamespacesActions.checkDestCluster());
         }
+
         dispatch(AuthenticationActions.setClusterLogin());
         toast.success('The cluster is now enabled successfully');
 
+        // Reset form and reload grid
         reset(DEFAULT_VALUES);
         dispatch(
           GridActions.fetchGrid({
@@ -93,23 +124,32 @@ export const ClusterLoginWithOutCredModal = () => {
             },
           })
         );
+
+        // Reload if on process-group route
         if (window.location.pathname.includes('/process-group')) {
           window.location.reload();
           history.push('/process-group');
         }
       } else {
-        toast.error(response.message || 'Error while getting data');
-
-        setLoading(false);
+        // If response is invalid or cluster_id is missing
+        toast.error(response?.message || 'Error while getting data');
+        console.warn('API did not return expected data:', response);
       }
     } catch (error) {
-      setLoading(false);
+      console.error('Caught error:', error);
+
+      // Extract meaningful error message
       const errorMessage =
         error?.response?.data?.message ===
         'The supplied username and password are not valid.'
           ? 'The entered username and password are incorrect.'
-          : error?.response?.data?.message || error.message;
+          : error?.response?.data?.message ||
+            error.message ||
+            'Something went wrong';
+
       toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -126,7 +166,7 @@ export const ClusterLoginWithOutCredModal = () => {
         loading={loading}
         secondaryButtonText="Back"
         primaryButtonText={'Submit'}
-        primaryButtonDisabled={selectedCluster?.value == clusterId}
+        // primaryButtonDisabled={selectedCluster?.value == clusterId}
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}

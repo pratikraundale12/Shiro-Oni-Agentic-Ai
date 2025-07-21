@@ -85,7 +85,11 @@ export const EnableClusterRender = ({ item }) => {
         clustersToken?.filter(token => token.id === item?.id);
       const payload = { id: item?.id, token: tokenToRemove?.[0]?.token };
       dispatch(ClustersActions.clusterLogout(payload));
+      console.log('line 88');
+
       if (clusterItem) {
+        console.log('line no 89');
+
         const cluster = JSON.parse(clusterItem);
         if (cluster.value === item.id) {
           localStorage.removeItem('selected_cluster');

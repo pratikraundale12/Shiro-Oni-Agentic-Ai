@@ -4,8 +4,22 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { InfoIcon, LinkIcon, QRIcons } from '../../../assets';
 import { KDFM } from '../../../constants';
 import { CheckboxField, InputField } from '../../../shared';
+import CertificateRadioSelect from './CertificateRadioSelect';
 
-const RegistryFormInputs = ({ register, errors, testSuccess }) => {
+const CERTIFICATE_OPTIONS = [
+  { value: true, label: 'Yes' },
+  { value: false, label: 'No' },
+];
+
+const RegistryFormInputs = ({
+  register,
+  errors,
+  testSuccess,
+  registeryCertificateOption,
+  setRegisteryCertificateOption,
+}) => {
+  console.log('RegistryFormInputs testSuccess:', registeryCertificateOption);
+  
   return (
     <>
       <InputField
@@ -50,6 +64,14 @@ const RegistryFormInputs = ({ register, errors, testSuccess }) => {
           }}
         />
       </div>
+      <CertificateRadioSelect
+        name="registeryCertificateOption"
+        label="Do you want to use certificate for this registry?"
+        options={CERTIFICATE_OPTIONS}
+        value={registeryCertificateOption}
+        defaultValue={registeryCertificateOption}
+        onChange={val => setRegisteryCertificateOption(val)}
+      />
     </>
   );
 };

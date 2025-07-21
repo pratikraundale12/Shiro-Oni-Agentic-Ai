@@ -298,8 +298,7 @@ export const Add = () => {
     testCertificatePasswordForRegistry,
     setTestCertificatePasswordForRegistry,
   ] = useState('');
-  console.log('testCertificateFile:', testCertificateFile);
-  console.log('testCertificatePassword:', testCertificatePassword);
+    const [registeryCertificateOption, setRegisteryCertificateOption] = useState(false);
   useEffect(() => {
     if (!approverEnable) {
       setChangeRequestApproverEnable(false);
@@ -696,7 +695,6 @@ export const Add = () => {
       data?.is_certificate_based_service_account === certificateOption
     );
   };
-  console.log('clusterData', clusterData);
 
   useEffect(() => {
     if (checkEditSave()) {
@@ -804,6 +802,7 @@ export const Add = () => {
       formStateData?.is_registry_authenticated
     );
     formData.append('registry_url', formStateData?.registryUrl || '');
+    formData.append('is_certificate_based_service_account', registeryCertificateOption);
 
     if (testCertificateFileForRegistry) {
       formData.append(
@@ -959,6 +958,8 @@ export const Add = () => {
               registryData={registryData}
               watchedFields={watchedFields}
               isCertificateUser={certificateOption}
+              registeryCertificateOption={registeryCertificateOption}
+              setRegisteryCertificateOption={setRegisteryCertificateOption}
             />
           </FormContainer>
         )}
