@@ -93,10 +93,6 @@ export const ClusterLoginModal = () => {
       !!selectedClusterData?.is_certificate_based_service_account
     );
   }, [selectedClusterData, setValue]);
-  console.log(
-    'selectedClusterData:',
-    selectedClusterData?.is_certificate_based_service_account
-  );
 
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
 

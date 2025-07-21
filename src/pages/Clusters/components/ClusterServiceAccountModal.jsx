@@ -239,14 +239,6 @@ export const ClusterServiceAccountModal = ({
   useEffect(() => {
     checkForChanges();
   }, [watchAllFields, changeRequestEnabled, method]);
-  console.log(
-    'service_account_certificate',
-    watch('service_account_certificate')
-  );
-  console.log(
-    'service_account_certificate_password',
-    watch('service_account_certificate_password')
-  );
 
   const handleSave = async () => {
     const formData = new FormData();

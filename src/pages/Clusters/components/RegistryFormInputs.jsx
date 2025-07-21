@@ -18,7 +18,6 @@ const RegistryFormInputs = ({
   registeryCertificateOption,
   setRegisteryCertificateOption,
 }) => {
-  console.log('RegistryFormInputs testSuccess:', registeryCertificateOption);
   
   return (
     <>

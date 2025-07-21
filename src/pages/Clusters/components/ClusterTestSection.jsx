@@ -37,7 +37,6 @@ const ClusterTestSection = ({
   data,
   certificateOption = false,
 }) => {
-  console.log('tesst', test);
 
   return (
     <Flex>
@@ -48,11 +47,13 @@ const ClusterTestSection = ({
             <Button
               onClick={() => setIsCertificateOpen(true)}
               disabled={
-                testSuccess ||
-                !dataFill ||
-                checkDuplicate ||
-                checkDuplicateName ||
-                watchedFields?.[1] === data?.nifi_url
+                certificateOption ===
+                  data?.is_certificate_based_service_account &&
+                (testSuccess ||
+                  !dataFill ||
+                  checkDuplicate ||
+                  checkDuplicateName ||
+                  watchedFields?.[1] === data?.nifi_url)
               }
             >
               {KDFM.ADD_CERTIFICATE}
@@ -66,11 +67,13 @@ const ClusterTestSection = ({
                 <Button
                   onClick={() => setIsCredOpen(true)}
                   disabled={
-                    testSuccess ||
-                    !dataFill ||
-                    checkDuplicate ||
-                    checkDuplicateName ||
-                    watchedFields?.[1] === data?.nifi_url
+                    certificateOption ===
+                      data?.is_certificate_based_service_account &&
+                    (testSuccess ||
+                      !dataFill ||
+                      checkDuplicate ||
+                      checkDuplicateName ||
+                      watchedFields?.[1] === data?.nifi_url)
                   }
                 >
                   {KDFM.ENTER_CREDENTIALS}

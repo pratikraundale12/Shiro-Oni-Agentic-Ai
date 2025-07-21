@@ -11,7 +11,6 @@ import {
   ClustersSelectors,
   GridActions,
   NamespacesActions,
-  NamespacesSelectors,
 } from '../../../store';
 import { Modal } from '../../../shared';
 import { CLUSTERS_TOKEN } from '../../../constants';
@@ -30,8 +29,6 @@ export const ClusterLoginWithOutCredModal = () => {
   const clusterLoginWithoutCred = useSelector(
     ClustersSelectors.getclusterToLoginWithoutCred
   );
-  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  console.log(selectedCluster, 'selectedCluster');
 
   const [loading, setLoading] = useState(false);
   const { handleSubmit, reset } = useForm({
@@ -54,11 +51,8 @@ export const ClusterLoginWithOutCredModal = () => {
       cluster_id: clusterLoginWithoutCred?.value,
     };
 
-    console.log('Submitting with payload:', payload);
-
     try {
       const response = await getClusterToken(payload);
-      console.log('API response:', response);
 
       // Check for valid response
       if (response && response.cluster_id) {
