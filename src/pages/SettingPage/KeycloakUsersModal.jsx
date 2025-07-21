@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
-import { Button, Modal } from '../../shared';
+import { Button, InputField, Modal } from '../../shared';
 import { StatusRender, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { useForm } from 'react-hook-form';
@@ -9,7 +9,7 @@ import { RolesActions, RolesSelectors } from '../../store';
 import RegistryMultiSelect from './Multiselect';
 import { isEmpty } from 'lodash';
 import styled from 'styled-components';
-import { PlusCircleIcon } from '../../assets';
+import { PlusCircleIcon, SmallSearchIcon } from '../../assets';
 const SyncButton = styled(Button)`
   width: auto;
   padding-top: 14px;
@@ -27,6 +27,15 @@ const KeycloakUsersModal = () => {
   const userList = useSelector(SettingsSelectors?.getKeycloakUserFetched);
   const roles = useSelector(RolesSelectors.getRoles);
   const [rolesUpdated, setRolesUpdated] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const filteredUsers = useMemo(() => {
+    return userList.filter(
+      user =>
+        user.first_name.toLowerCase().includes(searchText.toLowerCase()) ||
+        user.last_name?.toLowerCase().includes(searchText.toLowerCase()) ||
+        user.username?.toLowerCase().includes(searchText.toLowerCase())
+    );
+  }, [searchText, userList]);
 
   const ROLES_OPTIONS = useMemo(() => {
     return roles?.map(ele => ({
@@ -166,8 +175,17 @@ const KeycloakUsersModal = () => {
             </SyncButton>
           </div>
         </div>
+        <div>
+          <InputField
+            type="text"
+            placeholder="Search by name, username"
+            icon={<SmallSearchIcon />}
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+          />
+        </div>
         <Table
-          data={userList || []}
+          data={filteredUsers || []}
           columns={COLUMNS}
           className="variables-table"
         />
