@@ -1,0 +1,178 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import { Button, Modal } from '../../shared';
+import { StatusRender, Table, TextRender } from '../../components';
+import { KDFM } from '../../constants';
+import { useForm } from 'react-hook-form';
+import { RolesActions, RolesSelectors } from '../../store';
+import RegistryMultiSelect from './Multiselect';
+import { isEmpty } from 'lodash';
+import styled from 'styled-components';
+import { PlusCircleIcon } from '../../assets';
+const SyncButton = styled(Button)`
+  width: auto;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-right: 17px;
+  padding-left: 17px;
+  height: 40px;
+  margin-bottom: 5px;
+`;
+const KeycloakUsersModal = () => {
+  const dispatch = useDispatch();
+  const isModalOpen = useSelector(
+    SettingsSelectors.getkeycloakUserListModalOpen
+  );
+  const userList = useSelector(SettingsSelectors?.getKeycloakUserFetched);
+  const roles = useSelector(RolesSelectors.getRoles);
+  const [rolesUpdated, setRolesUpdated] = useState([]);
+
+  const ROLES_OPTIONS = useMemo(() => {
+    return roles?.map(ele => ({
+      label: ele?.name,
+      value: ele?.role_id,
+    }));
+  }, [roles]);
+
+  const { control, handleSubmit, reset } = useForm();
+
+  useEffect(() => {
+    if (!isEmpty(userList) && !isEmpty(ROLES_OPTIONS)) {
+      const newDefaultValues = {};
+
+      userList.forEach(user => {
+        const userRoleIds = (user.role || []).map(r => r.role_id);
+        const matchedRoles = ROLES_OPTIONS.filter(opt =>
+          userRoleIds.includes(opt.value)
+        );
+        newDefaultValues[`${user.id}`] = matchedRoles;
+      });
+      reset(newDefaultValues);
+    }
+  }, [userList, ROLES_OPTIONS, reset]);
+
+  const COLUMNS = [
+    {
+      label: <>{KDFM.NAME} </>,
+      width: '20%',
+      resize: true,
+      renderCell: item => (
+        <TextRender
+          text={`${item?.first_name || ''} ${item?.middle_name || ''} ${item?.last_name || ''}`}
+          capitalizeText={false}
+          toolTip={false}
+        />
+      ),
+    },
+    {
+      label: <>{KDFM.USERNAME} </>,
+      width: '20%',
+      resize: true,
+      renderCell: item => (
+        <TextRender
+          text={item.username || ''}
+          capitalizeText={false}
+          toolTip={false}
+        />
+      ),
+    },
+    {
+      label: KDFM.EMAIL,
+      width: '20%',
+      resize: true,
+      renderCell: item => (
+        <TextRender text={item?.email} capitalizeText={false} toolTip={false} />
+      ),
+    },
+
+    {
+      label: <>{KDFM.STATUS} </>,
+      width: '10%',
+      resize: true,
+      renderCell: item => (
+        <StatusRender status={item?.is_active ? 'Active' : 'Inactive'} />
+      ),
+    },
+    {
+      label: KDFM.ROLE,
+      width: '30%',
+      resize: true,
+      renderCell: item => (
+        <>
+          <RegistryMultiSelect
+            enableCheckboxes
+            control={control}
+            name={`${item?.id}`}
+            placeholder={'Select Role'}
+            options={ROLES_OPTIONS || []}
+            customOnChange={(hookFormOnChange, selected, meta) => {
+              const selectedIds = selected?.map(ele => ele?.value);
+              setRolesUpdated(prev => {
+                const existingIndex = prev.findIndex(
+                  item => item.user_id === meta?.name
+                );
+
+                if (existingIndex !== -1) {
+                  const updated = [...prev];
+                  updated[existingIndex] = {
+                    user_id: meta?.name,
+                    role_ids: selectedIds,
+                  };
+                  return updated;
+                }
+                return [
+                  ...prev,
+                  { user_id: meta?.name, role_ids: selectedIds },
+                ];
+              });
+              hookFormOnChange(selected);
+            }}
+          />
+        </>
+      ),
+    },
+  ];
+
+  const onSubmit = () => {
+    dispatch(SettingsActions.assignKeycloakRolesToUsers(rolesUpdated));
+  };
+
+  return (
+    <>
+      <Modal
+        size="lg"
+        title={'Keycloak Users'}
+        isOpen={isModalOpen}
+        onRequestClose={() =>
+          dispatch(SettingsActions.setkeycloakUserListModalOpen(false))
+        }
+        secondaryButtonText="Cancel"
+        primaryButtonText="Submit"
+        onSubmit={handleSubmit(onSubmit)}
+        footerAlign="start"
+        contentStyles={{ minWidth: '65%' }}
+      >
+        <div className="d-flex justify-content-end">
+          <div className=" mb-3">
+            <SyncButton
+              icon={<PlusCircleIcon width={16} height={16} color="black" />}
+              onClick={() => dispatch(RolesActions.roleModal(true))}
+              variant="secondary"
+              size="sm"
+              type="button"
+            >
+              Add New Role
+            </SyncButton>
+          </div>
+        </div>
+        <Table
+          data={userList || []}
+          columns={COLUMNS}
+          className="variables-table"
+        />
+      </Modal>
+    </>
+  );
+};
+export default KeycloakUsersModal;
