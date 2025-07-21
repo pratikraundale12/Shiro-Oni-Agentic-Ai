@@ -31,6 +31,10 @@ export const ListUsers = () => {
       return column;
     });
   };
+  const getRolesName = arrayOfObj => {
+    const nameArr = arrayOfObj?.map(ele => ele.role_name);
+    return nameArr?.join(', ');
+  };
 
   const COLUMNS = [
     {
@@ -108,7 +112,7 @@ export const ListUsers = () => {
       width: '20%',
       resize: true,
       renderCell: item => (
-        <TextRender text={item?.role?.join(', ')} capitalizeText={false} />
+        <TextRender text={getRolesName(item?.role)} capitalizeText={false} />
       ),
     },
     {

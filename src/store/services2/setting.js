@@ -10,11 +10,18 @@ export const settingsAPI = api => {
       to_email: to_email,
       changedSmtpData: changedSmtpData,
     });
-
+  const fetchKeycloakUsers = ({ payload }) => {
+    return api.post(`/keycloack-users`, payload);
+  };
+  const assignKeycloakRolesToUsers = ({ payload }) => {
+    return api.post(`/assign-roles`, payload);
+  };
   return {
     createSettings,
     fetchSettings,
     downloadLogsZip,
     verifyEmail,
+    fetchKeycloakUsers,
+    assignKeycloakRolesToUsers,
   };
 };

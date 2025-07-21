@@ -14,6 +14,7 @@ import { KDFM, SSO_LOGIN_TYPE } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, SelectField, SwitchButton } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import KeycloakCredentialSection from './KeycloakCredentialSection';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -436,6 +437,7 @@ export const SSOLoginSettings = () => {
                         required
                       />
                     </div>
+                    <KeycloakCredentialSection />
                   </InputFields>
                 </>
               )}
