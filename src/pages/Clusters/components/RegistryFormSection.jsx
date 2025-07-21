@@ -41,6 +41,7 @@ const RegistryFormSection = ({
   clusterId,
   registryData,
   watchedFields,
+  isCertificateUser,
 }) => {
 
   return (
@@ -67,8 +68,8 @@ const RegistryFormSection = ({
                 {KDFM.ADD_CERTIFICATE}
               </Button>
             </div>
-            <ORText>OR</ORText>
-            <div>
+            {<ORText>OR</ORText>}
+            {<div>
               <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
               <Button
                 onClick={() => setIsCredOpen(true)}
@@ -81,7 +82,7 @@ const RegistryFormSection = ({
               >
                 {KDFM.ENTER_CREDENTIALS}
               </Button>
-            </div>
+            </div>}
           </>
         </Flex>
       ) : null}

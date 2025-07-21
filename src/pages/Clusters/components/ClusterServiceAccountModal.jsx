@@ -239,13 +239,21 @@ export const ClusterServiceAccountModal = ({
   useEffect(() => {
     checkForChanges();
   }, [watchAllFields, changeRequestEnabled, method]);
+  console.log(
+    'service_account_certificate',
+    watch('service_account_certificate')
+  );
+  console.log(
+    'service_account_certificate_password',
+    watch('service_account_certificate_password')
+  );
 
   const handleSave = async () => {
     const formData = new FormData();
     // const payloadData = {
     //   name: clusterData.clusterName,
     //   nifi_url: clusterData.nifiUrl,
-    //   ...(clusterData.registryId && { registry_id: clusterData.registryId }),
+    //   ...(clusterData.registryId && { registry_id: clusterDa ta.registryId }),
     //   ...(clusterData.logs_url && { logs_url: clusterData.logs_url }),
     //   ...(clusterData.metrics_url && { metrics_url: clusterData.metrics_url }),
     //   tag: tags,

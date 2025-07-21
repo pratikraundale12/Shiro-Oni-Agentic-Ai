@@ -146,6 +146,9 @@ export const Add = () => {
     nifiUrl: data?.nifi_url || '',
     metrics_url: data?.metrics_url || '',
     logs_url: data?.logs_url || '',
+    service_account_certificate: data?.service_account_certificate || '',
+    service_account_certificate_password:
+      data?.service_account_certificate_password || '',
   });
   const [clusterId, setClusterId] = useState(data?.id);
   const gridData = useSelector(state =>
@@ -287,6 +290,16 @@ export const Add = () => {
       ? ClusterSchema
       : RegistrySchema;
   };
+  const [testCertificateFile, setTestCertificateFile] = useState('');
+  const [testCertificatePassword, setTestCertificatePassword] = useState('');
+  const [testCertificateFileForRegistry, setTestCertificateFileForRegistry] =
+    useState('');
+  const [
+    testCertificatePasswordForRegistry,
+    setTestCertificatePasswordForRegistry,
+  ] = useState('');
+  console.log('testCertificateFile:', testCertificateFile);
+  console.log('testCertificatePassword:', testCertificatePassword);
   useEffect(() => {
     if (!approverEnable) {
       setChangeRequestApproverEnable(false);
@@ -472,13 +485,18 @@ export const Add = () => {
         clusterName !== clusterData.clusterName ||
         nifiUrl !== clusterData.nifiUrl ||
         logs_url !== clusterData.logs_url ||
-        metrics_url !== clusterData.metrics_url
+        metrics_url !== clusterData.metrics_url ||
+        testCertificateFile !== clusterData.service_account_certificate ||
+        testCertificatePassword !==
+          clusterData.service_account_certificate_password
       ) {
         setClusterData({
           clusterName: clusterName || '',
           nifiUrl: nifiUrl || '',
           metrics_url: metrics_url || '',
           logs_url: logs_url || '',
+          service_account_certificate: testCertificateFile || '',
+          service_account_certificate_password: testCertificatePassword || '',
         });
       }
     } else if (
@@ -495,6 +513,9 @@ export const Add = () => {
           registryName: registryName || '',
           registryUrl: registryUrl || '',
           is_registry_authenticated: watchedFields?.[7] || true,
+          service_account_certificate: testCertificateFileForRegistry || '',
+          service_account_certificate_password:
+            testCertificatePasswordForRegistry || '',
         });
       }
     }
@@ -520,6 +541,8 @@ export const Add = () => {
     setRegistryData,
     setTest,
     activeTab,
+    testCertificateFile,
+    testCertificatePassword,
   ]);
   // Update the useEffect where you check for data
   useEffect(() => {
@@ -673,6 +696,7 @@ export const Add = () => {
       data?.is_certificate_based_service_account === certificateOption
     );
   };
+  console.log('clusterData', clusterData);
 
   useEffect(() => {
     if (checkEditSave()) {
@@ -772,17 +796,37 @@ export const Add = () => {
   };
 
   const handleNewRgistrySave = async () => {
-    const data = {
-      name: formStateData?.registryName,
-      is_registry_authenticated: formStateData?.is_registry_authenticated,
-      registry_url: formStateData?.registryUrl,
-    };
-    const response = await createRegistry(data);
+    const formData = new FormData();
+
+    formData.append('name', formStateData?.registryName || '');
+    formData.append(
+      'is_registry_authenticated',
+      formStateData?.is_registry_authenticated
+    );
+    formData.append('registry_url', formStateData?.registryUrl || '');
+
+    if (testCertificateFileForRegistry) {
+      formData.append(
+        'service_account_certificate',
+        testCertificateFileForRegistry
+      );
+    }
+
+    if (testCertificatePasswordForRegistry) {
+      formData.append(
+        'service_account_certificate_password',
+        testCertificatePasswordForRegistry
+      );
+    }
+
+    const response = await createRegistry(formData); // Make sure your API expects FormData
+
     if (response?.status === 201) {
       fetchRegistry();
     } else {
       toast.error(response.message);
     }
+
     handleBack();
   };
 
@@ -830,9 +874,10 @@ export const Add = () => {
               certificateOption={certificateOption}
               setCertificateOption={setCertificateOption}
             />
-            {!certificateOption && (
+            {
               <ClusterTestSection
                 test={test}
+                certificateOption={certificateOption}
                 setIsCertificateOpen={setIsCertificateOpen}
                 testSuccess={testSuccess}
                 dataFill={dataFill}
@@ -843,7 +888,7 @@ export const Add = () => {
                 watchedFields={watchedFields}
                 data={data}
               />
-            )}
+            }
             {testSuccess && !successModal && !certificateOption && (
               <CertificateTextDisplay
                 clusterModule={true}
@@ -913,6 +958,7 @@ export const Add = () => {
               clusterId={clusterId}
               registryData={registryData}
               watchedFields={watchedFields}
+              isCertificateUser={certificateOption}
             />
           </FormContainer>
         )}
@@ -973,6 +1019,12 @@ export const Add = () => {
         clusterData={clusterData}
         registryData={registryData}
         setSuccessModal={setSuccessModal}
+        setTestCertificateFile={setTestCertificateFile}
+        setTestCertificatePassword={setTestCertificatePassword}
+        setTestCertificatePasswordForRegistry={
+          setTestCertificatePasswordForRegistry
+        }
+        setTestCertificateFileForRegistry={setTestCertificateFileForRegistry}
       />
       <Creditionals
         isCredOpen={isCredOpen}

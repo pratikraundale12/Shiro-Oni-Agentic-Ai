@@ -48,6 +48,10 @@ export const Certificate = ({
   activeTab,
   registryData,
   setSuccessModal,
+  setTestCertificateFile,
+  setTestCertificatePassword,
+  setTestCertificatePasswordForRegistry,
+  setTestCertificateFileForRegistry,
 }) => {
   const dispatch = useDispatch();
   const [failedModal, setFailedModal] = useState(false);
@@ -77,7 +81,10 @@ export const Certificate = ({
       payload.append('file', data.pfxFile);
       payload.append('passphrase', data.password);
       payload.append('skip_credentials', false);
-
+      setTestCertificateFile(data.pfxFile);
+      setTestCertificatePassword(data.password);
+      setTestCertificateFileForRegistry('');
+      setTestCertificatePasswordForRegistry('');
       const response = await testCluster(payload);
       if (response.status === 200) {
         setTestSuccess(true);
@@ -99,7 +106,8 @@ export const Certificate = ({
       );
       payload.append('file', data.pfxFile);
       payload.append('passphrase', data.password);
-
+      setTestCertificateFileForRegistry(data.pfxFile);
+      setTestCertificatePasswordForRegistry(data.password);
       const response = await testRegistry(payload);
       if (response.status === 204) {
         setTestSuccess(true);
@@ -180,4 +188,8 @@ Certificate.propTypes = {
   registryData: PropTypes.object,
   activeTab: PropTypes.string,
   setSuccessModal: PropTypes.func,
+  setTestCertificateFile: PropTypes.func,
+  setTestCertificatePassword: PropTypes.func,
+  setTestCertificateFileForRegistry: PropTypes.func,
+  setTestCertificatePasswordForRegistry: PropTypes.func,
 };

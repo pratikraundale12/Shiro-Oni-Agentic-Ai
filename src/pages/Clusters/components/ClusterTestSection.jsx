@@ -35,7 +35,10 @@ const ClusterTestSection = ({
   watchedFields,
   testData,
   data,
+  certificateOption = false,
 }) => {
+  console.log('tesst', test);
+  
   return (
     <Flex>
       {test ? (
@@ -55,8 +58,8 @@ const ClusterTestSection = ({
               {KDFM.ADD_CERTIFICATE}
             </Button>
           </div>
-          <ORText>{KDFM.SEPARATOR}</ORText>
-          <div>
+          { <ORText>{KDFM.SEPARATOR}</ORText>}
+          {<div>
             <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
             <Button
               onClick={() => setIsCredOpen(true)}
@@ -70,7 +73,7 @@ const ClusterTestSection = ({
             >
               {KDFM.ENTER_CREDENTIALS}
             </Button>
-          </div>
+          </div>}
         </>
       ) : (
         <div>
