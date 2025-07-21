@@ -16,6 +16,14 @@ export const SettingsActions = {
   verifyEmail: createAction(`${prefix}verifyEmail`),
   verifyEmailSuccess: createAction(`${prefix}verifyEmailSuccess`),
   setIsEmailVerified: createAction(`${prefix}setIsEmailVerified`),
+  fetchKeycloakUsers: createAction(`${prefix}fetchKeycloakUsers`),
+  setkeycloakUserFetched: createAction(`${prefix}setkeycloakUserFetched`),
+  setkeycloakUserListModalOpen: createAction(
+    `${prefix}setkeycloakUserListModalOpen`
+  ),
+  assignKeycloakRolesToUsers: createAction(
+    `${prefix}assignKeycloakRolesToUsers`
+  ),
 };
 
 // /* ------------- INITIAL STATE ------------- */
@@ -25,6 +33,8 @@ export const SETTING_INITIAL_STATE = {
   addNewValidationModalOpen: false,
   isDownloading: false,
   emailVerified: false,
+  keycloakUserFetched: [],
+  keycloakUserListModalOpen: false,
 };
 
 // /* ------------- SELECTORS ------------------ */
@@ -35,6 +45,9 @@ export const SettingsSelectors = {
     state.settings.addNewValidationModalOpen,
   getIsDownloading: state => state.settings.isDownloading,
   getEmailVerified: state => state.settings.emailVerified,
+  getKeycloakUserFetched: state => state.settings.keycloakUserFetched,
+  getkeycloakUserListModalOpen: state =>
+    state.settings.keycloakUserListModalOpen,
 };
 
 // /* ------------- REDUCERS ------------------- */
@@ -71,6 +84,19 @@ const setIsEmailVerified = (state, { payload }) => {
   };
 };
 
+const setkeycloakUserFetched = (state, { payload }) => {
+  return {
+    ...state,
+    keycloakUserFetched: payload,
+  };
+};
+const setkeycloakUserListModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    keycloakUserListModalOpen: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
   builder
@@ -93,5 +119,10 @@ export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
       state.isDownloading = false;
     })
     .addCase(SettingsActions.verifyEmailSuccess, verifyEmailSuccess)
-    .addCase(SettingsActions.setIsEmailVerified, setIsEmailVerified);
+    .addCase(SettingsActions.setIsEmailVerified, setIsEmailVerified)
+    .addCase(SettingsActions.setkeycloakUserFetched, setkeycloakUserFetched)
+    .addCase(
+      SettingsActions.setkeycloakUserListModalOpen,
+      setkeycloakUserListModalOpen
+    );
 });

@@ -6,6 +6,7 @@ import { fetchDashboard } from '../dashboard';
 import { fetchGrid } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SettingsActions } from './redux';
+import { history } from '../../helpers/history';
 
 export function* createSettings(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -120,6 +121,42 @@ export function* verifyEmail(api, payload) {
   }
 }
 
+export function* fetchKeycloakUsers(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchKeycloakUsers',
+    loadingSection: 'fetchKeycloakUsers',
+    apiMethod: api.fetchKeycloakUsers,
+    apiParams: [{ payload: payload }],
+  });
+
+  if (response.ok) {
+    toast.success('Fetched successfully');
+    yield put(
+      SettingsActions.setkeycloakUserFetched(response?.data?.data?.data)
+    );
+    yield put(SettingsActions.setkeycloakUserListModalOpen(true));
+  } else {
+    toast.error(response.data.message);
+  }
+}
+
+export function* assignKeycloakRolesToUsers(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'assignKeycloakRolesToUsers',
+    loadingSection: 'assignKeycloakRolesToUsers',
+    apiMethod: api.assignKeycloakRolesToUsers,
+    apiParams: [{ payload: payload }],
+  });
+
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield put(SettingsActions.setkeycloakUserListModalOpen(false));
+    yield call(history.push, '/user-management');
+  } else {
+    toast.error(response.data.message);
+  }
+}
+
 export function* settingsSagas(api) {
   yield all([
     takeLatest(SettingsActions.createSettings, createSettings, api),
@@ -127,5 +164,11 @@ export function* settingsSagas(api) {
     takeLatest(SettingsActions.refreshSetting, refreshSetting, api),
     takeLatest(SettingsActions.downloadLogsZip, downloadLogsZip, api),
     takeLatest(SettingsActions.verifyEmail, verifyEmail, api),
+    takeLatest(SettingsActions.fetchKeycloakUsers, fetchKeycloakUsers, api),
+    takeLatest(
+      SettingsActions.assignKeycloakRolesToUsers,
+      assignKeycloakRolesToUsers,
+      api
+    ),
   ]);
 }
