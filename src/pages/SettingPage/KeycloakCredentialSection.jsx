@@ -11,7 +11,6 @@ import { theme } from '../../styles';
 import { FullPageLoader } from '../../components';
 import { LoadingSelectors } from '../../store';
 import KeycloakUsersModal from './KeycloakUsersModal';
-import AddNewRoleModal from '../../shared/AddNewRoleModal';
 
 const InputFields = styled.div`
   display: flex;
@@ -152,7 +151,6 @@ const KeycloakCredentialSection = () => {
         </InputFields>
       </div>
       <KeycloakUsersModal />
-      <AddNewRoleModal />
     </>
   );
 };
