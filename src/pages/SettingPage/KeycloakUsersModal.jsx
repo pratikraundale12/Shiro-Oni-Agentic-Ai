@@ -1,24 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
-import { Button, InputField, Modal } from '../../shared';
+import { InputField, Modal } from '../../shared';
 import { StatusRender, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { useForm } from 'react-hook-form';
-import { RolesActions, RolesSelectors } from '../../store';
+import { RolesSelectors } from '../../store';
 import RegistryMultiSelect from './Multiselect';
 import { isEmpty } from 'lodash';
-import styled from 'styled-components';
-import { PlusCircleIcon, SmallSearchIcon } from '../../assets';
-const SyncButton = styled(Button)`
-  width: auto;
-  padding-top: 14px;
-  padding-bottom: 14px;
-  padding-right: 17px;
-  padding-left: 17px;
-  height: 40px;
-  margin-bottom: 5px;
-`;
+import { SmallSearchIcon } from '../../assets';
+
 const KeycloakUsersModal = () => {
   const dispatch = useDispatch();
   const isModalOpen = useSelector(
@@ -29,11 +20,11 @@ const KeycloakUsersModal = () => {
   const [rolesUpdated, setRolesUpdated] = useState([]);
   const [searchText, setSearchText] = useState('');
   const filteredUsers = useMemo(() => {
-    return userList.filter(
+    return userList?.filter(
       user =>
-        user.first_name.toLowerCase().includes(searchText.toLowerCase()) ||
-        user.last_name?.toLowerCase().includes(searchText.toLowerCase()) ||
-        user.username?.toLowerCase().includes(searchText.toLowerCase())
+        user?.first_name?.toLowerCase().includes(searchText?.toLowerCase()) ||
+        user?.last_name?.toLowerCase().includes(searchText?.toLowerCase()) ||
+        user?.username?.toLowerCase().includes(searchText?.toLowerCase())
     );
   }, [searchText, userList]);
 
@@ -160,21 +151,8 @@ const KeycloakUsersModal = () => {
         primaryButtonText="Submit"
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
-        contentStyles={{ minWidth: '65%' }}
+        contentStyles={{ minWidth: '65%', minHeight: '90%', maxHeight: '90%' }}
       >
-        <div className="d-flex justify-content-end">
-          <div className=" mb-3">
-            <SyncButton
-              icon={<PlusCircleIcon width={16} height={16} color="black" />}
-              onClick={() => dispatch(RolesActions.roleModal(true))}
-              variant="secondary"
-              size="sm"
-              type="button"
-            >
-              Add New Role
-            </SyncButton>
-          </div>
-        </div>
         <div>
           <InputField
             type="text"
@@ -188,6 +166,7 @@ const KeycloakUsersModal = () => {
           data={filteredUsers || []}
           columns={COLUMNS}
           className="variables-table"
+          showPagination={true}
         />
       </Modal>
     </>
