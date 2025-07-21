@@ -213,6 +213,10 @@ export const ListNamespaces = () => {
         toastId: 'please-login-cluster-toast',
         autoClose: 5000,
       });
+      toast.info('ELSE TOAST OPTION', {
+        toastId: 'please-login-cluster-toast8975946',
+        autoClose: 5000,
+      });
     }
   }, [
     settingsAPIdata?.username,
