@@ -431,6 +431,9 @@ export const Layout = ({ children }) => {
     if (!isEmpty(settingLogo)) {
       if (!settingLogo?.sso_enabled && !settingLogo?.ldapEnabled) {
         handleRedirectionAdmin();
+        setTimeout(() => {
+          handleRedirectionAdmin();
+        }, 50);
       }
     }
   }, [settingLogo]);
