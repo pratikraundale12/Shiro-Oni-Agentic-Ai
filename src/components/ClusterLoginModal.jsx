@@ -191,12 +191,18 @@ export const ClusterLoginModal = () => {
   };
 
   useEffect(() => {
-    if (isObject(clusterLogin)) {
-      setValue('cluster_id', clusterLogin.value);
+    // Try to use clusterLogin.value, otherwise fallback to selectedCluster.value
+    let clusterIdToSet = '';
+    if (isObject(clusterLogin) && clusterLogin.value) {
+      clusterIdToSet = clusterLogin.value;
+    } else if (isObject(selectedCluster) && selectedCluster.value) {
+      clusterIdToSet = selectedCluster.value;
     }
-
+    if (clusterIdToSet) {
+      setValue('cluster_id', clusterIdToSet);
+    }
     return () => reset(DEFAULT_VALUES);
-  }, [clusterLogin, setValue, reset]);
+  }, [clusterLogin, selectedCluster, setValue, reset]);
 
   const onSwitchCluster = () => {
     if (window.location.pathname.includes('/process-group')) {
@@ -261,7 +267,7 @@ export const ClusterLoginModal = () => {
         primaryButtonDisabled={selectedCluster?.value == clusterId}
         onSubmit={isFieldsDisabled ? onSwitchCluster : handleSubmit(onSubmit)}
         footerAlign="start"
-        contentStyles={{ minWidth: '30%' }}
+        contentStyles={{ maxWidth: '30%', maxHeight: '50%' }}
         primaryButtonProps={{ id: 'enable-cluster-submit-btn' }}
       >
         <SelectField
@@ -272,12 +278,14 @@ export const ClusterLoginModal = () => {
           icon={<ClusterIcon />}
           errors={errors}
           options={sortedClusters}
-          defaultValue={clusterLogin}
           placeholder="Select Cluster"
           required
           disabled={isObject(clusterLogin)}
           showCircleIcon={true}
         />
+        {selectedClusterData?.is_certificate_based_service_account && (
+          <div style={{ height: '100px' }}></div>
+        )}
 
         {/* Only show Username and Password if not certificate based */}
         {!selectedClusterData?.is_certificate_based_service_account && (

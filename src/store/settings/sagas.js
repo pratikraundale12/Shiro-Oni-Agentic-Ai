@@ -1,13 +1,13 @@
 // sagas.js
 import { toast } from 'react-toastify';
-import { all, call, takeLatest, put } from 'redux-saga/effects';
+import { all, call, takeLatest, put, select } from 'redux-saga/effects';
 import { changeFavicon } from '../../helpers';
 import { fetchDashboard } from '../dashboard';
-import { fetchGrid } from '../grid';
+import { fetchGrid, GridActions } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SettingsActions } from './redux';
 import { history } from '../../helpers/history';
-
+import { UsersActions, UsersSelectors } from '../users';
 export function* createSettings(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'createSettings',
@@ -141,6 +141,9 @@ export function* fetchKeycloakUsers(api, { payload }) {
 }
 
 export function* assignKeycloakRolesToUsers(api, { payload }) {
+  const userEditRoleModalOpen = yield select(
+    UsersSelectors.getUserRoleEditModalOpen
+  );
   const response = yield call(requestSaga, {
     errorSection: 'assignKeycloakRolesToUsers',
     loadingSection: 'assignKeycloakRolesToUsers',
@@ -151,7 +154,17 @@ export function* assignKeycloakRolesToUsers(api, { payload }) {
   if (response.ok) {
     toast.success(response?.data?.message);
     yield put(SettingsActions.setkeycloakUserListModalOpen(false));
-    yield call(history.push, '/user-management');
+    if (userEditRoleModalOpen) {
+      yield put(
+        GridActions.fetchGrid({
+          module: 'users',
+          params: { page: 1, limit: 10 },
+        })
+      );
+    } else {
+      yield call(history.push, '/user-management');
+    }
+    yield put(UsersActions.setuserRoleEditModalOpen(false));
   } else {
     toast.error(response.data.message);
   }

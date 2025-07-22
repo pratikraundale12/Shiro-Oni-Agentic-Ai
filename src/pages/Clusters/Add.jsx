@@ -872,6 +872,7 @@ export const Add = () => {
               approverEnableForStartAndStop={approverEnableForStartAndStop}
               certificateOption={certificateOption}
               setCertificateOption={setCertificateOption}
+              data={data}
             />
             {
               <ClusterTestSection
