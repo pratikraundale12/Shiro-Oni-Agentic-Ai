@@ -304,6 +304,7 @@ export const ListNamespaces = () => {
                   value: item.id,
                 })
               );
+              setRemoveSearch(false);
               setCurrentPage(1);
             }}
           >
@@ -674,6 +675,7 @@ export const ListNamespaces = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         removeSearch={removeSearch}
+        setRemoveSearch={setRemoveSearch}
       />
 
       <Modal
