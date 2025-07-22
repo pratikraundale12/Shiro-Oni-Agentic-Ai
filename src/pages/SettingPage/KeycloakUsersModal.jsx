@@ -152,6 +152,7 @@ const KeycloakUsersModal = () => {
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
         contentStyles={{ minWidth: '65%', minHeight: '90%', maxHeight: '90%' }}
+        primaryButtonDisabled={isEmpty(rolesUpdated)}
       >
         <div>
           <InputField
