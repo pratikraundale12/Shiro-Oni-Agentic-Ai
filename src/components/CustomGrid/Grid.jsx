@@ -127,6 +127,7 @@ export const Grid = ({
   setSelectEntity,
   selectStatus,
   setSelectStatus,
+  setRemoveSearch,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -577,7 +578,7 @@ export const Grid = ({
         </>
       )}
       <div className="mb-2 ps-1">
-        <Breadcrumb module={module} />
+        <Breadcrumb module={module} setRemoveSearch={setRemoveSearch} />
       </div>
 
       <TableContainer module={module}>
@@ -653,4 +654,5 @@ Grid.propTypes = {
   setSelectStatus: PropTypes.func,
   selectEvent: PropTypes.string,
   setSelectEvent: PropTypes.func,
+  setRemoveSearch: PropTypes.func,
 };

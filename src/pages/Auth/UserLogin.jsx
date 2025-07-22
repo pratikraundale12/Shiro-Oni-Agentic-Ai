@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
 
@@ -15,7 +15,11 @@ import {
   SIGN_IN_TO_YOUR_ACCOUNT,
 } from '../../constants';
 import { Button, InputField, PasswordField, TextButton } from '../../shared';
-import { AuthenticationActions, NamespacesActions } from '../../store';
+import {
+  AuthenticationActions,
+  AuthenticationSelectors,
+  NamespacesActions,
+} from '../../store';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { useLocation } from 'react-router-dom';
@@ -54,7 +58,8 @@ const PATH = 'login';
 
 export const UserLogin = () => {
   const dispatch = useDispatch();
-  // setState
+  const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
+
   const location = useLocation();
   const { state } = useGlobalContext();
   const params = new URLSearchParams(location.search);
@@ -79,51 +84,55 @@ export const UserLogin = () => {
 
   return (
     <Layout>
-      <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <InputField
-            name="username"
-            type="text"
-            label="Username"
-            placeholder="Enter your Username"
-            register={register}
-            errors={errors}
-            icon={<UserIcon />}
-            rightIcon={getRightIcon(watch, errors)}
-            required
-          />
-          <PasswordField
-            name="password"
-            register={register}
-            errors={errors}
-            watch={watch}
-            required
-            label="Password"
-          />
-          <ForgetLinkContainer>
-            <PasswordTextMessage></PasswordTextMessage>
-            <TextButton
-              onClick={() =>
-                toast.error(
-                  'To change your password, Contact the administrator.'
-                )
-              }
-            >
-              {FORGOT_PASSWORD}
-            </TextButton>
-          </ForgetLinkContainer>
-        </div>
+      {settingLogo?.ldapEnabled && (
+        <>
+          <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <div>
+              <InputField
+                name="username"
+                type="text"
+                label="Username"
+                placeholder="Enter your Username"
+                register={register}
+                errors={errors}
+                icon={<UserIcon />}
+                rightIcon={getRightIcon(watch, errors)}
+                required
+              />
+              <PasswordField
+                name="password"
+                register={register}
+                errors={errors}
+                watch={watch}
+                required
+                label="Password"
+              />
+              <ForgetLinkContainer>
+                <PasswordTextMessage></PasswordTextMessage>
+                <TextButton
+                  onClick={() =>
+                    toast.error(
+                      'To change your password, Contact the administrator.'
+                    )
+                  }
+                >
+                  {FORGOT_PASSWORD}
+                </TextButton>
+              </ForgetLinkContainer>
+            </div>
 
-        <SubmitButton
-          iconPosition="right"
-          icon={<LessArrowIcon color={theme.colors.white} />}
-          type="submit"
-          loading={state.loaders[PATH] && 'Signing In...'}
-        >
-          {SIGN_IN_TO_YOUR_ACCOUNT}
-        </SubmitButton>
-      </Form>
+            <SubmitButton
+              iconPosition="right"
+              icon={<LessArrowIcon color={theme.colors.white} />}
+              type="submit"
+              loading={state.loaders[PATH] && 'Signing In...'}
+            >
+              {SIGN_IN_TO_YOUR_ACCOUNT}
+            </SubmitButton>
+          </Form>
+        </>
+      )}
       {/* <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
       <SSOButtonsContainer>
         <SSOButton disabled>

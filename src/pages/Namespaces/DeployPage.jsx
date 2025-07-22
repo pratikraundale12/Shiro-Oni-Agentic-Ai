@@ -25,6 +25,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { SettingsActions } from '../../store/settings';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -383,6 +384,7 @@ function DeployPage() {
     if (isEmpty(bucketListOptions)) {
       dispatch(NamespacesActions.fetchRegistryData());
     }
+    dispatch(SettingsActions.setSettingsData({}));
   }, [dispatch]);
 
   const hasRunOnce = useRef(false);

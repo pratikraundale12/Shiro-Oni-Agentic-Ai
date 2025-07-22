@@ -24,6 +24,7 @@ export const SettingsActions = {
   assignKeycloakRolesToUsers: createAction(
     `${prefix}assignKeycloakRolesToUsers`
   ),
+  setSettingsData: createAction(`${prefix}setSettingsData`),
 };
 
 // /* ------------- INITIAL STATE ------------- */
@@ -35,6 +36,7 @@ export const SETTING_INITIAL_STATE = {
   emailVerified: false,
   keycloakUserFetched: [],
   keycloakUserListModalOpen: false,
+  settingsData: {},
 };
 
 // /* ------------- SELECTORS ------------------ */
@@ -48,6 +50,7 @@ export const SettingsSelectors = {
   getKeycloakUserFetched: state => state.settings.keycloakUserFetched,
   getkeycloakUserListModalOpen: state =>
     state.settings.keycloakUserListModalOpen,
+  getSettingsData: state => state.settings.settingsData,
 };
 
 // /* ------------- REDUCERS ------------------- */
@@ -81,6 +84,12 @@ const setIsEmailVerified = (state, { payload }) => {
   return {
     ...state,
     emailVerified: payload,
+  };
+};
+const setSettingsData = (state, { payload }) => {
+  return {
+    ...state,
+    settingsData: payload,
   };
 };
 
@@ -124,5 +133,6 @@ export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
     .addCase(
       SettingsActions.setkeycloakUserListModalOpen,
       setkeycloakUserListModalOpen
-    );
+    )
+    .addCase(SettingsActions.setSettingsData, setSettingsData);
 });
