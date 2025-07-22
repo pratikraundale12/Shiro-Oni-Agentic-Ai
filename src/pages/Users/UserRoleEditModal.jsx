@@ -76,7 +76,7 @@ export const UserRoleEditModal = ({ setRemoveSearch }) => {
     <>
       <FullPageLoader loading={loading} />
       <Modal
-        title={`Edit Role: ${selectedUser?.first_name || ''} ${selectedUser?.middle_name || ''} ${selectedUser?.last_name || ''}`}
+        title={`${selectedUser?.first_name || ''} ${selectedUser?.middle_name || ''} ${selectedUser?.last_name || ''}: Role Edit`}
         isOpen={isModalOpen}
         onRequestClose={() =>
           dispatch(UsersActions.setuserRoleEditModalOpen(false))
