@@ -169,7 +169,21 @@ export function* assignKeycloakRolesToUsers(api, { payload }) {
     toast.error(response.data.message);
   }
 }
+export function* keycloakTestCredentials(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'keycloakTestCredentials',
+    loadingSection: 'keycloakTestCredentials',
+    apiMethod: api.keycloakTestCredentials,
+    apiParams: [{ payload: payload }],
+  });
 
+  if (response.ok) {
+    toast.success(response?.data?.message || 'Tested successfully');
+    yield put(SettingsActions.setDisplayFetchUserBtn(true));
+  } else {
+    toast.error(response.data.message);
+  }
+}
 export function* settingsSagas(api) {
   yield all([
     takeLatest(SettingsActions.createSettings, createSettings, api),
@@ -181,6 +195,11 @@ export function* settingsSagas(api) {
     takeLatest(
       SettingsActions.assignKeycloakRolesToUsers,
       assignKeycloakRolesToUsers,
+      api
+    ),
+    takeLatest(
+      SettingsActions.keycloakTestCredentials,
+      keycloakTestCredentials,
       api
     ),
   ]);
