@@ -1,28 +1,35 @@
 import { React, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DeleteDustbinIcon, SortDownIcon, SortUpIcon } from '../../assets';
+import {
+  DeleteDustbinIcon,
+  RoleswtichIcon,
+  SortDownIcon,
+  SortUpIcon,
+} from '../../assets';
 import {
   Grid,
+  IconButton,
   ProfileRender,
   StatusRender,
   TextRender,
 } from '../../components';
 import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { ModalWithIcon } from '../../shared';
-import { GridSelectors, RolesActions } from '../../store';
+import { GridSelectors, RolesActions, UsersActions } from '../../store';
 import { useGlobalContext } from '../../utils';
 import { isEmpty } from 'lodash';
+import { UserRoleEditModal } from './UserRoleEditModal';
 
 export const ListUsers = () => {
   const { state, setState } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('');
+  const [removeSearch, setRemoveSearch] = useState(false);
   const dispatch = useDispatch();
 
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'users')
   );
-
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -40,7 +47,7 @@ export const ListUsers = () => {
     {
       label: KDFM.PROFILE,
       renderCell: item => <ProfileRender url={item.photo} />,
-      width: '10%',
+      width: '6%',
       resize: true,
     },
     {
@@ -109,7 +116,7 @@ export const ListUsers = () => {
     },
     {
       label: KDFM.ROLE,
-      width: '20%',
+      width: '18%',
       resize: true,
       renderCell: item => (
         <TextRender text={getRolesName(item?.role)} capitalizeText={false} />
@@ -133,11 +140,28 @@ export const ListUsers = () => {
           </button>
         </>
       ),
-      width: '10%',
+      width: '8%',
       resize: true,
       renderCell: item => (
         <StatusRender status={item?.is_active ? 'Active' : 'Inactive'} />
       ),
+    },
+    {
+      label: 'Action',
+      renderCell: item => (
+        <>
+          <IconButton
+            onClick={() => {
+              dispatch(UsersActions.setuserRoleEditModalOpen(true));
+              dispatch(UsersActions.setSingleUserForEdit(item));
+            }}
+          >
+            <RoleswtichIcon />
+          </IconButton>
+        </>
+      ),
+      width: '8%',
+      resize: true,
     },
   ];
 
@@ -169,7 +193,9 @@ export const ListUsers = () => {
         currentPage={currentPage}
         sortingState={sortingState}
         setSortingState={setSortingState}
+        removeSearch={removeSearch}
       />
+      <UserRoleEditModal setRemoveSearch={setRemoveSearch} />
     </>
   );
 };
