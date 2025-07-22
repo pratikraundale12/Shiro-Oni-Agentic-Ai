@@ -783,6 +783,9 @@ export const Add = () => {
     if (!watchedFields?.[7] && activeTab === 'registry') {
       return false;
     }
+    if(certificateOption !== data?.is_certificate_based_service_account) {
+      return isSaveDisabled() || !testSuccess;
+    }
     if (hasValidationErrors()) return true;
     if (newRegistry) {
       return isTestInvalid();
