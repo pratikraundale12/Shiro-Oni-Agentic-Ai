@@ -138,7 +138,20 @@ const KeycloakUsersModal = () => {
       ...item,
       email: item.email.replace(/_dot_/g, '.'),
     }));
-    dispatch(SettingsActions.assignKeycloakRolesToUsers(updatedEmailPayload));
+
+    const mergedArray = updatedEmailPayload.map(item => {
+      const match = userListData.find(user => user.email === item.email);
+      return match
+        ? {
+            ...item,
+            username: match.username,
+            first_name: match.first_name,
+            last_name: match.last_name,
+          }
+        : item;
+    });
+
+    dispatch(SettingsActions.assignKeycloakRolesToUsers(mergedArray));
   };
 
   return (
