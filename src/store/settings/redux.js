@@ -26,6 +26,7 @@ export const SettingsActions = {
   ),
   keycloakTestCredentials: createAction(`${prefix}keycloakTestCredentials`),
   setDisplayFetchUserBtn: createAction(`${prefix}setDisplayFetchUserBtn`),
+  setSettingsData: createAction(`${prefix}setSettingsData`),
 };
 
 // /* ------------- INITIAL STATE ------------- */
@@ -38,6 +39,7 @@ export const SETTING_INITIAL_STATE = {
   keycloakUserFetched: [],
   keycloakUserListModalOpen: false,
   displayFetchUserBtn: false,
+  settingsData: {},
 };
 
 // /* ------------- SELECTORS ------------------ */
@@ -52,6 +54,7 @@ export const SettingsSelectors = {
   getkeycloakUserListModalOpen: state =>
     state.settings.keycloakUserListModalOpen,
   getdisplayFetchUserBtn: state => state.settings.displayFetchUserBtn,
+  getSettingsData: state => state.settings.settingsData,
 };
 
 // /* ------------- REDUCERS ------------------- */
@@ -85,6 +88,12 @@ const setIsEmailVerified = (state, { payload }) => {
   return {
     ...state,
     emailVerified: payload,
+  };
+};
+const setSettingsData = (state, { payload }) => {
+  return {
+    ...state,
+    settingsData: payload,
   };
 };
 
@@ -135,5 +144,6 @@ export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
       SettingsActions.setkeycloakUserListModalOpen,
       setkeycloakUserListModalOpen
     )
-    .addCase(SettingsActions.setDisplayFetchUserBtn, setDisplayFetchUserBtn);
+    .addCase(SettingsActions.setDisplayFetchUserBtn, setDisplayFetchUserBtn)
+    .addCase(SettingsActions.setSettingsData, setSettingsData);
 });

@@ -30,13 +30,16 @@ export function* createSettings(api, { payload }) {
 }
 
 export function* fetchSettings(api) {
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'fetchSettings',
     loadingSection: 'fetchSettings',
     apiMethod: api.fetchSettings,
     apiParams: [{ params: {} }],
     successAction: SettingsActions.fetchSettingsSuccess,
   });
+  if (response.ok && response.data) {
+    yield put(SettingsActions.setSettingsData(response.data));
+  }
 }
 
 export function* downloadLogsZip(api, { payload }) {

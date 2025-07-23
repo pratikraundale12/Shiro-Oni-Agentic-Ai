@@ -37,6 +37,19 @@ const ClusterTestSection = ({
   data,
   certificateOption = false,
 }) => {
+const isDisabled = () => {
+  if (certificateOption !== data?.is_certificate_based_service_account) {
+    return false;
+  }
+
+  return (
+    testSuccess ||
+    !dataFill ||
+    checkDuplicate ||
+    checkDuplicateName ||
+    watchedFields?.[1] === data?.nifi_url
+  );
+};
 
   return (
     <Flex>
@@ -46,13 +59,7 @@ const ClusterTestSection = ({
             <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
             <Button
               onClick={() => setIsCertificateOpen(true)}
-              disabled={
-                testSuccess ||
-                  !dataFill ||
-                  checkDuplicate ||
-                  checkDuplicateName ||
-                  watchedFields?.[1] === data?.nifi_url
-              }
+              disabled={isDisabled()}
             >
               {KDFM.ADD_CERTIFICATE}
             </Button>
@@ -64,13 +71,7 @@ const ClusterTestSection = ({
                 <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
                 <Button
                   onClick={() => setIsCredOpen(true)}
-                  disabled={
-                  testSuccess ||
-                      !dataFill ||
-                      checkDuplicate ||
-                      checkDuplicateName ||
-                      watchedFields?.[1] === data?.nifi_url
-                  }
+                  disabled={isDisabled()}
                 >
                   {KDFM.ENTER_CREDENTIALS}
                 </Button>

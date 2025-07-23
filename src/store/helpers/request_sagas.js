@@ -27,7 +27,7 @@ export function* requestSaga({
     if (action) {
       yield put(action);
     }
-  } else if (!response.ok && response.data.message === 'Session Expired') {
+  } else if (!response.ok && response?.data?.message === 'Session Expired') {
     toast.error(response.data.message);
     yield put(AuthenticationActions.logout({ url: '/login' }));
     const clustersToken = JSON.parse(

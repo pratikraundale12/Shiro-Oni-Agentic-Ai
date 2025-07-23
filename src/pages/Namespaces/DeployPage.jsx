@@ -25,6 +25,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { SettingsActions } from '../../store/settings';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -178,10 +179,11 @@ function DeployPage() {
   const [successTest, setSuccessTest] = useState(false);
   const [proceedWithDispatch, setProceedWithDispatch] = useState(false);
   const formData = useSelector(NamespacesSelectors.getDeployFormData);
-  const [keepParameter, setKeepParameter] = useState(true);
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
+  const keepParameters = useSelector(NamespacesSelectors.getKeepParameters);
+
   const tableRef = useRef(null);
 
   const handleScrollOnClick = () => {
@@ -383,6 +385,7 @@ function DeployPage() {
     if (isEmpty(bucketListOptions)) {
       dispatch(NamespacesActions.fetchRegistryData());
     }
+    dispatch(SettingsActions.setSettingsData({}));
   }, [dispatch]);
 
   const hasRunOnce = useRef(false);
@@ -425,7 +428,7 @@ function DeployPage() {
           bucketId: selectedValuebucketId,
           flow_name: selectedValueFlowId,
           selectedFlowName: flowname?.[0]?.label,
-          keepParameters: keepParameter,
+          keepParameters: keepParameters,
         })
       );
       dispatch(NamespacesActions.fetchRegistryFlowDetails(versionSelected));
@@ -440,7 +443,7 @@ function DeployPage() {
         bucketId: value.value,
         flow_name: '',
         selectedFlowName: '',
-        keepParameters: keepParameter,
+        keepParameters: keepParameters,
       })
     );
     dispatch(NamespacesActions.setVersionSelect(''));
@@ -465,6 +468,7 @@ function DeployPage() {
   const loadingfetchRegistryFlowDetails = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
   );
+
   return (
     <div>
       <FullPageLoader
@@ -546,8 +550,12 @@ function DeployPage() {
                     <CheckboxField
                       name="check"
                       label="Keep existing Parameter Contexts"
-                      checked={keepParameter}
-                      onChange={e => setKeepParameter(e.target.checked)}
+                      checked={keepParameters}
+                      onChange={e => {
+                        dispatch(
+                          NamespacesActions.setKeepParameters(e.target.checked)
+                        );
+                      }}
                     />
                   </div>
                 </div>
