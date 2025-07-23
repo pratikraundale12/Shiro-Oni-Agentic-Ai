@@ -221,6 +221,8 @@ const ProfileDropdown = () => {
     const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
     const idToken = localStorage.getItem('keycloak_id_token');
     const keycloakUrl = storedConfig?.keycloak_url;
+    const keycloakRealm = storedConfig?.keycloak_realm;
+
     if (!idToken) {
       console.error('No ID token found for logout');
       return;
@@ -233,7 +235,7 @@ const ProfileDropdown = () => {
     localStorage.removeItem('keycloak_state_val');
 
     const logoutUrl =
-      `${keycloakUrl}/realms/DFM-DEV/protocol/openid-connect/logout?` +
+      `${keycloakUrl}/realms/${keycloakRealm}/protocol/openid-connect/logout?` +
       `id_token_hint=${idToken}&` +
       `post_logout_redirect_uri=${API_URL}/login`;
 
