@@ -41,7 +41,7 @@ const SubmitButton = styled(Button)`
 
 const ForgetLinkContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   align-items: center;
 `;
 
@@ -110,9 +110,6 @@ export const Login = () => {
             label="Password"
           />
           <ForgetLinkContainer>
-            <PasswordTextMessage>
-              Must be 8 characters at least
-            </PasswordTextMessage>
             <TextButton type="button" onClick={() => history.push('/forgot')}>
               {FORGOT_PASSWORD}
             </TextButton>
