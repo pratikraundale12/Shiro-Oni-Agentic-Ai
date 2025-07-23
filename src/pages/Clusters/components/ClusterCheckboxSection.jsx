@@ -33,16 +33,14 @@ const ClusterCheckBoxSection = ({
 }) => {
   return (
     <>
-      {isEmpty(data) && (
-        <CertificateRadioSelect
-          name="certificateOption"
-          label="Do you want to use certificate for this cluster?"
-          options={CERTIFICATE_OPTIONS}
-          value={certificateOption}
-          defaultValue={certificateOption}
-          onChange={val => setCertificateOption(val)}
-        />
-      )}
+      <CertificateRadioSelect
+        name="certificateOption"
+        label="Do you want to use certificate for this cluster?"
+        options={CERTIFICATE_OPTIONS}
+        value={certificateOption}
+        defaultValue={certificateOption}
+        onChange={val => setCertificateOption(val)}
+      />
       <CheckBoxFlex>
         <CheckboxField
           name="check"
