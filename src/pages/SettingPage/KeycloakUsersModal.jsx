@@ -8,16 +8,26 @@ import { useForm } from 'react-hook-form';
 import { RolesSelectors } from '../../store';
 import RegistryMultiSelect from './Multiselect';
 import { isEmpty } from 'lodash';
-import { SmallSearchIcon } from '../../assets';
+import { CircleExclamationMarkIcon, SmallSearchIcon } from '../../assets';
+import { theme } from '../../styles';
 
 const KeycloakUsersModal = () => {
   const dispatch = useDispatch();
   const isModalOpen = useSelector(
     SettingsSelectors.getkeycloakUserListModalOpen
   );
-  const userList = useSelector(SettingsSelectors?.getKeycloakUserFetched);
+  const userListData = useSelector(SettingsSelectors?.getKeycloakUserFetched);
+  const userList = useMemo(
+    () =>
+      userListData?.map(item => ({
+        ...item,
+        email: item.email.replace(/\./g, '_dot_'),
+        emailDisplay: item.email,
+      })) || [],
+    [userListData]
+  );
   const roles = useSelector(RolesSelectors.getRoles);
-  const [rolesUpdated, setRolesUpdated] = useState([]);
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const filteredUsers = useMemo(() => {
     return userList?.filter(
@@ -46,7 +56,7 @@ const KeycloakUsersModal = () => {
         const matchedRoles = ROLES_OPTIONS.filter(opt =>
           userRoleIds.includes(opt.value)
         );
-        newDefaultValues[`${user.id}`] = matchedRoles;
+        newDefaultValues[`${user.email}`] = matchedRoles;
       });
       reset(newDefaultValues);
     }
@@ -82,7 +92,11 @@ const KeycloakUsersModal = () => {
       width: '20%',
       resize: true,
       renderCell: item => (
-        <TextRender text={item?.email} capitalizeText={false} toolTip={false} />
+        <TextRender
+          text={item?.emailDisplay}
+          capitalizeText={false}
+          toolTip={false}
+        />
       ),
     },
 
@@ -103,29 +117,10 @@ const KeycloakUsersModal = () => {
           <RegistryMultiSelect
             enableCheckboxes
             control={control}
-            name={`${item?.id}`}
+            name={`${item?.email}`}
             placeholder={'Select Role'}
             options={ROLES_OPTIONS || []}
-            customOnChange={(hookFormOnChange, selected, meta) => {
-              const selectedIds = selected?.map(ele => ele?.value);
-              setRolesUpdated(prev => {
-                const existingIndex = prev.findIndex(
-                  item => item.user_id === meta?.name
-                );
-
-                if (existingIndex !== -1) {
-                  const updated = [...prev];
-                  updated[existingIndex] = {
-                    user_id: meta?.name,
-                    role_ids: selectedIds,
-                  };
-                  return updated;
-                }
-                return [
-                  ...prev,
-                  { user_id: meta?.name, role_ids: selectedIds },
-                ];
-              });
+            customOnChange={(hookFormOnChange, selected) => {
               hookFormOnChange(selected);
             }}
           />
@@ -134,8 +129,16 @@ const KeycloakUsersModal = () => {
     },
   ];
 
-  const onSubmit = () => {
-    dispatch(SettingsActions.assignKeycloakRolesToUsers(rolesUpdated));
+  const onSubmit = data => {
+    const structuredPayload = Object.entries(data).map(([email, roles]) => ({
+      email,
+      role_ids: roles.map(role => role.value),
+    }));
+    const updatedEmailPayload = structuredPayload?.map(item => ({
+      ...item,
+      email: item.email.replace(/_dot_/g, '.'),
+    }));
+    dispatch(SettingsActions.assignKeycloakRolesToUsers(updatedEmailPayload));
   };
 
   return (
@@ -144,15 +147,15 @@ const KeycloakUsersModal = () => {
         size="lg"
         title={'Keycloak Users'}
         isOpen={isModalOpen}
-        onRequestClose={() =>
-          dispatch(SettingsActions.setkeycloakUserListModalOpen(false))
-        }
-        secondaryButtonText="Cancel"
+        onRequestClose={e => {
+          e.preventDefault();
+          setIsWarningModalOpen(true);
+        }}
         primaryButtonText="Submit"
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
         contentStyles={{ minWidth: '65%', minHeight: '90%', maxHeight: '90%' }}
-        primaryButtonDisabled={isEmpty(rolesUpdated)}
+        clickOutsideToClose={false}
       >
         <div>
           <InputField
@@ -169,6 +172,32 @@ const KeycloakUsersModal = () => {
           className="variables-table"
           showPagination={true}
         />
+      </Modal>
+      <Modal
+        size="lg"
+        title={'Warning'}
+        isOpen={isWarningModalOpen}
+        onRequestClose={() => {
+          setIsWarningModalOpen(false);
+        }}
+        secondaryButtonText="Cancel"
+        primaryButtonText="Close"
+        onSubmit={() => {
+          dispatch(SettingsActions.setkeycloakUserListModalOpen(false));
+          setIsWarningModalOpen(false);
+        }}
+        footerAlign="start"
+        contentStyles={{ minWidth: '25%' }}
+        clickOutsideToClose={false}
+      >
+        <div style={{ fontSize: '18px', fontWeight: '500' }}>
+          <CircleExclamationMarkIcon
+            color={theme.colors.primary}
+            width={22}
+            height={22}
+          />{' '}
+          Closing this screen will result in loss of fetched data.
+        </div>
       </Modal>
     </>
   );

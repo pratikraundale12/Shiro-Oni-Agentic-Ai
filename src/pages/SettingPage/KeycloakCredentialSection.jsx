@@ -159,18 +159,24 @@ const KeycloakCredentialSection = () => {
               placeholder="Enter your Password"
             />
           </div>
-          {!displayFetchUserBtn && (
-            <div className="col-xl-2 d-flex align-items-center">
-              <Button onClick={handleSubmit(handleTestCredentials)}>
-                Test Credentials
-              </Button>
-            </div>
-          )}
-          {displayFetchUserBtn && (
-            <div className="col-xl-2 d-flex align-items-center">
-              <Button onClick={handleFetchUser}>Fetch Users</Button>
-            </div>
-          )}
+
+          <div className="col-xl-2 d-flex align-items-center">
+            <Button
+              onClick={handleSubmit(handleTestCredentials)}
+              isBtnDisable={displayFetchUserBtn}
+            >
+              Test Credentials
+            </Button>
+          </div>
+
+          <div className="col-xl-2 d-flex align-items-center">
+            <Button
+              onClick={handleFetchUser}
+              isBtnDisable={!displayFetchUserBtn}
+            >
+              Fetch Users
+            </Button>
+          </div>
         </InputFields>
       </div>
       <KeycloakUsersModal />

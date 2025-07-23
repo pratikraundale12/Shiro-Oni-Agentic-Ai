@@ -131,9 +131,7 @@ export function* fetchKeycloakUsers(api, { payload }) {
 
   if (response.ok) {
     toast.success('Fetched successfully');
-    yield put(
-      SettingsActions.setkeycloakUserFetched(response?.data?.data?.data)
-    );
+    yield put(SettingsActions.setkeycloakUserFetched(response?.data?.data));
     yield put(SettingsActions.setkeycloakUserListModalOpen(true));
   } else {
     toast.error(response.data.message);

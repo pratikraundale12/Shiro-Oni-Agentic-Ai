@@ -88,6 +88,7 @@ export const Modal = ({
   noPadding = false,
   noScroll = false,
   primaryButtonProps = {},
+  clickOutsideToClose = true,
 }) => {
   const styleObject = {
     overlay: {
@@ -132,6 +133,7 @@ export const Modal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={styleObject}
+      shouldCloseOnOverlayClick={clickOutsideToClose}
     >
       <form
         className="d-flex flex-column overflow-auto"
@@ -222,4 +224,5 @@ Modal.propTypes = {
   }),
   noPadding: PropTypes.bool,
   noScroll: PropTypes.bool,
+  clickOutsideToClose: PropTypes.bool,
 };
