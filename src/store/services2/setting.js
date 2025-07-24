@@ -16,6 +16,9 @@ export const settingsAPI = api => {
   const assignKeycloakRolesToUsers = ({ payload }) => {
     return api.post(`/assign-roles`, payload);
   };
+  const updateRoleOfUsers = ({ payload }) => {
+    return api.post(`/update-roles`, payload);
+  };
   const keycloakTestCredentials = ({ payload }) => {
     return api.post(`/keycloack-test-connection`, payload);
   };
@@ -27,5 +30,6 @@ export const settingsAPI = api => {
     fetchKeycloakUsers,
     assignKeycloakRolesToUsers,
     keycloakTestCredentials,
+    updateRoleOfUsers,
   };
 };
