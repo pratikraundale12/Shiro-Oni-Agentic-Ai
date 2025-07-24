@@ -1,4 +1,5 @@
 /*eslint-disable*/
+import { isEmpty } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { KDFM } from '../../../constants';
@@ -37,20 +38,6 @@ const ClusterTestSection = ({
   data,
   certificateOption = false,
 }) => {
-const isDisabled = () => {
-  if (certificateOption !== data?.is_certificate_based_service_account) {
-    return false;
-  }
-
-  return (
-    testSuccess ||
-    !dataFill ||
-    checkDuplicate ||
-    checkDuplicateName ||
-    watchedFields?.[1] === data?.nifi_url
-  );
-};
-
   return (
     <Flex>
       {test ? (
@@ -59,7 +46,15 @@ const isDisabled = () => {
             <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
             <Button
               onClick={() => setIsCertificateOpen(true)}
-              disabled={isDisabled()}
+              disabled={
+                isEmpty(data)
+                  ? testSuccess ||
+                    !dataFill ||
+                    checkDuplicate ||
+                    checkDuplicateName ||
+                    watchedFields?.[1] === data?.nifi_url
+                  : false
+              }
             >
               {KDFM.ADD_CERTIFICATE}
             </Button>
@@ -71,7 +66,15 @@ const isDisabled = () => {
                 <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
                 <Button
                   onClick={() => setIsCredOpen(true)}
-                  disabled={isDisabled()}
+                  disabled={
+                    isEmpty(data)
+                      ? testSuccess ||
+                        !dataFill ||
+                        checkDuplicate ||
+                        checkDuplicateName ||
+                        watchedFields?.[1] === data?.nifi_url
+                      : false
+                  }
                 >
                   {KDFM.ENTER_CREDENTIALS}
                 </Button>

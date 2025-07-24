@@ -7,7 +7,6 @@ import { Button, SwitchButton } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { InputField, PasswordField } from '../../../shared';
-import { KDFM } from '../../../constants';
 import {
   CurvedLockIcon,
   CurvedProfileIcon,
@@ -17,37 +16,10 @@ import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
-import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../styles';
 
 const Container = styled.div``;
-const ModalContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-bottom: 0;
-`;
-const UploadWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  color: #ff7a00;
-  margin-bottom: 12px;
-  padding: 5px 12px;
-  background: white;
-  font-weight: bold;
-  border: 1px solid #ff7a00;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
-  &:hover {
-    background: #fdfaf5;
-  }
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
-`;
 const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -90,7 +62,6 @@ export const ClusterServiceAccountModal = ({
     watch,
     setValue,
     reset,
-    control,
     formState: { errors },
     handleSubmit,
   } = useForm({
@@ -382,77 +353,35 @@ export const ClusterServiceAccountModal = ({
         </div>
 
         <div className="row mb-3 mt-3">
-          {data?.is_certificate_based_service_account === false && (
-            <>
-              <div className="col-4">
-                <InputField
-                  name="service_username"
-                  type="text"
-                  label="Username"
-                  placeholder="Enter Your User Name"
-                  required
-                  register={register}
-                  errors={errors}
-                  icon={<CurvedProfileIcon />}
-                  disabled={!changeRequestEnabled || loading}
-                />
-              </div>
-              <div className="col-4">
-                <PasswordField
-                  name="service_password"
-                  register={register}
-                  watch={watch}
-                  label="Password"
-                  required
-                  icon={<CurvedLockIcon />}
-                  placeholder="Enter Your Password"
-                  disableToggle={false}
-                  errors={errors}
-                  disabled={!changeRequestEnabled || loading}
-                />
-              </div>
-            </>
-          )}
-          {data?.is_certificate_based_service_account === true && (
-            <>
-              <div className="col-4">
-                <ModalContainer>
-                  <PemUploadField
-                    name="service_account_certificate"
-                    label="P12 File"
-                    watch={watch}
-                    control={control}
-                    required
-                    rightIcon={
-                      <UploadWrapper
-                        disabled={!changeRequestEnabled || loading}
-                      >
-                        Upload File
-                      </UploadWrapper>
-                    }
-                    placeholder={KDFM.UPLOAD_P12_FILE}
-                    errors={errors}
-                    fileLable="P12 file"
-                    disabled={!changeRequestEnabled || loading}
-                  />
-                </ModalContainer>
-              </div>
-              <div className="col-4">
-                <PasswordField
-                  name="service_account_certificate_password"
-                  register={register}
-                  watch={watch}
-                  label="Password"
-                  required
-                  icon={<CurvedLockIcon />}
-                  placeholder="Enter Your Password"
-                  disableToggle={false}
-                  errors={errors}
-                  disabled={!changeRequestEnabled || loading}
-                />
-              </div>
-            </>
-          )}
+          <>
+            <div className="col-4">
+              <InputField
+                name="service_username"
+                type="text"
+                label="Username"
+                placeholder="Enter Your User Name"
+                required
+                register={register}
+                errors={errors}
+                icon={<CurvedProfileIcon />}
+                disabled={!changeRequestEnabled || loading}
+              />
+            </div>
+            <div className="col-4">
+              <PasswordField
+                name="service_password"
+                register={register}
+                watch={watch}
+                label="Password"
+                required
+                icon={<CurvedLockIcon />}
+                placeholder="Enter Your Password"
+                disableToggle={false}
+                errors={errors}
+                disabled={!changeRequestEnabled || loading}
+              />
+            </div>
+          </>
         </div>
 
         <FlexWrapper>

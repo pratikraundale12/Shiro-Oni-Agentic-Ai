@@ -1,15 +1,16 @@
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { CrossIcon, FileIcon } from '../../assets';
 import { getFileSize } from '../../helpers';
-import { Button, SvgButton } from '../../shared';
+import { Button, Modal, SvgButton } from '../../shared';
 
 const StyledButton = styled(Button)`
   height: 36px;
-  padding: 0 20px;
+  padding: 0 15px;
   margin-top: 4px;
   border-radius: 4px;
   max-width: 130px;
@@ -38,12 +39,7 @@ const FlexBetween = styled.div`
   justify-content: space-between;
 `;
 
-const FileLabel = styled.span`
-  color: ${props => props.theme.colors.darker};
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 14px;
-`;
+const FileLabel = styled.span``;
 
 const Progress = styled.div`
   width: 100%;
@@ -72,9 +68,17 @@ const ErrorText = styled.span`
   display: block;
 `;
 
-export const UploadFile = ({ name, control, watch }) => {
+export const UploadFile = ({
+  name,
+  control,
+  watch,
+  data,
+  setIsCertificateOpen,
+}) => {
   const ref = useRef();
   const file = watch(name);
+  const [showModal, setShowModal] = useState(false);
+  console.log(data, 'data');
 
   return (
     <Controller
@@ -97,13 +101,33 @@ export const UploadFile = ({ name, control, watch }) => {
           }
         };
 
+        // New: handle upload button click
+        const handleUploadClick = () => {
+          if (!isEmpty(data)) {
+            setShowModal(true); // Only open confirmation modal
+          } else {
+            ref.current.click();
+          }
+        };
+
+        // New: handle modal actions
+        const handleModalConfirm = () => {
+          setShowModal(false);
+          setIsCertificateOpen(true); // Close parent modal only after confirmation
+          ref.current.click();
+        };
+        const handleModalCancel = () => {
+          setShowModal(false);
+          setIsCertificateOpen(true);
+        };
+
         return (
           <div>
             <FileWrapper>
               <FileIcon width={48} height={48} />
               <FileDetailsContainer>
                 <FlexBetween>
-                  <FileLabel>PFX File</FileLabel>
+                  <FileLabel></FileLabel>
                   {file && (
                     <RemoveButton onClick={handleRemove} icon={<CrossIcon />} />
                   )}
@@ -119,10 +143,10 @@ export const UploadFile = ({ name, control, watch }) => {
                 ) : (
                   <StyledButton
                     variant="secondary"
-                    onClick={() => ref.current.click()}
+                    onClick={handleUploadClick}
                     type="button"
                   >
-                    Select file
+                    Certificate file
                   </StyledButton>
                 )}
               </FileDetailsContainer>
@@ -135,6 +159,24 @@ export const UploadFile = ({ name, control, watch }) => {
               hidden
             />
             {error && <ErrorText>{error.message}</ErrorText>}
+            {/* Confirmation Modal using shared Modal component */}
+            <Modal
+              title="Replace Certificate"
+              isOpen={showModal}
+              onRequestClose={handleModalCancel}
+              size="sm"
+              secondaryButtonText="Cancel"
+              primaryButtonText="Replace"
+              onSubmit={handleModalConfirm}
+              onSecondaryButtonClick={handleModalCancel}
+              footerAlign="start"
+              contentStyles={{ maxWidth: '30%', maxHeight: '50%' }}
+            >
+              <div style={{ marginBottom: 16 }}>
+                A certificate is already uploaded. Do you want to replace it
+                with a new one?
+              </div>
+            </Modal>
           </div>
         );
       }}
@@ -147,4 +189,7 @@ UploadFile.propTypes = {
   control: PropTypes.object.isRequired,
   watch: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired,
+  data: PropTypes.any, // Add validation for 'data' prop
+  setIsCertificateOpen: PropTypes.func,
+  isCertificateOpen: PropTypes.bool,
 };

@@ -30,7 +30,7 @@ const ModalContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  margin-top: 38px;
+  margin-top: 12px;
   margin-bottom: 35px;
 `;
 
@@ -52,6 +52,7 @@ export const Certificate = ({
   setTestCertificatePassword,
   setTestCertificatePasswordForRegistry,
   setTestCertificateFileForRegistry,
+  data,
 }) => {
   const dispatch = useDispatch();
   const [failedModal, setFailedModal] = useState(false);
@@ -70,8 +71,12 @@ export const Certificate = ({
   });
 
   useEffect(() => {
-    if (isCertificateOpen) reset(DEFAULT_VALUES);
-  }, [isCertificateOpen]);
+    if (isCertificateOpen) {
+      reset({
+        password: data?.service_account_certificate_password || '',
+      });
+    }
+  }, [isCertificateOpen, data, reset]);
 
   const handleTest = async data => {
     const payload = new FormData();
@@ -156,6 +161,9 @@ export const Certificate = ({
             label={KDFM.PFX_FILE}
             placeholder={KDFM.SELECT_PFX_FILE}
             errors={errors}
+            data={data}
+            isCertificateOpen={isCertificateOpen}
+            setIsCertificateOpen={setIsCertificateOpen}
           />
           <PasswordField
             name="password"
@@ -192,4 +200,5 @@ Certificate.propTypes = {
   setTestCertificatePassword: PropTypes.func,
   setTestCertificateFileForRegistry: PropTypes.func,
   setTestCertificatePasswordForRegistry: PropTypes.func,
+  data: PropTypes.any,
 };
