@@ -16,7 +16,6 @@ const TextColor = styled.div`
     font-size: 14px !important;
   }
 `;
-
 const TextDispalyEllipses = styled.span`
   max-width: 12ch;
   overflow: hidden;
@@ -24,47 +23,6 @@ const TextDispalyEllipses = styled.span`
   white-space: nowrap;
   display: inline-block;
 `;
-
-// Helper function to parse HTML content safely
-const parseHTMLContent = text => {
-  if (!text || typeof text !== 'string') return text;
-
-  // Check if text contains HTML tags
-  const hasHTMLTags = /<[^>]*>/g.test(text);
-  if (!hasHTMLTags) return text;
-
-  // Parse <strong> tags specifically
-  const strongRegex = /<strong>(.*?)<\/strong>/g;
-  const parts = [];
-  let lastIndex = 0;
-  let match;
-  let keyCounter = 0;
-
-  while ((match = strongRegex.exec(text)) !== null) {
-    // Add text before the match
-    if (match.index > lastIndex) {
-      parts.push(text.substring(lastIndex, match.index));
-    }
-
-    // Add the bold text
-    parts.push(<strong key={`strong-${keyCounter++}`}>{match[1]}</strong>);
-
-    lastIndex = strongRegex.lastIndex;
-  }
-
-  // Add remaining text
-  if (lastIndex < text.length) {
-    parts.push(text.substring(lastIndex));
-  }
-
-  return parts.length > 1 ? parts : text;
-};
-
-// Helper function to strip HTML tags for tooltip
-const stripHTMLTags = text => {
-  if (!text || typeof text !== 'string') return text;
-  return text.replace(/<[^>]*>/g, '');
-};
 
 export const TextRender = ({
   text,
@@ -75,43 +33,35 @@ export const TextRender = ({
   withEllipses = false,
   ...rest
 }) => {
-  const originalText = text ? text : 'N/A';
-  const textToRender =
-    typeof originalText === 'number' ? String(originalText) : originalText;
+  text = text ? text : 'N/A';
+  const textToRender = typeof text === 'number' ? String(text) : text;
 
-  // Parse HTML content for display
-  const parsedContent = parseHTMLContent(textToRender);
-
-  // Clean text for tooltip (remove HTML tags)
-  const cleanTextForTooltip = stripHTMLTags(textToRender);
-
-  // Use clean text for tooltip ID to avoid issues with HTML characters
-  const tooltipId = `tooltip-${cleanTextForTooltip.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  const getPlainTextForTooltip = htmlString => {
+    const temp = document.createElement('div');
+    temp.innerHTML = htmlString;
+    return temp.textContent || temp.innerText || '';
+  };
 
   return (
     <TextColor
       {...rest}
       capitalizeText={capitalizeText}
-      data-tooltip-id={tooltipId}
+      data-tooltip-id={textToRender}
     >
       {withEllipses ? (
-        <TextDispalyEllipses>
-          {Array.isArray(parsedContent) ? (
-            <span>{parsedContent}</span>
-          ) : (
-            parsedContent
-          )}
-        </TextDispalyEllipses>
+        <TextDispalyEllipses>{textToRender}</TextDispalyEllipses>
       ) : (
-        <span>
-          {Array.isArray(parsedContent) ? parsedContent : parsedContent}
-        </span>
+        <span dangerouslySetInnerHTML={{ __html: textToRender || 'N/A' }} />
       )}
 
       {toolTip && (
         <ReactTooltip
-          id={tooltipId}
-          content={ListForTooltip ? ListForTooltip : cleanTextForTooltip}
+          id={textToRender}
+          content={
+            ListForTooltip
+              ? ListForTooltip
+              : getPlainTextForTooltip(textToRender)
+          }
           place={tooltipPlacement}
           positionStrategy="fixed"
           style={{
@@ -128,7 +78,7 @@ export const TextRender = ({
 };
 
 TextRender.propTypes = {
-  text: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  text: PropTypes.string,
   capitalizeText: PropTypes.bool,
   tooltipPlacement: PropTypes.string,
   toolTip: PropTypes.bool,
