@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Button, InputField, PasswordField } from '../../shared';
 import { AppIcon, CircleExclamationMarkIcon, UserIcon } from '../../assets';
@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { SettingsActions } from '../../store/settings';
+import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { theme } from '../../styles';
 import { FullPageLoader } from '../../components';
 import { LoadingSelectors } from '../../store';
@@ -76,6 +76,10 @@ const IconContent = styled.div`
 `;
 const KeycloakCredentialSection = () => {
   const dispatch = useDispatch();
+  const displayFetchUserBtn = useSelector(
+    SettingsSelectors.getdisplayFetchUserBtn
+  );
+  const [fetchUserPayload, setFetchUserPayload] = useState({});
   const keycloakCredSchema = yup.object().shape({
     username: yup.string().required('Username is required'),
     password: yup.string().required('Password is required'),
@@ -89,13 +93,23 @@ const KeycloakCredentialSection = () => {
     watch,
     formState: { errors },
   } = useForm({ resolver: yupResolver(keycloakCredSchema) });
-  const handleFetchUser = data => {
+  const handleTestCredentials = data => {
     const payload = {
       keycloak_user: data?.username,
       keycloak_password: data?.password,
     };
-    dispatch(SettingsActions.fetchKeycloakUsers(payload));
+    setFetchUserPayload(payload);
+    dispatch(SettingsActions.keycloakTestCredentials(payload));
   };
+  const handleFetchUser = () => {
+    dispatch(SettingsActions.fetchKeycloakUsers(fetchUserPayload));
+  };
+  useEffect(() => {
+    return () => {
+      dispatch(SettingsActions.setDisplayFetchUserBtn(false));
+    };
+  }, []);
+
   return (
     <>
       <FullPageLoader loading={loading} />
@@ -145,8 +159,23 @@ const KeycloakCredentialSection = () => {
               placeholder="Enter your Password"
             />
           </div>
+
           <div className="col-xl-2 d-flex align-items-center">
-            <Button onClick={handleSubmit(handleFetchUser)}>Fetch Users</Button>
+            <Button
+              onClick={handleSubmit(handleTestCredentials)}
+              isBtnDisable={displayFetchUserBtn}
+            >
+              Test Credentials
+            </Button>
+          </div>
+
+          <div className="col-xl-2 d-flex align-items-center">
+            <Button
+              onClick={handleFetchUser}
+              isBtnDisable={!displayFetchUserBtn}
+            >
+              Fetch Users
+            </Button>
           </div>
         </InputFields>
       </div>

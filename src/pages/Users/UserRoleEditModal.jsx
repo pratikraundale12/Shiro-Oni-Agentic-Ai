@@ -10,9 +10,10 @@ import {
 } from '../../store';
 import RegistryMultiSelect from '../SettingPage/Multiselect';
 import { useForm } from 'react-hook-form';
-import { isEqual, sortBy } from 'lodash';
+import { isEmpty, isEqual, sortBy } from 'lodash';
 import { FullPageLoader } from '../../components';
 import { SettingsActions } from '../../store/settings';
+import { toast } from 'react-toastify';
 
 export const UserRoleEditModal = ({ setRemoveSearch }) => {
   const dispatch = useDispatch();
@@ -57,10 +58,17 @@ export const UserRoleEditModal = ({ setRemoveSearch }) => {
 
   const onSubmit = data => {
     const selectedIds = data?.multiselect?.map(ele => ele?.value);
+    if (isEmpty(selectedIds)) {
+      toast.info('Atleast one role must be selected.');
+      return;
+    }
     dispatch(
       SettingsActions.assignKeycloakRolesToUsers([
         {
-          user_id: selectedUser?.id,
+          username: selectedUser?.username,
+          email: selectedUser?.email,
+          first_name: selectedUser?.first_name,
+          last_name: selectedUser?.last_name,
           role_ids: selectedIds,
         },
       ])
@@ -90,16 +98,18 @@ export const UserRoleEditModal = ({ setRemoveSearch }) => {
         contentStyles={{ minWidth: '30%' }}
         primaryButtonProps={{ id: 'enable-cluster-submit-btn' }}
       >
-        <RegistryMultiSelect
-          enableCheckboxes
-          control={control}
-          name={`multiselect`}
-          placeholder={'Select Role'}
-          options={ROLES_OPTIONS || []}
-          customOnChange={(hookFormOnChange, selected) => {
-            hookFormOnChange(selected);
-          }}
-        />
+        <div style={{ height: '300px' }}>
+          <RegistryMultiSelect
+            enableCheckboxes
+            control={control}
+            name={`multiselect`}
+            placeholder={'Select Role'}
+            options={ROLES_OPTIONS || []}
+            customOnChange={(hookFormOnChange, selected) => {
+              hookFormOnChange(selected);
+            }}
+          />
+        </div>
       </Modal>
     </>
   );

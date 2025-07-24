@@ -19,6 +19,7 @@ import { GridSelectors, RolesActions, UsersActions } from '../../store';
 import { useGlobalContext } from '../../utils';
 import { isEmpty } from 'lodash';
 import { UserRoleEditModal } from './UserRoleEditModal';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 export const ListUsers = () => {
   const { state, setState } = useGlobalContext();
@@ -151,13 +152,24 @@ export const ListUsers = () => {
       renderCell: item => (
         <>
           <IconButton
-            onClick={() => {
+            onClick={e => {
+              e.currentTarget.blur();
               dispatch(UsersActions.setuserRoleEditModalOpen(true));
               dispatch(UsersActions.setSingleUserForEdit(item));
             }}
+            data-tooltip-id={`tooltip-user-role-update`}
           >
             <RoleswtichIcon />
           </IconButton>
+          <ReactTooltip
+            id={`tooltip-user-role-update`}
+            place="right"
+            content={'Role Update'}
+            style={{
+              whiteSpace: 'normal',
+              zIndex: 9999,
+            }}
+          />
         </>
       ),
       width: '8%',

@@ -175,7 +175,7 @@ export const Add = () => {
     clusterName: yup
       .string()
       .min(3, 'Cluster Name must be at least 3 characters long')
-      .max(50, 'Cluster Name must be at most 50 characters long')
+      .max(200, 'Cluster Name must be at most 200 characters long')
       .required('Cluster Name is required')
       .test(
         'unique-cluster-name',
@@ -298,7 +298,8 @@ export const Add = () => {
     testCertificatePasswordForRegistry,
     setTestCertificatePasswordForRegistry,
   ] = useState('');
-    const [registeryCertificateOption, setRegisteryCertificateOption] = useState(false);
+  const [registeryCertificateOption, setRegisteryCertificateOption] =
+    useState(false);
   useEffect(() => {
     if (!approverEnable) {
       setChangeRequestApproverEnable(false);
@@ -805,7 +806,10 @@ export const Add = () => {
       formStateData?.is_registry_authenticated
     );
     formData.append('registry_url', formStateData?.registryUrl || '');
-    formData.append('is_certificate_based_service_account', registeryCertificateOption);
+    formData.append(
+      'is_certificate_based_service_account',
+      registeryCertificateOption
+    );
 
     if (testCertificateFileForRegistry) {
       formData.append(

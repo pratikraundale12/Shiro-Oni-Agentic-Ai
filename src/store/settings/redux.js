@@ -24,6 +24,8 @@ export const SettingsActions = {
   assignKeycloakRolesToUsers: createAction(
     `${prefix}assignKeycloakRolesToUsers`
   ),
+  keycloakTestCredentials: createAction(`${prefix}keycloakTestCredentials`),
+  setDisplayFetchUserBtn: createAction(`${prefix}setDisplayFetchUserBtn`),
   setSettingsData: createAction(`${prefix}setSettingsData`),
 };
 
@@ -36,6 +38,7 @@ export const SETTING_INITIAL_STATE = {
   emailVerified: false,
   keycloakUserFetched: [],
   keycloakUserListModalOpen: false,
+  displayFetchUserBtn: false,
   settingsData: {},
 };
 
@@ -50,6 +53,7 @@ export const SettingsSelectors = {
   getKeycloakUserFetched: state => state.settings.keycloakUserFetched,
   getkeycloakUserListModalOpen: state =>
     state.settings.keycloakUserListModalOpen,
+  getdisplayFetchUserBtn: state => state.settings.displayFetchUserBtn,
   getSettingsData: state => state.settings.settingsData,
 };
 
@@ -105,6 +109,12 @@ const setkeycloakUserListModalOpen = (state, { payload }) => {
     keycloakUserListModalOpen: payload,
   };
 };
+const setDisplayFetchUserBtn = (state, { payload }) => {
+  return {
+    ...state,
+    displayFetchUserBtn: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
@@ -134,5 +144,6 @@ export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
       SettingsActions.setkeycloakUserListModalOpen,
       setkeycloakUserListModalOpen
     )
+    .addCase(SettingsActions.setDisplayFetchUserBtn, setDisplayFetchUserBtn)
     .addCase(SettingsActions.setSettingsData, setSettingsData);
 });
