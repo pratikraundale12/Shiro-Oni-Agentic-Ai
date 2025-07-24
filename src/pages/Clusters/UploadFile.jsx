@@ -103,7 +103,12 @@ export const UploadFile = ({
 
         // New: handle upload button click
         const handleUploadClick = () => {
-          if (!isEmpty(data)) {
+          if (
+            !isEmpty(
+              data?.service_account_certificate_password &&
+                data?.service_account_certificate
+            )
+          ) {
             setShowModal(true); // Only open confirmation modal
           } else {
             ref.current.click();
