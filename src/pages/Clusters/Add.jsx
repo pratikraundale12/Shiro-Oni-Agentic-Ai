@@ -332,7 +332,6 @@ export const Add = () => {
     try {
       // Create FormData object
       const formData = new FormData();
-      console.log('clusterData', clusterData);
 
       // Append data to FormData
       formData.append('name', clusterData?.clusterName || '');
@@ -830,6 +829,9 @@ export const Add = () => {
   const isDisabled = () => {
     if (!watchedFields?.[7] && activeTab === 'registry') {
       return false;
+    }
+    if(certificateOption !== data?.is_certificate_based_service_account) {
+      return isSaveDisabled() || !testSuccess;
     }
     if (hasValidationErrors()) return true;
     if (newRegistry) {
