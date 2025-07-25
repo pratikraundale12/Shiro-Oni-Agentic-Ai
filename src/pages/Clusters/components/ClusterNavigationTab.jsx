@@ -37,6 +37,7 @@ const ClusterNavigationTab = ({
   isRegistryDetailDisable,
   data,
   setClusterFormData = () => {},
+  certificateOption
 }) => {
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
   const isSuperAdmin = currentUserData?.role === 'superadmin';
@@ -83,20 +84,23 @@ const ClusterNavigationTab = ({
           />
         )}
       </>
-      {isSuperAdmin && data && location?.pathname === '/clusters/edit' && (
-        <NavButton
-          active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
-          onClick={() =>
-            Object.keys(data || {})?.length
-              ? setActiveTab(CLUSTER_MODULE_TABS.SERVICE_ACCOUNT)
-              : {}
-          }
-          disabled={isRegistryDetailDisable}
-          data-tooltip-id="navButtonTooltip"
-        >
-          {KDFM.SERVICE_ACCOUNT}
-        </NavButton>
-      )}
+      {data?.is_certificate_based_service_account === false && certificateOption === false &&
+        isSuperAdmin &&
+        data &&
+        location?.pathname === '/clusters/edit' && (
+          <NavButton
+            active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
+            onClick={() =>
+              Object.keys(data || {})?.length
+                ? setActiveTab(CLUSTER_MODULE_TABS.SERVICE_ACCOUNT)
+                : {}
+            }
+            disabled={isRegistryDetailDisable}
+            data-tooltip-id="navButtonTooltip"
+          >
+            {KDFM.SERVICE_ACCOUNT}
+          </NavButton>
+        )}
     </NavTabs>
   );
 };

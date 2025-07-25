@@ -151,6 +151,8 @@ export const Add = () => {
       data?.service_account_certificate_password || '',
   });
   const [clusterId, setClusterId] = useState(data?.id);
+  const [editUsername, setEditUsername] = useState('');
+  const [editPassword, setEditPassword] = useState('');
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'clusters')
   );
@@ -328,25 +330,69 @@ export const Add = () => {
 
   const editClusterData = async () => {
     try {
-      const payload = {
-        name: clusterData?.clusterName,
-        nifi_url: clusterData?.nifiUrl,
-        logs_url: isEmpty(clusterData?.logs_url) ? null : clusterData?.logs_url,
-        metrics_url: isEmpty(clusterData?.metrics_url)
-          ? null
-          : clusterData?.metrics_url,
-        tag: tags,
-        notification_enable: notificationEnable,
-        approver_enable: approverEnable,
-        start_stop_requires_approval: approverEnableForStartAndStop,
-        change_request_enable: changeRequestEnable,
-        registry_id: selectedRegistryId,
-        has_custom_service_account: false,
-        is_certificate_based_service_account: certificateOption,
-      };
+      // Create FormData object
+      const formData = new FormData();
+
+      // Append data to FormData
+      formData.append('name', clusterData?.clusterName || '');
+      formData.append('nifi_url', clusterData?.nifiUrl || '');
+      formData.append(
+        'logs_url',
+        isEmpty(clusterData?.logs_url) ? '' : clusterData?.logs_url
+      );
+      formData.append(
+        'metrics_url',
+        isEmpty(clusterData?.metrics_url) ? '' : clusterData?.metrics_url
+      );
+
+      // For arrays like tags, you can either stringify or append individually
+      if (tags && Array.isArray(tags)) {
+        formData.append('tag', JSON.stringify(tags));
+      }
+
+      formData.append(
+        'notification_enable',
+        notificationEnable ? 'true' : 'false'
+      );
+      formData.append('approver_enable', approverEnable ? 'true' : 'false');
+      formData.append(
+        'start_stop_requires_approval',
+        approverEnableForStartAndStop ? 'true' : 'false'
+      );
+      formData.append(
+        'change_request_enable',
+        changeRequestEnable ? 'true' : 'false'
+      );
+      formData.append('registry_id', selectedRegistryId || '');
+      formData.append('has_custom_service_account', 'false');
+      formData.append(
+        'is_certificate_based_service_account',
+        certificateOption ? 'true' : 'false'
+      );
+
+      // Add certificate file and passphrase if present
+      if (testCertificateFile) {
+        formData.append('service_account_certificate', testCertificateFile);
+      }
+      if (testCertificatePassword) {
+        formData.append(
+          'service_account_certificate_password',
+          testCertificatePassword
+        );
+      }
+
+      // Add username and password if present
+      if (editUsername) {
+        formData.append('service_username', editUsername);
+      }
+      if (editPassword) {
+        formData.append('service_password', editPassword);
+      }
 
       const id = clusterId;
-      const response = await updateCluster(id, payload);
+
+      // Make sure your updateCluster function handles FormData
+      const response = await updateCluster(id, formData);
 
       if (response?.id) {
         const cluster = localStorage.getItem('selected_cluster');
@@ -847,6 +893,7 @@ export const Add = () => {
           isRegistryDetailDisable={isRegistryDetailDisable()}
           data={data}
           setClusterFormData={setClusterFormData}
+          certificateOption={certificateOption}
         />
 
         {activeTab === CLUSTER_MODULE_TABS.CLUSTER && (
@@ -1034,6 +1081,7 @@ export const Add = () => {
           setTestCertificatePasswordForRegistry
         }
         setTestCertificateFileForRegistry={setTestCertificateFileForRegistry}
+        data={data}
       />
       <Creditionals
         isCredOpen={isCredOpen}
@@ -1046,6 +1094,9 @@ export const Add = () => {
         setSuccessModal={setSuccessModal}
         setSaveButtonEnable={setSaveButtonEnable}
         newregistryData={newRegistryDataFromWatch}
+        // Pass setters for username and password
+        setEditUsername={setEditUsername}
+        setEditPassword={setEditPassword}
       />
       <SummaryModal
         clusterData={clusterData}

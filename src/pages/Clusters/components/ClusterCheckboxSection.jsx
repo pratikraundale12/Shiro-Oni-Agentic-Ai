@@ -11,6 +11,7 @@ const CheckBoxFlex = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 10px;
 `;
 
 const CERTIFICATE_OPTIONS = [
@@ -33,14 +34,6 @@ const ClusterCheckBoxSection = ({
 }) => {
   return (
     <>
-      <CertificateRadioSelect
-        name="certificateOption"
-        label="Do you want to use certificate for this cluster?"
-        options={CERTIFICATE_OPTIONS}
-        value={certificateOption}
-        defaultValue={certificateOption}
-        onChange={val => setCertificateOption(val)}
-      />
       <CheckBoxFlex>
         <CheckboxField
           name="check"
@@ -69,6 +62,14 @@ const ClusterCheckBoxSection = ({
           onChange={e => setNotificationEnable(e.target.checked)}
         />
       </CheckBoxFlex>
+      <CertificateRadioSelect
+        name="certificateOption"
+        label="Do you want to use a certificate user as a service account?"
+        options={CERTIFICATE_OPTIONS}
+        value={certificateOption}
+        defaultValue={certificateOption}
+        onChange={val => setCertificateOption(val)}
+      />
     </>
   );
 };
