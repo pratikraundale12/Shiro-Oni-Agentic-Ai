@@ -79,7 +79,6 @@ export const UploadFile = ({
   const ref = useRef();
   const file = watch(name);
   const [showModal, setShowModal] = useState(false);
-  console.log(data, 'data');
 
   return (
     <Controller

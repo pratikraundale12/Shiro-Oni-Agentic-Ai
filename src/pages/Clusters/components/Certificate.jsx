@@ -13,6 +13,7 @@ import { ClustersActions } from '../../../store';
 import { testCluster, testRegistry } from '../../../store/apis/clusters';
 import { UploadFile } from '../UploadFile';
 import { FailedTestModal } from './FailedTestModal';
+import { isEmpty } from 'lodash';
 
 const schema = yup.object().shape({
   pfxFile: yup.mixed().required('PFX file is required'),
@@ -52,6 +53,7 @@ export const Certificate = ({
   setTestCertificatePassword,
   setTestCertificatePasswordForRegistry,
   setTestCertificateFileForRegistry,
+  setUploadFileatEditTime,
   data,
 }) => {
   const dispatch = useDispatch();
@@ -92,6 +94,10 @@ export const Certificate = ({
       setTestCertificatePasswordForRegistry('');
       const response = await testCluster(payload);
       if (response.status === 200) {
+        if (!isEmpty(data)) {
+          setUploadFileatEditTime(true);
+        }
+
         setTestSuccess(true);
         setIsCertificateOpen(false);
         setSuccessModal(true);
@@ -202,4 +208,5 @@ Certificate.propTypes = {
   setTestCertificateFileForRegistry: PropTypes.func,
   setTestCertificatePasswordForRegistry: PropTypes.func,
   data: PropTypes.any,
+  setUploadFileatEditTime: PropTypes.func,
 };
