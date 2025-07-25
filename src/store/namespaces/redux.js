@@ -1238,13 +1238,6 @@ const setKeepParameters = (state, { payload }) => {
   };
 };
 
-const setKeepParameters = (state, { payload }) => {
-  return {
-    ...state,
-    keepParameterForDeploy: payload,
-  };
-};
-
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
