@@ -240,12 +240,10 @@ export const ListClusters = () => {
                         <span>{KDFM.EDIT}</span>
                       </Item>
                     )}
-                    {item?.edit_cluster && (
-                      <Item onClick={handleCopyClusterClick}>
-                        <CopyIcon width={16} height={16} />
-                        <span>Copy Cluster</span>
-                      </Item>
-                    )}
+                    {/* <Item onClick={handleCopyClusterClick}>
+                      <CopyIcon width={16} height={16} />
+                      <span>Copy Cluster</span>
+                    </Item> */}
                     <>
                       {item.status !== CLUSTER_STATUS.DISCONNECTED && (
                         <Item onClick={() => handleClick('view')}>
@@ -383,21 +381,21 @@ export const ListClusters = () => {
     GridSelectors.getGridData(state, 'clusters')
   );
 
-  const handleCopyClusterClick = () => {
-    const copiedData = {
-      ...menuState.row,
-      id: undefined,
-      name: getNextUniqueName(menuState?.row?.name, gridData),
-    };
-    dispatch(
-      ClustersActions.setCopyClusterData({
-        data: copiedData,
-        originalName: menuState.row.name,
-      })
-    );
-    dispatch(ClustersActions.setCopyClusterModalOpen(true));
-    handleCloseMenu();
-  };
+  // const handleCopyClusterClick = () => {
+  //   const copiedData = {
+  //     ...menuState.row,
+  //     id: undefined,
+  //     name: getNextUniqueName(menuState?.row?.name, gridData),
+  //   };
+  //   dispatch(
+  //     ClustersActions.setCopyClusterData({
+  //       data: copiedData,
+  //       originalName: menuState.row.name,
+  //     })
+  //   );
+  //   dispatch(ClustersActions.setCopyClusterModalOpen(true));
+  //   handleCloseMenu();
+  // };
 
   const handleCopyClusterConfirm = () => {
     history.push('/clusters/add', { state: copyClusterData });
