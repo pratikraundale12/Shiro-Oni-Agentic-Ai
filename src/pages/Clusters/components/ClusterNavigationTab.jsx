@@ -5,6 +5,7 @@ import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import styled from 'styled-components';
 import { AuthenticationSelectors } from '../../../store';
 import { useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -63,7 +64,7 @@ const ClusterNavigationTab = ({
                 : {}
               : {}
           }
-          disabled={isRegistryDetailDisable}
+          disabled={isRegistryDetailDisable || isEmpty(data)}
           data-tooltip-id="navButtonTooltip"
         >
           {KDFM.REGISTRY_DETAILS}

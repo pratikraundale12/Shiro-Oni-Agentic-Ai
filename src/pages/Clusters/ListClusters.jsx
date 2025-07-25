@@ -240,10 +240,12 @@ export const ListClusters = () => {
                         <span>{KDFM.EDIT}</span>
                       </Item>
                     )}
-                    <Item onClick={handleCopyClusterClick}>
-                      <CopyIcon width={16} height={16} />
-                      <span>Copy Cluster</span>
-                    </Item>
+                    {item?.edit_cluster && (
+                      <Item onClick={handleCopyClusterClick}>
+                        <CopyIcon width={16} height={16} />
+                        <span>Copy Cluster</span>
+                      </Item>
+                    )}
                     <>
                       {item.status !== CLUSTER_STATUS.DISCONNECTED && (
                         <Item onClick={() => handleClick('view')}>

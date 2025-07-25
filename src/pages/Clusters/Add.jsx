@@ -1047,9 +1047,11 @@ export const Add = () => {
                 id="registry-details-continue-btn"
                 onClick={handleRegistry}
                 disabled={
-                  !isEmpty(data)
-                    ? data?.registry_id == selectedRegistryId
-                    : isEmpty(selectedRegistryId)
+                  isCopyOperation
+                    ? false
+                    : !isEmpty(data)
+                      ? data?.registry_id == selectedRegistryId
+                      : isEmpty(selectedRegistryId)
                 }
               >
                 {KDFM.CONTINUE}
