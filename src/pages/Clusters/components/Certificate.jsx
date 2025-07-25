@@ -71,12 +71,12 @@ export const Certificate = ({
   });
 
   useEffect(() => {
-    if (isCertificateOpen) {
+    if (isCertificateOpen && activeTab === 'cluster') {
       reset({
         password: data?.service_account_certificate_password || '',
       });
     }
-  }, [isCertificateOpen, data, reset]);
+  }, [isCertificateOpen, data, reset, activeTab]);
 
   const handleTest = async data => {
     const payload = new FormData();
@@ -164,6 +164,7 @@ export const Certificate = ({
             data={data}
             isCertificateOpen={isCertificateOpen}
             setIsCertificateOpen={setIsCertificateOpen}
+            activeTab={activeTab}
           />
           <PasswordField
             name="password"
