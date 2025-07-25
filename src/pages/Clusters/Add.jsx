@@ -296,6 +296,7 @@ export const Add = () => {
   const [testCertificatePassword, setTestCertificatePassword] = useState('');
   const [testCertificateFileForRegistry, setTestCertificateFileForRegistry] =
     useState('');
+  const [uploadFileatEditTime, setUploadFileatEditTime] = useState(false);
   const [
     testCertificatePasswordForRegistry,
     setTestCertificatePasswordForRegistry,
@@ -827,11 +828,11 @@ export const Add = () => {
   const isSaveDisabled = () =>
     isFieldValuesUnchanged() && checkEditSave() && saveButtonEnable;
   const isDisabled = () => {
-    if (!watchedFields?.[7] && activeTab === 'registry') {
+    if (!isEmpty(data) && uploadFileatEditTime) {
       return false;
     }
-    if(certificateOption !== data?.is_certificate_based_service_account) {
-      return isSaveDisabled() || !testSuccess;
+    if (!watchedFields?.[7] && activeTab === 'registry') {
+      return false;
     }
     if (hasValidationErrors()) return true;
     if (newRegistry) {
@@ -1084,6 +1085,7 @@ export const Add = () => {
         }
         setTestCertificateFileForRegistry={setTestCertificateFileForRegistry}
         data={data}
+        setUploadFileatEditTime={setUploadFileatEditTime}
       />
       <Creditionals
         isCredOpen={isCredOpen}
