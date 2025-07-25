@@ -8,14 +8,12 @@ const Label = styled.h3`
   font-weight: 500;
   text-align: left;
   color: ${props => props.theme.colors.darker};
-  margin-bottom: 0.5rem;
 `;
 
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
   margin-right: 1rem;
-  margin-bottom: 0.5rem;
   cursor: pointer;
 `;
 

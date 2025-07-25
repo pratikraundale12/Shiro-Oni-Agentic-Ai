@@ -32,6 +32,8 @@ export const Creditionals = ({
   setSuccessModal,
   setSaveButtonEnable,
   newregistryData = {},
+  setEditUsername,
+  setEditPassword,
 }) => {
   const dispatch = useDispatch();
   const [failedModal, setFailedModal] = useState(false);
@@ -66,6 +68,8 @@ export const Creditionals = ({
         setLoading(false);
         dispatch(ClustersActions.setClusterFormData(response?.data));
         setSaveButtonEnable(false);
+        if (setEditUsername) setEditUsername(data?.username);
+        if (setEditPassword) setEditPassword(data?.password);
       } else {
         setTestMessage(response.message);
         setIsCredOpen(false);
@@ -171,4 +175,6 @@ Creditionals.propTypes = {
   setSuccessModal: PropTypes.func,
   setSaveButtonEnable: PropTypes.bool,
   newregistryData: PropTypes.object,
+  setEditUsername: PropTypes.func,
+  setEditPassword: PropTypes.func,
 };

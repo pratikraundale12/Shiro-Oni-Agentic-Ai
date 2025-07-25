@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { InputField, Modal } from '../../shared';
-import { StatusRender, Table, TextRender } from '../../components';
+import { Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { useForm } from 'react-hook-form';
 import { RolesSelectors } from '../../store';
@@ -89,7 +89,7 @@ const KeycloakUsersModal = () => {
     },
     {
       label: KDFM.EMAIL,
-      width: '20%',
+      width: '30%',
       resize: true,
       renderCell: item => (
         <TextRender
@@ -97,15 +97,6 @@ const KeycloakUsersModal = () => {
           capitalizeText={false}
           toolTip={false}
         />
-      ),
-    },
-
-    {
-      label: <>{KDFM.STATUS} </>,
-      width: '10%',
-      resize: true,
-      renderCell: item => (
-        <StatusRender status={item?.is_active ? 'Active' : 'Inactive'} />
       ),
     },
     {

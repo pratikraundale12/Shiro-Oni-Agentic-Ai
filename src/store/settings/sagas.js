@@ -142,14 +142,25 @@ export function* fetchKeycloakUsers(api, { payload }) {
 }
 
 export function* assignKeycloakRolesToUsers(api, { payload }) {
+  let isSingleRoleUpdate = false;
+  let users = [];
+  if (payload?.isSingleRoleUpdate) {
+    isSingleRoleUpdate = true;
+  }
+  if (payload?.users) {
+    users = payload.users;
+  }
   const userEditRoleModalOpen = yield select(
     UsersSelectors.getUserRoleEditModalOpen
   );
+  const updatedPayload = isSingleRoleUpdate ? users : payload;
   const response = yield call(requestSaga, {
     errorSection: 'assignKeycloakRolesToUsers',
     loadingSection: 'assignKeycloakRolesToUsers',
-    apiMethod: api.assignKeycloakRolesToUsers,
-    apiParams: [{ payload: payload }],
+    apiMethod: isSingleRoleUpdate
+      ? api.updateRoleOfUsers
+      : api.assignKeycloakRolesToUsers,
+    apiParams: [{ payload: updatedPayload }],
   });
 
   if (response.ok) {

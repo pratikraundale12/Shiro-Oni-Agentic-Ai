@@ -63,15 +63,18 @@ export const UserRoleEditModal = ({ setRemoveSearch }) => {
       return;
     }
     dispatch(
-      SettingsActions.assignKeycloakRolesToUsers([
-        {
-          username: selectedUser?.username,
-          email: selectedUser?.email,
-          first_name: selectedUser?.first_name,
-          last_name: selectedUser?.last_name,
-          role_ids: selectedIds,
-        },
-      ])
+      SettingsActions.assignKeycloakRolesToUsers({
+        isSingleRoleUpdate: true,
+        users: [
+          {
+            username: selectedUser?.username,
+            email: selectedUser?.email,
+            first_name: selectedUser?.first_name,
+            last_name: selectedUser?.last_name,
+            role_ids: selectedIds,
+          },
+        ],
+      })
     );
     setRemoveSearch(true);
   };
