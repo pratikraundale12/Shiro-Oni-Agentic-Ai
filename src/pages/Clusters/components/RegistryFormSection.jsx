@@ -53,6 +53,7 @@ const RegistryFormSection = ({
         testSuccess={testSuccess}
         registeryCertificateOption={registeryCertificateOption}
         setRegisteryCertificateOption={setRegisteryCertificateOption}
+        watchedFields={watchedFields}
       />
       {watchedFields?.[7] === true ? (
         <Flex>
