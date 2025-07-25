@@ -1674,7 +1674,7 @@ const Summary = () => {
                           <SummaryDetailsHFourTag className="mb-2">
                             <CheckboxField
                               name="check"
-                              label="Sanity Check and Deployment"
+                              label="Sanity Check and Deploy"
                               checked={sanityCheckAfterDeploy}
                               onChange={e =>
                                 dispatch(
