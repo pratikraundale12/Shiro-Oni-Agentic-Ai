@@ -74,6 +74,7 @@ export const UploadFile = ({
   watch,
   data,
   setIsCertificateOpen,
+  activeTab,
 }) => {
   const ref = useRef();
   const file = watch(name);
@@ -106,7 +107,8 @@ export const UploadFile = ({
             !isEmpty(
               data?.service_account_certificate_password &&
                 data?.service_account_certificate
-            )
+            ) &&
+            activeTab === 'cluster'
           ) {
             setShowModal(true); // Only open confirmation modal
           } else {
@@ -196,4 +198,5 @@ UploadFile.propTypes = {
   data: PropTypes.any, // Add validation for 'data' prop
   setIsCertificateOpen: PropTypes.func,
   isCertificateOpen: PropTypes.bool,
+  activeTab: PropTypes.string, // Add validation for 'activeTab' prop
 };
