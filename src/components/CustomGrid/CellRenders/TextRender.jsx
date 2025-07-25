@@ -35,10 +35,7 @@ export const TextRender = ({
 }) => {
   text = text ? text : 'N/A';
   const textToRender = typeof text === 'number' ? String(text) : text;
-<<<<<<< HEAD
 
-=======
->>>>>>> 9cd49835f09692a31ff985454b63efa95224bac1
   const getPlainTextForTooltip = htmlString => {
     const temp = document.createElement('div');
     temp.innerHTML = htmlString;

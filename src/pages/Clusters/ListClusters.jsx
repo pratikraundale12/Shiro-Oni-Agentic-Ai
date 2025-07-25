@@ -32,13 +32,11 @@ import {
   ClustersSelectors,
   DashboardActions,
   GridActions,
-  GridSelectors,
   NamespacesActions,
 } from '../../store';
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { useGlobalContext } from '../../utils';
-import { getNextUniqueName } from '../../utils/CheckUniqueString';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
 import { ClusterLoginWithOutCredModal } from './components/ClusterLoginWithoutCredModal';
 
@@ -377,9 +375,9 @@ export const ListClusters = () => {
     }
   };
 
-  const gridData = useSelector(state =>
-    GridSelectors.getGridData(state, 'clusters')
-  );
+  // const gridData = useSelector(state =>
+  //   GridSelectors.getGridData(state, 'clusters')
+  // );
 
   // const handleCopyClusterClick = () => {
   //   const copiedData = {
