@@ -7,6 +7,8 @@ export const UsersActions = {
   fetchUsers: createAction(`${prefix}fetchUsers`),
   fetchUsersSuccess: createAction(`${prefix}fetchUsersSuccess`),
   setUserModalOpen: createAction(`${prefix}setUserModalOpen`),
+  setAddNewUser: createAction(`${prefix}setAddNewUser`),
+  createUserByDFM: createAction(`${prefix}createUserByDFM`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -16,6 +18,7 @@ export const USERS_INITIAL_STATE = {
   prev: null,
   next: null,
   isUserModalOpen: false,
+  addNewUser: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -23,6 +26,7 @@ export const UsersSelectors = {
   getCount: state => state.users.count,
   getUsers: state => state.users.data,
   getUserModalOpen: state => state.users.isUserModalOpen,
+  getAddNewUser: state => state.users.addNewUser,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -41,9 +45,16 @@ const setUserModalOpen = (state, { payload }) => {
   };
 };
 
+const setAddNewUser = (state, { payload }) => {
+  return {
+    ...state,
+    addNewUser: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const usersReducer = createReducer(USERS_INITIAL_STATE, builder => {
   builder
     .addCase(UsersActions.fetchUsersSuccess, fetchUsersSuccess)
-    .addCase(UsersActions.setUserModalOpen, setUserModalOpen);
+    .addCase(UsersActions.setUserModalOpen, setUserModalOpen)
+    .addCase(UsersActions.setAddNewUser, setAddNewUser);
 });
