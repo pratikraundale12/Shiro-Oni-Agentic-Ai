@@ -20,7 +20,7 @@ export const SettingIcon = ({ width = 80, height = 80 }) => (
   </svg>
 );
 
-NameSpaceIcon.propTypes = {
+SettingIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
 };
