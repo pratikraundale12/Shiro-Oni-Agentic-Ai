@@ -146,8 +146,13 @@ export const Add = () => {
     nifiUrl: data?.nifi_url || '',
     metrics_url: data?.metrics_url || '',
     logs_url: data?.logs_url || '',
+    service_account_certificate: data?.service_account_certificate || '',
+    service_account_certificate_password:
+      data?.service_account_certificate_password || '',
   });
   const [clusterId, setClusterId] = useState(data?.id);
+  const [editUsername, setEditUsername] = useState('');
+  const [editPassword, setEditPassword] = useState('');
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'clusters')
   );
@@ -172,7 +177,7 @@ export const Add = () => {
     clusterName: yup
       .string()
       .min(3, 'Cluster Name must be at least 3 characters long')
-      .max(50, 'Cluster Name must be at most 50 characters long')
+      .max(200, 'Cluster Name must be at most 200 characters long')
       .required('Cluster Name is required')
       .test(
         'unique-cluster-name',
@@ -280,6 +285,10 @@ export const Add = () => {
   const [approverEnableForStartAndStop, setApproverEnableForStartAndStop] =
     useState(data?.start_stop_requires_approval || false);
 
+  const [certificateOption, setCertificateOption] = useState(
+    data?.is_certificate_based_service_account || false
+  );
+
   const [changeRequestEnable, setChangeRequestApproverEnable] = useState(
     data?.change_request_enable || false
   );
@@ -291,6 +300,17 @@ export const Add = () => {
       ? ClusterSchema
       : RegistrySchema;
   };
+  const [testCertificateFile, setTestCertificateFile] = useState('');
+  const [testCertificatePassword, setTestCertificatePassword] = useState('');
+  const [testCertificateFileForRegistry, setTestCertificateFileForRegistry] =
+    useState('');
+  const [uploadFileatEditTime, setUploadFileatEditTime] = useState(false);
+  const [
+    testCertificatePasswordForRegistry,
+    setTestCertificatePasswordForRegistry,
+  ] = useState('');
+  const [registeryCertificateOption, setRegisteryCertificateOption] =
+    useState(false);
   useEffect(() => {
     if (!approverEnable) {
       setChangeRequestApproverEnable(false);
@@ -319,24 +339,69 @@ export const Add = () => {
 
   const editClusterData = async () => {
     try {
-      const payload = {
-        name: clusterData?.clusterName,
-        nifi_url: clusterData?.nifiUrl,
-        logs_url: isEmpty(clusterData?.logs_url) ? null : clusterData?.logs_url,
-        metrics_url: isEmpty(clusterData?.metrics_url)
-          ? null
-          : clusterData?.metrics_url,
-        tag: tags,
-        notification_enable: notificationEnable,
-        approver_enable: approverEnable,
-        start_stop_requires_approval: approverEnableForStartAndStop,
-        change_request_enable: changeRequestEnable,
-        registry_id: selectedRegistryId,
-        has_custom_service_account: false,
-      };
+      // Create FormData object
+      const formData = new FormData();
+
+      // Append data to FormData
+      formData.append('name', clusterData?.clusterName || '');
+      formData.append('nifi_url', clusterData?.nifiUrl || '');
+      formData.append(
+        'logs_url',
+        isEmpty(clusterData?.logs_url) ? '' : clusterData?.logs_url
+      );
+      formData.append(
+        'metrics_url',
+        isEmpty(clusterData?.metrics_url) ? '' : clusterData?.metrics_url
+      );
+
+      // For arrays like tags, you can either stringify or append individually
+      if (tags && Array.isArray(tags)) {
+        formData.append('tag', JSON.stringify(tags));
+      }
+
+      formData.append(
+        'notification_enable',
+        notificationEnable ? 'true' : 'false'
+      );
+      formData.append('approver_enable', approverEnable ? 'true' : 'false');
+      formData.append(
+        'start_stop_requires_approval',
+        approverEnableForStartAndStop ? 'true' : 'false'
+      );
+      formData.append(
+        'change_request_enable',
+        changeRequestEnable ? 'true' : 'false'
+      );
+      formData.append('registry_id', selectedRegistryId || '');
+      formData.append('has_custom_service_account', 'false');
+      formData.append(
+        'is_certificate_based_service_account',
+        certificateOption ? 'true' : 'false'
+      );
+
+      // Add certificate file and passphrase if present
+      if (testCertificateFile) {
+        formData.append('service_account_certificate', testCertificateFile);
+      }
+      if (testCertificatePassword) {
+        formData.append(
+          'service_account_certificate_password',
+          testCertificatePassword
+        );
+      }
+
+      // Add username and password if present
+      if (editUsername) {
+        formData.append('service_username', editUsername);
+      }
+      if (editPassword) {
+        formData.append('service_password', editPassword);
+      }
 
       const id = clusterId;
-      const response = await updateCluster(id, payload);
+
+      // Make sure your updateCluster function handles FormData
+      const response = await updateCluster(id, formData);
 
       if (response?.id) {
         const cluster = localStorage.getItem('selected_cluster');
@@ -475,13 +540,18 @@ export const Add = () => {
         clusterName !== clusterData.clusterName ||
         nifiUrl !== clusterData.nifiUrl ||
         logs_url !== clusterData.logs_url ||
-        metrics_url !== clusterData.metrics_url
+        metrics_url !== clusterData.metrics_url ||
+        testCertificateFile !== clusterData.service_account_certificate ||
+        testCertificatePassword !==
+          clusterData.service_account_certificate_password
       ) {
         setClusterData({
           clusterName: clusterName || '',
           nifiUrl: nifiUrl || '',
           metrics_url: metrics_url || '',
           logs_url: logs_url || '',
+          service_account_certificate: testCertificateFile || '',
+          service_account_certificate_password: testCertificatePassword || '',
         });
       }
     } else if (
@@ -498,6 +568,9 @@ export const Add = () => {
           registryName: registryName || '',
           registryUrl: registryUrl || '',
           is_registry_authenticated: watchedFields?.[7] || true,
+          service_account_certificate: testCertificateFileForRegistry || '',
+          service_account_certificate_password:
+            testCertificatePasswordForRegistry || '',
         });
       }
     }
@@ -523,6 +596,8 @@ export const Add = () => {
     setRegistryData,
     setTest,
     activeTab,
+    testCertificateFile,
+    testCertificatePassword,
   ]);
   // Update the useEffect where you check for data
   useEffect(() => {
@@ -672,7 +747,8 @@ export const Add = () => {
       data?.approver_enable === approverEnable &&
       data?.notification_enable === notificationEnable &&
       data?.change_request_enable === changeRequestEnable &&
-      data?.start_stop_requires_approval === approverEnableForStartAndStop
+      data?.start_stop_requires_approval === approverEnableForStartAndStop &&
+      data?.is_certificate_based_service_account === certificateOption
     );
   };
 
@@ -689,6 +765,7 @@ export const Add = () => {
     notificationEnable,
     changeRequestEnable,
     approverEnableForStartAndStop,
+    certificateOption,
   ]);
   // Also update the handleTitleProvider function to handle copy operation
   const handleTitleProvider = data => {
@@ -759,6 +836,9 @@ export const Add = () => {
   const isSaveDisabled = () =>
     isFieldValuesUnchanged() && checkEditSave() && saveButtonEnable;
   const isDisabled = () => {
+    if (!isEmpty(data) && uploadFileatEditTime) {
+      return false;
+    }
     if (!watchedFields?.[7] && activeTab === 'registry') {
       return false;
     }
@@ -773,17 +853,41 @@ export const Add = () => {
   };
 
   const handleNewRgistrySave = async () => {
-    const data = {
-      name: formStateData?.registryName,
-      is_registry_authenticated: formStateData?.is_registry_authenticated,
-      registry_url: formStateData?.registryUrl,
-    };
-    const response = await createRegistry(data);
+    const formData = new FormData();
+
+    formData.append('name', formStateData?.registryName || '');
+    formData.append(
+      'is_registry_authenticated',
+      formStateData?.is_registry_authenticated
+    );
+    formData.append('registry_url', formStateData?.registryUrl || '');
+    formData.append(
+      'is_certificate_based_service_account',
+      registeryCertificateOption
+    );
+
+    if (testCertificateFileForRegistry) {
+      formData.append(
+        'service_account_certificate',
+        testCertificateFileForRegistry
+      );
+    }
+
+    if (testCertificatePasswordForRegistry) {
+      formData.append(
+        'service_account_certificate_password',
+        testCertificatePasswordForRegistry
+      );
+    }
+
+    const response = await createRegistry(formData); // Make sure your API expects FormData
+
     if (response?.status === 201) {
       fetchRegistry();
     } else {
       toast.error(response.message);
     }
+
     handleBack();
   };
 
@@ -798,6 +902,7 @@ export const Add = () => {
           isRegistryDetailDisable={isRegistryDetailDisable()}
           data={data}
           setClusterFormData={setClusterFormData}
+          certificateOption={certificateOption}
         />
 
         {activeTab === CLUSTER_MODULE_TABS.CLUSTER && (
@@ -828,20 +933,26 @@ export const Add = () => {
               changeRequestEnable={changeRequestEnable}
               notificationEnable={notificationEnable}
               approverEnableForStartAndStop={approverEnableForStartAndStop}
-            />
-            <ClusterTestSection
-              test={test}
-              setIsCertificateOpen={setIsCertificateOpen}
-              testSuccess={testSuccess}
-              dataFill={dataFill}
-              checkDuplicate={checkDuplicate}
-              checkDuplicateName={checkDuplicateName}
-              setIsCredOpen={setIsCredOpen}
-              testData={testData}
-              watchedFields={watchedFields}
+              certificateOption={certificateOption}
+              setCertificateOption={setCertificateOption}
               data={data}
             />
-            {testSuccess && !successModal && (
+            {
+              <ClusterTestSection
+                test={test}
+                certificateOption={certificateOption}
+                setIsCertificateOpen={setIsCertificateOpen}
+                testSuccess={testSuccess}
+                dataFill={dataFill}
+                checkDuplicate={checkDuplicate}
+                checkDuplicateName={checkDuplicateName}
+                setIsCredOpen={setIsCredOpen}
+                testData={testData}
+                watchedFields={watchedFields}
+                data={data}
+              />
+            }
+            {testSuccess && !successModal && !certificateOption && (
               <CertificateTextDisplay
                 clusterModule={true}
                 activeTab={activeTab}
@@ -910,6 +1021,9 @@ export const Add = () => {
               clusterId={clusterId}
               registryData={registryData}
               watchedFields={watchedFields}
+              isCertificateUser={certificateOption}
+              registeryCertificateOption={registeryCertificateOption}
+              setRegisteryCertificateOption={setRegisteryCertificateOption}
             />
           </FormContainer>
         )}
@@ -972,6 +1086,14 @@ export const Add = () => {
         clusterData={clusterData}
         registryData={registryData}
         setSuccessModal={setSuccessModal}
+        setTestCertificateFile={setTestCertificateFile}
+        setTestCertificatePassword={setTestCertificatePassword}
+        setTestCertificatePasswordForRegistry={
+          setTestCertificatePasswordForRegistry
+        }
+        setTestCertificateFileForRegistry={setTestCertificateFileForRegistry}
+        data={data}
+        setUploadFileatEditTime={setUploadFileatEditTime}
       />
       <Creditionals
         isCredOpen={isCredOpen}
@@ -984,6 +1106,9 @@ export const Add = () => {
         setSuccessModal={setSuccessModal}
         setSaveButtonEnable={setSaveButtonEnable}
         newregistryData={newRegistryDataFromWatch}
+        // Pass setters for username and password
+        setEditUsername={setEditUsername}
+        setEditPassword={setEditPassword}
       />
       <SummaryModal
         clusterData={clusterData}
@@ -998,6 +1123,7 @@ export const Add = () => {
         changeRequestEnable={changeRequestEnable}
         approverEnableForStartAndStop={approverEnableForStartAndStop}
         tags={tags}
+        certificateOption={certificateOption}
       />
       {successModal && (
         <SuccessTestModal

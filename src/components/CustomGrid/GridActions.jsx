@@ -261,7 +261,7 @@ export const GridActions = ({
   const { setState } = useGlobalContext();
   const [searchValue, setSearchValue] = useState('');
   useEffect(() => {
-    if (removeSearch && module === 'namespaces') {
+    if (removeSearch && (module === 'namespaces' || module === 'users')) {
       setSearchValue('');
     }
   }, [removeSearch]);

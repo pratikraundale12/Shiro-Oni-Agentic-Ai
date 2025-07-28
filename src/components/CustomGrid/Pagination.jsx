@@ -183,7 +183,7 @@ const Pagination = ({
         <span>Items per page</span>
       </div>
       <Flex>
-        <StyledButton onClick={handlePrev} disabled={page === 1}>
+        <StyledButton onClick={handlePrev} disabled={page === 1} type="button">
           <GreaterArrowIcon color={theme.colors.white} />
         </StyledButton>
         {pageNumbers.map((number, index) => (
@@ -193,11 +193,16 @@ const Pagination = ({
             size="sm"
             variant="secondary"
             active={number === page}
+            type="button"
           >
             {number}
           </StyledButton>
         ))}
-        <StyledButton onClick={handleNext} disabled={page === totalPage}>
+        <StyledButton
+          onClick={handleNext}
+          disabled={page === totalPage}
+          type="button"
+        >
           <LessArrowIcon color={theme.colors.white} />
         </StyledButton>
       </Flex>

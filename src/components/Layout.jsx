@@ -181,7 +181,10 @@ const UserBtnContainer = styled.div`
     }
   }
   .admin-login {
-    border-radius: 0 30px 0 0;
+    ${({ isAdminActive }) =>
+      isAdminActive
+        ? `border-radius: 30px 30px 0 0;`
+        : `border-radius: 0 30px 0 0;`}
     border-left: none;
     width: 100%;
     cursor: pointer;
@@ -424,6 +427,16 @@ export const Layout = ({ children }) => {
   const handleRedirectionAdmin = () => {
     history.push('/admin/login');
   };
+  useEffect(() => {
+    if (!isEmpty(settingLogo)) {
+      if (!settingLogo?.sso_enabled && !settingLogo?.ldapEnabled) {
+        handleRedirectionAdmin();
+        setTimeout(() => {
+          handleRedirectionAdmin();
+        }, 50);
+      }
+    }
+  }, [settingLogo]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -536,25 +549,31 @@ export const Layout = ({ children }) => {
             ) : (
               <LogoImg src={image} alt="Logo" />
             )}
-            <UserBtnContainer>
-              {(isUserLogin || isAdminLogin) && (
-                <LoginBtnContainer
-                  className={`d-flex align-items-center justify-content-between user-container`}
-                >
-                  <StyledLoginBox
-                    id="login-switch-role-btn"
-                    onClick={handleRedirectionUser}
-                    className="user-login"
-                    active={isUserLogin}
+            {/* */}
+            <UserBtnContainer
+              isAdminActive={
+                !settingLogo?.sso_enabled && !settingLogo?.ldapEnabled
+              }
+            >
+              {(isUserLogin || isAdminLogin) &&
+                !(!settingLogo?.sso_enabled && !settingLogo?.ldapEnabled) && (
+                  <LoginBtnContainer
+                    className={`d-flex align-items-center justify-content-between user-container`}
                   >
-                    <RedirectionSection>
-                      <RedirectionText active={isUserLogin}>
-                        User
-                      </RedirectionText>
-                    </RedirectionSection>
-                  </StyledLoginBox>
-                </LoginBtnContainer>
-              )}
+                    <StyledLoginBox
+                      id="login-switch-role-btn"
+                      onClick={handleRedirectionUser}
+                      className="user-login"
+                      active={isUserLogin}
+                    >
+                      <RedirectionSection>
+                        <RedirectionText active={isUserLogin}>
+                          User
+                        </RedirectionText>
+                      </RedirectionSection>
+                    </StyledLoginBox>
+                  </LoginBtnContainer>
+                )}
               {(isUserLogin || isAdminLogin) && (
                 <LoginBtnContainer
                   className={`d-flex align-items-center justify-content-between admin-container`}
@@ -581,9 +600,11 @@ export const Layout = ({ children }) => {
                 !settingLogo?.show_sso_page &&
                 settingLogo?.sso_enabled && (
                   <>
-                    <SmallText>
-                      <span>or</span>
-                    </SmallText>
+                    {settingLogo?.ldapEnabled && (
+                      <SmallText>
+                        <span>or</span>
+                      </SmallText>
+                    )}
                     <SSOButtonsContainer>
                       <SSOButton onClick={handleMSLogin}>
                         <MicroSoftIcon />
@@ -597,9 +618,11 @@ export const Layout = ({ children }) => {
                 !settingLogo?.show_sso_page &&
                 settingLogo?.sso_enabled && (
                   <>
-                    <SmallText>
-                      <span>or</span>
-                    </SmallText>{' '}
+                    {settingLogo?.ldapEnabled && (
+                      <SmallText>
+                        <span>or</span>
+                      </SmallText>
+                    )}
                     <SSOButtonsContainer>
                       <SSOButton onClick={handleKeycloakLogin}>
                         <KeycloakIcon />
@@ -652,7 +675,7 @@ export const Layout = ({ children }) => {
                     Terms Of Use
                   </RedirectionText>
                 </PolicyContainer>
-                <LabelSelect>Version 2.1.22</LabelSelect>
+                <LabelSelect>Version 2.1.22-1</LabelSelect>
               </RightSection>
             ) : (
               <RightSectionreset>
@@ -682,7 +705,7 @@ export const Layout = ({ children }) => {
                     Terms Of Use
                   </RedirectionText>
                 </PolicyContainer>
-                <LabelSelect>Version 2.1.22</LabelSelect>
+                <LabelSelect>Version 2.1.22-1</LabelSelect>
               </RightSectionreset>
             )}
           </RightWrapper>

@@ -41,14 +41,19 @@ const RegistryFormSection = ({
   clusterId,
   registryData,
   watchedFields,
+  isCertificateUser,
+  registeryCertificateOption,
+  setRegisteryCertificateOption,
 }) => {
-
   return (
     <>
       <RegistryFormInputs
         register={register}
         errors={errors}
         testSuccess={testSuccess}
+        registeryCertificateOption={registeryCertificateOption}
+        setRegisteryCertificateOption={setRegisteryCertificateOption}
+        watchedFields={watchedFields}
       />
       {watchedFields?.[7] === true ? (
         <Flex>
@@ -67,21 +72,25 @@ const RegistryFormSection = ({
                 {KDFM.ADD_CERTIFICATE}
               </Button>
             </div>
-            <ORText>OR</ORText>
-            <div>
-              <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
-              <Button
-                onClick={() => setIsCredOpen(true)}
-                disabled={
-                  testSuccess ||
-                  !dataFill ||
-                  checkDuplicateRegistry ||
-                  checkDuplicateRegistryName
-                }
-              >
-                {KDFM.ENTER_CREDENTIALS}
-              </Button>
-            </div>
+            {registeryCertificateOption === false && (
+              <>
+                <ORText>OR</ORText>
+                <div>
+                  <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
+                  <Button
+                    onClick={() => setIsCredOpen(true)}
+                    disabled={
+                      testSuccess ||
+                      !dataFill ||
+                      checkDuplicateRegistry ||
+                      checkDuplicateRegistryName
+                    }
+                  >
+                    {KDFM.ENTER_CREDENTIALS}
+                  </Button>
+                </div>
+              </>
+            )}
           </>
         </Flex>
       ) : null}

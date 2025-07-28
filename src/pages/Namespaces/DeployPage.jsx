@@ -179,10 +179,11 @@ function DeployPage() {
   const [successTest, setSuccessTest] = useState(false);
   const [proceedWithDispatch, setProceedWithDispatch] = useState(false);
   const formData = useSelector(NamespacesSelectors.getDeployFormData);
-  const keepParameters = useSelector(NamespacesSelectors.getKeepParameters);
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
+  const keepParameters = useSelector(NamespacesSelectors.getKeepParameters);
+
   const tableRef = useRef(null);
 
   const handleScrollOnClick = () => {
@@ -467,6 +468,7 @@ function DeployPage() {
   const loadingfetchRegistryFlowDetails = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
   );
+
   return (
     <div>
       <FullPageLoader

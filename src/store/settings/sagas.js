@@ -1,12 +1,13 @@
 // sagas.js
 import { toast } from 'react-toastify';
-import { all, call, takeLatest, put } from 'redux-saga/effects';
+import { all, call, takeLatest, put, select } from 'redux-saga/effects';
 import { changeFavicon } from '../../helpers';
 import { fetchDashboard } from '../dashboard';
-import { fetchGrid } from '../grid';
+import { fetchGrid, GridActions } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SettingsActions } from './redux';
-
+import { history } from '../../helpers/history';
+import { UsersActions, UsersSelectors } from '../users';
 export function* createSettings(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'createSettings',
@@ -123,6 +124,78 @@ export function* verifyEmail(api, payload) {
   }
 }
 
+export function* fetchKeycloakUsers(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchKeycloakUsers',
+    loadingSection: 'fetchKeycloakUsers',
+    apiMethod: api.fetchKeycloakUsers,
+    apiParams: [{ payload: payload }],
+  });
+
+  if (response.ok) {
+    toast.success('Fetched successfully');
+    yield put(SettingsActions.setkeycloakUserFetched(response?.data?.data));
+    yield put(SettingsActions.setkeycloakUserListModalOpen(true));
+  } else {
+    toast.error(response.data.message);
+  }
+}
+
+export function* assignKeycloakRolesToUsers(api, { payload }) {
+  let isSingleRoleUpdate = false;
+  let users = [];
+  if (payload?.isSingleRoleUpdate) {
+    isSingleRoleUpdate = true;
+  }
+  if (payload?.users) {
+    users = payload.users;
+  }
+  const userEditRoleModalOpen = yield select(
+    UsersSelectors.getUserRoleEditModalOpen
+  );
+  const updatedPayload = isSingleRoleUpdate ? users : payload;
+  const response = yield call(requestSaga, {
+    errorSection: 'assignKeycloakRolesToUsers',
+    loadingSection: 'assignKeycloakRolesToUsers',
+    apiMethod: isSingleRoleUpdate
+      ? api.updateRoleOfUsers
+      : api.assignKeycloakRolesToUsers,
+    apiParams: [{ payload: updatedPayload }],
+  });
+
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield put(SettingsActions.setkeycloakUserListModalOpen(false));
+    if (userEditRoleModalOpen) {
+      yield put(
+        GridActions.fetchGrid({
+          module: 'users',
+          params: { page: 1, limit: 10 },
+        })
+      );
+    } else {
+      yield call(history.push, '/user-management');
+    }
+    yield put(UsersActions.setuserRoleEditModalOpen(false));
+  } else {
+    toast.error(response.data.message);
+  }
+}
+export function* keycloakTestCredentials(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'keycloakTestCredentials',
+    loadingSection: 'keycloakTestCredentials',
+    apiMethod: api.keycloakTestCredentials,
+    apiParams: [{ payload: payload }],
+  });
+
+  if (response.ok) {
+    toast.success(response?.data?.message || 'Tested successfully');
+    yield put(SettingsActions.setDisplayFetchUserBtn(true));
+  } else {
+    toast.error(response.data.message);
+  }
+}
 export function* settingsSagas(api) {
   yield all([
     takeLatest(SettingsActions.createSettings, createSettings, api),
@@ -130,5 +203,16 @@ export function* settingsSagas(api) {
     takeLatest(SettingsActions.refreshSetting, refreshSetting, api),
     takeLatest(SettingsActions.downloadLogsZip, downloadLogsZip, api),
     takeLatest(SettingsActions.verifyEmail, verifyEmail, api),
+    takeLatest(SettingsActions.fetchKeycloakUsers, fetchKeycloakUsers, api),
+    takeLatest(
+      SettingsActions.assignKeycloakRolesToUsers,
+      assignKeycloakRolesToUsers,
+      api
+    ),
+    takeLatest(
+      SettingsActions.keycloakTestCredentials,
+      keycloakTestCredentials,
+      api
+    ),
   ]);
 }

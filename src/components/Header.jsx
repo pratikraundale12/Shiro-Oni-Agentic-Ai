@@ -222,6 +222,7 @@ const ProfileDropdown = () => {
     const idToken = localStorage.getItem('keycloak_id_token');
     const keycloakUrl = storedConfig?.keycloak_url;
     const keycloakRealm = storedConfig?.keycloak_realm;
+
     if (!idToken) {
       console.error('No ID token found for logout');
       return;
