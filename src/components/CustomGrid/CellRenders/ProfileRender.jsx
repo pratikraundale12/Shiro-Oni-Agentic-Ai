@@ -33,8 +33,10 @@ export const ProfileRender = ({ url }) => {
   const [isValidImage, setIsValidImage] = useState(false);
 
   useEffect(() => {
-    if (url) {
-      checkImageExists(url).then(exists => setIsValidImage(exists));
+    if (`${process.env.REACT_APP_API_URL}${url}`) {
+      checkImageExists(`${process.env.REACT_APP_API_URL}${url}`).then(exists =>
+        setIsValidImage(exists)
+      );
     } else {
       setIsValidImage(false);
     }
@@ -43,7 +45,10 @@ export const ProfileRender = ({ url }) => {
   return (
     <ImageContainer>
       {isValidImage ? (
-        <ProfileImage src={url} alt="profile" />
+        <ProfileImage
+          src={`${process.env.REACT_APP_API_URL}${url}`}
+          alt="profile"
+        />
       ) : (
         <ProfileIcon width={40} height={40} />
       )}

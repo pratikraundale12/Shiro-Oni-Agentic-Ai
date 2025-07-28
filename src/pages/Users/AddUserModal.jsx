@@ -202,6 +202,7 @@ export const AddUserModal = props => {
         formData.append('photo', null);
       }
       dispatch(UsersActions.createUserByDFM(formData));
+      reset(DEFAULT_VALUES);
       return;
     }
     const formData = createFormData(data);
@@ -227,6 +228,7 @@ export const AddUserModal = props => {
         localStorage.setItem(ACCESS_TOKEN, response.data.token);
       }
     }
+    reset(DEFAULT_VALUES);
   };
 
   useEffect(() => {
