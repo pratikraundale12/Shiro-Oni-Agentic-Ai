@@ -216,9 +216,17 @@ export const Add = () => {
   const RegistrySchema = yup.object().shape({
     registryName: yup
       .string()
+      .required('Registry Name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Registry Name cannot start or end with spaces',
+        value => {
+          if (!value) return false;
+          return value === value.trim();
+        }
+      )
       .min(3, 'Registry Name must be at least 3 characters long')
       .max(30, 'Registry Name must be at most 30 characters long')
-      .required('Registry Name is required')
       .test(
         'unique-registry-name',
         'Registry name already exists',
@@ -296,6 +304,7 @@ export const Add = () => {
   const [testCertificatePassword, setTestCertificatePassword] = useState('');
   const [testCertificateFileForRegistry, setTestCertificateFileForRegistry] =
     useState('');
+  const [uploadFileatEditTime, setUploadFileatEditTime] = useState(false);
   const [
     testCertificatePasswordForRegistry,
     setTestCertificatePasswordForRegistry,
@@ -827,11 +836,11 @@ export const Add = () => {
   const isSaveDisabled = () =>
     isFieldValuesUnchanged() && checkEditSave() && saveButtonEnable;
   const isDisabled = () => {
-    if (!watchedFields?.[7] && activeTab === 'registry') {
+    if (!isEmpty(data) && uploadFileatEditTime) {
       return false;
     }
-    if(certificateOption !== data?.is_certificate_based_service_account) {
-      return isSaveDisabled() || !testSuccess;
+    if (!watchedFields?.[7] && activeTab === 'registry') {
+      return false;
     }
     if (hasValidationErrors()) return true;
     if (newRegistry) {
@@ -1047,9 +1056,11 @@ export const Add = () => {
                 id="registry-details-continue-btn"
                 onClick={handleRegistry}
                 disabled={
-                  !isEmpty(data)
-                    ? data?.registry_id == selectedRegistryId
-                    : isEmpty(selectedRegistryId)
+                  isCopyOperation
+                    ? false
+                    : !isEmpty(data)
+                      ? data?.registry_id == selectedRegistryId
+                      : isEmpty(selectedRegistryId)
                 }
               >
                 {KDFM.CONTINUE}
@@ -1082,6 +1093,7 @@ export const Add = () => {
         }
         setTestCertificateFileForRegistry={setTestCertificateFileForRegistry}
         data={data}
+        setUploadFileatEditTime={setUploadFileatEditTime}
       />
       <Creditionals
         isCredOpen={isCredOpen}

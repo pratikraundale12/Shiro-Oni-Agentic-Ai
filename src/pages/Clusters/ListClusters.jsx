@@ -32,13 +32,11 @@ import {
   ClustersSelectors,
   DashboardActions,
   GridActions,
-  GridSelectors,
   NamespacesActions,
 } from '../../store';
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { useGlobalContext } from '../../utils';
-import { getNextUniqueName } from '../../utils/CheckUniqueString';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
 import { ClusterLoginWithOutCredModal } from './components/ClusterLoginWithoutCredModal';
 
@@ -240,10 +238,10 @@ export const ListClusters = () => {
                         <span>{KDFM.EDIT}</span>
                       </Item>
                     )}
-                    <Item onClick={handleCopyClusterClick}>
+                    {/* <Item onClick={handleCopyClusterClick}>
                       <CopyIcon width={16} height={16} />
                       <span>Copy Cluster</span>
-                    </Item>
+                    </Item> */}
                     <>
                       {item.status !== CLUSTER_STATUS.DISCONNECTED && (
                         <Item onClick={() => handleClick('view')}>
@@ -377,25 +375,25 @@ export const ListClusters = () => {
     }
   };
 
-  const gridData = useSelector(state =>
-    GridSelectors.getGridData(state, 'clusters')
-  );
+  // const gridData = useSelector(state =>
+  //   GridSelectors.getGridData(state, 'clusters')
+  // );
 
-  const handleCopyClusterClick = () => {
-    const copiedData = {
-      ...menuState.row,
-      id: undefined,
-      name: getNextUniqueName(menuState?.row?.name, gridData),
-    };
-    dispatch(
-      ClustersActions.setCopyClusterData({
-        data: copiedData,
-        originalName: menuState.row.name,
-      })
-    );
-    dispatch(ClustersActions.setCopyClusterModalOpen(true));
-    handleCloseMenu();
-  };
+  // const handleCopyClusterClick = () => {
+  //   const copiedData = {
+  //     ...menuState.row,
+  //     id: undefined,
+  //     name: getNextUniqueName(menuState?.row?.name, gridData),
+  //   };
+  //   dispatch(
+  //     ClustersActions.setCopyClusterData({
+  //       data: copiedData,
+  //       originalName: menuState.row.name,
+  //     })
+  //   );
+  //   dispatch(ClustersActions.setCopyClusterModalOpen(true));
+  //   handleCloseMenu();
+  // };
 
   const handleCopyClusterConfirm = () => {
     history.push('/clusters/add', { state: copyClusterData });

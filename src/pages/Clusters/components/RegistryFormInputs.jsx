@@ -17,8 +17,8 @@ const RegistryFormInputs = ({
   testSuccess,
   registeryCertificateOption,
   setRegisteryCertificateOption,
+  watchedFields,
 }) => {
-  
   return (
     <>
       <InputField
@@ -63,14 +63,16 @@ const RegistryFormInputs = ({
           }}
         />
       </div>
-      <CertificateRadioSelect
-        name="registeryCertificateOption"
-        label="Do you want to use certificate for this registry?"
-        options={CERTIFICATE_OPTIONS}
-        value={registeryCertificateOption}
-        defaultValue={registeryCertificateOption}
-        onChange={val => setRegisteryCertificateOption(val)}
-      />
+      {watchedFields?.[7] === true && (
+        <CertificateRadioSelect
+          name="registeryCertificateOption"
+          label="Do you want to use certificate for this registry?"
+          options={CERTIFICATE_OPTIONS}
+          value={registeryCertificateOption}
+          defaultValue={registeryCertificateOption}
+          onChange={val => setRegisteryCertificateOption(val)}
+        />
+      )}
     </>
   );
 };

@@ -1231,7 +1231,6 @@ const setCsPermissions = (state, { payload }) => {
     csPermissions: payload,
   };
 };
-
 const setKeepParameters = (state, { payload }) => {
   return {
     ...state,
