@@ -1,8 +1,9 @@
 import { toast } from 'react-toastify';
-import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { all, call, put, takeLatest, select } from 'redux-saga/effects';
 import { requestSaga } from '../helpers/request_sagas';
 import { UsersActions } from './redux';
 import { GridActions } from '../grid';
+import { ClustersSelectors } from '../clusters';
 
 export function* fetchUsers(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -19,6 +20,7 @@ export function* fetchUsers(api, { payload }) {
   }
 }
 export function* createUserByDFM(api, { payload }) {
+  const itemPerPage = yield select(ClustersSelectors.getClusterListItems);
   const response = yield call(requestSaga, {
     errorSection: 'createUserByDFM',
     loadingSection: 'createUserByDFM',
@@ -32,7 +34,7 @@ export function* createUserByDFM(api, { payload }) {
     yield put(
       GridActions.fetchGrid({
         module: 'users',
-        params: { page: 1, limit: 10 },
+        params: { page: 1, limit: itemPerPage || 10 },
       })
     );
   } else {
