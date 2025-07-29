@@ -23,6 +23,7 @@ import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
+import { NAMESPACE_CONSTANTS } from '../../constants/namespace.constant';
 import { history } from '../../helpers/history';
 import { Button, CheckboxField, Modal, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
@@ -1540,6 +1541,88 @@ const Summary = () => {
     controllerServiceReduxData?.localServicesData
   );
 
+  // Function to determine loading text based on current operation
+  const getLoadingText = () => {
+    if (loadingregistry) {
+      if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
+        // For scheduled operations
+        if (scheduleStartFlow) {
+          // Handle schedule start/stop flow
+          if (scheduleFlowType === 'RUNNING') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STARTING_FLOW;
+          } else if (scheduleFlowType === 'STOPPED') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STOPPING_FLOW;
+          }
+        }
+        // For schedule deploy, check scheduleDeploymentFlow first
+        if (scheduleDeploymentFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        }
+        // For schedule upgrade/downgrade
+        if (scheduleUpgradeFromList) {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+        // Fallback for other schedule operations
+        if (deployByRegistryFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        } else {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+      } else {
+        // For manual operations
+        if (deployByRegistryFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_DEPLOYING_FLOW;
+        } else {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_DOWNGRADING_FLOW;
+        }
+      }
+    }
+    if (loadingreUpgradeFlow) {
+      if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
+        if (scheduleStartFlow) {
+          // Handle schedule start/stop flow
+          if (scheduleFlowType === 'RUNNING') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STARTING_FLOW;
+          } else if (scheduleFlowType === 'STOPPED') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STOPPING_FLOW;
+          }
+        }
+        // For schedule deploy, check scheduleDeploymentFlow first
+        if (scheduleDeploymentFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        }
+        // For schedule upgrade/downgrade
+        if (scheduleUpgradeFromList) {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+        // Fallback for other schedule operations
+        if (deployByRegistryFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        } else {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+      } else {
+        return type === 'upgrade'
+          ? NAMESPACE_CONSTANTS.LOADING_UPGRADING_FLOW
+          : NAMESPACE_CONSTANTS.LOADING_DOWNGRADING_FLOW;
+      }
+    }
+    if (loadingreUpdateFlow) {
+      return NAMESPACE_CONSTANTS.LOADING_UPDATING_FLOW_STATUS;
+    }
+    return KDFM.LOADING;
+  };
+
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -1547,6 +1630,7 @@ const Summary = () => {
           loading={
             loadingregistry || loadingreUpdateFlow || loadingreUpgradeFlow
           }
+          text={getLoadingText()}
         />
         <TopTitleBar className="d-flex mb-3">
           <MainTitleDiv className="d-flex">
