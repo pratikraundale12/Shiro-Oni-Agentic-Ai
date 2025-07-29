@@ -105,6 +105,9 @@ const ClusterDetailTab = ({
 
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
+  const selectedNiFiVersion = useSelector(
+    ClustersSelectors.getClusterSetupSelectedNiFiVersion
+  );
 
   const itemsForList = useMemo(() => {
     return listHostIpData.filter(ele => !ele?.is_selected);
@@ -151,6 +154,12 @@ const ClusterDetailTab = ({
 
   const nifiVersion = watch('nifiVersion');
   const configName = watch('configName');
+  
+  useEffect(() => {
+    if (!isEmpty(selectedNiFiVersion) && !isEmpty(nifiVerionsOptions)) {
+      setValue('nifiVersion', selectedNiFiVersion);
+    }
+  }, [selectedNiFiVersion, nifiVerionsOptions]);
 
   useEffect(() => {
     if (nifiVersion) {

@@ -125,6 +125,9 @@ export const ClustersActions = {
   setAllConfigPropertiesAndValue: createAction(
     `${prefix}setAllConfigPropertiesAndValue`
   ),
+  setClusterSetupSelectedNiFiVersion: createAction(
+    `${prefix}setClusterSetupSelectedNiFiVersion`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -173,6 +176,7 @@ export const CLUSTERS_INITIAL_STATE = {
   lastVisitedTab: 'clusters',
   clusterListItems: 10,
   allConfigPropertiesAndValue: {},
+  clusterSetupSelectedNiFiVersion: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -234,6 +238,8 @@ export const ClustersSelectors = {
   getClusterListItems: state => state.clusters.clusterListItems,
   getAllConfigPropertiesAndValue: state =>
     state.clusters.allConfigPropertiesAndValue,
+  getClusterSetupSelectedNiFiVersion: state =>
+    state.clusters.clusterSetupSelectedNiFiVersion,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -522,6 +528,12 @@ const setAllConfigPropertiesAndValue = (state, { payload }) => {
     allConfigPropertiesAndValue: payload,
   };
 };
+const setClusterSetupSelectedNiFiVersion = (state, { payload }) => {
+  return {
+    ...state,
+    clusterSetupSelectedNiFiVersion: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -649,6 +661,10 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setAllConfigPropertiesAndValue,
         setAllConfigPropertiesAndValue
+      )
+      .addCase(
+        ClustersActions.setClusterSetupSelectedNiFiVersion,
+        setClusterSetupSelectedNiFiVersion
       );
   }
 );
