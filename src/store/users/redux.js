@@ -7,6 +7,8 @@ export const UsersActions = {
   fetchUsers: createAction(`${prefix}fetchUsers`),
   fetchUsersSuccess: createAction(`${prefix}fetchUsersSuccess`),
   setUserModalOpen: createAction(`${prefix}setUserModalOpen`),
+  setAddNewUser: createAction(`${prefix}setAddNewUser`),
+  createUserByDFM: createAction(`${prefix}createUserByDFM`),
   setuserRoleEditModalOpen: createAction(`${prefix}setuserRoleEditModalOpen`),
   setSingleUserForEdit: createAction(`${prefix}setSingleUserForEdit`),
 };
@@ -18,6 +20,7 @@ export const USERS_INITIAL_STATE = {
   prev: null,
   next: null,
   isUserModalOpen: false,
+  addNewUser: false,
   userRoleEditModalOpen: false,
   singleUserForEdit: {},
 };
@@ -27,6 +30,7 @@ export const UsersSelectors = {
   getCount: state => state.users.count,
   getUsers: state => state.users.data,
   getUserModalOpen: state => state.users.isUserModalOpen,
+  getAddNewUser: state => state.users.addNewUser,
   getUserRoleEditModalOpen: state => state.users.userRoleEditModalOpen,
   getSingleUserForEdit: state => state.users.singleUserForEdit,
 };
@@ -46,6 +50,13 @@ const setUserModalOpen = (state, { payload }) => {
     isUserModalOpen: payload,
   };
 };
+
+const setAddNewUser = (state, { payload }) => {
+  return {
+    ...state,
+    addNewUser: payload,
+  };
+};
 const setuserRoleEditModalOpen = (state, { payload }) => {
   return {
     ...state,
@@ -63,6 +74,7 @@ export const usersReducer = createReducer(USERS_INITIAL_STATE, builder => {
   builder
     .addCase(UsersActions.fetchUsersSuccess, fetchUsersSuccess)
     .addCase(UsersActions.setUserModalOpen, setUserModalOpen)
+    .addCase(UsersActions.setAddNewUser, setAddNewUser)
     .addCase(UsersActions.setuserRoleEditModalOpen, setuserRoleEditModalOpen)
     .addCase(UsersActions.setSingleUserForEdit, setSingleUserForEdit);
 });

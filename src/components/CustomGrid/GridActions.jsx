@@ -58,6 +58,7 @@ import {
   NamespacesSelectors,
   RolesActions,
   RolesSelectors,
+  UsersActions,
   UsersSelectors,
 } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
@@ -890,7 +891,6 @@ export const GridActions = ({
               )}
             </>
           )}
-
           {module === 'users' && (
             <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
           )}
@@ -985,7 +985,20 @@ export const GridActions = ({
               >
                 {buttonText}
               </Button>
-            )}
+            )}{' '}
+          {module === 'users' && userPermissions.includes('add_user') && (
+            //
+            <Button
+              icon={<PlusCircleIcon width={16} height={16} color="white" />}
+              onClick={() => {
+                dispatch(UsersActions.setUserModalOpen(true));
+                dispatch(UsersActions.setAddNewUser(true));
+              }}
+              size="sm"
+            >
+              Add User
+            </Button>
+          )}
           {userPermissions.includes(getButtonPermissions(module)) &&
             !userModalOpen && <Modal />}
         </ButtonsContainer>

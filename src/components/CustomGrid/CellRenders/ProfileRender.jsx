@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-
 import { ProfileIcon } from '../../../assets';
+import { API_URL } from '../../../constants';
 
 const ImageContainer = styled.div`
   border-radius: 100%;
@@ -33,8 +33,10 @@ export const ProfileRender = ({ url }) => {
   const [isValidImage, setIsValidImage] = useState(false);
 
   useEffect(() => {
-    if (url) {
-      checkImageExists(url).then(exists => setIsValidImage(exists));
+    if (`${API_URL}${url}`) {
+      checkImageExists(`${API_URL}${url}`).then(exists =>
+        setIsValidImage(exists)
+      );
     } else {
       setIsValidImage(false);
     }
@@ -43,7 +45,7 @@ export const ProfileRender = ({ url }) => {
   return (
     <ImageContainer>
       {isValidImage ? (
-        <ProfileImage src={url} alt="profile" />
+        <ProfileImage src={`${API_URL}${url}`} alt="profile" />
       ) : (
         <ProfileIcon width={40} height={40} />
       )}

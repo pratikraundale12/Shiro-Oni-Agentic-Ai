@@ -141,7 +141,7 @@ const MODULES = [
   },
 ];
 
-const EXCLUDE_ADD_PERMISSION = ['namespace', 'history', 'user'];
+const EXCLUDE_ADD_PERMISSION = ['namespace', 'history'];
 const EXCLUDE_EDIT_PERMISSION = ['cluster', 'namespace', 'history', 'user'];
 const EXCLUDE_DELETE_PERMISSION = [
   'cluster',
