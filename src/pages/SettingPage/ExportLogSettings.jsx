@@ -314,9 +314,9 @@ export const ExportLogSettings = () => {
                   place="right"
                   content={`Log levels include all higher-severity logs:
 
-• Debug → shows Debug, Info, Error
-• Info → shows Info, Error  
-• Error → shows only Error`}
+• Debug → logs Debug, Info, Error
+• Info → logs Info, Error  
+• Error → logs only Error`}
                   style={{
                     backgroundColor: '#333',
                     padding: '8px 12px',
