@@ -511,6 +511,7 @@ export const Grid = ({
         setDownloadModalOpen={setDownloadModalOpen}
         removeSearch={removeSearch}
         setIsExportReportOpen={setIsExportReportOpen}
+        setRemoveSearch={setRemoveSearch}
       />
       {module === 'nodes' && !loading && (
         <>

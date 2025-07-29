@@ -247,6 +247,7 @@ export const GridActions = ({
   setDownloadModalOpen,
   removeSearch = false,
   setIsExportReportOpen,
+  setRemoveSearch,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -993,6 +994,11 @@ export const GridActions = ({
               onClick={() => {
                 dispatch(UsersActions.setUserModalOpen(true));
                 dispatch(UsersActions.setAddNewUser(true));
+                setRemoveSearch(true);
+                setState(prevState => ({ ...prevState, search: null }));
+                setCurrentPage(1);
+                dispatch(SchedularActions.setSearchText(null));
+                setSearchValue('');
               }}
               size="sm"
             >
@@ -1167,4 +1173,5 @@ GridActions.propTypes = {
   setValue: PropTypes.func,
   onItemsPerPageChange: PropTypes.func.isRequired,
   setIsExportReportOpen: PropTypes.func,
+  setRemoveSearch: PropTypes.func,
 };
