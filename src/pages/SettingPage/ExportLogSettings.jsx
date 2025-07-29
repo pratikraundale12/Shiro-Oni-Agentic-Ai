@@ -4,13 +4,13 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { FileDownloadIcon, LogDocumentIcon } from '../../assets';
+import { AppIcon, FileDownloadIcon, LogDocumentIcon } from '../../assets';
 
 import { toast } from 'react-toastify';
-import { Button, ModalWithIcon, SelectField, SwitchButton } from '../../shared';
+import { SETTING_CONSTANTS } from '../../constants/setting.constant';
+import { Button, ModalWithIcon, SelectField } from '../../shared';
 import StyledDateRangePickerInput from '../../shared/FormInputs/components/StyledDateRangePickerInput';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
-import { SETTING_CONSTANTS } from '../../constants/setting.constant';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -52,17 +52,6 @@ const StyledSaveButton = styled(Button)`
   left: 140px;
 `;
 
-const LogSettingsSection = styled.div`
-  border-bottom: 1px solid black;
-`;
-
-const LogSettingsTitle = styled.h4`
-  font-size: 16px;
-  font-weight: 600;
-  color: #444445;
-  margin-bottom: 20px;
-`;
-
 const LogSettingsDescription = styled.p`
   font-size: 16px;
   font-family: Red Hat Display;
@@ -82,8 +71,69 @@ const OrangeText = styled.span`
   color: orange;
 `;
 
+const GreyBoxNamespace = styled.div`
+  background-color: #ffffff;
+  border-radius: 20px;
+`;
+const TabWrapper = styled.div`
+  display: flex;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(221, 228, 240, 1);
+  flex-wrap: nowrap; /* Prevents tabs from wrapping */
+  align-items: center;
+  border-bottom: 1px solid rgba(221, 228, 240, 1);
+  min-width: max-content; /* Ensures it doesn't shrink below content width */
+`;
+
+const Tab = styled.div`
+  padding: 10px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s;
+  font: Red Hat Display;
+  font-weight: 600;
+  font-size: 16px;
+  color: ${props =>
+    props.active ? 'rgba(255, 122, 0, 1)' : 'rgba(68, 68, 69, 1)'};
+  border-color: ${props =>
+    props.active ? 'rgba(255, 122, 0, 1)' : 'transparent'};
+  &:hover {
+    color: rgba(255, 122, 0, 1);
+
+    svg {
+      stroke: rgba(255, 122, 0, 1);
+    }
+  }
+`;
+
+const TabsContainer = styled.div`
+  width: 100%;
+  overflow-x: auto; /* Enables horizontal scrolling */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for Firefox */
+  scrollbar-width: none;
+`;
+
+const IconContent = styled.div`
+  display: inline;
+  margin-right: 6px;
+
+  svg path {
+    transition: stroke 0.3s;
+  }
+
+  ${Tab}:hover & svg path {
+    stroke: rgba(255, 122, 0, 1);
+  }
+`;
+
 export const settingSchema = yup.object().shape({
   logs_type: yup.string().required('Please select a log type'),
+  log_level: yup.string().required('Please select a log level'),
 });
 
 export const ExportLogSettings = () => {
@@ -99,8 +149,7 @@ export const ExportLogSettings = () => {
   const isDownloading = useSelector(SettingsSelectors.getIsDownloading);
   const [selectedDate, setSelectedDate] = useState([]);
   const [isLogsModalOpen, setIsLogsModalOpen] = useState(false);
-  const [debugLogsEnabled, setDebugLogsEnabled] = useState(false);
-  const [infoLogsEnabled, setInfoLogsEnabled] = useState(false);
+  const [selectedLogLevel, setSelectedLogLevel] = useState('');
   const isDownloadEnabled = !!watch('logs_type');
 
   const approverOptions = [
@@ -110,31 +159,26 @@ export const ExportLogSettings = () => {
     { label: 'Error', value: 'error' },
   ];
 
+  const logLevelOptions = [
+    { label: 'Debug', value: 'debug' },
+    { label: 'Info', value: 'info' },
+    { label: 'Warning', value: 'warning' },
+    { label: 'Error (Error only)', value: 'error' },
+  ];
+
   const handleChange = value => {
     setSelectedDate(value);
   };
 
-  const handleDebugLogsToggle = () => {
-    setDebugLogsEnabled(!debugLogsEnabled);
-    // Save to API immediately
-    saveLogSettings(!debugLogsEnabled, infoLogsEnabled);
-  };
-
-  const handleInfoLogsToggle = () => {
-    setInfoLogsEnabled(!infoLogsEnabled);
-    // Save to API immediately
-    saveLogSettings(debugLogsEnabled, !infoLogsEnabled);
-  };
-
-  const saveLogSettings = (debugEnabled, infoEnabled) => {
+  const saveLogSettings = logLevel => {
     const payload = new FormData();
 
     if (settingData?.id) {
       payload.append('id', settingData.id);
     }
 
-    payload.append('debug_logs_enabled', debugEnabled);
-    payload.append('info_logs_enabled', infoEnabled);
+    // Send only the selected log level
+    payload.append('log_level', logLevel);
 
     dispatch(SettingsActions.createSettings(payload));
     setTimeout(() => {
@@ -193,10 +237,22 @@ export const ExportLogSettings = () => {
       if (!watch('logs_type')) {
         setValue('logs_type', settingData?.logs_type || '');
       }
-      setDebugLogsEnabled(settingData?.debug_logs_enabled || false);
-      setInfoLogsEnabled(settingData?.info_logs_enabled || false);
+
+      // Get log level from API data
+      const level = settingData?.log_level || '';
+      setSelectedLogLevel(level);
+      setValue('log_level', level);
     }
   }, [settingData, setValue, watch]);
+
+  // Watch for log level changes and save settings
+  useEffect(() => {
+    const logLevel = watch('log_level');
+    if (logLevel && logLevel !== selectedLogLevel) {
+      setSelectedLogLevel(logLevel);
+      saveLogSettings(logLevel);
+    }
+  }, [watch('log_level')]);
 
   return (
     <Wrapper>
@@ -207,10 +263,21 @@ export const ExportLogSettings = () => {
           justifyContent: 'space-between',
         }}
       >
-        <LogSettingsSection className="mb-0 pb-3">
-          <LogSettingsTitle>
-            {SETTING_CONSTANTS.LOG_CONFIGURATION}
-          </LogSettingsTitle>
+        <div className="mb-0 pb-3">
+          <div>
+            <GreyBoxNamespace className="w-100  mb-3">
+              <TabsContainer>
+                <TabWrapper className="nav">
+                  <Tab active={true} className="nav-item">
+                    <IconContent className="nav-item">
+                      <AppIcon color={'#FF7A00'} />
+                    </IconContent>
+                    {SETTING_CONSTANTS.LOG_CONFIGURATION}
+                  </Tab>
+                </TabWrapper>
+              </TabsContainer>
+            </GreyBoxNamespace>
+          </div>
           <LogSettingsDescription>
             {SETTING_CONSTANTS.LOG_CONFIGURATION_DESCRIPTION}{' '}
             <OrangeText>
@@ -220,27 +287,35 @@ export const ExportLogSettings = () => {
 
           <div className="row">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mb-3">
-              <SwitchButton
-                id="debug-logs-toggle"
-                name="Debug Logs"
-                checked={debugLogsEnabled}
-                onChange={handleDebugLogsToggle}
-                isDisabled={false}
-              />
-            </div>
-            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mb-3">
-              <SwitchButton
-                id="info-logs-toggle"
-                name="Info Logs"
-                checked={infoLogsEnabled}
-                onChange={handleInfoLogsToggle}
-                isDisabled={false}
+              <SelectField
+                label="Log Level"
+                name="log_level"
+                control={control}
+                icon={<LogDocumentIcon color="#444445" />}
+                errors={errors}
+                options={logLevelOptions}
+                placeholder="Select Log Level"
+                required
               />
             </div>
           </div>
-        </LogSettingsSection>
+        </div>
 
         <div className="-flex justify-content-end me-4 pt-3">
+          <div>
+            <GreyBoxNamespace className="w-100  mb-3">
+              <TabsContainer>
+                <TabWrapper className="nav">
+                  <Tab active={true} className="nav-item">
+                    <IconContent className="nav-item">
+                      <AppIcon color={'#FF7A00'} />
+                    </IconContent>
+                    {SETTING_CONSTANTS.LOG_EXPORT}
+                  </Tab>
+                </TabWrapper>
+              </TabsContainer>
+            </GreyBoxNamespace>
+          </div>
           <SectionSeprate className="mb-3 mt-3">
             {SETTING_CONSTANTS.DATE_RANGE_TEXT}
           </SectionSeprate>

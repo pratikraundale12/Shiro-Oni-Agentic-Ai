@@ -219,7 +219,7 @@ const SettingTab = () => {
                   }
                 />
               </IconContent>
-              Log Config
+              Log Configuration
             </Tab>
           </TabWrapper>
         </TabsContainer>
