@@ -206,6 +206,7 @@ export const ListUsers = () => {
         sortingState={sortingState}
         setSortingState={setSortingState}
         removeSearch={removeSearch}
+        setRemoveSearch={setRemoveSearch}
       />
       <UserRoleEditModal setRemoveSearch={setRemoveSearch} />
     </>
