@@ -4,12 +4,13 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { LogDocumentIcon, FileDownloadIcon } from '../../assets';
+import { FileDownloadIcon, LogDocumentIcon } from '../../assets';
 
-import { Button, SelectField, ModalWithIcon } from '../../shared';
-import { SettingsActions, SettingsSelectors } from '../../store/settings';
-import StyledDateRangePickerInput from '../../shared/FormInputs/components/StyledDateRangePickerInput';
 import { toast } from 'react-toastify';
+import { Button, ModalWithIcon, SelectField, SwitchButton } from '../../shared';
+import StyledDateRangePickerInput from '../../shared/FormInputs/components/StyledDateRangePickerInput';
+import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import { SETTING_CONSTANTS } from '../../constants/setting.constant';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -51,6 +52,36 @@ const StyledSaveButton = styled(Button)`
   left: 140px;
 `;
 
+const LogSettingsSection = styled.div`
+  border-bottom: 1px solid black;
+`;
+
+const LogSettingsTitle = styled.h4`
+  font-size: 16px;
+  font-weight: 600;
+  color: #444445;
+  margin-bottom: 20px;
+`;
+
+const LogSettingsDescription = styled.p`
+  font-size: 16px;
+  font-family: Red Hat Display;
+  font-weight: 400;
+  color: #444445;
+  margin-bottom: 20px;
+  line-height: 1.5;
+`;
+const SectionSeprate = styled.div`
+  font-size: 16px;
+  font-family: Red Hat Display;
+  font-weight: 400;
+  color: #444445;
+  line-height: 1.5;
+`;
+const OrangeText = styled.span`
+  color: orange;
+`;
+
 export const settingSchema = yup.object().shape({
   logs_type: yup.string().required('Please select a log type'),
 });
@@ -68,6 +99,8 @@ export const ExportLogSettings = () => {
   const isDownloading = useSelector(SettingsSelectors.getIsDownloading);
   const [selectedDate, setSelectedDate] = useState([]);
   const [isLogsModalOpen, setIsLogsModalOpen] = useState(false);
+  const [debugLogsEnabled, setDebugLogsEnabled] = useState(false);
+  const [infoLogsEnabled, setInfoLogsEnabled] = useState(false);
   const isDownloadEnabled = !!watch('logs_type');
 
   const approverOptions = [
@@ -79,6 +112,34 @@ export const ExportLogSettings = () => {
 
   const handleChange = value => {
     setSelectedDate(value);
+  };
+
+  const handleDebugLogsToggle = () => {
+    setDebugLogsEnabled(!debugLogsEnabled);
+    // Save to API immediately
+    saveLogSettings(!debugLogsEnabled, infoLogsEnabled);
+  };
+
+  const handleInfoLogsToggle = () => {
+    setInfoLogsEnabled(!infoLogsEnabled);
+    // Save to API immediately
+    saveLogSettings(debugLogsEnabled, !infoLogsEnabled);
+  };
+
+  const saveLogSettings = (debugEnabled, infoEnabled) => {
+    const payload = new FormData();
+
+    if (settingData?.id) {
+      payload.append('id', settingData.id);
+    }
+
+    payload.append('debug_logs_enabled', debugEnabled);
+    payload.append('info_logs_enabled', infoEnabled);
+
+    dispatch(SettingsActions.createSettings(payload));
+    setTimeout(() => {
+      dispatch(SettingsActions.fetchSettings());
+    }, 1000);
   };
 
   const handleDownloadLogs = () => {
@@ -132,6 +193,8 @@ export const ExportLogSettings = () => {
       if (!watch('logs_type')) {
         setValue('logs_type', settingData?.logs_type || '');
       }
+      setDebugLogsEnabled(settingData?.debug_logs_enabled || false);
+      setInfoLogsEnabled(settingData?.info_logs_enabled || false);
     }
   }, [settingData, setValue, watch]);
 
@@ -144,10 +207,49 @@ export const ExportLogSettings = () => {
           justifyContent: 'space-between',
         }}
       >
-        <div className="-flex justify-content-end me-4">
+        <LogSettingsSection className="mb-0 pb-3">
+          <LogSettingsTitle>
+            {SETTING_CONSTANTS.LOG_CONFIGURATION}
+          </LogSettingsTitle>
+          <LogSettingsDescription>
+            {SETTING_CONSTANTS.LOG_CONFIGURATION_DESCRIPTION}{' '}
+            <OrangeText>
+              {SETTING_CONSTANTS.LOG_CONFIGURATION_DESCRIPTION_TEXT}
+            </OrangeText>
+          </LogSettingsDescription>
+
+          <div className="row">
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mb-3">
+              <SwitchButton
+                id="debug-logs-toggle"
+                name="Debug Logs"
+                checked={debugLogsEnabled}
+                onChange={handleDebugLogsToggle}
+                isDisabled={false}
+              />
+            </div>
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mb-3">
+              <SwitchButton
+                id="info-logs-toggle"
+                name="Info Logs"
+                checked={infoLogsEnabled}
+                onChange={handleInfoLogsToggle}
+                isDisabled={false}
+              />
+            </div>
+          </div>
+        </LogSettingsSection>
+
+        <div className="-flex justify-content-end me-4 pt-3">
+          <SectionSeprate className="mb-3 mt-3">
+            {SETTING_CONSTANTS.DATE_RANGE_TEXT}
+          </SectionSeprate>
           <InputFields className="row">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
-              <DateRangeWrapper className="mb-3"> Date Range </DateRangeWrapper>
+              <DateRangeWrapper className="mb-3">
+                {' '}
+                {SETTING_CONSTANTS.Date_Range_LABEL}{' '}
+              </DateRangeWrapper>
               <StyledDateRangePickerInput
                 value={selectedDate}
                 handleChange={handleChange}
@@ -176,7 +278,7 @@ export const ExportLogSettings = () => {
                 disabled={!isDownloadEnabled || isDownloading}
                 onClick={() => setIsLogsModalOpen(true)}
               >
-                <ButtonText>Download Logs</ButtonText>
+                <ButtonText>{SETTING_CONSTANTS.DOWNLOAD_LOGS}</ButtonText>
               </StyledSaveButton>
             </div>
           </InputFields>
