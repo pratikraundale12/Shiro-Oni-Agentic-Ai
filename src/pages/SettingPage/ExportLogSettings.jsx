@@ -150,6 +150,7 @@ export const ExportLogSettings = () => {
   const [selectedDate, setSelectedDate] = useState([]);
   const [isLogsModalOpen, setIsLogsModalOpen] = useState(false);
   const [selectedLogLevel, setSelectedLogLevel] = useState('');
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const isDownloadEnabled = !!watch('logs_type');
 
   const approverOptions = [
@@ -162,8 +163,8 @@ export const ExportLogSettings = () => {
   const logLevelOptions = [
     { label: 'Debug', value: 'debug' },
     { label: 'Info', value: 'info' },
-    { label: 'Warning', value: 'warning' },
-    { label: 'Error (Error only)', value: 'error' },
+    { label: 'Warning', value: 'warn' },
+    { label: 'Error', value: 'error' },
   ];
 
   const handleChange = value => {
@@ -242,17 +243,18 @@ export const ExportLogSettings = () => {
       const level = settingData?.log_level || '';
       setSelectedLogLevel(level);
       setValue('log_level', level);
+      setIsInitialLoad(false);
     }
   }, [settingData, setValue, watch]);
 
   // Watch for log level changes and save settings
   useEffect(() => {
     const logLevel = watch('log_level');
-    if (logLevel && logLevel !== selectedLogLevel) {
+    if (logLevel && logLevel !== selectedLogLevel && !isInitialLoad) {
       setSelectedLogLevel(logLevel);
       saveLogSettings(logLevel);
     }
-  }, [watch('log_level')]);
+  }, [watch('log_level'), isInitialLoad]);
 
   return (
     <Wrapper>
