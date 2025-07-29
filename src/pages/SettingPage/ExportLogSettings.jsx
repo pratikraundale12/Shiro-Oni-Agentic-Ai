@@ -4,9 +4,15 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { AppIcon, FileDownloadIcon, LogDocumentIcon } from '../../assets';
+import {
+  AppIcon,
+  FileDownloadIcon,
+  InfoIcon,
+  LogDocumentIcon,
+} from '../../assets';
 
 import { toast } from 'react-toastify';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { SETTING_CONSTANTS } from '../../constants/setting.constant';
 import { Button, ModalWithIcon, SelectField } from '../../shared';
 import StyledDateRangePickerInput from '../../shared/FormInputs/components/StyledDateRangePickerInput';
@@ -131,6 +137,16 @@ const IconContent = styled.div`
   }
 `;
 
+const LogLevelLabel = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444445;
+`;
+
 export const settingSchema = yup.object().shape({
   logs_type: yup.string().required('Please select a log type'),
   log_level: yup.string().required('Please select a log level'),
@@ -163,7 +179,6 @@ export const ExportLogSettings = () => {
   const logLevelOptions = [
     { label: 'Debug', value: 'debug' },
     { label: 'Info', value: 'info' },
-    { label: 'Warning', value: 'warn' },
     { label: 'Error', value: 'error' },
   ];
 
@@ -289,8 +304,28 @@ export const ExportLogSettings = () => {
 
           <div className="row">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mb-3">
+              <LogLevelLabel>
+                {SETTING_CONSTANTS.LOG_LEVEL_LABEL}
+                <div data-tooltip-id="log-level-tooltip">
+                  <InfoIcon color="#444445" />
+                </div>
+                <ReactTooltip
+                  id="log-level-tooltip"
+                  place="right"
+                  content="Log levels include all higher-severity logs: • Debug → shows Debug, Info, Error • Info → shows Info, Error • Error → shows only Error"
+                  style={{
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                    backgroundColor: '#333',
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    borderRadius: '4px',
+                    zIndex: 9999,
+                    maxWidth: '300px',
+                  }}
+                />
+              </LogLevelLabel>
               <SelectField
-                label="Log Level"
                 name="log_level"
                 control={control}
                 icon={<LogDocumentIcon color="#444445" />}
