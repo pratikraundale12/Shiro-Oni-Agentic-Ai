@@ -312,16 +312,20 @@ export const ExportLogSettings = () => {
                 <ReactTooltip
                   id="log-level-tooltip"
                   place="right"
-                  content="Log levels include all higher-severity logs: • Debug → shows Debug, Info, Error • Info → shows Info, Error • Error → shows only Error"
+                  content={`Log levels include all higher-severity logs:
+
+• Debug → logs Debug, Info, Error
+• Info → logs Info, Error  
+• Error → logs only Error`}
                   style={{
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
                     backgroundColor: '#333',
                     padding: '8px 12px',
                     fontSize: '14px',
                     borderRadius: '4px',
                     zIndex: 9999,
                     maxWidth: '300px',
+                    color: 'white',
+                    whiteSpace: 'pre-line',
                   }}
                 />
               </LogLevelLabel>
