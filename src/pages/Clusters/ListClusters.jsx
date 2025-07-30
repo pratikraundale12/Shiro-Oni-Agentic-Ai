@@ -679,6 +679,7 @@ export const ListClusters = () => {
       })
     );
     dispatch(ClustersActions.setRegistryNodesData({}));
+    dispatch(ClustersActions.setClusterSetupSelectedNiFiVersion(null));
     return () => {
       dispatch(ClustersActions.setLastVisitedTab('cluster'));
     };

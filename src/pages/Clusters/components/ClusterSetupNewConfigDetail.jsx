@@ -538,7 +538,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
     },
   });
   const nifiVersion = watch('nifiVersion');
-
+  
   useEffect(() => {
     if (!isEmpty(allNifiProperties) && isEmpty(configToEdit)) {
       const nifiPropertiesDefaultValues =
@@ -839,6 +839,9 @@ const ClusterSetupNewConfigDetailsPage = () => {
   };
 
   const handleAddConfig = async data => {
+    dispatch(
+      ClustersActions.setClusterSetupSelectedNiFiVersion(data?.nifiVersion)
+    );
     if (
       !isEmpty(configToEdit) &&
       methodForLoginIdentity === 'ldap-provider' &&
