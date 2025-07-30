@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { debounce, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { useForm } from 'react-hook-form';
@@ -60,13 +60,13 @@ import {
   RolesSelectors,
   UsersSelectors,
 } from '../../store';
-import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../FullPageLoader';
 import { use } from 'react';
+import { SettingsActions } from '../../store/settings';
 
 const Flex = styled.div`
   display: flex;
@@ -242,8 +242,6 @@ export const GridActions = ({
   setScheduleType,
   selectStatus,
   setSelectStatus,
-  isDownloadModalOpen,
-  setDownloadModalOpen,
   removeSearch = false,
   setIsExportReportOpen,
 }) => {
@@ -345,6 +343,7 @@ export const GridActions = ({
       if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
         return;
       }
+      dispatch(SettingsActions.fetchSettings());
       dispatch(
         GridSagsActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
