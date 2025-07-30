@@ -117,7 +117,6 @@ export const ACTIVITY_EVENTS = [
   { label: 'Deploy', value: 'Deploy' },
   { label: 'Downgrade', value: 'downgrade' },
   { label: 'Schedule Deploy', value: 'Schedule Deploy' },
-  { label: 'Schedule Deploy', value: 'Schedule Deploy' },
   { label: 'Schedule Upgrade', value: 'Schedule upgrade' },
   { label: 'Schedule Upgraded', value: 'Schedule upgraded' },
   { label: 'Schedule Downgraded', value: 'Schedule downgraded' },
