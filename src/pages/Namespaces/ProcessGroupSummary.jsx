@@ -178,6 +178,7 @@ const ConfigDetailsPage = () => {
             isAddParameterContextOpen={isAddParameterContextOpen}
             isParameterContextOpen={isParameterContextOpen}
             setIsParameterContextOpen={setIsParameterContextOpen}
+            fromSummaryDetails={true}
           />
         );
       case KDFM.VARIABLES:
