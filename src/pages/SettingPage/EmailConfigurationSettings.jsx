@@ -334,6 +334,7 @@ export const EmailConfigurationSettings = () => {
     setEmailError({});
     setIsVerifyEmailOpen(false);
   };
+  
   useEffect(() => {
     if (isEmailVerified && changedData) {
       const isChanged =
@@ -466,7 +467,6 @@ export const EmailConfigurationSettings = () => {
             <StyledVerifyEmailBtn
               type="button"
               onClick={() => handleVerifyEmail()}
-              isBtnDisable={!isChanged}
             >
               <ButtonText>{'Verify Email'}</ButtonText>
             </StyledVerifyEmailBtn>
