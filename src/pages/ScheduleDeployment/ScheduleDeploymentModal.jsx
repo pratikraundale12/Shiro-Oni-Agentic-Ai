@@ -33,6 +33,15 @@ import {
 const Container = styled.div`
   height: 350px;
 `;
+const IconCover = styled.div`
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #dde4f0;
+`;
 const ActiveButtonDiv = styled.div`
   width: 100%;
   gap: 12px;
@@ -334,49 +343,49 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
                 <FlowControlDiv className="mt-4">Flow Control</FlowControlDiv>
                 <div className="d-flex mt-3">
                   <TextsvgDiv className="d-flex mr-4">
-                    <ActiveButtonDiv className="div-btn-1 mr-2">
-                      <ActiveButtonDiv
-                        className="div-btn-1 "
-                        isActive={activeButton === 'RUNNING'}
-                        activeColor="#58e715"
-                        hoverColor="#58e715"
-                        activeTextColor="#fff"
-                        onClick={() => handleUpdateStatus('RUNNING')}
-                      >
+                    <ActiveButtonDiv
+                      className="div-btn-1 "
+                      isActive={activeButton === 'RUNNING'}
+                      activeColor="#58e715"
+                      hoverColor="#58e715"
+                      activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('RUNNING')}
+                    >
+                      <IconCover>
                         <TriangleIcons color="#58e715" />
-                      </ActiveButtonDiv>
+                      </IconCover>{' '}
+                      <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
                     </ActiveButtonDiv>
-                    <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
                   </TextsvgDiv>
                   <TextsvgDiv className="d-flex">
-                    <ActiveButtonDiv className="div-btn-2 mr-2">
-                      <ActiveButtonDiv
-                        className="div-btn-2"
-                        isActive={activeButton === 'STOPPED'}
-                        activeColor="#c52b2b"
-                        hoverColor="#c52b2b"
-                        activeTextColor="#fff"
-                        onClick={() => handleUpdateStatus('STOPPED')}
-                      >
+                    <ActiveButtonDiv
+                      className="div-btn-2"
+                      isActive={activeButton === 'STOPPED'}
+                      activeColor="#c52b2b"
+                      hoverColor="#c52b2b"
+                      activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('STOPPED')}
+                    >
+                      <IconCover>
                         <SquareBoxIcon color="#c52b2b" />
-                      </ActiveButtonDiv>
+                      </IconCover>
+                      <div>{KDFM.STOPPED_FLOW}</div>
                     </ActiveButtonDiv>
-                    <div>{KDFM.STOPPED_FLOW}</div>
                   </TextsvgDiv>
 
                   {activeButton && (
                     <TextsvgDiv className="d-flex ml-4">
-                      <ActiveButtonDivResetFlow className="div-btn-2 mr-2">
-                        <ActiveButtonDivResetFlow
-                          className="div-btn-2"
-                          onClick={() => {
-                            setActiveButton(null);
-                          }}
-                        >
+                      <ActiveButtonDivResetFlow
+                        className="div-btn-2"
+                        onClick={() => {
+                          setActiveButton(null);
+                        }}
+                      >
+                        <IconCover>
                           <CrossIcon color="#B5BDC8" />
-                        </ActiveButtonDivResetFlow>
+                        </IconCover>
+                        <div>Reset Flow</div>
                       </ActiveButtonDivResetFlow>
-                      <div>Reset Flow</div>
                     </TextsvgDiv>
                   )}
                 </div>
