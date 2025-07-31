@@ -31,16 +31,17 @@ const Text = styled.p`
   color: ${theme.colors.darker};
 `;
 
-export const FullPageLoader = ({ loading, ...props }) => {
+export const FullPageLoader = ({ loading, text = KDFM.LOADING, ...props }) => {
   if (!loading) return null;
   return (
     <Container {...props}>
       <Loader src={loader} alt="loader" />
-      <Text>{KDFM.LOADING}</Text>
+      <Text>{text}</Text>
     </Container>
   );
 };
 
 FullPageLoader.propTypes = {
-  loading: PropTypes.bool,
+  loading: PropTypes.bool.isRequired,
+  text: PropTypes.string,
 };

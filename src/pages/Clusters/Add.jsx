@@ -211,9 +211,17 @@ export const Add = () => {
   const RegistrySchema = yup.object().shape({
     registryName: yup
       .string()
+      .required('Registry Name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Registry Name cannot start or end with spaces',
+        value => {
+          if (!value) return false;
+          return value === value.trim();
+        }
+      )
       .min(3, 'Registry Name must be at least 3 characters long')
       .max(30, 'Registry Name must be at most 30 characters long')
-      .required('Registry Name is required')
       .test(
         'unique-registry-name',
         'Registry name already exists',
@@ -934,9 +942,11 @@ export const Add = () => {
                 id="registry-details-continue-btn"
                 onClick={handleRegistry}
                 disabled={
-                  !isEmpty(data)
-                    ? data?.registry_id == selectedRegistryId
-                    : isEmpty(selectedRegistryId)
+                  isCopyOperation
+                    ? false
+                    : !isEmpty(data)
+                      ? data?.registry_id == selectedRegistryId
+                      : isEmpty(selectedRegistryId)
                 }
               >
                 {KDFM.CONTINUE}

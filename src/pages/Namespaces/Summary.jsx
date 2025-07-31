@@ -23,6 +23,7 @@ import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
+import { NAMESPACE_CONSTANTS } from '../../constants/namespace.constant';
 import { history } from '../../helpers/history';
 import { Button, CheckboxField, Modal, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
@@ -198,37 +199,110 @@ const ActiveButtonDiv = styled.div`
   gap: 12px;
   max-height: 48px;
   min-height: 48px;
-  padding: 8px 60px 8px 8px;
+  padding: 8px;
   border: 1px solid
-    ${({ className, activeColor }) => {
-      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
-      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+    ${({ className, isActive }) => {
+      if (isActive) {
+        if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+        if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      }
       return '#dde4f0';
     }};
   border-radius: 8px;
-  background-color: #f5f7fa;
-  cursor: pointer;
+  background-color: ${({ isActive, className }) => {
+    if (isActive) {
+      if (className?.includes('div-btn-1')) return '#58e715'; // green
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // red
+    }
+    return '#f5f7fa'; // default inactive
+  }};
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   position: relative;
   display: flex;
   align-items: center;
   justify-content: start;
+  color: ${({ isActive, className }) => {
+    if (isActive) {
+      if (className?.includes('div-btn-1')) return '#fff'; // green
+      if (className?.includes('div-btn-2')) return '#fff'; // red
+    }
+    return 'black'; // default inactive
+  }};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 23px;
 
   & span {
     position: absolute;
     top: 0px;
     right: 2px;
     font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     line-height: 23px;
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
+  &:hover {
+    background-color: ${({ disabled, className, isActive, hoverColor }) => {
+      if (disabled) return undefined; // no hover effect
+      if (hoverColor) return hoverColor;
+      return '#F6F7F9';
+    }};
 
-  .div-btn-1.disabled {
-    cursor: not-allowed;
+    border: 1px solid
+      ${({ className, isActive }) => {
+        if (isActive) {
+          if (className?.includes('div-btn-1')) return '#58e715';
+          if (className?.includes('div-btn-2')) return '#c52b2b';
+        }
+        return '#dde4f0';
+      }};
+
+    color: ${({ disabled, isActive }) => {
+      if (disabled) return undefined; // don't override the original color
+      return isActive ? '#000' : '#fff'; // active = black, inactive = white
+    }};
+
+    border-radius: 8px; // always applied, even on hover
   }
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
+`;
+
+const ActiveButtonDivResetFlow = styled.div`
+  width: 100%;
+  gap: 12px;
+  max-height: 48px;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid
+    ${({ className, isActive }) => {
+      if (isActive) {
+        if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+        if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      }
+      return '#dde4f0';
+    }};
+  border-radius: 8px;
+  background-color: #dde4f0;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 23px;
+
+  & span {
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    font-family: ${props => props.theme.fontNato};
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 23px;
+    color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
 `;
 const BottomButtonDiv = styled.div`
@@ -396,7 +470,9 @@ const Summary = () => {
   const changeRequestValue = useSelector(NamespacesSelectors.getChangeRequest);
   const [openConfigDetailsModal, setOpenConfigDetailsModal] = useState(false);
   const [isSanityCheckModalOpen, setIsSanityCheckModalOpen] = useState(false);
-  const selectedClusterMethod = useSelector(NamespacesSelectors.getSelectedCluster);
+  const selectedClusterMethod = useSelector(
+    NamespacesSelectors.getSelectedCluster
+  );
 
   useEffect(() => {
     if (!isEmpty(selectedClusterMethod?.value)) {
@@ -404,12 +480,12 @@ const Summary = () => {
     }
   }, [dispatch, selectedClusterMethod]);
 
-   const clusters_new_list = useSelector(ClustersSelectors.getAllClustersList);
-   const matchedCluster = clusters_new_list.find(
-    (cluster) => cluster.id === selectedClusterMethod?.value
-   );
-   const hasSanityCheckAccess = matchedCluster?.view_sanity_check;
-    
+  const clusters_new_list = useSelector(ClustersSelectors.getAllClustersList);
+  const matchedCluster = clusters_new_list.find(
+    cluster => cluster.id === selectedClusterMethod?.value
+  );
+  const hasSanityCheckAccess = matchedCluster?.view_sanity_check;
+
   const handleSanityCheckModalSubmit = () => {
     setIsSanityCheckModalOpen(false);
     dispatch(NamespacesActions.setSanityCheckAtDeploy(true));
@@ -520,10 +596,9 @@ const Summary = () => {
         return rest;
       }),
     }));
-      const singleNamespaceData1 = useSelector(
-        NamespacesSelectors.getSingleNamespaceData
-      );
-      
+  const singleNamespaceData1 = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
 
   const newProcessorEC =
     registryAllDetails.controllerServicesData?.externalControllerServices?.filter(
@@ -1105,10 +1180,10 @@ const Summary = () => {
       }));
       const payload = {
         version: versionSelected?.version,
-       flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
-      namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
-      registryId: registryData?.id || singleNamespaceData1?.registryId,
-      bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
+        flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
+        namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
+        registryId: registryData?.id || singleNamespaceData1?.registryId,
+        bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
         namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
         payload: {
           namespaceId: checkDestCluster?.value,
@@ -1466,6 +1541,88 @@ const Summary = () => {
     controllerServiceReduxData?.localServicesData
   );
 
+  // Function to determine loading text based on current operation
+  const getLoadingText = () => {
+    if (loadingregistry) {
+      if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
+        // For scheduled operations
+        if (scheduleStartFlow) {
+          // Handle schedule start/stop flow
+          if (scheduleFlowType === 'RUNNING') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STARTING_FLOW;
+          } else if (scheduleFlowType === 'STOPPED') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STOPPING_FLOW;
+          }
+        }
+        // For schedule deploy, check scheduleDeploymentFlow first
+        if (scheduleDeploymentFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        }
+        // For schedule upgrade/downgrade
+        if (scheduleUpgradeFromList) {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+        // Fallback for other schedule operations
+        if (deployByRegistryFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        } else {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+      } else {
+        // For manual operations
+        if (deployByRegistryFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_DEPLOYING_FLOW;
+        } else {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_DOWNGRADING_FLOW;
+        }
+      }
+    }
+    if (loadingreUpgradeFlow) {
+      if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
+        if (scheduleStartFlow) {
+          // Handle schedule start/stop flow
+          if (scheduleFlowType === 'RUNNING') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STARTING_FLOW;
+          } else if (scheduleFlowType === 'STOPPED') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STOPPING_FLOW;
+          }
+        }
+        // For schedule deploy, check scheduleDeploymentFlow first
+        if (scheduleDeploymentFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        }
+        // For schedule upgrade/downgrade
+        if (scheduleUpgradeFromList) {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+        // Fallback for other schedule operations
+        if (deployByRegistryFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        } else {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+      } else {
+        return type === 'upgrade'
+          ? NAMESPACE_CONSTANTS.LOADING_UPGRADING_FLOW
+          : NAMESPACE_CONSTANTS.LOADING_DOWNGRADING_FLOW;
+      }
+    }
+    if (loadingreUpdateFlow) {
+      return NAMESPACE_CONSTANTS.LOADING_UPDATING_FLOW_STATUS;
+    }
+    return KDFM.LOADING;
+  };
+
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -1473,6 +1630,7 @@ const Summary = () => {
           loading={
             loadingregistry || loadingreUpdateFlow || loadingreUpgradeFlow
           }
+          text={getLoadingText()}
         />
         <TopTitleBar className="d-flex mb-3">
           <MainTitleDiv className="d-flex">
@@ -1670,42 +1828,44 @@ const Summary = () => {
                   {isRegistryDeploy && (
                     <>
                       <UseColXl className="col-xl-4 col-6 mb-4 pb-1 row">
-                       { hasSanityCheckAccess === true &&  <div className="summary-details d-flex">
-                          <SummaryDetailsHFourTag className="mb-2">
-                            <CheckboxField
-                              name="check"
-                              label="Sanity Check and Deployment"
-                              checked={sanityCheckAfterDeploy}
-                              onChange={e =>
-                                dispatch(
-                                  NamespacesActions.setSanityCheckAtDeploy(
-                                    e.target.checked
+                        {hasSanityCheckAccess === true && (
+                          <div className="summary-details d-flex">
+                            <SummaryDetailsHFourTag className="mb-2">
+                              <CheckboxField
+                                name="check"
+                                label="Sanity Check and Deploy"
+                                checked={sanityCheckAfterDeploy}
+                                onChange={e =>
+                                  dispatch(
+                                    NamespacesActions.setSanityCheckAtDeploy(
+                                      e.target.checked
+                                    )
                                   )
-                                )
+                                }
+                              />
+                            </SummaryDetailsHFourTag>
+                            <div
+                              className="d-flex align-items-center ms-2"
+                              data-tooltip-id={`sanity-check-info`}
+                            >
+                              <InfoIcon color={theme.colors.primary} />
+                            </div>
+                            <ReactTooltip
+                              id={`sanity-check-info`}
+                              place="bottom"
+                              effect="solid"
+                              content={
+                                'This deployment will be performed using the DFM (Data Flow Manager) UI in NiFi. Also upon deployment, it ensures that all processors remain in the STOPPED state and are not scheduled to run automatically'
                               }
+                              style={{
+                                width: '400px',
+                                whiteSpace: 'normal',
+                                wordWrap: 'break-word',
+                                zIndex: 10000,
+                              }}
                             />
-                          </SummaryDetailsHFourTag>
-                          <div
-                            className="d-flex align-items-center ms-2"
-                            data-tooltip-id={`sanity-check-info`}
-                          >
-                            <InfoIcon color={theme.colors.primary} />
                           </div>
-                          <ReactTooltip
-                            id={`sanity-check-info`}
-                            place="bottom"
-                            effect="solid"
-                            content={
-                              'This deployment will be performed using the DFM (Data Flow Manager) UI in NiFi. Also upon deployment, it ensures that all processors remain in the STOPPED state and are not scheduled to run automatically'
-                            }
-                            style={{
-                              width: '400px',
-                              whiteSpace: 'normal',
-                              wordWrap: 'break-word',
-                              zIndex: 10000,
-                            }}
-                          />
-                        </div>}
+                        )}
                       </UseColXl>
                     </>
                   )}
@@ -1885,7 +2045,7 @@ const Summary = () => {
                             }}
                           >
                             <IconCover>
-                              <TriangleIcons color="#B5BDC8" />
+                              <TriangleIcons color="#58e715" />
                             </IconCover>
                             <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
                           </ActiveButtonDiv>
@@ -1903,14 +2063,14 @@ const Summary = () => {
                             }}
                           >
                             <IconCover>
-                              <SquareBoxIcon color="#B5BDC8" />
+                              <SquareBoxIcon color="#c52b2b" />
                             </IconCover>
                             <div>{KDFM.STOPPED_FLOW}</div>
                           </ActiveButtonDiv>
                         </TextsvgDiv>
                         {activeButton && (
                           <TextsvgDiv className="d-flex">
-                            <ActiveButtonDiv
+                            <ActiveButtonDivResetFlow
                               className="div-btn-3"
                               activeTextColor="#fff"
                               onClick={() => {
@@ -1923,7 +2083,7 @@ const Summary = () => {
                                 <CrossIcon color="#B5BDC8" />{' '}
                               </IconCover>
                               <div>Reset Flow</div>
-                            </ActiveButtonDiv>
+                            </ActiveButtonDivResetFlow>
                           </TextsvgDiv>
                         )}
                       </>

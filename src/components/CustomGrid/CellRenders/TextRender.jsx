@@ -35,6 +35,12 @@ export const TextRender = ({
 }) => {
   text = text ? text : 'N/A';
   const textToRender = typeof text === 'number' ? String(text) : text;
+  const getPlainTextForTooltip = htmlString => {
+    const temp = document.createElement('div');
+    temp.innerHTML = htmlString;
+    return temp.textContent || temp.innerText || '';
+  };
+
   return (
     <TextColor
       {...rest}
@@ -44,13 +50,17 @@ export const TextRender = ({
       {withEllipses ? (
         <TextDispalyEllipses>{textToRender}</TextDispalyEllipses>
       ) : (
-        <span>{textToRender}</span>
+        <span dangerouslySetInnerHTML={{ __html: textToRender || 'N/A' }} />
       )}
 
       {toolTip && (
         <ReactTooltip
           id={textToRender}
-          content={ListForTooltip ? ListForTooltip : textToRender}
+          content={
+            ListForTooltip
+              ? ListForTooltip
+              : getPlainTextForTooltip(textToRender)
+          }
           place={tooltipPlacement}
           positionStrategy="fixed"
           style={{

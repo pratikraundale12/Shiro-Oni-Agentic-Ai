@@ -67,6 +67,7 @@ const ParameterContext = ({
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   isParameterContextOpen,
+  fromSummaryDetails = false,
 }) => {
   const [selectedParentContextId, setSelectedParentContextId] = useState('');
   const dispatch = useDispatch();
@@ -329,6 +330,8 @@ const ParameterContext = ({
       ),
     },
   ];
+  const uniqueDataSortedParameter = uniqBy(newlyAddParameters, 'name');
+
   const handleSaveParameterContext = async () => {
     if (!newlyAddParameters) return;
     const uniqueDataSorted = uniqBy(newlyAddParameters, 'name');
@@ -459,7 +462,11 @@ const ParameterContext = ({
                 className="w-auto mt-2"
                 size="sm"
                 onClick={handleSaveParameterContext}
-                disabled={!canWrite}
+                disabled={
+                  fromSummaryDetails
+                    ? isEmpty(uniqueDataSortedParameter)
+                    : !canWrite
+                }
               >
                 Save
               </Button>
@@ -501,6 +508,7 @@ ParameterContext.propTypes = {
   setNewlyAddedParameterContext: PropTypes.func.isRequired,
   isParameterContextOpen: PropTypes.object,
   parameterContextId: PropTypes.string,
+  fromSummaryDetails: PropTypes.bool,
 };
 
 export default ParameterContext;

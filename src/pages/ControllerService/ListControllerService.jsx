@@ -394,7 +394,7 @@ export const ListControllerService = () => {
             item?.validationStatus === 'INVALID') ||
           !controllerPermissions.includes('edit_controller_services');
         return (
-          <div className="d-flex justify-content-center align-items-center">
+          <div className="d-flex justify-content-start align-items-center">
             {controllerPermissions.includes('edit_controller_services') && (
               <>
                 <button
