@@ -299,7 +299,9 @@ export const EmailConfigurationSettings = () => {
       ...(smtpPass !== settingData?.smtp_pass && { smtp_pass: smtpPass }),
       ...(smtpUser !== settingData?.smtp_user && { smtp_user: smtpUser }),
       ...(smtpHost !== settingData?.smtp_host && { smtp_host: smtpHost }),
-      ...(smtpPort !== settingData?.smtp_port && { smtp_port: smtpPort }),
+      ...(smtpPort !== settingData?.smtp_port && {
+        smtp_port: Number(smtpPort),
+      }),
       ...(fromEmail !== settingData?.from_email && { from_email: fromEmail }),
     };
     setChangedData(changedSmtpData);
@@ -397,6 +399,7 @@ export const EmailConfigurationSettings = () => {
           <div className="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-6">
             <InputField
               name="smtp_port"
+              type="number"
               register={register}
               icon={<CurvedDocumentTextIcon />}
               label={KDFM.SMTP_PORT}
