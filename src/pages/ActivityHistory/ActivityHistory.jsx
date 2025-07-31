@@ -274,6 +274,7 @@ export const ActvityHistory = () => {
           event: selectEvent.map(event => event.value).join(','),
           entity: selectEntity.map(entity => entity.value).join(','),
           search: search === null ? '' : search,
+          sort: sortingState,
         },
       })
     );
