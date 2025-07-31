@@ -176,7 +176,11 @@ export const EmailConfigurationSettings = () => {
       settingData?.smtp_service
     );
     appendIfChanged('smtp_host', data?.smtp_host, settingData?.smtp_host);
-    appendIfChanged('smtp_port', data?.smtp_port, settingData?.smtp_port);
+    appendIfChanged(
+      'smtp_port',
+      Number(data?.smtp_port),
+      Number(settingData?.smtp_port)
+    );
     appendIfChanged('smtp_user', data?.smtp_user, settingData?.smtp_user);
     appendIfChanged('smtp_pass', data?.smtp_pass, settingData?.smtp_pass);
 
@@ -299,7 +303,9 @@ export const EmailConfigurationSettings = () => {
       ...(smtpPass !== settingData?.smtp_pass && { smtp_pass: smtpPass }),
       ...(smtpUser !== settingData?.smtp_user && { smtp_user: smtpUser }),
       ...(smtpHost !== settingData?.smtp_host && { smtp_host: smtpHost }),
-      ...(smtpPort !== settingData?.smtp_port && { smtp_port: smtpPort }),
+      ...(smtpPort !== settingData?.smtp_port && {
+        smtp_port: Number(smtpPort),
+      }),
       ...(fromEmail !== settingData?.from_email && { from_email: fromEmail }),
     };
     setChangedData(changedSmtpData);
@@ -328,14 +334,15 @@ export const EmailConfigurationSettings = () => {
     setEmailError({});
     setIsVerifyEmailOpen(false);
   };
-
+  
   useEffect(() => {
     if (isEmailVerified && changedData) {
       const isChanged =
         ('smtp_pass' in changedData && changedData.smtp_pass !== smtpPass) ||
         ('smtp_user' in changedData && changedData.smtp_user !== smtpUser) ||
         ('smtp_host' in changedData && changedData.smtp_host !== smtpHost) ||
-        ('smtp_port' in changedData && changedData.smtp_port !== smtpPort) ||
+        ('smtp_port' in changedData &&
+          Number(changedData.smtp_port) !== Number(smtpPort)) ||
         ('from_email' in changedData && changedData.from_email !== fromEmail) ||
         ('smtp_service' in changedData &&
           changedData.smtp_service !== smtpService);
@@ -397,6 +404,7 @@ export const EmailConfigurationSettings = () => {
           <div className="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-6">
             <InputField
               name="smtp_port"
+              type="number"
               register={register}
               icon={<CurvedDocumentTextIcon />}
               label={KDFM.SMTP_PORT}
@@ -459,7 +467,6 @@ export const EmailConfigurationSettings = () => {
             <StyledVerifyEmailBtn
               type="button"
               onClick={() => handleVerifyEmail()}
-              isBtnDisable={!isChanged}
             >
               <ButtonText>{'Verify Email'}</ButtonText>
             </StyledVerifyEmailBtn>
