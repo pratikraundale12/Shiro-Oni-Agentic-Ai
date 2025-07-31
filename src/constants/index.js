@@ -92,6 +92,7 @@ export const MODULE_LIST_MAP = [
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
   { label: 'Local Changes', value: 'Local Changes' },
   { label: 'Audit', value: 'Audit' },
+  { label: 'Cluster Permission', value: 'Cluster Permission' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
