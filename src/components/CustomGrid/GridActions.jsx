@@ -531,10 +531,19 @@ export const GridActions = ({
 
   const handleChange = value => {
     setCurrentPage(1);
-    const [dynamicStart, dynamicEnd] = getDynamicRangeStartEnd(
-      value?.[0],
-      value?.[1]
-    );
+    let [start, end] = value;
+    if (
+      start &&
+      end &&
+      start.toDateString() === end.toDateString() &&
+      start.getTime() === end.getTime()
+    ) {
+      const adjustedEnd = new Date(end);
+      adjustedEnd.setHours(23, 59, 0, 0);
+      end = adjustedEnd;
+    }
+
+    const [dynamicStart, dynamicEnd] = getDynamicRangeStartEnd(start, end);
 
     dispatch(
       SchedularActions.setScheduleSelectRange([dynamicStart, dynamicEnd])
