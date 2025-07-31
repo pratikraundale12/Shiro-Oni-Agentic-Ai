@@ -334,7 +334,7 @@ export const EmailConfigurationSettings = () => {
     setEmailError({});
     setIsVerifyEmailOpen(false);
   };
-  
+
   useEffect(() => {
     if (isEmailVerified && changedData) {
       const isChanged =
