@@ -29,7 +29,7 @@ import {
   RefreshIcon,
   ScheduleDeploymentIcon,
   SmallSearchIcon,
-  TodoIcon,
+  // TodoIcon,
 } from '../../assets';
 import {
   ACCESS_OPTIONS,
@@ -756,9 +756,9 @@ export const GridActions = ({
         <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
         <FullPageLoader loading={loading} />
         <Flex>
-          <ImageContainer>
+          {/* <ImageContainer>
             <TodoIcon width={22} height={24} />
-          </ImageContainer>
+          </ImageContainer> */}
           <Title>
             <span>{title}</span>
             {module === 'namespaces' && Boolean(gridCount) && (

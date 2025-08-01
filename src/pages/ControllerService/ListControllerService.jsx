@@ -13,7 +13,7 @@ import {
   RefreshIcon,
   SettingSmallIcon,
   SmallSearchIcon,
-  TodoIcon,
+  // TodoIcon,
   TriangleExclamationMarkIcon,
 } from '../../assets';
 
@@ -394,7 +394,7 @@ export const ListControllerService = () => {
             item?.validationStatus === 'INVALID') ||
           !controllerPermissions.includes('edit_controller_services');
         return (
-          <div className="d-flex justify-content-start align-items-center">
+          <div className="d-flex justify-content-start align-items-center gap-2">
             {controllerPermissions.includes('edit_controller_services') && (
               <>
                 <button
@@ -610,7 +610,7 @@ export const ListControllerService = () => {
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2">
-            <TodoIcon width={22} height={24} />
+            {/* <TodoIcon width={22} height={24} /> */}
             <HeadingStyle>Controller Services List</HeadingStyle>
           </div>
         </div>

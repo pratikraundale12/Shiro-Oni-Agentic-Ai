@@ -12,7 +12,7 @@ import {
   PlusCircleIcon,
   QRIcons,
   TagIcon,
-  TodoIcon,
+  // TodoIcon,
 } from '../../assets';
 import { FullPageLoader } from '../../components';
 import { Table } from '../../components/CustomGrid/Table';
@@ -533,9 +533,9 @@ export const LdapConfig = () => {
       {loading && <FullPageLoader loading={loading} />}
       <Heading>
         <Flex>
-          <ImageContainer>
+          {/* <ImageContainer>
             <TodoIcon width={22} height={24} />
-          </ImageContainer>
+          </ImageContainer> */}
           <Title>LDAP Configuration Fields</Title>
         </Flex>
       </Heading>

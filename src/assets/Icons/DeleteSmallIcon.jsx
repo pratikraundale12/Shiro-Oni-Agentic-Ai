@@ -1,22 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { theme } from '../../styles';
 
 export const DeleteSmallIcon = ({
   width = 20,
   height = 20,
-  color = theme.colors.darker,
+  color = '#FF0000',
 }) => (
   <svg
     width={width}
     height={height}
-    viewBox="6 6 19 19"
+    viewBox="0 0 16 16"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M20.1666 11.0003H24.3333V12.667H22.6666V23.5003C22.6666 23.9606 22.2935 24.3337 21.8333 24.3337H10.1666C9.70639 24.3337 9.33329 23.9606 9.33329 23.5003V12.667H7.66663V11.0003H11.8333V8.50033C11.8333 8.04009 12.2064 7.66699 12.6666 7.66699H19.3333C19.7935 7.66699 20.1666 8.04009 20.1666 8.50033V11.0003ZM21 12.667H11V22.667H21V12.667ZM13.5 15.167H15.1666V20.167H13.5V15.167ZM16.8333 15.167H18.5V20.167H16.8333V15.167ZM13.5 9.33366V11.0003H18.5V9.33366H13.5Z"
-      fill={color}
+      d="M14 3.98763C11.78 3.76763 9.54667 3.6543 7.32 3.6543C6 3.6543 4.68 3.72096 3.36 3.8543L2 3.98763"
+      stroke={color}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.66699 3.31203L5.81366 2.4387C5.92033 1.80536 6.00033 1.33203 7.12699 1.33203H8.87366C10.0003 1.33203 10.087 1.83203 10.187 2.44536L10.3337 3.31203"
+      stroke={color}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12.5679 6.09375L12.1346 12.8071C12.0612 13.8537 12.0012 14.6671 10.1412 14.6671H5.86124C4.00124 14.6671 3.94124 13.8537 3.8679 12.8071L3.43457 6.09375"
+      stroke={color}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M6.8877 11H9.1077"
+      stroke={color}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M6.33301 8.33398H9.66634"
+      stroke={color}
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
