@@ -9,7 +9,7 @@ import { theme } from '../../styles';
 import { FlowMetrics, InsightContainer } from './components';
 import DeploymentStatistics from './DeploymentStatistics';
 import { toast } from 'react-toastify';
-import { subHours, isAfter } from 'date-fns';
+import { subHours, isAfter, startOfDay } from 'date-fns';
 
 import {
   ActiveThreadIcon,
@@ -351,18 +351,28 @@ export const Dashboard = () => {
 
   const handleDateRangeChange = dateRange => {
     if (dateRange && dateRange.length === 2) {
-      const [startDate, endDate] = dateRange;
+      let [startDate, endDate] = dateRange;
       const now = new Date();
-
-      if (isAfter(startDate, now) || isAfter(endDate, now)) {
+      if (
+        startDate.toDateString() === endDate.toDateString() &&
+        startDate.getTime() === endDate.getTime()
+      ) {
+        const adjustedEnd = new Date(endDate);
+        adjustedEnd.setHours(23, 59, 0, 0);
+        endDate = adjustedEnd;
+      }
+      if (
+        isAfter(startOfDay(startDate), startOfDay(now)) ||
+        isAfter(startOfDay(endDate), startOfDay(now))
+      ) {
         toast.error(
-          'Future dates are not allowed. Please select a date range up to now.'
+          'Future dates are not allowed. Please select a date range up to today.'
         );
         return;
       }
 
-      setSelectedRange(dateRange);
-
+      const adjustedRange = [startDate, endDate];
+      setSelectedRange(adjustedRange);
       if (!isEmpty(selectedCluster)) {
         dispatch(
           DashboardActions.fetchDashboard({
