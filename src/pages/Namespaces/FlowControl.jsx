@@ -313,13 +313,20 @@ const FlowControl = () => {
 
   const handleConfirmUpdateStatus = () => {
     dispatch(NamespacesActions.updateNamespaceStatus(confirmDialogue.action));
+    setConfirmDialogue(prev => ({
+      ...prev,
+      state: false,
+    }));
+  };
+
+  useEffect(() => {
     setConfirmDialogue({
       state: false,
       action: '',
       text: '',
       forPopup: false,
     });
-  };
+  }, []);
 
   const { id } = useParams();
   useEffect(() => {
@@ -372,7 +379,16 @@ const FlowControl = () => {
 
   return (
     <DataWrapper>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader
+        loading={loading}
+        text={
+          confirmDialogue?.text === 'stop'
+            ? 'Stopping Flow ...'
+            : confirmDialogue?.text === 'start'
+              ? 'Starting Flow ...'
+              : 'Loading'
+        }
+      />
       <ScrollSetGrey className="scroll-set-grey pe-1">
         <IconsvgDiv className="row">
           <CustomNine className="col-md-6 mb-3">
