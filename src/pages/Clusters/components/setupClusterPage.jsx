@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { ClustersSelectors } from '../../../store';
 import SetupClusterManageHostWrapper from './SetupClusterManageHostWrapper';
 import SetupClusterManageConfigWrapper from './SetupClusterManageConfigWrapper';
+import ManageTrustoreCertificateTab from './ManageTrustoreCertificate';
 
 const SetupClusterPage = () => {
   const activeSelectedTab = useSelector(
@@ -23,6 +24,9 @@ const SetupClusterPage = () => {
       )}
       {activeSelectedTab === 'manage_config' && (
         <SetupClusterManageConfigWrapper activeTab={activeSelectedTab} />
+      )}
+      {activeSelectedTab === 'manage_trustore_certificate' && (
+        <ManageTrustoreCertificateTab activeTab={activeSelectedTab} />
       )}
     </>
   );

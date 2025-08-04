@@ -13,6 +13,7 @@ import {
   ModalWithRightBtn,
   PasswordField,
   RadioSelectField,
+  SelectField,
 } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
@@ -54,7 +55,33 @@ const UploadWrapper = styled.div`
     background-color: rgb(253, 250, 245);
   }
 `;
+const StyledSelectField = styled(SelectField)`
+  & > div {
+    margin-bottom: ${props => props.marginBottom || '1rem'};
+  }
 
+  & label {
+    margin-bottom: ${props => props.labelMargin || '2px'} !important;
+  }
+
+  & .react-select__control {
+    height: ${props => props.height || '55px'};
+    border-radius: ${props => props.borderRadius || '4px'};
+  }
+
+  & .react-select__value-container {
+    padding: ${props => props.innerPadding || props.padding || '0 8px'};
+  }
+
+  & .react-select__menu {
+    border-radius: ${props => props.menuBorderRadius || '4px'};
+  }
+
+  & .react-select__option {
+    padding: ${props => props.optionPadding || '8px 12px'};
+    font-size: ${props => props.fontSize || '14px'};
+  }
+`;
 export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
   const dispatch = useDispatch();
   const [method, setMethod] = useState('password');
@@ -78,6 +105,10 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
   const OPTIONS = [
     { id: 1, value: 'password', label: 'Password' },
     { id: 2, value: 'privatekey', label: 'Private Key' },
+  ];
+  const KEYSTORE_SELECTION_OPTIONS = [
+    { id: 1, value: 'true', label: 'True' },
+    { id: 2, value: 'false', label: 'False' },
   ];
 
   const schemaPasswrd = yup.object().shape({
@@ -128,6 +159,8 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
     }
   }, [hostToEdit]);
   const watchMethodCredentials = watch('methodForCredentials');
+  const watchKeystoreSelection = watch('isKeystoreCertificateAdd');
+  console.log(watchKeystoreSelection, 'watchKeystoreSelection');
 
   const handleTestSubmit = data => {
     setFormData(data);
@@ -179,6 +212,16 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
       }
     }
   }, [isModalOpen]);
+  const typeOptions = [
+    {
+      label: 'JKS',
+      value: 'JKS',
+    },
+    {
+      label: 'PKCS12',
+      value: 'PKCS12',
+    },
+  ];
   return (
     <>
       <FullPageLoader loading={loading} />
@@ -319,6 +362,62 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                   />
                 </ModalContainer>
               </span>
+            </>
+          )}
+          <div className=" d-flex justify-content-end mt-2">
+            <div>
+              <RadioSelectField
+                name="isKeystoreCertificateAdd"
+                options={KEYSTORE_SELECTION_OPTIONS}
+                register={register}
+                defaultValue={'false'}
+                disabled={!isPrimaryBtnDisable}
+                label={'Add Keystore Certificate'}
+              />
+            </div>
+          </div>
+          {watchKeystoreSelection === 'true' && (
+            <>
+              <div className="row mt-2">
+                <PemUploadField
+                  name="pfxFile"
+                  watch={watch}
+                  control={control}
+                  label={'Keystore Certificate'}
+                  // required
+                  rightIcon={<UploadWrapper>Keystore File</UploadWrapper>}
+                  placeholder={'Keystore Certificate'}
+                  errors={errors}
+                  fileLable="Keystore Certificate"
+                />
+              </div>
+              <div className="row mt-2">
+                <div className="col-6">
+                  <PasswordField
+                    name="keystorePassword"
+                    register={register}
+                    watch={watch}
+                    label="Keystore Password"
+                    icon={<CurvedLockIcon />}
+                    placeholder="Enter Password"
+                    disableToggle={false}
+                    errors={errors}
+                  />
+                </div>
+                <div className="col-6">
+                  <StyledSelectField
+                    label="Keystore Type"
+                    id="keystore-type"
+                    name="keystoreType"
+                    control={control}
+                    icon={<DocumentTextIcon />}
+                    errors={errors}
+                    placeholder="Select Option"
+                    showCircleIcon={true}
+                    options={typeOptions}
+                  />
+                </div>
+              </div>
             </>
           )}
         </Container>

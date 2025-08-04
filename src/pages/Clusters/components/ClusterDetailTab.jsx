@@ -7,6 +7,7 @@ import {
   Modal,
   ModalWithIcon,
   RadioField,
+  RadioSelectField,
   SelectField,
 } from '../../../shared';
 import {
@@ -108,7 +109,7 @@ const ClusterDetailTab = ({
   const selectedNiFiVersion = useSelector(
     ClustersSelectors.getClusterSetupSelectedNiFiVersion
   );
-
+  const isAddTrustoreCert = watch('isTruststoreCertificateAdd');
   const itemsForList = useMemo(() => {
     return listHostIpData.filter(ele => !ele?.is_selected);
   }, [listHostIpData]);
@@ -154,7 +155,7 @@ const ClusterDetailTab = ({
 
   const nifiVersion = watch('nifiVersion');
   const configName = watch('configName');
-  
+
   useEffect(() => {
     if (!isEmpty(selectedNiFiVersion) && !isEmpty(nifiVerionsOptions)) {
       setValue('nifiVersion', selectedNiFiVersion);
@@ -553,7 +554,10 @@ const ClusterDetailTab = ({
       setDeleteNodes(deleteKeyArray);
     }
   }, [hostList]);
-
+  const KEYSTORE_SELECTION_OPTIONS = [
+    { id: 1, value: 'true', label: 'True' },
+    { id: 2, value: 'false', label: 'False' },
+  ];
   return (
     <>
       <FullPageLoader loading={loading || loadingAddAPI} />
@@ -617,6 +621,31 @@ const ClusterDetailTab = ({
             disabled={!isEmpty(nodesUpdateAnsbibleClusterId)}
           />
         </div>
+        <div className="col-4 mt-3">
+          <RadioSelectField
+            name="isTruststoreCertificateAdd"
+            options={KEYSTORE_SELECTION_OPTIONS}
+            register={register}
+            defaultValue={'false'}
+            // disabled={!isPrimaryBtnDisable}
+            label={'Add Trustore Certificate'}
+          />
+        </div>
+        {isAddTrustoreCert === 'true' && (
+          <div className="col-4 mt-3">
+            <LabelSelect className="mb-3">Trustore Certificate</LabelSelect>
+            <SelectField
+              name="configVersion"
+              icon={<QRIcons />}
+              register={register}
+              errors={errors}
+              control={control}
+              options={configVersionOptions || []}
+              placeholder={KDFM.SELECT_CONFIG_VERSION}
+              disabled={!isEmpty(nodesUpdateAnsbibleClusterId)}
+            />
+          </div>
+        )}
       </div>
       <div className="row mx-auto">
         <div className="col-auto ms-3">
