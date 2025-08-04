@@ -328,7 +328,12 @@ export const ListScheduleDeployment = () => {
   const getDefSchedule = async item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setIsDiffModalOpen(true));
-    dispatch(SchedularActions.fetchDiffScheduleData(item?.id));
+    dispatch(
+      SchedularActions.fetchDiffScheduleData({
+        schedule_id: item?.id,
+        event: '',
+      })
+    );
   };
   const handleUserStoryModal = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));

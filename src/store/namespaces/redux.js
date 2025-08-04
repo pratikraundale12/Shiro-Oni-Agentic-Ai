@@ -258,6 +258,12 @@ export const NamespacesActions = {
   ),
   setScheduleStartFlow: createAction(`${prefix}setScheduleStartFlow`),
   setScheduleFlowType: createAction(`${prefix}setScheduleFlowType`),
+  refreshControllerService: createAction(`${prefix}refreshControllerService`),
+  refreshControllerServiceSuccess: createAction(
+    `${prefix}refreshControllerServiceSuccess`
+  ),
+  setCsPermissions: createAction(`${prefix}setCsPermissions`),
+  setKeepParameters: createAction(`${prefix}setKeepParameters`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -383,6 +389,8 @@ export const NAMESPACES_INITIAL_STATE = {
   scheduleStartFlow: false,
   scheduleFlowType: null,
   lastSanityReportData: {},
+  csPermissions: {},
+  keepParameterForDeploy: true,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -517,6 +525,10 @@ export const NamespacesSelectors = {
   getScheduleStartFlow: state => state.namespaces.scheduleStartFlow,
   getScheduleFlowType: state => state.namespaces.scheduleFlowType,
   getLastSanityReportData: state => state.namespaces.lastSanityReportData,
+  getRefreshedControllerService: state =>
+    state.namespaces.refreshedControllerService,
+  getCsPermissions: state => state.namespaces.csPermissions,
+  getKeepParameters: state => state.namespaces.keepParameterForDeploy,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1218,6 +1230,27 @@ const fetchLastSanityReportSuccess = (state, { payload }) => {
   };
 };
 
+const refreshControllerServiceSuccess = (state, { payload }) => {
+  const { data } = payload;
+  return {
+    ...state,
+    refreshedControllerService: { data },
+  };
+};
+
+const setCsPermissions = (state, { payload }) => {
+  return {
+    ...state,
+    csPermissions: payload,
+  };
+};
+const setKeepParameters = (state, { payload }) => {
+  return {
+    ...state,
+    keepParameterForDeploy: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1508,6 +1541,12 @@ export const namespacesReducer = createReducer(
         fetchLastSanityReportSuccess
       )
       .addCase(NamespacesActions.setScheduleStartFlow, setScheduleStartFlow)
-      .addCase(NamespacesActions.setScheduleFlowType, setScheduleFlowType);
+      .addCase(NamespacesActions.setScheduleFlowType, setScheduleFlowType)
+      .addCase(NamespacesActions.setCsPermissions, setCsPermissions)
+      .addCase(
+        NamespacesActions.refreshControllerServiceSuccess,
+        refreshControllerServiceSuccess
+      )
+      .addCase(NamespacesActions.setKeepParameters, setKeepParameters);
   }
 );

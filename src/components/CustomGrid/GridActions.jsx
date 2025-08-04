@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { debounce, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { useForm } from 'react-hook-form';
@@ -60,13 +60,13 @@ import {
   RolesSelectors,
   UsersSelectors,
 } from '../../store';
-import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../FullPageLoader';
 import { use } from 'react';
+import { SettingsActions } from '../../store/settings';
 
 const Flex = styled.div`
   display: flex;
@@ -242,14 +242,13 @@ export const GridActions = ({
   setScheduleType,
   selectStatus,
   setSelectStatus,
-  isDownloadModalOpen,
-  setDownloadModalOpen,
   removeSearch = false,
   setIsExportReportOpen,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
+  const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
   const accessType = useSelector(RolesSelectors.getAccessType);
   const userModalOpen = useSelector(UsersSelectors.getUserModalOpen);
   const roles = useSelector(RolesSelectors.getRoles);
@@ -259,10 +258,10 @@ export const GridActions = ({
   const { setState } = useGlobalContext();
   const [searchValue, setSearchValue] = useState('');
   useEffect(() => {
-    if(removeSearch && module === 'namespaces') {
+    if (removeSearch && module === 'namespaces') {
       setSearchValue('');
     }
-  },[removeSearch])
+  }, [removeSearch]);
   const uniqueRoles = useMemo(() => {
     return Array.from(new Set(roles.map(role => role.name))).map(name => {
       return roles.find(role => role.name === name);
@@ -327,10 +326,9 @@ export const GridActions = ({
     return [start, end];
   }
 
-    const gridData = useSelector(state =>
-      GridSelectors.getGridData(state, 'activityHistory')
-    );
-    
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'activityHistory')
+  );
 
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
@@ -342,9 +340,10 @@ export const GridActions = ({
     onItemsPerPageChange(10);
 
     if (module === 'namespaces') {
-       if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
-         return;
-        }
+      if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
+        return;
+      }
+      dispatch(SettingsActions.fetchSettings());
       dispatch(
         GridSagsActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
@@ -426,7 +425,7 @@ export const GridActions = ({
             clusterId,
             params: {
               page: 1,
-              limit: 10,
+              limit: itemPerClusterList || 10,
               id: scheduleToken,
               ...(search && { search: search }),
               ...(watchStatus &&
@@ -445,23 +444,23 @@ export const GridActions = ({
                 clusterSelectedValue?.label !== 'All' && {
                   clusterName: clusterSelectedValue?.label,
                 }),
-             ...(location?.pathname?.includes('activity-history') &&
-  selectEvent &&
-  selectEvent.length > 0 && {
-    event: selectEvent.map(event => event.value).join(','),
-  }),
+              ...(location?.pathname?.includes('activity-history') &&
+                selectEvent &&
+                selectEvent.length > 0 && {
+                  event: selectEvent.map(event => event.value).join(','),
+                }),
 
-...(location?.pathname?.includes('activity-history') &&
-  selectEntity &&
-  selectEntity.length > 0 && {
-    entity: selectEntity.map(entity => entity.value).join(','),
-  }),
+              ...(location?.pathname?.includes('activity-history') &&
+                selectEntity &&
+                selectEntity.length > 0 && {
+                  entity: selectEntity.map(entity => entity.value).join(','),
+                }),
 
-...(location?.pathname?.includes('activity-history') &&
-  selectStatus &&
-  selectStatus.length > 0 && {
-    status: selectStatus.map(status => status.value).join(','),
-  }),
+              ...(location?.pathname?.includes('activity-history') &&
+                selectStatus &&
+                selectStatus.length > 0 && {
+                  status: selectStatus.map(status => status.value).join(','),
+                }),
               ...(location?.pathname?.includes('schedule-deployment') &&
                 scheduleType?.value !== 'all' && {
                   type: scheduleType?.value,
@@ -532,10 +531,19 @@ export const GridActions = ({
 
   const handleChange = value => {
     setCurrentPage(1);
-    const [dynamicStart, dynamicEnd] = getDynamicRangeStartEnd(
-      value?.[0],
-      value?.[1]
-    );
+    let [start, end] = value;
+    if (
+      start &&
+      end &&
+      start.toDateString() === end.toDateString() &&
+      start.getTime() === end.getTime()
+    ) {
+      const adjustedEnd = new Date(end);
+      adjustedEnd.setHours(23, 59, 0, 0);
+      end = adjustedEnd;
+    }
+
+    const [dynamicStart, dynamicEnd] = getDynamicRangeStartEnd(start, end);
 
     dispatch(
       SchedularActions.setScheduleSelectRange([dynamicStart, dynamicEnd])
@@ -734,14 +742,13 @@ export const GridActions = ({
 
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
-    const handleExportReport = () => {
-      setIsExportReportOpen(true);
-    };
-  
-    const loading = useSelector(state =>
-      LoadingSelectors.getLoading(state, 'fetchEmailReport')
-    );
+  const handleExportReport = () => {
+    setIsExportReportOpen(true);
+  };
 
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchEmailReport')
+  );
 
   return (
     <>
@@ -763,25 +770,6 @@ export const GridActions = ({
           <>
             {
               <ButtonsContainerScheduleList>
-                {selectedCluster?.value && (
-                  <Button
-                    size="md"
-                    onClick={() => history.push('/process-group')}
-                  >
-                    <div
-                      className="d-flex "
-                      style={{ fontSize: '14px', fontWeight: '750' }}
-                    >
-                      <ScheduleDeploymentIcon
-                        height={19}
-                        width={19}
-                        color={'#fff'}
-                      />
-                      Schedule Deployment
-                    </div>
-                  </Button>
-                )}
-
                 <DateRangePickerInput
                   value={selectedRange}
                   handleChange={handleChange}
@@ -829,6 +817,24 @@ export const GridActions = ({
                     backgroundColor={theme.colors.lightGrey}
                   />
                 </DropdownContainer>
+                {/* {selectedCluster?.value && (
+                  <Button
+                    size="md"
+                    onClick={() => history.push('/process-group')}
+                  >
+                    <div
+                      className="d-flex "
+                      style={{ fontSize: '14px', fontWeight: '750' }}
+                    >
+                      <ScheduleDeploymentIcon
+                        height={19}
+                        width={19}
+                        color={'#fff'}
+                      />
+                      Schedule Deployment
+                    </div>
+                  </Button>
+                )} */}
               </ButtonsContainerScheduleList>
             }
           </>
@@ -869,6 +875,30 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
+          {module === 'scheduler' && (
+            <>
+              {' '}
+              {selectedCluster?.value && (
+                <Button
+                  size="md"
+                  onClick={() => history.push('/process-group')}
+                >
+                  <div
+                    className="d-flex "
+                    style={{ fontSize: '14px', fontWeight: '750' }}
+                  >
+                    <ScheduleDeploymentIcon
+                      height={19}
+                      width={19}
+                      color={'#fff'}
+                    />
+                    Schedule Deployment
+                  </div>
+                </Button>
+              )}
+            </>
+          )}
+
           {module === 'users' && (
             <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
           )}
@@ -884,43 +914,6 @@ export const GridActions = ({
           )}
           {module === 'activityHistory' && (
             <>
-             <div className="d-flex align-items-center gap-2">
-                          {/* <div>
-                            <Button
-                              onClick={() => {
-                                history.push('/activity-history/download-history');
-                              }}
-                            >
-                              Download Activity History
-                            </Button>
-                          </div> */}
-                          <div>
-                            {!isEmpty(gridData) && (
-                              <Button onClick={handleExportReport}>Export Report</Button>
-                            )}
-                            
-                          </div>
-                        </div>
-              <div>
-                <MultiSelectField
-                  name="activityStatus"
-                  control={control}
-                  label="Select Status"
-                  placeholder="Select Status"
-                  options={ACTIVITY_STATUS_OPTIONS}
-                  customValue={selectStatus}
-                  customOnChange={(onChange, selectedOptions) => {
-                    handleStatusChange(selectedOptions);
-                    onChange(selectedOptions);
-                  }}
-                  wrapperCustomClass="entity-dropdown"
-                  customWidth="275px"
-                  enableCheckboxes={true}
-                   hideMultipleOptions={true}
-                   enableSelectAll={true}  // Enable select all
-                   selectAllLabel="Select All"
-                />
-              </div>
               <div>
                 <MultiSelectField
                   name="activityEvent"
@@ -938,7 +931,7 @@ export const GridActions = ({
                   enableCheckboxes={true}
                   selectAllLabel="Select All"
                   hideMultipleOptions={true}
-                  enableSelectAll={true}  // Enable select all
+                  enableSelectAll={true} // Enable select all
                 />
               </div>
               <div>
@@ -949,7 +942,7 @@ export const GridActions = ({
                   placeholder={KDFM.SELECT_ENTITY}
                   options={MODULE_LIST_MAP}
                   customValue={selectEntity}
-                  enableSelectAll={true}  // Enable select all
+                  enableSelectAll={true} // Enable select all
                   selectAllLabel="Select All"
                   customOnChange={(onChange, selectedOptions) => {
                     handleEntityChange(selectedOptions);
@@ -958,8 +951,35 @@ export const GridActions = ({
                   wrapperCustomClass="entity-dropdown"
                   customWidth="275px"
                   enableCheckboxes={true}
-                   hideMultipleOptions={true}
+                  hideMultipleOptions={true}
                 />
+              </div>
+              <div>
+                <MultiSelectField
+                  name="activityStatus"
+                  control={control}
+                  label="Select Status"
+                  placeholder="Select Status"
+                  options={ACTIVITY_STATUS_OPTIONS}
+                  customValue={selectStatus}
+                  customOnChange={(onChange, selectedOptions) => {
+                    handleStatusChange(selectedOptions);
+                    onChange(selectedOptions);
+                  }}
+                  wrapperCustomClass="entity-dropdown"
+                  customWidth="275px"
+                  enableCheckboxes={true}
+                  hideMultipleOptions={true}
+                  enableSelectAll={true} // Enable select all
+                  selectAllLabel="Select All"
+                />
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <div>
+                  {!isEmpty(gridData) && (
+                    <Button onClick={handleExportReport}>Export Report</Button>
+                  )}
+                </div>
               </div>
               <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
             </>
@@ -1036,18 +1056,16 @@ export const GridActions = ({
             )}
             {['namespaces'].includes(module) && (
               <>
-               <RefreshIocn
-                  onClick={
-                    handleRefresh
-                   }
-                 data-tooltip-id={`tooltip-group-namespace-refresh-`}
-                 style={{
-                  cursor:
-                  selectedCluster?.value && !isEmpty(selectedCluster?.value)
-                   ? 'pointer'
-                   : 'not-allowed',
+                <RefreshIocn
+                  onClick={handleRefresh}
+                  data-tooltip-id={`tooltip-group-namespace-refresh-`}
+                  style={{
+                    cursor:
+                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                        ? 'pointer'
+                        : 'not-allowed',
                   }}
-                 >
+                >
                   <RefreshIcon
                     style={{
                       cursor:

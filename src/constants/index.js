@@ -92,6 +92,7 @@ export const MODULE_LIST_MAP = [
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
   { label: 'Local Changes', value: 'Local Changes' },
   { label: 'Audit', value: 'Audit' },
+  { label: 'Cluster Permission', value: 'Cluster Permission' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -118,6 +119,8 @@ export const ACTIVITY_EVENTS = [
   { label: 'Downgrade', value: 'downgrade' },
   { label: 'Schedule Deploy', value: 'Schedule Deploy' },
   { label: 'Schedule Upgrade', value: 'Schedule upgrade' },
+  { label: 'Schedule Upgraded', value: 'Schedule upgraded' },
+  { label: 'Schedule Downgraded', value: 'Schedule downgraded' },
   { label: 'Schedule Downgrade', value: 'Schedule downgrade' },
   { label: 'Update', value: 'Update' },
   { label: 'Reject', value: 'Reject' },
@@ -133,6 +136,7 @@ export const ACTIVITY_EVENTS = [
   { label: 'Schedule Start', value: 'Schedule Start' },
   { label: 'Sanity Check', value: 'Sanity Check' },
   { label: 'Download', value: 'Download' },
+  { label: 'Schedule Started', value: 'Schedule Started' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
@@ -255,6 +259,10 @@ export const KDFM = {
   SMTP: 'Email Configuration',
   FLOW_CONTROL_WARNING:
     'The "Start" and "Stop" buttons will be hidden if all the processors are either invalid or disabled.',
+  SCHEDULE_FLOW_CONTROL_WARNING:
+    'The "Schedule Start" and "Schedule Stop" buttons will be hidden if all the processors are either invalid or disabled.',
+  SCHEDULE_AUTOMATIC_START_FLOW:
+    'The process group has been successfully deployed and is scheduled to start automatically at the specified date and time.',
 
   CHANGE_CONFIGURATION: 'Change Configuration',
   LAST_SYNC: 'Last Sync Time',
@@ -268,6 +276,7 @@ export const KDFM = {
   USER_STORY: 'User Story',
   CHANGE_REQUEST: 'Change Request',
   PLEASE_LOGIN_TO_CLUSTER: 'Please login to cluster',
+  SELECT_PROCESS_GROUP: 'Select Process Group',
 
   // License constants
   TRIAL: 'Trial',

@@ -9,7 +9,7 @@ import { theme } from '../../styles';
 import { FlowMetrics, InsightContainer } from './components';
 import DeploymentStatistics from './DeploymentStatistics';
 import { toast } from 'react-toastify';
-import { subHours, isAfter } from 'date-fns';
+import { subHours, isAfter, startOfDay } from 'date-fns';
 
 import {
   ActiveThreadIcon,
@@ -257,7 +257,6 @@ export const Dashboard = () => {
   );
   const [updatedErrors, setUpdatedErrors] = useState([]);
   const [activeTab, setActiveTab] = useState('QuickInsights');
-  const cluster = JSON.parse(localStorage.getItem('selected_cluster') || '{}');
 
   // Reset selectedRange when cluster changes
   useEffect(() => {
@@ -352,18 +351,28 @@ export const Dashboard = () => {
 
   const handleDateRangeChange = dateRange => {
     if (dateRange && dateRange.length === 2) {
-      const [startDate, endDate] = dateRange;
+      let [startDate, endDate] = dateRange;
       const now = new Date();
-
-      if (isAfter(startDate, now) || isAfter(endDate, now)) {
+      if (
+        startDate.toDateString() === endDate.toDateString() &&
+        startDate.getTime() === endDate.getTime()
+      ) {
+        const adjustedEnd = new Date(endDate);
+        adjustedEnd.setHours(23, 59, 0, 0);
+        endDate = adjustedEnd;
+      }
+      if (
+        isAfter(startOfDay(startDate), startOfDay(now)) ||
+        isAfter(startOfDay(endDate), startOfDay(now))
+      ) {
         toast.error(
-          'Future dates are not allowed. Please select a date range up to now.'
+          'Future dates are not allowed. Please select a date range up to today.'
         );
         return;
       }
 
-      setSelectedRange(dateRange);
-
+      const adjustedRange = [startDate, endDate];
+      setSelectedRange(adjustedRange);
       if (!isEmpty(selectedCluster)) {
         dispatch(
           DashboardActions.fetchDashboard({
@@ -428,19 +437,13 @@ export const Dashboard = () => {
 
   const handleDeploymentStatisticsClick = () => {
     if (!selectedCluster?.value) {
-      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER);
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
       return;
     }
     setActiveTab('DeploymentStatistics');
   };
-
-  useEffect(() => {
-    const noClusterSelected = isEmpty(cluster?.value);
-    const isQuickInsightsTab = activeTab === 'QuickInsights';
-    if (noClusterSelected && isQuickInsightsTab) {
-      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER);
-    }
-  }, [cluster, activeTab]);
 
   return (
     <>
@@ -507,7 +510,11 @@ export const Dashboard = () => {
                     }
                     onChange={onNamespaceSelect}
                     placeholder="Select Process Group"
-                    title="Select Process Group"
+                    title={
+                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                        ? KDFM.SELECT_PROCESS_GROUP
+                        : KDFM.PLEASE_LOGIN_TO_CLUSTER
+                    }
                     backgroundColor={theme.colors.lightGrey}
                     size="sm"
                     disabled={!selectedCluster?.value}
