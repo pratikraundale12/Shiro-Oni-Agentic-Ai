@@ -118,6 +118,7 @@ export const SummaryModal = ({
   changeRequestEnable,
   selectedRegistriesArray = [],
   registries,
+  default_registry_data,
 }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -180,6 +181,7 @@ export const SummaryModal = ({
       start_stop_requires_approval: approverEnableForStartAndStop,
       change_request_enable: changeRequestEnable,
       registry_ids: selectedRegistriesId,
+      default_registry_id: default_registry_data,
     };
     const id = clusterId;
     const response = await updateCluster(id, payload);
@@ -448,4 +450,5 @@ SummaryModal.propTypes = {
   changeRequestEnable: PropTypes.bool,
   selectedRegistriesArray: PropTypes.array,
   registries: PropTypes.array,
+  default_registry_data: PropTypes.any,
 };

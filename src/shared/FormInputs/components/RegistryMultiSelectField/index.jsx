@@ -90,6 +90,7 @@ const RegistryMultiSelect = ({
         ...styles,
         minHeight: 42,
         width: customWidth || '100%',
+        height: '50px',
       };
 
       if (state.isFocused) newStyles.borderColor = theme.colors.darkGrey;

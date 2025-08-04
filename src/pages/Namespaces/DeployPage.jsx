@@ -225,7 +225,7 @@ function DeployPage() {
     handleSubmit,
   } = useForm({
     resolver: yupResolver(registrySchema),
-    defaultValues: { registry: '' },
+    defaultValues: { registry: registryDropdownOptions?.[0]?.label || '' },
   });
 
   const convertDate = dateString => {
@@ -514,7 +514,7 @@ function DeployPage() {
                       control={control}
                       placeholder="Select Registry"
                       onChange={onRegistryChange}
-                      defaultValue={{}}
+                      defaultValue={registryDropdownOptions?.[0]?.label}
                     />
                   </BucketDiv>
                 </div>

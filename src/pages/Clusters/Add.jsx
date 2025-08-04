@@ -129,7 +129,7 @@ const LabelSelect = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 `;
 export const Add = () => {
   const [activeTab, setActiveTab] = useState(CLUSTER_MODULE_TABS.CLUSTER);
@@ -144,6 +144,7 @@ export const Add = () => {
   const [openSummary, setOpenSummary] = useState(false);
   const [failedTestMessage, setFailedTestMessage] = useState('');
   const [registries, setRegistries] = useState([]);
+
   const location = useLocation();
   const dispatch = useDispatch();
   const { state: data } = location.state || {};
@@ -323,8 +324,14 @@ export const Add = () => {
   };
 
   const selectedRegistryId = watch('registry');
+  const selectedDefalutRegistryId = watch('default_registry');
+  console.log('selectedDefalutRegistryId', selectedDefalutRegistryId);
 
   const editClusterData = async () => {
+    const selectedRegistriesId = formStateData?.registry?.map(
+      item => item?.value
+    );
+
     try {
       const payload = {
         name: clusterData?.clusterName,
@@ -338,8 +345,9 @@ export const Add = () => {
         approver_enable: approverEnable,
         start_stop_requires_approval: approverEnableForStartAndStop,
         change_request_enable: changeRequestEnable,
-        registry_id: selectedRegistryId,
+        registry_ids: selectedRegistriesId,
         has_custom_service_account: false,
+        default_registry: selectedDefalutRegistryId,
       };
 
       const id = clusterId;
@@ -582,7 +590,6 @@ export const Add = () => {
     fetchRegistry();
   }, [activeTab]);
 
-  
   const handleRegistry = () => {
     setIsCertificateOpen(false);
     setIsCredOpen(false);
@@ -861,15 +868,28 @@ export const Add = () => {
 
         {activeTab === CLUSTER_MODULE_TABS.REGISTRY && !newRegistry && (
           <FormContainer>
-            <div className="w-100 mb-4">
-              <LabelSelect>Select Registry</LabelSelect>
-              <RegistryMultiSelect
-                enableCheckboxes
-                control={control}
-                name="registry"
-                placeholder={'Select Registry'}
-                options={registries}
-              />
+            <div className="w-100 mb-4 row">
+              <div className="col-lg-8">
+                <LabelSelect>Select Registry</LabelSelect>
+                <RegistryMultiSelect
+                  enableCheckboxes
+                  control={control}
+                  name="registry"
+                  placeholder={'Select Registry'}
+                  options={registries}
+                />
+              </div>
+              <div className="col-lg-4">
+                <SelectField
+                  label="Default Registry"
+                  name="default_registry"
+                  control={control}
+                  // icon={<LogDocumentIcon color="#444445" />}
+                  errors={errors}
+                  options={selectedRegistryId}
+                  placeholder="Select Default Registry"
+                />
+              </div>
             </div>
             <ORText style={{ textAlign: 'center' }}>OR</ORText>
             <div>
@@ -1008,6 +1028,7 @@ export const Add = () => {
         approverEnableForStartAndStop={approverEnableForStartAndStop}
         tags={tags}
         selectedRegistriesArray={formStateData?.registry}
+        default_registry_data={selectedDefalutRegistryId}
         registries={registries}
       />
       {successModal && (
