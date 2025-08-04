@@ -652,7 +652,7 @@ export const Layout = ({ children }) => {
                     Terms Of Use
                   </RedirectionText>
                 </PolicyContainer>
-                <LabelSelect>Version 2.1.22</LabelSelect>
+                <LabelSelect>Version 2.1.23</LabelSelect>
               </RightSection>
             ) : (
               <RightSectionreset>
@@ -682,7 +682,7 @@ export const Layout = ({ children }) => {
                     Terms Of Use
                   </RedirectionText>
                 </PolicyContainer>
-                <LabelSelect>Version 2.1.22</LabelSelect>
+                <LabelSelect>Version 2.1.23</LabelSelect>
               </RightSectionreset>
             )}
           </RightWrapper>
