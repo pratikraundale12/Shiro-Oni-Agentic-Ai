@@ -17,6 +17,7 @@ import { Button, InputField, Modal, PasswordField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { FullPageLoader } from '../../components';
 import { LoadingSelectors } from '../../store';
+import { isEmpty } from 'lodash';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -203,6 +204,7 @@ export const EmailConfigurationSettings = () => {
       }
     } finally {
       setLoading(false);
+      setChangedData({});
     }
   };
   const smtpService = watch('smtp_service');
@@ -303,7 +305,7 @@ export const EmailConfigurationSettings = () => {
       ...(smtpPass !== settingData?.smtp_pass && { smtp_pass: smtpPass }),
       ...(smtpUser !== settingData?.smtp_user && { smtp_user: smtpUser }),
       ...(smtpHost !== settingData?.smtp_host && { smtp_host: smtpHost }),
-      ...(smtpPort !== settingData?.smtp_port && {
+      ...(Number(smtpPort) !== Number(settingData?.smtp_port) && {
         smtp_port: Number(smtpPort),
       }),
       ...(fromEmail !== settingData?.from_email && { from_email: fromEmail }),
@@ -346,10 +348,12 @@ export const EmailConfigurationSettings = () => {
         ('from_email' in changedData && changedData.from_email !== fromEmail) ||
         ('smtp_service' in changedData &&
           changedData.smtp_service !== smtpService);
-      isChanged
-        ? setDisableSaveSetting(isChanged)
-        : setDisableSaveSetting(!isEmailVerified);
-    } else setDisableSaveSetting(!isEmailVerified);
+      if (isEmailVerified && !isEmpty(Object.keys(changedData)) && !isChanged) {
+        setDisableSaveSetting(false);
+      } else {
+        setDisableSaveSetting(true);
+      }
+    }
   }, [
     isEmailVerified,
     changedData,
