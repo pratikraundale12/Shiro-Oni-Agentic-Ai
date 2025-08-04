@@ -535,20 +535,18 @@ const Summary = () => {
   );
 
   const registryDropdownOptions = registryData.map(item => ({
-      label: item?.name,
-      value: item?.nifiRegistryId,
-      default_registry_id: item?.is_default,
-    }));
-    console.log(registryDropdownOptions?.[0]?.value, 'registryDropdownOptions');
-    console.log(registryData,'registryData');
-    
-    
- const defaultRegistry = registryDropdownOptions.find(
-      item => item.default_registry_id === true
-    );
- const defaultRegistryValue = defaultRegistry?.value || '';
- console.log(defaultRegistryValue,'defaultRegistryValue');
- 
+    label: item?.name,
+    value: item?.nifiRegistryId,
+    default_registry_id: item?.is_default,
+    url: item?.url,
+  }));
+
+  const defaultRegistry = registryDropdownOptions.find(
+    item => item.default_registry_id === true
+  );
+  const defaultRegistryValue = defaultRegistry?.value || '';
+  const defaultRegistryUrl = defaultRegistry?.url || '';
+
   const XcordUpdated = useSelector(NamespacesSelectors.getregistryFlowXCord);
   const YcordUpdated = useSelector(NamespacesSelectors.getregistryFlowYCord);
   const registryDetailsData = useSelector(
@@ -1056,7 +1054,11 @@ const Summary = () => {
       version: registryFlowVerion?.version,
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
-      registryId: registrySelectedId || registryData?.id || defaultRegistryValue || registryDropdownOptions?.[0]?.value,
+      registryId:
+        registrySelectedId ||
+        registryData?.id ||
+        defaultRegistryValue ||
+        registryDropdownOptions?.[0]?.value,
       flowName: formDataRegistry?.selectedFlowName,
       namespaceStatus: flowControlState,
       position: {
@@ -1088,7 +1090,10 @@ const Summary = () => {
       version: versionSelected?.version,
       namespaceId: checkDestCluster?.id,
       bucketId: checkDestCluster?.bucketId,
-      registryId: registrySelectedId || registryData?.id || registryDropdownOptions?.[0]?.value,
+      registryId:
+        registrySelectedId ||
+        registryData?.id ||
+        registryDropdownOptions?.[0]?.value,
       namespaceStatus: flowControlState,
       payload: {
         namespaceId: checkDestCluster?.value,
@@ -1123,7 +1128,11 @@ const Summary = () => {
       version: registryFlowVerion?.version,
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
-      registryId: registrySelectedId || registryData?.id || defaultRegistryValue || registryDropdownOptions?.[0]?.value,
+      registryId:
+        registrySelectedId ||
+        registryData?.id ||
+        defaultRegistryValue ||
+        registryDropdownOptions?.[0]?.value,
       namespaceId: checkDestCluster?.value,
       mode: 'deploy',
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
@@ -1166,7 +1175,11 @@ const Summary = () => {
         version: registryFlowVerion?.version,
         flowId: registryFlowVerion?.flowId,
         bucketId: registryFlowVerion?.bucketId,
-        registryId: registrySelectedId || registryData?.id || defaultRegistryValue || registryDropdownOptions?.[0]?.value,
+        registryId:
+          registrySelectedId ||
+          registryData?.id ||
+          defaultRegistryValue ||
+          registryDropdownOptions?.[0]?.value,
         namespaceId: checkDestCluster?.value,
         mode: 'deploy',
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
@@ -1203,10 +1216,15 @@ const Summary = () => {
       }));
       const payload = {
         version: versionSelected?.version,
-       flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
-      namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
-      registryId: registrySelectedId || registryData?.id || singleNamespaceData1?.registryId || defaultRegistryValue || registryDropdownOptions?.[0]?.value,
-      bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
+        flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
+        namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
+        registryId:
+          registrySelectedId ||
+          registryData?.id ||
+          singleNamespaceData1?.registryId ||
+          defaultRegistryValue ||
+          registryDropdownOptions?.[0]?.value,
+        bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
         namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
         payload: {
           namespaceId: checkDestCluster?.value,
@@ -1266,7 +1284,11 @@ const Summary = () => {
       version: versionSelected?.version,
       flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
       namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
-      registryId: registryData?.id || singleNamespaceData1?.registryId || defaultRegistryValue || registryDropdownOptions?.[0]?.value,
+      registryId:
+        registryData?.id ||
+        singleNamespaceData1?.registryId ||
+        defaultRegistryValue ||
+        registryDropdownOptions?.[0]?.value,
       bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
       namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
       revert_local_changes: shouldRevertChanges,
@@ -1735,7 +1757,9 @@ const Summary = () => {
                               textDecoration: 'underline',
                             }}
                           >
-                            {localRegistryIdArr?.[0]?.url}
+                            {localRegistryIdArr?.[0]?.url ||
+                              registryDropdownOptions?.[0]?.url ||
+                              defaultRegistryUrl}
                           </span>
                           <div
                             data-tooltip-id={`copy-board-namespace-summary1`}
