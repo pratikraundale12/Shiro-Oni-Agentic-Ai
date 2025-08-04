@@ -685,6 +685,13 @@ const Summary = () => {
     parameterName: item.name,
     parameters: item.parameters,
   }));
+  const registrySelectedId = useSelector(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
+  );
+
+  const localRegistryIdArr = registryData?.filter(
+    item => item?.nifiRegistryId === registrySelectedId
+  );
 
   const getChangedParameterObjects = (obj1, obj2) => {
     const result = [];
@@ -1033,7 +1040,7 @@ const Summary = () => {
       version: registryFlowVerion?.version,
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
-      registryId: registryData?.id,
+      registryId: registrySelectedId || registryData?.id,
       flowName: formDataRegistry?.selectedFlowName,
       namespaceStatus: flowControlState,
       position: {
@@ -1065,7 +1072,7 @@ const Summary = () => {
       version: versionSelected?.version,
       namespaceId: checkDestCluster?.id,
       bucketId: checkDestCluster?.bucketId,
-      registryId: registryData?.id,
+      registryId: registrySelectedId || registryData?.id,
       namespaceStatus: flowControlState,
       payload: {
         namespaceId: checkDestCluster?.value,
@@ -1100,7 +1107,7 @@ const Summary = () => {
       version: registryFlowVerion?.version,
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
-      registryId: registryData?.id,
+      registryId: registrySelectedId || registryData?.id,
       namespaceId: checkDestCluster?.value,
       mode: 'deploy',
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
@@ -1143,7 +1150,7 @@ const Summary = () => {
         version: registryFlowVerion?.version,
         flowId: registryFlowVerion?.flowId,
         bucketId: registryFlowVerion?.bucketId,
-        registryId: registryData?.id,
+        registryId: registrySelectedId || registryData?.id,
         namespaceId: checkDestCluster?.value,
         mode: 'deploy',
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
@@ -1180,10 +1187,10 @@ const Summary = () => {
       }));
       const payload = {
         version: versionSelected?.version,
-        flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
-        namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
-        registryId: registryData?.id || singleNamespaceData1?.registryId,
-        bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
+       flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
+      namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
+      registryId: registrySelectedId || registryData?.id || singleNamespaceData1?.registryId,
+      bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
         namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
         payload: {
           namespaceId: checkDestCluster?.value,
@@ -1337,8 +1344,8 @@ const Summary = () => {
   };
 
   const handleRegistryClick = () => {
-    if (!registryData?.url) return;
-    window.open(registryData.url, '_blank');
+    if (!localRegistryIdArr?.[0]?.url) return;
+    window.open(localRegistryIdArr?.[0]?.url, '_blank');
   };
   const isScheduled = scheduleDeploymentFlow || scheduleUpgradeFromList;
 
@@ -1712,14 +1719,14 @@ const Summary = () => {
                               textDecoration: 'underline',
                             }}
                           >
-                            {registryData?.url}
+                            {localRegistryIdArr?.[0]?.url}
                           </span>
                           <div
                             data-tooltip-id={`copy-board-namespace-summary1`}
                           >
                             <CopyToClipboard
                               className="summary-clipboard"
-                              copyItem={registryData?.url}
+                              copyItem={localRegistryIdArr?.[0]?.url}
                             />
                           </div>
                           <ReactTooltip

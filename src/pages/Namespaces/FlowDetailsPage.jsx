@@ -230,7 +230,9 @@ const FlowDetailsPage = () => {
   const shouldRevertChanges = useSelector(
     NamespacesSelectors.getShouldRevertChanges
   );
-
+  const registrySelectedId = useSelector(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
+  );
   useEffect(() => {
     if (isUpgrade) {
       if (registryDetailsData?.positions?.[0]?.x !== undefined) {
@@ -532,6 +534,11 @@ const FlowDetailsPage = () => {
     }
   }, [dispatch, change_request_var]);
 
+  const localRegistryIdArr = registryData?.filter(
+    item =>
+      item?.nifiRegistryId ===
+      (selectedNameSpace?.registryId || registrySelectedId)
+  );
   useEffect(() => {
     dispatch(SettingsActions.setSettingsData({}));
   }, [dispatch]);
@@ -735,7 +742,9 @@ const FlowDetailsPage = () => {
                     label={KDFM.NIFI_URL}
                     placeholder={KDFM.ENTER_NIFI_URL}
                     value={
-                      registryAllDetails?.nifi_url || registryData?.nifiUrl
+                      registryAllDetails?.nifi_url ||
+                      registryData?.nifiUrl ||
+                      versionListData?.graphData?.nifiUrl
                     }
                     icon={<LinkIcon />}
                     disabled
@@ -747,7 +756,7 @@ const FlowDetailsPage = () => {
                     type="text"
                     label={KDFM.REGISTRY_URL}
                     placeholder={KDFM.ENTER_REGISTRY_URL}
-                    value={registryData?.url}
+                    value={registryData?.url || localRegistryIdArr?.[0]?.url}
                     icon={<LinkIcon />}
                     disabled
                   />
