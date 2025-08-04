@@ -37,6 +37,7 @@ import {
 } from '../../store';
 import { SettingsActions } from '../../store/settings';
 import { KDFM } from '../../constants';
+import { useForm } from 'react-hook-form';
 
 const TopSection = styled.div`
   display: flex;
@@ -248,7 +249,12 @@ const Tab = styled.div`
 export const Dashboard = () => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const clusterChanged = useSelector(
+    DashboardSelectors.getResetNamespaceOption
+  );
   const [selectedNamespace, setSelectedNamespace] = useState(null);
+  const { control, setValue } = useForm();
+
   const [selectedRange, setSelectedRange] = useState(null); // Add selectedRange state
   const namespaces = useSelector(NamespacesSelectors.getNamespaces);
   const dashboardData = useSelector(DashboardSelectors.getDashboardData);
@@ -346,6 +352,7 @@ export const Dashboard = () => {
   ];
 
   const onNamespaceSelect = selectedItem => {
+    dispatch(DashboardActions.setResetNamespaceOption(false));
     setSelectedNamespace(selectedItem);
   };
 
@@ -386,7 +393,7 @@ export const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (!isEmpty(selectedCluster)) {
+    if (!isEmpty(selectedCluster) && !clusterChanged) {
       const payload = {
         selectedNamespace: selectedNamespace,
       };
@@ -395,6 +402,8 @@ export const Dashboard = () => {
           payload,
         })
       );
+    } else {
+      setValue('namespaceDropdown', null);
     }
   }, [dispatch, selectedCluster, selectedNamespace]);
 
@@ -518,6 +527,8 @@ export const Dashboard = () => {
                     backgroundColor={theme.colors.lightGrey}
                     size="sm"
                     disabled={!selectedCluster?.value}
+                    control={control}
+                    name="namespaceDropdown"
                   />
                 </DropdownContainer>
               )}
