@@ -181,7 +181,8 @@ export const SummaryModal = ({
       start_stop_requires_approval: approverEnableForStartAndStop,
       change_request_enable: changeRequestEnable,
       registry_ids: selectedRegistriesId,
-      default_registry_id: default_registry_data,
+      default_registry_id:
+        default_registry_data?.value || default_registry_data || null,
     };
     const id = clusterId;
     const response = await updateCluster(id, payload);

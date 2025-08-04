@@ -148,6 +148,7 @@ export const Add = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { state: data } = location.state || {};
+
   const [tags, setTags] = useState(data?.tag || '');
   const [clusterData, setClusterData] = useState({
     clusterName: data?.name || '',
@@ -159,6 +160,7 @@ export const Add = () => {
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'clusters')
   );
+
   const [saveButtonEnable, setSaveButtonEnable] = useState(true);
   const [error, setError] = useState('');
   const filteredGridData = gridData.filter(item => {
@@ -316,6 +318,9 @@ export const Add = () => {
     resolver: yupResolver(handleSchemaCheck(activeTab)),
     mode: 'all',
     reValidateMode: 'onChange',
+    defaultValues: {
+      default_registry: data?.default_registry?.name,
+    },
   });
   const formStateData = watch();
   const newRegistryDataFromWatch = {
@@ -325,7 +330,6 @@ export const Add = () => {
 
   const selectedRegistryId = watch('registry');
   const selectedDefalutRegistryId = watch('default_registry');
-  console.log('selectedDefalutRegistryId', selectedDefalutRegistryId);
 
   const editClusterData = async () => {
     const selectedRegistriesId = formStateData?.registry?.map(
@@ -347,7 +351,6 @@ export const Add = () => {
         change_request_enable: changeRequestEnable,
         registry_ids: selectedRegistriesId,
         has_custom_service_account: false,
-        default_registry: selectedDefalutRegistryId,
       };
 
       const id = clusterId;
@@ -888,6 +891,7 @@ export const Add = () => {
                   errors={errors}
                   options={selectedRegistryId}
                   placeholder="Select Default Registry"
+                  defaultValue={data?.default_registry?.name}
                 />
               </div>
             </div>

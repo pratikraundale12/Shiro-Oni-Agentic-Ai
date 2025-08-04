@@ -173,7 +173,12 @@ function DeployPage() {
   const registryDropdownOptions = registryData.map(item => ({
     label: item?.name,
     value: item?.nifiRegistryId,
+    default_registry_id: item?.is_default,
   }));
+  const defaultRegistry = registryDropdownOptions.find(
+    item => item.default_registry_id === true
+  );
+  const defaultRegistryLabel = defaultRegistry?.label || '';
 
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
   const [successTest, setSuccessTest] = useState(false);
@@ -225,7 +230,9 @@ function DeployPage() {
     handleSubmit,
   } = useForm({
     resolver: yupResolver(registrySchema),
-    defaultValues: { registry: registryDropdownOptions?.[0]?.label || '' },
+    defaultValues: {
+      registry: defaultRegistryLabel || registryDropdownOptions?.[0]?.label,
+    },
   });
 
   const convertDate = dateString => {
@@ -514,7 +521,10 @@ function DeployPage() {
                       control={control}
                       placeholder="Select Registry"
                       onChange={onRegistryChange}
-                      defaultValue={registryDropdownOptions?.[0]?.label}
+                      defaultValue={
+                        defaultRegistryLabel ||
+                        registryDropdownOptions?.[0]?.label
+                      }
                     />
                   </BucketDiv>
                 </div>
