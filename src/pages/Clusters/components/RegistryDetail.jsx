@@ -9,7 +9,7 @@ const Container = styled.div`
     height: auto;
   }
 `;
-const RegistryDetail = ({ data, displayFullWidth }) => {
+const RegistryDetail = ({ data }) => {
   const REGISTRYCOLUMNS = [
     {
       label: KDFM.REGISTRY_NAME,
@@ -39,9 +39,9 @@ const RegistryDetail = ({ data, displayFullWidth }) => {
   ];
 
   return (
-    <Container className={`${displayFullWidth ? 'col-12' : 'col-6'} mt-2`}>
+    <Container className="col-6">
       <Table
-        data={data || []}
+        data={[data || {}]}
         columns={REGISTRYCOLUMNS}
         className={'customTable'}
       />
@@ -51,7 +51,6 @@ const RegistryDetail = ({ data, displayFullWidth }) => {
 
 RegistryDetail.propTypes = {
   data: PropTypes.object.isRequired,
-  displayFullWidth: PropTypes.bool,
 };
 
 export default RegistryDetail;
