@@ -1126,8 +1126,12 @@ export function* fetchNamespacesForDestiationCluster(api, { payload }) {
   }
 }
 
-export function* fetchRegistryData(api, { payload }) {
+export function* fetchRegistryData(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const gridData = yield select(
+    GridSelectors.getNamespaceGridRegistry,
+    'namespaces'
+  );
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1143,7 +1147,7 @@ export function* fetchRegistryData(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        registriesId: payload,
+        registriesId: gridData?.id,
       },
     ],
   });
@@ -1156,8 +1160,9 @@ export function* fetchRegistryData(api, { payload }) {
 
 export function* fetchFlowNameList(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const selectedRegistryId = yield select(
-    NamespacesSelectors.getSelectedRegistryOnDeploy
+  const gridData = yield select(
+    GridSelectors.getNamespaceGridRegistry,
+    'namespaces'
   );
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -1175,7 +1180,7 @@ export function* fetchFlowNameList(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        registriesId: selectedRegistryId,
+        registriesId: gridData?.id,
         bucketId: payload,
       },
     ],
@@ -1191,8 +1196,9 @@ export function* fetchVersionData(api, { payload }) {
   const { isFromSchedule } = payload;
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const selectedSchedule = yield select(SchedularSelectors.getSelectedSchedule);
-  const selectedRegistryId = yield select(
-    NamespacesSelectors.getSelectedRegistryOnDeploy
+  const gridData = yield select(
+    GridSelectors.getNamespaceGridRegistry,
+    'namespaces'
   );
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -1218,10 +1224,7 @@ export function* fetchVersionData(api, { payload }) {
         clusterId: isFromSchedule
           ? selectedSchedule?.cluster_id
           : selectedClusterToken?.id,
-        registriesId:
-          selectedRegistryId ||
-          payload?.registryId ||
-          selectedSchedule?.registry_id,
+        registriesId: gridData?.id || selectedSchedule?.registry_id,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,
         namespaceId:
@@ -1241,9 +1244,6 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
-  const selectedRegistryId = yield select(
-    NamespacesSelectors.getSelectedRegistryOnDeploy
-  );
   const scheduleStartFlow = yield select(
     NamespacesSelectors.getScheduleStartFlow
   );
@@ -1258,13 +1258,6 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   const isUpgrade = yield select(NamespacesSelectors.getDeployRegistryFlow);
-  const gridData = yield select(
-    GridSelectors.getNamespaceGridRegistry,
-    'namespaces'
-  );
-  const localRegistryIdArr = gridData?.filter(
-    item => item?.nifiRegistryId === selectedRegistryId
-  );
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -1275,7 +1268,6 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        registriesId: localRegistryIdArr?.[0]?.localRegistryId,
         namespaceId: scheduleStartFlow
           ? urlId
           : !isUpgrade

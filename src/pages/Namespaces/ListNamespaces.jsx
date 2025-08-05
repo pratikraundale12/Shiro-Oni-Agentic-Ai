@@ -599,7 +599,6 @@ export const ListNamespaces = () => {
   ];
 
   const handleSelect = item => {
-    dispatch(NamespacesActions.setSelectedRegistryOnDeploy(item?.registryId));
     if (isEmpty(registryData)) {
       toast.error(
         'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
@@ -621,7 +620,6 @@ export const ListNamespaces = () => {
       NamespacesActions.fetchVersionData({
         bucketId: item.bucketId,
         flowId: item.flowId,
-        registryId: item?.registryId,
       })
     );
     history.push('/process-group/flow-details', {

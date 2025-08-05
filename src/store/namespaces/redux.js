@@ -239,9 +239,6 @@ export const NamespacesActions = {
   fetchInvalidProcessorDetailsSuccess: createAction(
     'FETCH_INVALID_PROCESSOR_DETAILS_SUCCESS'
   ),
-  setSelectedRegistryOnDeploy: createAction(
-    `${prefix}setSelectedRegistryOnDeploy`
-  ),
   fetchSanityReportAuditLog: createAction(`${prefix}fetchSanityReportAuditLog`),
   setSanityReportAuditData: createAction(`${prefix}setSanityReportAuditData`),
   setDisplaySanityCheckCleanModal: createAction(
@@ -382,7 +379,6 @@ export const NAMESPACES_INITIAL_STATE = {
   localChangesModalType: null,
   revertConfirmationModalOpen: false,
   invalidProcessorDetails: [],
-  selectedRegistryOnDeploy: null,
   sanityReportAuditData: {},
   displaySanityCheckCleanModal: false,
   deleteNamespaceDetails: {},
@@ -516,8 +512,6 @@ export const NamespacesSelectors = {
   getRevertConfirmationModalOpen: state =>
     state.namespaces.revertConfirmationModalOpen,
   getInvalidProcessorDetails: state => state.namespaces.invalidProcessorDetails,
-  getSelectedRegistryOnDeploy: state =>
-    state.namespaces.selectedRegistryOnDeploy,
   getSanityReportAuditData: state => state.namespaces.sanityReportAuditData,
   getDisplaySanityCheckCleanModal: state =>
     state.namespaces.displaySanityCheckCleanModal,
@@ -1188,13 +1182,6 @@ const fetchInvalidProcessorDetailsSuccess = (state, { payload }) => {
     invalidProcessorDetails: payload,
   };
 };
-
-const setSelectedRegistryOnDeploy = (state, { payload }) => {
-  return {
-    ...state,
-    selectedRegistryOnDeploy: payload,
-  };
-};
 const setSanityReportAuditData = (state, { payload }) => {
   return {
     ...state,
@@ -1519,10 +1506,6 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.fetchInvalidProcessorDetailsSuccess,
         fetchInvalidProcessorDetailsSuccess
-      )
-      .addCase(
-        NamespacesActions.setSelectedRegistryOnDeploy,
-        setSelectedRegistryOnDeploy
       )
       .addCase(
         NamespacesActions.setSanityReportAuditData,

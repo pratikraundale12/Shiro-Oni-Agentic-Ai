@@ -505,10 +505,6 @@ export const ListClusters = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    dispatch(GridActions.fetchGridSuccess({ module: 'nodes', data: {} }));
-  }, [dispatch]);
-
   return (
     <>
       <ModalWithIcon
