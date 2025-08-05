@@ -203,19 +203,6 @@ const FlowDetailsPage = () => {
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
-
-  const registryDropdownOptions = registryData.map(item => ({
-    label: item?.name,
-    value: item?.nifiRegistryId,
-    default_registry_id: item?.is_default,
-    url: item?.url,
-  }));
-
-  const defaultRegistry = registryDropdownOptions.find(
-    item => item.default_registry_id === true
-  );
-  const defaultRegistryUrl = defaultRegistry?.url || '';
-
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
@@ -769,12 +756,7 @@ const FlowDetailsPage = () => {
                     type="text"
                     label={KDFM.REGISTRY_URL}
                     placeholder={KDFM.ENTER_REGISTRY_URL}
-                    value={
-                      registryData?.url ||
-                      localRegistryIdArr?.[0]?.url ||
-                      registryDropdownOptions?.[0]?.url ||
-                      defaultRegistryUrl
-                    }
+                    value={registryData?.url || localRegistryIdArr?.[0]?.url}
                     icon={<LinkIcon />}
                     disabled
                   />

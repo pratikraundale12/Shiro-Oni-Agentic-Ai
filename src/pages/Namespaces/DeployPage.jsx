@@ -179,7 +179,6 @@ function DeployPage() {
     item => item.default_registry_id === true
   );
   const defaultRegistryLabel = defaultRegistry?.label || '';
-  const defaultRegistryValue = defaultRegistry?.value || '';
 
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
   const [successTest, setSuccessTest] = useState(false);
@@ -390,13 +389,9 @@ function DeployPage() {
   }, [selectedValueFlowId]);
 
   useEffect(() => {
-    dispatch(
-      NamespacesActions.fetchRegistryData(
-        registrySelectedId ||
-          defaultRegistryValue ||
-          registryDropdownOptions?.[0]?.value
-      )
-    );
+    if (!isEmpty(registrySelectedId)) {
+      dispatch(NamespacesActions.fetchRegistryData(registrySelectedId));
+    }
     dispatch(SettingsActions.setSettingsData({}));
   }, [dispatch, registrySelectedId]);
 
