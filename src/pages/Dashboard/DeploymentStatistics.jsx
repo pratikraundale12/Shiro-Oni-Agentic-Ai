@@ -166,7 +166,7 @@ const D3PieChart = ({ data }) => {
 
     const width = 500;
     const height = 250;
-    const radius = Math.min(width - 160, height) / 2 - 20;
+    const radius = Math.min(width - 160, height) / 2 - 40; // Reduced radius to make room for outside labels
 
     const g = svg
       .attr('width', width)
@@ -186,12 +186,18 @@ const D3PieChart = ({ data }) => {
       .value(d => d.value)
       .sort(null);
 
-    // Arc generator
+    // Arc generators
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
     const arcHover = d3
       .arc()
       .innerRadius(0)
       .outerRadius(radius + 10);
+
+    // Arc for label positioning (outside the pie)
+    const labelArc = d3
+      .arc()
+      .innerRadius(radius + 20)
+      .outerRadius(radius + 20);
 
     // Create pie data with exact values (NO rounding)
     const pieData = [
@@ -252,19 +258,37 @@ const D3PieChart = ({ data }) => {
         tooltip.transition().duration(500).style('opacity', 0);
       });
 
-    // Add percentage labels on slices with exact values (NO rounding)
+    // Add connecting lines from pie slice to labels
+    arcs
+      .append('polyline')
+      .attr('points', d => {
+        const centroid = arc.centroid(d);
+        const labelPos = labelArc.centroid(d);
+        // Create a line from slice edge to label position
+        return [centroid, labelPos].map(point => point.join(',')).join(' ');
+      })
+      .style('fill', 'none')
+      .style('stroke', '#999')
+      .style('stroke-width', '1px')
+      .style('opacity', 0.7);
+
+    // Add percentage labels OUTSIDE the pie chart
     arcs
       .append('text')
-      .attr('transform', d => `translate(${arc.centroid(d)})`)
+      .attr('transform', d => `translate(${labelArc.centroid(d)})`)
       .attr('dy', '0.35em')
-      .style('text-anchor', 'middle')
+      .style('text-anchor', d => {
+        // Adjust text anchor based on which side of the pie the label is on
+        const centroid = labelArc.centroid(d);
+        return centroid[0] > 0 ? 'start' : 'end';
+      })
       .style('font-size', '12px')
       .style('font-weight', 'bold')
       .style('fill', 'black')
       .style('pointer-events', 'none')
       .text(d => {
         const value = Number(d.data.value);
-        return value > 5 ? `${value}%` : ''; // Show exact value, no rounding
+        return `${value}%`; // Show exact value, no rounding
       });
 
     // Add legend - positioned to avoid overlap
