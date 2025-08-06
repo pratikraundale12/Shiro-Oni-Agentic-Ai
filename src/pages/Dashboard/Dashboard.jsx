@@ -403,9 +403,17 @@ export const Dashboard = () => {
         })
       );
     } else {
-      setValue('namespaceDropdown', null);
+      const payload = {
+        selectedNamespace: '',
+      };
+      dispatch(
+        DashboardActions.fetchDashboard({
+          payload,
+        })
+      );
+      setValue('namespaceDropdown', 'All');
     }
-  }, [dispatch, selectedCluster, selectedNamespace]);
+  }, [dispatch, selectedCluster, selectedNamespace, clusterChanged]);
 
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {
