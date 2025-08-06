@@ -6,13 +6,13 @@ import {
   InputField,
   Modal,
   ModalWithIcon,
-  RadioField,
   RadioSelectField,
   SelectField,
 } from '../../../shared';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
+  InfoIcon,
   PlusIcon,
   QRIcons,
 } from '../../../assets';
@@ -580,7 +580,7 @@ const ClusterDetailTab = ({
           />
         </div>
       </div>
-      <div className="row mt-2 ms-2 me-2 mb-4">
+      <div className="row mt-2 ms-2 me-2 mb-2">
         <div className="col-4">
           <LabelSelect className="mb-3">{KDFM.NIFI_VERSION}</LabelSelect>
           <SelectField
@@ -631,20 +631,15 @@ const ClusterDetailTab = ({
             label={'Add Trustore Certificate'}
           />
         </div>
+      </div>
+      <div className="ms-3 mb-2">
         {isAddTrustoreCert === 'true' && (
-          <div className="col-4 mt-3">
-            <LabelSelect className="mb-3">Trustore Certificate</LabelSelect>
-            <SelectField
-              name="configVersion"
-              icon={<QRIcons />}
-              register={register}
-              errors={errors}
-              control={control}
-              options={configVersionOptions || []}
-              placeholder={KDFM.SELECT_CONFIG_VERSION}
-              disabled={!isEmpty(nodesUpdateAnsbibleClusterId)}
-            />
-          </div>
+          <>
+            <InfoIcon color={theme.colors.primary} /> &nbsp; Keystore holds this
+            NiFi node’s own security certificate (its identity), while
+            Truststore contains certificates of trusted systems. Together, they
+            enable secure communication within the NiFi cluster.
+          </>
         )}
       </div>
       <div className="row mx-auto">

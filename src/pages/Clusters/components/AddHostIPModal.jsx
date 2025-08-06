@@ -20,12 +20,14 @@ import {
   CurvedLockIcon,
   CurvedProfileIcon,
   DocumentTextIcon,
+  InfoIcon,
 } from '../../../assets';
 import { isEmpty, set } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
+import { theme } from '../../../styles';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -85,6 +87,7 @@ const StyledSelectField = styled(SelectField)`
 export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
   const dispatch = useDispatch();
   const [method, setMethod] = useState('password');
+  const [addCertificate, setAddCertificate] = useState(false);
   const [formData, setFormData] = useState({});
   const isModalOpen = useSelector(ClustersSelectors.getIsAddHostIPModalOpen);
   const isPrimaryBtnDisable = useSelector(
@@ -124,6 +127,26 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
     username: yup.string().required('Username is required'),
     password: yup.string().required('Password is required'),
   });
+  const schemaPasswrdwithCertificate = yup.object().shape({
+    host_ip: yup
+      .string()
+      .required('Host IP is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Host IP must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
+    port: yup.string().required('Port is required'),
+    username: yup.string().required('Username is required'),
+    password: yup.string().required('Password is required'),
+    keystoreType: yup.string().required('Port is required'),
+    keystorePassword: yup.string().required('Username is required'),
+    keystoreCertificate: yup.mixed().required('File is required'),
+    truststoreType: yup.string().required('Port is required'),
+    truststorePassword: yup.string().required('Username is required'),
+    truststoreCertificate: yup.mixed().required('File is required'),
+  });
+
   const schemaPrivateKey = yup.object().shape({
     host_ip: yup
       .string()
@@ -137,7 +160,40 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
     username: yup.string().required('Username is required'),
     pfxFile: yup.mixed().required('File is required'),
   });
-  const schema = method === 'password' ? schemaPasswrd : schemaPrivateKey;
+  const schemaPrivateKeywithCertificate = yup.object().shape({
+    host_ip: yup
+      .string()
+      .required('Host IP is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Host IP must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
+    port: yup.string().required('Port is required'),
+    username: yup.string().required('Username is required'),
+    pfxFile: yup.mixed().required('File is required'),
+    keystoreType: yup.string().required('Port is required'),
+    keystorePassword: yup.string().required('Username is required'),
+    keystoreCertificate: yup.mixed().required('File is required'),
+    truststoreType: yup.string().required('Port is required'),
+    truststorePassword: yup.string().required('Username is required'),
+    truststoreCertificate: yup.mixed().required('File is required'),
+  });
+  const getSchema = () => {
+    if (method === 'password') {
+      if (addCertificate === 'true') {
+        return schemaPasswrdwithCertificate;
+      } else {
+        return schemaPasswrd;
+      }
+    } else {
+      if (addCertificate === 'true') {
+        return schemaPrivateKeywithCertificate;
+      } else {
+        return schemaPrivateKey;
+      }
+    }
+  };
   const {
     register,
     handleSubmit,
@@ -147,7 +203,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
     control,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(getSchema()),
   });
 
   useEffect(() => {
@@ -159,8 +215,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
     }
   }, [hostToEdit]);
   const watchMethodCredentials = watch('methodForCredentials');
-  const watchKeystoreSelection = watch('isKeystoreCertificateAdd');
-  console.log(watchKeystoreSelection, 'watchKeystoreSelection');
+  const watchCertificateSelection = watch('isKeystoreCertificateAdd');
 
   const handleTestSubmit = data => {
     setFormData(data);
@@ -180,11 +235,20 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
     payload.append('hostName', formData?.hostName);
     payload.append('port', getIndividualHostData?.port);
     payload.append('username', getIndividualHostData?.username);
-    payload.append('file', getIndividualHostData?.pfxFile);
+    payload.append('pemFile', getIndividualHostData?.pfxFile);
     payload.append(
       'isPassword',
       getIndividualHostData?.methodForCredentials === 'password'
     );
+    if (formData?.isKeystoreCertificateAdd === 'true') {
+      payload.append('keystoreFile', formData?.keystoreCertificate);
+      payload.append('truststoreFile', formData?.truststoreCertificate);
+      payload.append('truststoreType', formData?.truststoreType);
+      payload.append('keystoreType', formData?.keystoreType);
+      payload.append('keystorePassword', formData?.keystorePassword);
+      payload.append('truststorePassword', formData?.truststorePassword);
+      payload.append('hasCertificate', formData?.isKeystoreCertificateAdd);
+    }
     if (isEmpty(hostToEdit)) {
       payload.append('hostIp', getIndividualHostData?.host_ip);
       dispatch(ClustersActions.addIndividualHost(payload));
@@ -202,6 +266,11 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
       setMethod(watchMethodCredentials);
     }
   }, [watchMethodCredentials]);
+  useEffect(() => {
+    if (watchCertificateSelection) {
+      setAddCertificate(watchCertificateSelection);
+    }
+  }, [watchCertificateSelection]);
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -233,7 +302,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
         primaryButtonText="Add Host"
         secondaryButtonText="Back"
         primaryButtonDisabled={isPrimaryBtnDisable}
-        contentStyles={{ minWidth: '40%', maxHeight: '65%' }}
+        contentStyles={{ minWidth: '68%', maxHeight: '65%' }}
         footerAlign="start"
         tertiaryButton={true}
         tertiaryButtonConfig={{
@@ -249,7 +318,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
           }}
         >
           <div className="row">
-            <div className="col-8">
+            <div className="col-6">
               <InputField
                 name="host_ip"
                 type="text"
@@ -262,7 +331,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 disabled={!isPrimaryBtnDisable || !isEmpty(hostToEdit)}
               />
             </div>{' '}
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 name="port"
                 type="text"
@@ -275,9 +344,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 disabled={!isPrimaryBtnDisable}
               />
             </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
+            <div className="col-3">
               <InputField
                 name="hostName"
                 type="text"
@@ -308,7 +375,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
           </div>
 
           <div className="row">
-            <div className="">
+            <div className="col-6">
               <InputField
                 name="username"
                 type="text"
@@ -321,50 +388,51 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 disabled={!isPrimaryBtnDisable}
               />
             </div>{' '}
-          </div>
-          {(isEmpty(watchMethodCredentials) ||
-            watchMethodCredentials === 'password') && (
-            <>
-              {' '}
-              <div className="row">
-                <PasswordField
-                  name="password"
-                  register={register}
-                  watch={watch}
-                  label="Password"
-                  required
-                  icon={<CurvedLockIcon />}
-                  placeholder="Enter Your Password"
-                  disableToggle={false}
-                  errors={errors}
-                />
-              </div>
-            </>
-          )}
-          {watchMethodCredentials === 'privatekey' && (
-            <>
-              <span
-                style={{
-                  pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
-                  cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
-                }}
-              >
-                <ModalContainer>
-                  <PemUploadField
-                    name="pfxFile"
+            {(isEmpty(watchMethodCredentials) ||
+              watchMethodCredentials === 'password') && (
+              <>
+                {' '}
+                <div className="col-6">
+                  <PasswordField
+                    name="password"
+                    register={register}
                     watch={watch}
-                    control={control}
+                    label="Password"
                     required
-                    rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                    placeholder={KDFM.UPLOAD_PEM_FILE}
+                    icon={<CurvedLockIcon />}
+                    placeholder="Enter Your Password"
+                    disableToggle={false}
                     errors={errors}
-                    fileLable="PEM file"
                   />
-                </ModalContainer>
-              </span>
-            </>
-          )}
-          <div className=" d-flex justify-content-end mt-2">
+                </div>
+              </>
+            )}
+            {watchMethodCredentials === 'privatekey' && (
+              <div className="col-6">
+                <span
+                  style={{
+                    pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
+                    cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  <ModalContainer>
+                    <PemUploadField
+                      name="pfxFile"
+                      watch={watch}
+                      control={control}
+                      required
+                      rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                      placeholder={KDFM.UPLOAD_PEM_FILE}
+                      errors={errors}
+                      fileLable="PEM file"
+                      disabled={!isPrimaryBtnDisable}
+                    />
+                  </ModalContainer>
+                </span>
+              </div>
+            )}
+          </div>
+          <div className=" d-flex justify-content-end ">
             <div>
               <RadioSelectField
                 name="isKeystoreCertificateAdd"
@@ -372,27 +440,38 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 register={register}
                 defaultValue={'false'}
                 disabled={!isPrimaryBtnDisable}
-                label={'Add Keystore Certificate'}
+                label={'Add Certificates'}
               />
             </div>
           </div>
-          {watchKeystoreSelection === 'true' && (
+          {watchCertificateSelection === 'true' && (
             <>
+              <InfoIcon color={theme.colors.primary} /> &nbsp; Keystore holds
+              this NiFi node’s own security certificate (its identity), while
+              Truststore contains certificates of trusted systems. Together,
+              they enable secure communication within the NiFi cluster.
               <div className="row mt-2">
-                <PemUploadField
-                  name="pfxFile"
-                  watch={watch}
-                  control={control}
-                  label={'Keystore Certificate'}
-                  // required
-                  rightIcon={<UploadWrapper>Keystore File</UploadWrapper>}
-                  placeholder={'Keystore Certificate'}
-                  errors={errors}
-                  fileLable="Keystore Certificate"
-                />
-              </div>
-              <div className="row mt-2">
-                <div className="col-6">
+                <div className="col-4">
+                  <span
+                    style={{
+                      pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
+                      cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    <PemUploadField
+                      name="keystoreCertificate"
+                      watch={watch}
+                      control={control}
+                      label={'Keystore Certificate'}
+                      // required
+                      rightIcon={<UploadWrapper>Browse File</UploadWrapper>}
+                      placeholder={'Keystore Certificate'}
+                      errors={errors}
+                      fileLable="Keystore Certificate"
+                    />
+                  </span>
+                </div>
+                <div className="col-5">
                   <PasswordField
                     name="keystorePassword"
                     register={register}
@@ -402,9 +481,10 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                     placeholder="Enter Password"
                     disableToggle={false}
                     errors={errors}
+                    disabled={!isPrimaryBtnDisable}
                   />
                 </div>
-                <div className="col-6">
+                <div className="col-3">
                   <StyledSelectField
                     label="Keystore Type"
                     id="keystore-type"
@@ -415,6 +495,55 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                     placeholder="Select Option"
                     showCircleIcon={true}
                     options={typeOptions}
+                    disabled={!isPrimaryBtnDisable}
+                  />
+                </div>
+              </div>
+              <div className="row mt-2">
+                <div className="col-4">
+                  <span
+                    style={{
+                      pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
+                      cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    <PemUploadField
+                      name="truststoreCertificate"
+                      watch={watch}
+                      control={control}
+                      label={'Truststore Certificate'}
+                      rightIcon={<UploadWrapper>Truststore File</UploadWrapper>}
+                      placeholder={'Truststore Certificate'}
+                      errors={errors}
+                      fileLable="Truststore Certificate"
+                    />
+                  </span>
+                </div>
+                <div className="col-5">
+                  <PasswordField
+                    name="truststorePassword"
+                    register={register}
+                    watch={watch}
+                    label="Truststore Password"
+                    icon={<CurvedLockIcon />}
+                    placeholder="Enter Password"
+                    disableToggle={false}
+                    errors={errors}
+                    disabled={!isPrimaryBtnDisable}
+                  />
+                </div>
+                <div className="col-3">
+                  <StyledSelectField
+                    label="Truststore Type"
+                    id="keystore-type"
+                    name="truststoreType"
+                    control={control}
+                    icon={<DocumentTextIcon />}
+                    errors={errors}
+                    placeholder="Select Option"
+                    showCircleIcon={true}
+                    options={typeOptions}
+                    disabled={!isPrimaryBtnDisable}
                   />
                 </div>
               </div>

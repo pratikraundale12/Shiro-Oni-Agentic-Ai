@@ -76,25 +76,6 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
         {KDFM.MANAGE_CONFIG}
       </NavButton>
       <NavButton
-        active={activeTab === 'manage_trustore_certificate'}
-        onClick={() => {
-          dispatch(
-            ClustersActions.setActiveTabClusterSetup(
-              'manage_trustore_certificate'
-            )
-          );
-        }}
-      >
-        <ActivityHistoryIcon
-          color={
-            activeTab === 'manage_trustore_certificate' ? '#FF7A00' : '#444445'
-          }
-          height={16}
-          width={16}
-        />{' '}
-        Manage Certificates
-      </NavButton>
-      <NavButton
         active={activeTab === 'cluster_details'}
         onClick={() => {
           dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
