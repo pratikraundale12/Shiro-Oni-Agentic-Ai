@@ -22,11 +22,13 @@ import {
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
+  NotePadIcon,
   PencilIcon,
   PlusCircleIcon,
 } from '../../../assets';
 import { AddHostIPModal } from './AddHostIPModal';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
+import { theme } from '../../../styles';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -112,7 +114,23 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
     },
     {
       label: 'Username',
-      renderCell: item => <>{item?.username}</>,
+      renderCell: item => (
+        <>
+          {' '}
+          {
+            <NotePadIcon
+              height="21"
+              width="21"
+              color={
+                item?.has_certificate
+                  ? theme.colors.primary
+                  : theme.colors.darkGrey
+              }
+            />
+          }
+          {item?.username}
+        </>
+      ),
       resize: true,
       width: '10%',
     },
@@ -177,7 +195,22 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <TableContainer>
-          <div className="d-flex justify-content-end mt-3 mb-3">
+          <div className="d-flex justify-content-between mt-3 mb-3">
+            <div className="ms-3 mt-2">
+              <div style={{ fontSize: '14px', fontWeight: '600' }}>Legends</div>
+              <NotePadIcon
+                height="21"
+                width="21"
+                color={theme.colors.primary}
+              />{' '}
+              : Host with certificates &nbsp;&nbsp;
+              <NotePadIcon
+                height="21"
+                width="21"
+                color={theme.colors.darkGrey}
+              />{' '}
+              : Host with no certificates
+            </div>
             <div className="col-auto me-3">
               <Button
                 size="md"
@@ -197,13 +230,14 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
               </Button>
             </div>
           </div>
-
-          <Table
-            data={listHostIpData || []}
-            columns={COLUMNS}
-            customNoDataText="No Host IP Available"
-            tableWithFullHeight={true}
-          />
+          <div className="ms-3 me-3">
+            <Table
+              data={listHostIpData || []}
+              columns={COLUMNS}
+              customNoDataText="No Host IP Available"
+              tableWithFullHeight={true}
+            />
+          </div>
         </TableContainer>
         <ModalWithIcon
           title={'Delete Host IP'}

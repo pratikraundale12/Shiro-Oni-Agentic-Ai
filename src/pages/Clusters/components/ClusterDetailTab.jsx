@@ -13,6 +13,7 @@ import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
   InfoIcon,
+  NotePadIcon,
   PlusIcon,
   QRIcons,
 } from '../../../assets';
@@ -347,7 +348,17 @@ const ClusterDetailTab = ({
     },
     {
       label: 'Username',
-      renderCell: item => <>{item?.username}</>,
+      renderCell: item => (
+        <>
+          {' '}
+          <NotePadIcon
+            height="21"
+            width="21"
+            color={item?.has_certificate ? theme.colors.primary : '#fff'}
+          />
+          {item?.username}
+        </>
+      ),
       resize: true,
       width: '15%',
     },
@@ -561,7 +572,7 @@ const ClusterDetailTab = ({
   return (
     <>
       <FullPageLoader loading={loading || loadingAddAPI} />
-      <div className="row mt-2 ms-2 me-2">
+      <div className="row mt-3 ms-2 me-2">
         {' '}
         <div className="col-6">
           <LabelSelect className="mb-3">{KDFM.CLUSTER_NAME}</LabelSelect>
@@ -580,7 +591,7 @@ const ClusterDetailTab = ({
           />
         </div>
       </div>
-      <div className="row mt-2 ms-2 me-2 mb-2">
+      <div className="row mt-1 ms-2 me-2 mb-2">
         <div className="col-4">
           <LabelSelect className="mb-3">{KDFM.NIFI_VERSION}</LabelSelect>
           <SelectField
@@ -621,29 +632,38 @@ const ClusterDetailTab = ({
             disabled={!isEmpty(nodesUpdateAnsbibleClusterId)}
           />
         </div>
-        <div className="col-4 mt-3">
-          <RadioSelectField
-            name="isTruststoreCertificateAdd"
-            options={KEYSTORE_SELECTION_OPTIONS}
-            register={register}
-            defaultValue={'false'}
-            // disabled={!isPrimaryBtnDisable}
-            label={'Add Certificates'}
-          />
-        </div>
-      </div>
-      <div className="ms-3 mb-2">
-        {isAddTrustoreCert === 'true' && (
-          <>
-            <InfoIcon color={theme.colors.primary} /> &nbsp; Keystore holds this
-            NiFi node’s own security certificate (its identity), while
-            Truststore contains certificates of trusted systems. Together, they
-            enable secure communication within the NiFi cluster.
-          </>
-        )}
+        <>
+          {!(
+            !isEmpty(clusterIdForAnsible) ||
+            !isEmpty(nodesUpdateAnsbibleClusterId)
+          ) && (
+            <>
+              <div className="mt-3">
+                {
+                  <>
+                    <InfoIcon color={theme.colors.primary} /> &nbsp; Keystore
+                    holds this NiFi node’s own security certificate (its
+                    identity), while Truststore contains certificates of trusted
+                    systems. Together, they enable secure communication within
+                    the NiFi cluster.
+                  </>
+                }
+              </div>
+              <div className="col-4 mt-2">
+                <RadioSelectField
+                  name="isTruststoreCertificateAdd"
+                  options={KEYSTORE_SELECTION_OPTIONS}
+                  register={register}
+                  defaultValue={'false'}
+                  label={'Add Certificates'}
+                />
+              </div>
+            </>
+          )}
+        </>
       </div>
       <div className="row mx-auto">
-        <div className="col-auto ms-3">
+        <div className="col-auto ms-2">
           <Button
             size="md"
             onClick={() =>

@@ -126,7 +126,13 @@ const SetupClusterWrapper = ({ activeTab }) => {
         .filter(item => item.is_selected)
         .map(item => item?.id);
 
-      const payload = { ...data, ...{ hosts: hosts } };
+      const payload = {
+        ...data,
+        ...{
+          hosts: hosts,
+          isSelfSignedCert: data?.isTruststoreCertificateAdd === 'true',
+        },
+      };
       if (isEmpty(hosts)) {
         toast.error('Select Host IP');
       } else {

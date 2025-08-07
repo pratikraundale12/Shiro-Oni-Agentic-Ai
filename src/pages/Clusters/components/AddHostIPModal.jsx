@@ -357,7 +357,6 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
               />
             </div>
           </div>
-
           <div
             className=" d-flex justify-content-end "
             style={{
@@ -373,7 +372,6 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
               disabled={!isPrimaryBtnDisable}
             />
           </div>
-
           <div className="row">
             <div className="col-6">
               <InputField
@@ -432,7 +430,13 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
               </div>
             )}
           </div>
-          <div className=" d-flex justify-content-end ">
+          <div className=" d-flex justify-content-between ">
+            <div className="mt-3">
+              <InfoIcon color={theme.colors.primary} /> &nbsp; Keystore holds
+              this NiFi node’s own security certificate (its identity), while
+              Truststore contains certificates of trusted systems. Together,
+              they enable secure communication within the NiFi cluster.
+            </div>
             <div>
               <RadioSelectField
                 name="isKeystoreCertificateAdd"
@@ -443,13 +447,9 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 label={'Add Certificates'}
               />
             </div>
-          </div>
+          </div>{' '}
           {watchCertificateSelection === 'true' && (
             <>
-              <InfoIcon color={theme.colors.primary} /> &nbsp; Keystore holds
-              this NiFi node’s own security certificate (its identity), while
-              Truststore contains certificates of trusted systems. Together,
-              they enable secure communication within the NiFi cluster.
               <div className="row mt-2">
                 <div className="col-4">
                   <span
