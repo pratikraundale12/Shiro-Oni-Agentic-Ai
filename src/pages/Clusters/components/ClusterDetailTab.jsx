@@ -628,7 +628,7 @@ const ClusterDetailTab = ({
             register={register}
             defaultValue={'false'}
             // disabled={!isPrimaryBtnDisable}
-            label={'Add Trustore Certificate'}
+            label={'Add Certificates'}
           />
         </div>
       </div>
