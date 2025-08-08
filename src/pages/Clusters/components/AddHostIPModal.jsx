@@ -139,12 +139,14 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
     port: yup.string().required('Port is required'),
     username: yup.string().required('Username is required'),
     password: yup.string().required('Password is required'),
-    keystoreType: yup.string().required('Port is required'),
-    keystorePassword: yup.string().required('Username is required'),
+    certificateType: yup.string().required('Certificate type is required'),
+    keystorePassword: yup.string().required('Keystore password is required'),
     keystoreCertificate: yup.mixed().required('File is required'),
-    truststoreType: yup.string().required('Port is required'),
-    truststorePassword: yup.string().required('Username is required'),
+    truststorePassword: yup
+      .string()
+      .required('Truststore password is required'),
     truststoreCertificate: yup.mixed().required('File is required'),
+    keyPassword: yup.string().required('Password is required'),
   });
 
   const schemaPrivateKey = yup.object().shape({
@@ -172,12 +174,14 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
     port: yup.string().required('Port is required'),
     username: yup.string().required('Username is required'),
     pfxFile: yup.mixed().required('File is required'),
-    keystoreType: yup.string().required('Port is required'),
-    keystorePassword: yup.string().required('Username is required'),
+    certificateType: yup.string().required('Certificate type is required'),
+    keystorePassword: yup.string().required('Keystore password is required'),
     keystoreCertificate: yup.mixed().required('File is required'),
-    truststoreType: yup.string().required('Port is required'),
-    truststorePassword: yup.string().required('Username is required'),
+    truststorePassword: yup
+      .string()
+      .required('Truststore password is required'),
     truststoreCertificate: yup.mixed().required('File is required'),
+    keyPassword: yup.string().required('Password is required'),
   });
   const getSchema = () => {
     if (method === 'password') {
@@ -243,11 +247,11 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
     if (formData?.isKeystoreCertificateAdd === 'true') {
       payload.append('keystoreFile', formData?.keystoreCertificate);
       payload.append('truststoreFile', formData?.truststoreCertificate);
-      payload.append('truststoreType', formData?.truststoreType);
-      payload.append('keystoreType', formData?.keystoreType);
+      payload.append('certificateType', formData?.certificateType);
       payload.append('keystorePassword', formData?.keystorePassword);
       payload.append('truststorePassword', formData?.truststorePassword);
       payload.append('hasCertificate', formData?.isKeystoreCertificateAdd);
+      payload.append('keyPassword', formData?.keyPassword);
     }
     if (isEmpty(hostToEdit)) {
       payload.append('hostIp', getIndividualHostData?.host_ip);
@@ -486,9 +490,9 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 </div>
                 <div className="col-3">
                   <StyledSelectField
-                    label="Keystore Type"
+                    label="Certificates Type"
                     id="keystore-type"
-                    name="keystoreType"
+                    name="certificateType"
                     control={control}
                     icon={<DocumentTextIcon />}
                     errors={errors}
@@ -519,7 +523,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                     />
                   </span>
                 </div>
-                <div className="col-5">
+                <div className="col-4">
                   <PasswordField
                     name="truststorePassword"
                     register={register}
@@ -532,17 +536,16 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                     disabled={!isPrimaryBtnDisable}
                   />
                 </div>
-                <div className="col-3">
-                  <StyledSelectField
-                    label="Truststore Type"
-                    id="keystore-type"
-                    name="truststoreType"
-                    control={control}
-                    icon={<DocumentTextIcon />}
+                <div className="col-4">
+                  <PasswordField
+                    name="keyPassword"
+                    register={register}
+                    watch={watch}
+                    label="Key Password"
+                    icon={<CurvedLockIcon />}
+                    placeholder="Enter Password"
+                    disableToggle={false}
                     errors={errors}
-                    placeholder="Select Option"
-                    showCircleIcon={true}
-                    options={typeOptions}
                     disabled={!isPrimaryBtnDisable}
                   />
                 </div>
