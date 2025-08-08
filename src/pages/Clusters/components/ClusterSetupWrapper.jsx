@@ -130,7 +130,6 @@ const SetupClusterWrapper = ({ activeTab }) => {
         ...data,
         ...{
           hosts: hosts,
-          isSelfSignedCert: data?.isTruststoreCertificateAdd === 'true',
         },
       };
       if (isEmpty(hosts)) {

@@ -651,11 +651,11 @@ const ClusterDetailTab = ({
               </div>
               <div className="col-4 mt-2">
                 <RadioSelectField
-                  name="isTruststoreCertificateAdd"
+                  name="isThirdPartyCert"
                   options={KEYSTORE_SELECTION_OPTIONS}
                   register={register}
                   defaultValue={'false'}
-                  label={'Add Certificates'}
+                  label={'Use Third Party Certificates'}
                 />
               </div>
             </>
