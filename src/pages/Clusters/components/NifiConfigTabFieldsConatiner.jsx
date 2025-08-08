@@ -60,7 +60,7 @@ const NifiConfigTabFieldsContainer = ({
           </div>
         ))}
         {topInputBooleanFields?.map(radio => (
-          <div className="col-6" key={radio?.name}>
+          <div className="col-4" key={radio?.name}>
             <RadioSelectFieldWithWatch
               name={radio?.name}
               options={TRUE_FALSE_OPTIONS}
@@ -71,7 +71,6 @@ const NifiConfigTabFieldsContainer = ({
             />
           </div>
         ))}
-        <div className="col-6"></div>
         {inputStringFields?.map((input, index) => (
           <div className="col-6" key={index}>
             <InputField
