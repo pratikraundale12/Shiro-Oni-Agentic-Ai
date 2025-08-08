@@ -516,7 +516,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                       watch={watch}
                       control={control}
                       label={'Truststore Certificate'}
-                      rightIcon={<UploadWrapper>Truststore File</UploadWrapper>}
+                      rightIcon={<UploadWrapper>Browse File</UploadWrapper>}
                       placeholder={'Truststore Certificate'}
                       errors={errors}
                       fileLable="Truststore Certificate"
