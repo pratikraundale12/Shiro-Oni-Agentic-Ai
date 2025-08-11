@@ -384,7 +384,7 @@ export const ClusterProcessDisplayModal = ({
     dispatch(
       GridActions.fetchGrid({
         module: 'clusters',
-        params: { page: 1, limit: 10 },
+        params: { page: 1, limit: 10, sort: 'name' },
         ...(sortingState && {
           sort: sortingState,
         }),
@@ -502,7 +502,7 @@ export const ClusterProcessDisplayModal = ({
     dispatch(
       GridActions.fetchGrid({
         module: 'clusters',
-        params: { page: 1, limit: 10 },
+        params: { page: 1, limit: 10, sort: 'name' },
         ...(sortingState && {
           sort: sortingState,
         }),
