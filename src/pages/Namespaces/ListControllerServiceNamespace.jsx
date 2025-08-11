@@ -595,7 +595,6 @@ export const ListControllerService = () => {
   return (
     <>
       <FullPageLoader loading={statusLoading || loading} />
-      <div>LIST CS NAMESPACE</div>
       <ScrollSetGrey className="scroll-set-grey pe-1">
         <Collapsible
           isAddBtnDisable={!canWrite}
