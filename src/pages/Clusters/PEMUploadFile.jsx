@@ -153,7 +153,7 @@ const PemUploadField = ({
   placeholder = 'Upload PEM file',
   validExtensionsArray = ['.pem', '.pfx', '.p12', '.jks'],
   acceptString = '.pem,.pfx,.p12,.jks',
-  errorText = 'PEM or PFX',
+  errorText = 'PEM,JKS or PFX',
   ...props
 }) => {
   const [fileName, setFileName] = useState('');
