@@ -1,10 +1,11 @@
 import React from 'react';
-import { InputField, RadioSelectField } from '../../../shared';
+import { InputField } from '../../../shared';
 import { TRUE_FALSE_OPTIONS } from '../../../constants';
 import { NotePadIcon } from '../../../assets';
 import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
 import styled from 'styled-components';
+import RadioSelectFieldWithWatch from '../../../shared/FormInputs/components/RadioSelectFieldWithWatch';
 
 const NoDataText = styled.div`
   color: ${props => props.theme.colors.lightGrey3};
@@ -17,12 +18,23 @@ const NifiConfigTabFieldsContainer = ({
   register,
   errors,
   allNifiProperties,
+  watch,
 }) => {
   const inputStringFields = allNifiProperties?.nifi_properties?.filter(
-    ele => ele?.type === 'string' || ele?.type === 'number'
+    ele =>
+      (ele?.type === 'string' || ele?.type === 'number') &&
+      ele?.priority !== 'true'
   );
   const inputBooleanFields = allNifiProperties?.nifi_properties?.filter(
-    ele => ele?.type === 'boolean'
+    ele => ele?.type === 'boolean' && ele?.priority !== 'true'
+  );
+  const topInputStringFields = allNifiProperties?.nifi_properties?.filter(
+    ele =>
+      (ele?.type === 'string' || ele?.type === 'number') &&
+      ele?.priority === 'true'
+  );
+  const topInputBooleanFields = allNifiProperties?.nifi_properties?.filter(
+    ele => ele?.type === 'boolean' && ele?.priority === 'true'
   );
 
   return (
@@ -33,6 +45,32 @@ const NifiConfigTabFieldsContainer = ({
             Select NiFi Version
           </NoDataText>
         )}
+        {topInputStringFields?.map((input, index) => (
+          <div className="col-6" key={index}>
+            <InputField
+              label={input.label}
+              name={input.name}
+              type="text"
+              placeholder={input.placeholder}
+              required={input.required === 'true'}
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+            />
+          </div>
+        ))}
+        {topInputBooleanFields?.map(radio => (
+          <div className="col-4" key={radio?.name}>
+            <RadioSelectFieldWithWatch
+              name={radio?.name}
+              options={TRUE_FALSE_OPTIONS}
+              label={radio?.label}
+              register={register}
+              defaultValue={'false'}
+              watch={watch}
+            />
+          </div>
+        ))}
         {inputStringFields?.map((input, index) => (
           <div className="col-6" key={index}>
             <InputField
@@ -49,12 +87,13 @@ const NifiConfigTabFieldsContainer = ({
         ))}
         {inputBooleanFields?.map(radio => (
           <div className="col-5" key={radio?.name}>
-            <RadioSelectField
+            <RadioSelectFieldWithWatch
               name={radio?.name}
               options={TRUE_FALSE_OPTIONS}
               label={radio?.label}
               register={register}
               defaultValue={'false'}
+              watch={watch}
             />
           </div>
         ))}
