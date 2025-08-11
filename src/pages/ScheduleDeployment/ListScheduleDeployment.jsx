@@ -1087,7 +1087,7 @@ export const ListScheduleDeployment = () => {
         setSortingState={setSortingState}
       />
       <DiffModalScheduleList />
-      <ScheduleSanityCheckModal />
+      <ScheduleSanityCheckModal fetchSchedule={fetchRecords} />
       <ModalWithIcon
         title="Sanity Check Confirmation"
         primaryButtonText="Confirm"
