@@ -151,8 +151,8 @@ const PemUploadField = ({
   setValue,
   onKeyDown,
   placeholder = 'Upload PEM file',
-  validExtensionsArray = ['.pem', '.pfx', '.p12'],
-  acceptString = '.pem,.pfx,.p12',
+  validExtensionsArray = ['.pem', '.pfx', '.p12', '.jks'],
+  acceptString = '.pem,.pfx,.p12,.jks',
   errorText = 'PEM or PFX',
   ...props
 }) => {
