@@ -74,6 +74,10 @@ const ClusterDetailTab = ({
   const handleSetValue = () => {
     if (ansibleClusterDataForEdit) {
       setValue('clusterName', ansibleClusterDataForEdit?.name);
+      setValue(
+        'isThirdPartyCert',
+        ansibleClusterDataForEdit?.has_third_party_cert.toString()
+      );
     }
   };
   useEffect(() => {
@@ -110,7 +114,6 @@ const ClusterDetailTab = ({
   const selectedNiFiVersion = useSelector(
     ClustersSelectors.getClusterSetupSelectedNiFiVersion
   );
-  const isAddTrustoreCert = watch('isTruststoreCertificateAdd');
   const itemsForList = useMemo(() => {
     return listHostIpData.filter(ele => !ele?.is_selected);
   }, [listHostIpData]);
@@ -332,7 +335,7 @@ const ClusterDetailTab = ({
         </>
       ),
       resize: true,
-      width: '45%',
+      width: '40%',
     },
     {
       label: 'Host',
@@ -348,19 +351,45 @@ const ClusterDetailTab = ({
     },
     {
       label: 'Username',
+      renderCell: item => <> {item?.username}</>,
+      resize: true,
+      width: '15%',
+    },
+    {
+      label: 'Certificate',
       renderCell: item => (
         <>
-          {' '}
-          <NotePadIcon
-            height="21"
-            width="21"
-            color={item?.has_certificate ? theme.colors.primary : '#fff'}
+          {
+            <span data-tooltip-id={`certificate-${item?.id}-detail`}>
+              <NotePadIcon
+                height="21"
+                width="21"
+                color={
+                  item?.has_certificate
+                    ? theme.colors.primary
+                    : theme.colors.darkGrey
+                }
+              />
+            </span>
+          }{' '}
+          <ReactTooltip
+            id={`certificate-${item?.id}-detail`}
+            place="bottom"
+            effect="solid"
+            content={
+              item?.has_certificate ? 'Has Certificate' : 'No Certificate'
+            }
+            style={{
+              width: '130px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
           />
-          {item?.username}
         </>
       ),
       resize: true,
-      width: '15%',
+      width: '7%',
     },
     {
       label: 'Status',
@@ -371,7 +400,7 @@ const ClusterDetailTab = ({
         />
       ),
       resize: true,
-      width: '10%',
+      width: '8%',
     },
   ];
   const COLUMNS_FOR_DELETE_NODE = [
@@ -632,23 +661,33 @@ const ClusterDetailTab = ({
             disabled={!isEmpty(nodesUpdateAnsbibleClusterId)}
           />
         </div>
+
         <>
-          {!(
-            !isEmpty(clusterIdForAnsible) ||
-            !isEmpty(nodesUpdateAnsbibleClusterId)
-          ) && (
+          {
             <>
-              <div className="mt-3">
-                {
-                  <>
-                    <InfoIcon color={theme.colors.primary} /> &nbsp; Keystore
-                    holds this NiFi node’s own security certificate (its
-                    identity), while Truststore contains certificates of trusted
-                    systems. Together, they enable secure communication within
-                    the NiFi cluster.
-                  </>
-                }
-              </div>
+              {!(
+                !isEmpty(clusterIdForAnsible) ||
+                !isEmpty(nodesUpdateAnsbibleClusterId)
+              ) && (
+                <div className="mt-3">
+                  {
+                    <>
+                      <InfoIcon color={theme.colors.primary} /> &nbsp;
+                      <span
+                        style={{
+                          color: theme.colors.primary,
+                          fontWeight: '600',
+                        }}
+                      >
+                        If Use Third-Party Certificates is checked, you may
+                        upload your keystore and truststore (.p12 / .jks) with
+                        passwords for SSL/TLS. Otherwise, a self-signed
+                        certificate will be generated automatically.
+                      </span>
+                    </>
+                  }
+                </div>
+              )}
               <div className="col-4 mt-2">
                 <RadioSelectField
                   name="isThirdPartyCert"
@@ -656,10 +695,14 @@ const ClusterDetailTab = ({
                   register={register}
                   defaultValue={'false'}
                   label={'Use Third Party Certificates'}
+                  disabled={
+                    !isEmpty(clusterIdForAnsible) ||
+                    !isEmpty(nodesUpdateAnsbibleClusterId)
+                  }
                 />
               </div>
             </>
-          )}
+          }
         </>
       </div>
       <div className="row mx-auto">

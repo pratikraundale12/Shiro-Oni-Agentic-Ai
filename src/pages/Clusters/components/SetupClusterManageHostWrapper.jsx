@@ -104,30 +104,56 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       ),
 
       resize: true,
-      width: '40%',
+      width: '34%',
+    },
+    {
+      label: 'Certificate',
+      renderCell: item => (
+        <>
+          {
+            <span data-tooltip-id={`certificate-${item?.id}-host`}>
+              <NotePadIcon
+                height="21"
+                width="21"
+                color={
+                  item?.has_certificate
+                    ? theme.colors.primary
+                    : theme.colors.darkGrey
+                }
+              />
+            </span>
+          }{' '}
+          <ReactTooltip
+            id={`certificate-${item?.id}-host`}
+            place="bottom"
+            effect="solid"
+            content={
+              item?.has_certificate ? 'Has Certificate' : 'No Certificate'
+            }
+            style={{
+              width: '130px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
+        </>
+      ),
+      resize: true,
+      width: '7%',
     },
     {
       label: 'Port No.',
       renderCell: item => <>{item?.port}</>,
       resize: true,
-      width: '10%',
+      width: '9%',
     },
     {
       label: 'Username',
       renderCell: item => (
         <>
           {' '}
-          {
-            <NotePadIcon
-              height="21"
-              width="21"
-              color={
-                item?.has_certificate
-                  ? theme.colors.primary
-                  : theme.colors.darkGrey
-              }
-            />
-          }
+          {}
           {item?.username}
         </>
       ),

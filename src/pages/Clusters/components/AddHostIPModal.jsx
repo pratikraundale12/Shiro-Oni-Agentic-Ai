@@ -436,10 +436,13 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
           </div>
           <div className=" d-flex justify-content-between ">
             <div className="mt-3">
-              <InfoIcon color={theme.colors.primary} /> &nbsp; Keystore holds
-              this NiFi node’s own security certificate (its identity), while
-              Truststore contains certificates of trusted systems. Together,
-              they enable secure communication within the NiFi cluster.
+              <InfoIcon color={theme.colors.primary} height={25} weight={25} />{' '}
+              &nbsp;
+              <span style={{ color: theme.colors.primary, fontWeight: '600' }}>
+                You can optionally upload your keystore and truststore
+                (.p12/.jks) files with passwords to enable secure SSL/TLS
+                communication.
+              </span>
             </div>
             <div>
               <RadioSelectField
@@ -475,7 +478,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                     />
                   </span>
                 </div>
-                <div className="col-5">
+                <div className="col-4">
                   <PasswordField
                     name="keystorePassword"
                     register={register}
@@ -488,7 +491,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                     disabled={!isPrimaryBtnDisable}
                   />
                 </div>
-                <div className="col-3">
+                <div className="col-4">
                   <StyledSelectField
                     label="Certificates Type"
                     id="keystore-type"
