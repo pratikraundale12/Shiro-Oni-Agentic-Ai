@@ -40,6 +40,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const dispatch = useDispatch();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [hostList, setHostList] = useState([]);
+  const [loadingFullPage, setLoadingFullPage] = useState(false);
   const clusterIdForAnsible = useSelector(
     ClustersSelectors.getansibleClucterToEdit
   );
@@ -98,6 +99,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const newlySelectedNodesIds = newlySelectedNodes.map(ele => ele?.id);
 
   const handleCreateCluster = data => {
+    setLoadingFullPage(true);
     if (!isEmpty(nodesUpdateAnsbibleClusterId)) {
       if (isEmpty(deselectedNodesIds) && isEmpty(newlySelectedNodesIds)) {
         toast.error('Please update any nodes first');
@@ -170,6 +172,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
           setHostList={setHostList}
           setValue={setValue}
           reset={reset}
+          loadingFullPage={loadingFullPage}
         />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">

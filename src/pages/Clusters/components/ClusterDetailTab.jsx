@@ -48,6 +48,7 @@ const ClusterDetailTab = ({
   hostList,
   setHostList,
   setValue,
+  loadingFullPage,
 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
@@ -600,7 +601,7 @@ const ClusterDetailTab = ({
   ];
   return (
     <>
-      <FullPageLoader loading={loading || loadingAddAPI} />
+      <FullPageLoader loading={loading || loadingAddAPI || loadingFullPage} />
       <div className="row mt-3 ms-2 me-2">
         {' '}
         <div className="col-6">
