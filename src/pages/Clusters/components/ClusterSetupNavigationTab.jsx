@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { ClustersActions } from '../../../store';
 import {
+  ActivityHistoryIcon,
   ClusterDetailTabIcon,
   CubeIcon,
   ManageHostIcon,
@@ -74,7 +75,6 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
         />{' '}
         {KDFM.MANAGE_CONFIG}
       </NavButton>
-
       <NavButton
         active={activeTab === 'cluster_details'}
         onClick={() => {

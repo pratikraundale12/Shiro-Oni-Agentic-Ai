@@ -72,6 +72,14 @@ const CreationmodelSteps = [
   { step: 'Custom metrics agent', status: 'completed' },
   { step: 'NiFi cluster flow election', status: 'completed' },
 ];
+const CreationModelThirdPartySteps = [
+  { step: 'Connectivity check', status: 'completed' },
+  { step: 'Host preparation', status: 'completed' },
+  { step: 'Certificate deployment', status: 'completed' },
+  { step: 'NiFi Configuration', status: 'completed' },
+  { step: 'Custom metrics agent', status: 'completed' },
+  { step: 'NiFi cluster flow election', status: 'completed' },
+];
 const deleteModalSteps = [
   {
     step: 'Connectivity check',
@@ -203,7 +211,26 @@ const nodesUpdateModalSteps = [
     status: 'completed',
   },
 ];
-
+const nodesAddThirdPartyModalSteps = [
+  {
+    step: 'Connectivity check',
+    status: 'completed',
+  },
+  {
+    step: 'Host preparation',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate deployment',
+    status: 'completed',
+  },
+  {
+    step: 'NiFi Configuration',
+    status: 'completed',
+  },
+  { step: 'NiFi cluster flow election', status: 'completed' },
+  { step: 'NiFi cluster deployment', status: 'completed' },
+];
 const RegistryModalSteps = [
   {
     step: 'Connectivity check',
@@ -274,7 +301,9 @@ export const ClusterProcessDisplayModal = ({
     if (processExeName === 'delete') {
       return deleteModalSteps;
     } else if (processExeName === 'creation') {
-      return CreationmodelSteps;
+      return processData?.has_third_party_cert
+        ? CreationModelThirdPartySteps
+        : CreationmodelSteps;
     } else if (processExeName === 'restart') {
       return RestartModalSteps;
     } else if (processExeName === 'stop') {
@@ -284,7 +313,9 @@ export const ClusterProcessDisplayModal = ({
     } else if (processExeName === 'upgrade') {
       return UpgradeModalSteps;
     } else if (processExeName === 'update-nodes') {
-      return nodesUpdateModalSteps;
+      return processData?.has_third_party_cert
+        ? nodesAddThirdPartyModalSteps
+        : nodesUpdateModalSteps;
     } else if (processExeName === 'add-registry') {
       return RegistryModalSteps;
     }

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
   CheckListIcon,
+  InfoIcon,
   LessArrowIcon,
   LinkIcon,
   NotePadIcon,
@@ -538,7 +539,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
     },
   });
   const nifiVersion = watch('nifiVersion');
-  
+
   useEffect(() => {
     if (!isEmpty(allNifiProperties) && isEmpty(configToEdit)) {
       const nifiPropertiesDefaultValues =
@@ -1263,6 +1264,21 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         />
                       </div>
                     </div>
+                    <InfoIcon
+                      color={theme.colors.primary}
+                      width={26}
+                      height={26}
+                    />
+                    <span
+                      style={{
+                        fontWeight: '650',
+                        color: theme.colors.primary,
+                        fontSize: '16px',
+                      }}
+                    >
+                      The login password entered here will be used to access
+                      NiFi.
+                    </span>
                   </div>
                 )}
 

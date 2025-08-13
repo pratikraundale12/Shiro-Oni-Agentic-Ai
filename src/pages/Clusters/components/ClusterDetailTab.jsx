@@ -6,12 +6,14 @@ import {
   InputField,
   Modal,
   ModalWithIcon,
-  RadioField,
+  RadioSelectField,
   SelectField,
 } from '../../../shared';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
+  InfoIcon,
+  NotePadIcon,
   PlusIcon,
   QRIcons,
 } from '../../../assets';
@@ -46,6 +48,7 @@ const ClusterDetailTab = ({
   hostList,
   setHostList,
   setValue,
+  loadingFullPage,
 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
@@ -72,6 +75,10 @@ const ClusterDetailTab = ({
   const handleSetValue = () => {
     if (ansibleClusterDataForEdit) {
       setValue('clusterName', ansibleClusterDataForEdit?.name);
+      setValue(
+        'isThirdPartyCert',
+        ansibleClusterDataForEdit?.has_third_party_cert.toString()
+      );
     }
   };
   useEffect(() => {
@@ -108,7 +115,6 @@ const ClusterDetailTab = ({
   const selectedNiFiVersion = useSelector(
     ClustersSelectors.getClusterSetupSelectedNiFiVersion
   );
-
   const itemsForList = useMemo(() => {
     return listHostIpData.filter(ele => !ele?.is_selected);
   }, [listHostIpData]);
@@ -154,7 +160,7 @@ const ClusterDetailTab = ({
 
   const nifiVersion = watch('nifiVersion');
   const configName = watch('configName');
-  
+
   useEffect(() => {
     if (!isEmpty(selectedNiFiVersion) && !isEmpty(nifiVerionsOptions)) {
       setValue('nifiVersion', selectedNiFiVersion);
@@ -330,7 +336,7 @@ const ClusterDetailTab = ({
         </>
       ),
       resize: true,
-      width: '45%',
+      width: '40%',
     },
     {
       label: 'Host',
@@ -346,9 +352,45 @@ const ClusterDetailTab = ({
     },
     {
       label: 'Username',
-      renderCell: item => <>{item?.username}</>,
+      renderCell: item => <> {item?.username}</>,
       resize: true,
       width: '15%',
+    },
+    {
+      label: 'Certificate',
+      renderCell: item => (
+        <>
+          {
+            <span data-tooltip-id={`certificate-${item?.id}-detail`}>
+              <NotePadIcon
+                height="21"
+                width="21"
+                color={
+                  item?.has_certificate
+                    ? theme.colors.primary
+                    : theme.colors.darkGrey
+                }
+              />
+            </span>
+          }{' '}
+          <ReactTooltip
+            id={`certificate-${item?.id}-detail`}
+            place="bottom"
+            effect="solid"
+            content={
+              item?.has_certificate ? 'Has Certificate' : 'No Certificate'
+            }
+            style={{
+              width: '130px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
+        </>
+      ),
+      resize: true,
+      width: '7%',
     },
     {
       label: 'Status',
@@ -359,7 +401,7 @@ const ClusterDetailTab = ({
         />
       ),
       resize: true,
-      width: '10%',
+      width: '8%',
     },
   ];
   const COLUMNS_FOR_DELETE_NODE = [
@@ -553,11 +595,14 @@ const ClusterDetailTab = ({
       setDeleteNodes(deleteKeyArray);
     }
   }, [hostList]);
-
+  const KEYSTORE_SELECTION_OPTIONS = [
+    { id: 1, value: 'true', label: 'True' },
+    { id: 2, value: 'false', label: 'False' },
+  ];
   return (
     <>
-      <FullPageLoader loading={loading || loadingAddAPI} />
-      <div className="row mt-2 ms-2 me-2">
+      <FullPageLoader loading={loading || loadingAddAPI || loadingFullPage} />
+      <div className="row mt-3 ms-2 me-2">
         {' '}
         <div className="col-6">
           <LabelSelect className="mb-3">{KDFM.CLUSTER_NAME}</LabelSelect>
@@ -576,7 +621,7 @@ const ClusterDetailTab = ({
           />
         </div>
       </div>
-      <div className="row mt-2 ms-2 me-2 mb-4">
+      <div className="row mt-1 ms-2 me-2 mb-2">
         <div className="col-4">
           <LabelSelect className="mb-3">{KDFM.NIFI_VERSION}</LabelSelect>
           <SelectField
@@ -617,9 +662,52 @@ const ClusterDetailTab = ({
             disabled={!isEmpty(nodesUpdateAnsbibleClusterId)}
           />
         </div>
+
+        <>
+          {
+            <>
+              {!(
+                !isEmpty(clusterIdForAnsible) ||
+                !isEmpty(nodesUpdateAnsbibleClusterId)
+              ) && (
+                <div className="mt-3">
+                  {
+                    <>
+                      <InfoIcon color={theme.colors.primary} /> &nbsp;
+                      <span
+                        style={{
+                          color: theme.colors.primary,
+                          fontWeight: '600',
+                        }}
+                      >
+                        If Use Third-Party Certificates is checked, you may
+                        upload your keystore and truststore (.p12 / .jks) with
+                        passwords for SSL/TLS. Otherwise, a self-signed
+                        certificate will be generated automatically.
+                      </span>
+                    </>
+                  }
+                </div>
+              )}
+              <div className="col-4 mt-2">
+                <RadioSelectField
+                  name="isThirdPartyCert"
+                  options={KEYSTORE_SELECTION_OPTIONS}
+                  register={register}
+                  defaultValue={'false'}
+                  label={'Use Third Party Certificates'}
+                  disabled={
+                    !isEmpty(clusterIdForAnsible) ||
+                    !isEmpty(nodesUpdateAnsbibleClusterId)
+                  }
+                />
+              </div>
+            </>
+          }
+        </>
       </div>
       <div className="row mx-auto">
-        <div className="col-auto ms-3">
+        <div className="col-auto ms-2">
           <Button
             size="md"
             onClick={() =>
