@@ -68,4 +68,15 @@ export const NAMESPACE_CONSTANTS = {
   PROCESSOR_NAME: 'Processor Name',
   ERROR_MESSAGE: 'Error Message',
   NO_INVALID_PROCESSORS: 'No Invalid Processors Found',
+
+  // Loading text constants
+  LOADING_DEPLOYING_FLOW: 'Deploying Flow...',
+  LOADING_UPGRADING_FLOW: 'Upgrading Flow...',
+  LOADING_DOWNGRADING_FLOW: 'Downgrading Flow...',
+  LOADING_SCHEDULE_DEPLOYING_FLOW: 'Schedule Deploying Flow...',
+  LOADING_SCHEDULE_UPGRADING_FLOW: 'Schedule Upgrading Flow...',
+  LOADING_SCHEDULE_DOWNGRADING_FLOW: 'Schedule Downgrading Flow...',
+  LOADING_SCHEDULE_STARTING_FLOW: 'Schedule Starting Flow...',
+  LOADING_SCHEDULE_STOPPING_FLOW: 'Schedule Stopping Flow...',
+  LOADING_UPDATING_FLOW_STATUS: 'Updating Flow Status...',
 };

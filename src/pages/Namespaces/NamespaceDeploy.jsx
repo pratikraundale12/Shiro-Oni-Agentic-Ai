@@ -130,19 +130,35 @@ const ActiveButtonDiv = styled.div`
   max-height: 48px;
   min-height: 48px;
   padding: 8px;
-  border: 1px solid
-    ${({ className }) => {
-      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
-      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+  border: 2px solid
+    ${({ className, isActive }) => {
+      if (isActive) {
+        if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+        if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      }
       return '#dde4f0';
     }};
+  background-color: ${({ className, isActive }) => {
+    if (isActive) {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+    }
+    return '#fff';
+  }};
   border-radius: 8px;
-  background-color: #f5f7fa;
+  /* background-color: #f5f7fa; */
   cursor: pointer;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: start;
+  color: ${({ className, isActive }) => {
+    if (isActive) {
+      if (className?.includes('div-btn-1')) return '#fff'; // Start (RUNNING) button
+      if (className?.includes('div-btn-2')) return '#fff'; // Stop (STOPPED) button
+    }
+    return 'black';
+  }};
 
   & span {
     position: absolute;
@@ -161,8 +177,24 @@ const ActiveButtonDiv = styled.div`
   .div-btn-1.disabled {
     cursor: not-allowed;
   }
-   &.disabled {
+  &.disabled {
     cursor: not-allowed;
+  }
+  &:hover {
+    background-color: ${({ className }) => {
+      if (className?.includes('div-btn-1')) return '#58e715'; // Hover green
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // Hover red
+      return '#f0f0f0'; // Default light gray
+    }};
+    color: ${({ className }) => {
+      if (
+        className?.includes('div-btn-1') ||
+        className?.includes('div-btn-2')
+      ) {
+        return '#fff'; // White text on hover for Start/Stop
+      }
+      return 'black'; // Default
+    }};
   }
 `;
 
@@ -390,7 +422,10 @@ const NamespaceDeploy = ({
                       className={`div-btn-1 ${
                         checkStartFlowCondition() ? 'disabled' : ''
                       }`}
-                      isActive={activeButtonPopup === 'RUNNING'}
+                      isActive={
+                        activeButtonPopup === 'RUNNING' ||
+                        checkStartFlowCondition()
+                      }
                       activeColor="#58e715"
                       hoverColor="#58e715"
                       activeTextColor="#fff"
@@ -401,7 +436,7 @@ const NamespaceDeploy = ({
                       data-tooltip-id="running-tooltip"
                     >
                       <IconCover>
-                        <TriangleIcons color="#B5BDC8" />
+                        <TriangleIcons color="#58e715" />
                       </IconCover>
                       <div>{KDFM.RUNNING_FLOW}</div>
                     </ActiveButtonDiv>
@@ -410,7 +445,10 @@ const NamespaceDeploy = ({
                       className={`div-btn-2 ${
                         checkStopFlowCondition() ? 'disabled' : ''
                       }`}
-                      isActive={activeButtonPopup === 'STOPPED'}
+                      isActive={
+                        activeButtonPopup === 'STOPPED' ||
+                        checkStopFlowCondition()
+                      }
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"
@@ -421,7 +459,7 @@ const NamespaceDeploy = ({
                       data-tooltip-id="stopped-tooltip"
                     >
                       <IconCover>
-                        <SquareBoxIcon color="#B5BDC8" />
+                        <SquareBoxIcon color="#c52b2b" />
                       </IconCover>
                       <div>{KDFM.STOPPED_FLOW}</div>
                     </ActiveButtonDiv>

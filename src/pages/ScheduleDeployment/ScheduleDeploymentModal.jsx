@@ -33,39 +33,123 @@ import {
 const Container = styled.div`
   height: 350px;
 `;
-const ActiveButtonDiv = styled.div`
-  height: 48px;
-  width: 48px;
-  max-width: 48px;
-  max-height: 48px;
-  min-height: 48px;
-  min-width: 48px;
-  border: 1px solid
-    ${({ className }) => {
-      if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
-      if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
-      return '#dde4f0';
-    }};
-  border-radius: 8px;
-  background-color: #f5f7fa;
-  cursor: pointer;
-  position: relative;
+const IconCover = styled.div`
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #dde4f0;
+`;
+const ActiveButtonDiv = styled.div`
+  width: 100%;
+  gap: 12px;
+  max-height: 48px;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid
+    ${({ className, isActive }) => {
+      if (isActive) {
+        if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+        if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      }
+      return '#dde4f0';
+    }};
+  border-radius: 8px;
+  background-color: ${({ isActive, className }) => {
+    if (isActive) {
+      if (className?.includes('div-btn-1')) return '#58e715'; // green
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // red
+    }
+    return '#f5f7fa'; // default inactive
+  }};
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  color: ${({ isActive, className }) => {
+    if (isActive) {
+      if (className?.includes('div-btn-1')) return '#fff'; // green
+      if (className?.includes('div-btn-2')) return '#fff'; // red
+    }
+    return 'black'; // default inactive
+  }};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 23px;
 
   & span {
     position: absolute;
     top: 0px;
     right: 2px;
     font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     line-height: 23px;
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
+  &:hover {
+    background-color: ${({ disabled, className, isActive, hoverColor }) => {
+      if (disabled) return undefined; // no hover effect
+      if (hoverColor) return hoverColor;
+      return '#F6F7F9';
+    }};
+
+    border: 1px solid
+      ${({ className, isActive }) => {
+        if (isActive) {
+          if (className?.includes('div-btn-1')) return '#58e715';
+          if (className?.includes('div-btn-2')) return '#c52b2b';
+        }
+        return '#dde4f0';
+      }};
+
+    color: ${({ disabled, isActive }) => {
+      if (disabled) return undefined; // don't override the original color
+      return isActive ? '#000' : '#fff'; // active = black, inactive = white
+    }};
+
+    border-radius: 8px; // always applied, even on hover
+  }
+`;
+const ActiveButtonDivResetFlow = styled.div`
+  width: 100%;
+  gap: 12px;
+  max-height: 48px;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid
+    ${({ className, isActive }) => {
+      if (isActive) {
+        if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+        if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      }
+      return '#dde4f0';
+    }};
+  border-radius: 8px;
+  background-color: #dde4f0;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 23px;
+
+  & span {
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    font-family: ${props => props.theme.fontNato};
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 23px;
+    color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
 `;
 const TextsvgDiv = styled.div`
@@ -259,49 +343,49 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
                 <FlowControlDiv className="mt-4">Flow Control</FlowControlDiv>
                 <div className="d-flex mt-3">
                   <TextsvgDiv className="d-flex mr-4">
-                    <ActiveButtonDiv className="div-btn-1 mr-2">
-                      <ActiveButtonDiv
-                        className="div-btn-1 "
-                        isActive={activeButton === 'RUNNING'}
-                        activeColor="#58e715"
-                        hoverColor="#58e715"
-                        activeTextColor="#fff"
-                        onClick={() => handleUpdateStatus('RUNNING')}
-                      >
-                        <TriangleIcons color="#B5BDC8" />
-                      </ActiveButtonDiv>
+                    <ActiveButtonDiv
+                      className="div-btn-1 "
+                      isActive={activeButton === 'RUNNING'}
+                      activeColor="#58e715"
+                      hoverColor="#58e715"
+                      activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('RUNNING')}
+                    >
+                      <IconCover>
+                        <TriangleIcons color="#58e715" />
+                      </IconCover>{' '}
+                      <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
                     </ActiveButtonDiv>
-                    <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
                   </TextsvgDiv>
                   <TextsvgDiv className="d-flex">
-                    <ActiveButtonDiv className="div-btn-2 mr-2">
-                      <ActiveButtonDiv
-                        className="div-btn-2"
-                        isActive={activeButton === 'STOPPED'}
-                        activeColor="#c52b2b"
-                        hoverColor="#c52b2b"
-                        activeTextColor="#fff"
-                        onClick={() => handleUpdateStatus('STOPPED')}
-                      >
-                        <SquareBoxIcon color="#B5BDC8" />
-                      </ActiveButtonDiv>
+                    <ActiveButtonDiv
+                      className="div-btn-2"
+                      isActive={activeButton === 'STOPPED'}
+                      activeColor="#c52b2b"
+                      hoverColor="#c52b2b"
+                      activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('STOPPED')}
+                    >
+                      <IconCover>
+                        <SquareBoxIcon color="#c52b2b" />
+                      </IconCover>
+                      <div>{KDFM.STOPPED_FLOW}</div>
                     </ActiveButtonDiv>
-                    <div>{KDFM.STOPPED_FLOW}</div>
                   </TextsvgDiv>
 
                   {activeButton && (
                     <TextsvgDiv className="d-flex ml-4">
-                      <ActiveButtonDiv className="div-btn-2 mr-2">
-                        <ActiveButtonDiv
-                          className="div-btn-2"
-                          onClick={() => {
-                            setActiveButton(null);
-                          }}
-                        >
+                      <ActiveButtonDivResetFlow
+                        className="div-btn-2"
+                        onClick={() => {
+                          setActiveButton(null);
+                        }}
+                      >
+                        <IconCover>
                           <CrossIcon color="#B5BDC8" />
-                        </ActiveButtonDiv>
-                      </ActiveButtonDiv>
-                      <div>Reset Flow</div>
+                        </IconCover>
+                        <div>Reset Flow</div>
+                      </ActiveButtonDivResetFlow>
                     </TextsvgDiv>
                   )}
                 </div>

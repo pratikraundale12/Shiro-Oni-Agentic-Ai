@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { debounce, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { useForm } from 'react-hook-form';
@@ -61,13 +61,13 @@ import {
   UsersActions,
   UsersSelectors,
 } from '../../store';
-import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../FullPageLoader';
 import { use } from 'react';
+import { SettingsActions } from '../../store/settings';
 
 const Flex = styled.div`
   display: flex;
@@ -243,8 +243,6 @@ export const GridActions = ({
   setScheduleType,
   selectStatus,
   setSelectStatus,
-  isDownloadModalOpen,
-  setDownloadModalOpen,
   removeSearch = false,
   setIsExportReportOpen,
   setRemoveSearch,
@@ -333,6 +331,9 @@ export const GridActions = ({
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'activityHistory')
   );
+  const gridDataNamespace = useSelector(state =>
+    GridSelectors.getGridData(state, 'namespaces')
+  );
 
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
@@ -347,6 +348,7 @@ export const GridActions = ({
       if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
         return;
       }
+      dispatch(SettingsActions.fetchSettings());
       dispatch(
         GridSagsActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
@@ -534,10 +536,19 @@ export const GridActions = ({
 
   const handleChange = value => {
     setCurrentPage(1);
-    const [dynamicStart, dynamicEnd] = getDynamicRangeStartEnd(
-      value?.[0],
-      value?.[1]
-    );
+    let [start, end] = value;
+    if (
+      start &&
+      end &&
+      start.toDateString() === end.toDateString() &&
+      start.getTime() === end.getTime()
+    ) {
+      const adjustedEnd = new Date(end);
+      adjustedEnd.setHours(23, 59, 0, 0);
+      end = adjustedEnd;
+    }
+
+    const [dynamicStart, dynamicEnd] = getDynamicRangeStartEnd(start, end);
 
     dispatch(
       SchedularActions.setScheduleSelectRange([dynamicStart, dynamicEnd])
@@ -1010,7 +1021,7 @@ export const GridActions = ({
         </ButtonsContainer>
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
-            {module === 'namespaces' && (
+            {module === 'namespaces' && !isEmpty(gridDataNamespace) && (
               <>
                 {selectedCluster?.value && (
                   <Button

@@ -92,6 +92,7 @@ export const MODULE_LIST_MAP = [
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
   { label: 'Local Changes', value: 'Local Changes' },
   { label: 'Audit', value: 'Audit' },
+  { label: 'Cluster Permission', value: 'Cluster Permission' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -116,7 +117,6 @@ export const ACTIVITY_EVENTS = [
   { label: 'Upgrade', value: 'Upgrade' },
   { label: 'Deploy', value: 'Deploy' },
   { label: 'Downgrade', value: 'downgrade' },
-  { label: 'Schedule Deploy', value: 'Schedule Deploy' },
   { label: 'Schedule Deploy', value: 'Schedule Deploy' },
   { label: 'Schedule Upgrade', value: 'Schedule upgrade' },
   { label: 'Schedule Upgraded', value: 'Schedule upgraded' },

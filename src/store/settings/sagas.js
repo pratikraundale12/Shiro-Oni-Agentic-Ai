@@ -22,8 +22,6 @@ export function* createSettings(api, { payload }) {
     if (payload.favicon) changeFavicon(URL.createObjectURL(payload.favicon));
     if (payload.title) document.title = payload.title;
     toast.success('Settings updated successfully.');
-    // yield put(RolesActions.permissionModal());
-    // yield call(api, { payload: { module: 'fetchSettingsSuccess' } });
   } else {
     toast.error(response?.message || response?.data?.message);
   }
@@ -39,6 +37,8 @@ export function* fetchSettings(api) {
   });
   if (response.ok && response.data) {
     yield put(SettingsActions.setSettingsData(response.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
   }
 }
 

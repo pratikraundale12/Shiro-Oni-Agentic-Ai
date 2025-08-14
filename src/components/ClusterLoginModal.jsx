@@ -14,6 +14,7 @@ import {
   AuthenticationActions,
   AuthenticationSelectors,
   ClustersSelectors,
+  DashboardActions,
   GridActions,
   NamespacesActions,
   NamespacesSelectors,
@@ -99,6 +100,7 @@ export const ClusterLoginModal = () => {
   const isFieldsDisabled = selectedClusterData?.status === 'Connected';
 
   const onSubmit = async data => {
+    dispatch(DashboardActions.setResetNamespaceOption(true));
     setLoading(true);
     const clusterData = JSON.parse(
       localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -205,6 +207,7 @@ export const ClusterLoginModal = () => {
   }, [clusterLogin, selectedCluster, setValue, reset]);
 
   const onSwitchCluster = () => {
+    dispatch(DashboardActions.setResetNamespaceOption(true));
     if (window.location.pathname.includes('/process-group')) {
       window.location.reload();
       history.push('/process-group');

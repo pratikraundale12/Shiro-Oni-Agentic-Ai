@@ -9,7 +9,7 @@ import { theme } from '../../styles';
 import { FlowMetrics, InsightContainer } from './components';
 import DeploymentStatistics from './DeploymentStatistics';
 import { toast } from 'react-toastify';
-import { subHours, isAfter } from 'date-fns';
+import { subHours, isAfter, startOfDay } from 'date-fns';
 
 import {
   ActiveThreadIcon,
@@ -37,6 +37,7 @@ import {
 } from '../../store';
 import { SettingsActions } from '../../store/settings';
 import { KDFM } from '../../constants';
+import { useForm } from 'react-hook-form';
 
 const TopSection = styled.div`
   display: flex;
@@ -248,7 +249,12 @@ const Tab = styled.div`
 export const Dashboard = () => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const clusterChanged = useSelector(
+    DashboardSelectors.getResetNamespaceOption
+  );
   const [selectedNamespace, setSelectedNamespace] = useState(null);
+  const { control, setValue } = useForm();
+
   const [selectedRange, setSelectedRange] = useState(null); // Add selectedRange state
   const namespaces = useSelector(NamespacesSelectors.getNamespaces);
   const dashboardData = useSelector(DashboardSelectors.getDashboardData);
@@ -346,23 +352,34 @@ export const Dashboard = () => {
   ];
 
   const onNamespaceSelect = selectedItem => {
+    dispatch(DashboardActions.setResetNamespaceOption(false));
     setSelectedNamespace(selectedItem);
   };
 
   const handleDateRangeChange = dateRange => {
     if (dateRange && dateRange.length === 2) {
-      const [startDate, endDate] = dateRange;
+      let [startDate, endDate] = dateRange;
       const now = new Date();
-
-      if (isAfter(startDate, now) || isAfter(endDate, now)) {
+      if (
+        startDate.toDateString() === endDate.toDateString() &&
+        startDate.getTime() === endDate.getTime()
+      ) {
+        const adjustedEnd = new Date(endDate);
+        adjustedEnd.setHours(23, 59, 0, 0);
+        endDate = adjustedEnd;
+      }
+      if (
+        isAfter(startOfDay(startDate), startOfDay(now)) ||
+        isAfter(startOfDay(endDate), startOfDay(now))
+      ) {
         toast.error(
-          'Future dates are not allowed. Please select a date range up to now.'
+          'Future dates are not allowed. Please select a date range up to today.'
         );
         return;
       }
 
-      setSelectedRange(dateRange);
-
+      const adjustedRange = [startDate, endDate];
+      setSelectedRange(adjustedRange);
       if (!isEmpty(selectedCluster)) {
         dispatch(
           DashboardActions.fetchDashboard({
@@ -376,7 +393,7 @@ export const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (!isEmpty(selectedCluster)) {
+    if (!isEmpty(selectedCluster) && !clusterChanged) {
       const payload = {
         selectedNamespace: selectedNamespace,
       };
@@ -385,8 +402,18 @@ export const Dashboard = () => {
           payload,
         })
       );
+    } else {
+      const payload = {
+        selectedNamespace: '',
+      };
+      dispatch(
+        DashboardActions.fetchDashboard({
+          payload,
+        })
+      );
+      setValue('namespaceDropdown', 'All');
     }
-  }, [dispatch, selectedCluster, selectedNamespace]);
+  }, [dispatch, selectedCluster, selectedNamespace, clusterChanged]);
 
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {
@@ -508,6 +535,8 @@ export const Dashboard = () => {
                     backgroundColor={theme.colors.lightGrey}
                     size="sm"
                     disabled={!selectedCluster?.value}
+                    control={control}
+                    name="namespaceDropdown"
                   />
                 </DropdownContainer>
               )}
