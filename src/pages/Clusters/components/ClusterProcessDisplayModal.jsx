@@ -341,14 +341,15 @@ export const ClusterProcessDisplayModal = ({
     } else if (processExeName === 'upgrade') {
       return UpgradeModalSteps;
     } else if (processExeName === 'update-nodes') {
-      return processData?.has_third_party_cert &&
-        !processData?.isNodeDeleteAction
+      return processData?.has_third_party_cert
         ? nodesAddThirdPartyModalSteps
-        : processData?.has_third_party_cert && processData?.isNodeDeleteAction
-          ? nodesDeleteThirdPartyModalSteps
-          : nodesUpdateModalSteps;
+        : nodesUpdateModalSteps;
     } else if (processExeName === 'add-registry') {
       return RegistryModalSteps;
+    } else if (processExeName === 'remove-node') {
+      return processData?.has_third_party_cert
+        ? nodesDeleteThirdPartyModalSteps
+        : nodesUpdateModalSteps;
     }
   };
   const getModalHeading = processExeName => {
@@ -364,7 +365,10 @@ export const ClusterProcessDisplayModal = ({
       return 'Cluster Start Progress';
     } else if (processExeName === 'upgrade') {
       return 'Cluster Upgrade Progress';
-    } else if (processExeName === 'update-nodes') {
+    } else if (
+      processExeName === 'update-nodes' ||
+      processExeName === 'remove-node'
+    ) {
       return 'Cluster Update Nodes Progress';
     } else if (processExeName === 'add-registry') {
       return 'Cluster Registry Association';
@@ -384,7 +388,10 @@ export const ClusterProcessDisplayModal = ({
       return 'Cluster started successfully';
     } else if (processExeName === 'upgrade') {
       return 'Cluster upgraded successfully';
-    } else if (processExeName === 'update-nodes') {
+    } else if (
+      processExeName === 'update-nodes' ||
+      processExeName === 'remove-node'
+    ) {
       return 'Cluster nodes updated successfully';
     } else if (processExeName === 'add-registry') {
       return 'Registry successfully associated. You may now Promote Flows and Manage Configurations';
@@ -404,7 +411,10 @@ export const ClusterProcessDisplayModal = ({
       return 'Cluster has been started. Initializing cluster components.';
     } else if (processExeName === 'upgrade') {
       return 'Cluster has been updated. Initializing cluster components.';
-    } else if (processExeName === 'update-nodes') {
+    } else if (
+      processExeName === 'update-nodes' ||
+      processExeName === 'remove-node'
+    ) {
       return 'Cluster nodes has been updated. Initializing cluster components.';
     } else if (processExeName === 'add-registry') {
       return 'Cluster registry association completed. Initializing cluster components.';
@@ -413,7 +423,7 @@ export const ClusterProcessDisplayModal = ({
   function calculateCompletionPercentage(modelSteps, currentSteps) {
     const totalSteps = modelSteps?.length;
     let filteredSteps = currentSteps;
-    if (processExeName === 'update-nodes') {
+    if (processExeName === 'update-nodes' || processExeName === 'remove-node') {
       filteredSteps = currentSteps?.filter((step, index) => {
         if (
           step.step === 'NiFi cluster deployment' &&
