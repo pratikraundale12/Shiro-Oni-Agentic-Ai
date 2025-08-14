@@ -231,6 +231,34 @@ const nodesAddThirdPartyModalSteps = [
   { step: 'NiFi cluster flow election', status: 'completed' },
   { step: 'NiFi cluster deployment', status: 'completed' },
 ];
+const nodesDeleteThirdPartyModalSteps = [
+  {
+    step: 'Connectivity check',
+    status: 'completed',
+  },
+  {
+    step: 'Service shutdown',
+    status: 'completed',
+  },
+  {
+    step: 'Directory cleanup',
+    status: 'completed',
+  },
+  {
+    step: 'Host preparation',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate deployment',
+    status: 'completed',
+  },
+  {
+    step: 'NiFi Configuration',
+    status: 'completed',
+  },
+  { step: 'NiFi cluster flow election', status: 'completed' },
+  { step: 'NiFi cluster deployment', status: 'completed' },
+];
 const RegistryModalSteps = [
   {
     step: 'Connectivity check',
@@ -313,9 +341,12 @@ export const ClusterProcessDisplayModal = ({
     } else if (processExeName === 'upgrade') {
       return UpgradeModalSteps;
     } else if (processExeName === 'update-nodes') {
-      return processData?.has_third_party_cert
+      return processData?.has_third_party_cert &&
+        !processData?.isNodeDeleteAction
         ? nodesAddThirdPartyModalSteps
-        : nodesUpdateModalSteps;
+        : processData?.has_third_party_cert && processData?.isNodeDeleteAction
+          ? nodesDeleteThirdPartyModalSteps
+          : nodesUpdateModalSteps;
     } else if (processExeName === 'add-registry') {
       return RegistryModalSteps;
     }
