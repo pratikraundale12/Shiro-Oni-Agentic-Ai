@@ -128,6 +128,7 @@ export const ClustersActions = {
   setClusterSetupSelectedNiFiVersion: createAction(
     `${prefix}setClusterSetupSelectedNiFiVersion`
   ),
+  setCreateClusterMethod: createAction(`${prefix}setCreateClusterMethod`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -177,6 +178,7 @@ export const CLUSTERS_INITIAL_STATE = {
   clusterListItems: 10,
   allConfigPropertiesAndValue: {},
   clusterSetupSelectedNiFiVersion: null,
+  createClusterMethod: 'vm',
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -534,6 +536,12 @@ const setClusterSetupSelectedNiFiVersion = (state, { payload }) => {
     clusterSetupSelectedNiFiVersion: payload,
   };
 };
+const setCreateClusterMethod = (state, { payload }) => {
+  return {
+    ...state,
+    createClusterMethod: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -665,6 +673,7 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setClusterSetupSelectedNiFiVersion,
         setClusterSetupSelectedNiFiVersion
-      );
+      )
+      .addCase(ClustersActions.setCreateClusterMethod, setCreateClusterMethod);
   }
 );

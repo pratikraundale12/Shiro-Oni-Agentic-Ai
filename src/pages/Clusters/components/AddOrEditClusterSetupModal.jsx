@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { ClustersActions, ClustersSelectors } from '../../../store';
-import { Modal } from '../../../shared';
+import { Button, Modal } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
   CreateClusterIcon,
@@ -15,8 +15,9 @@ import { theme } from '../../../styles';
 import { history } from '../../../helpers/history';
 
 const Container = styled.div`
-display: flex;
-gap: 25px`;
+  display: flex;
+  gap: 25px;
+`;
 
 const BulletContainer = styled.div`
   width: 100%;
@@ -27,7 +28,7 @@ const BulletContainer = styled.div`
       borderSelected ? theme.colors.primary : '#DDE4F0'};
   border-radius: 14px;
   background-color: ${({ borderSelected }) =>
-      borderSelected ? '#f5f7fa' : '#fff'};
+    borderSelected ? '#f5f7fa' : '#fff'};
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -55,7 +56,7 @@ const LeftHolder = styled.div`
   justify-content: space-between;
   padding-top: 16px;
   text-align: center;
-  `;
+`;
 const RightHolder = styled.div`
   display: flex;
   flex-direction: column;
@@ -79,7 +80,7 @@ const BottomText = styled.span`
   line-height: 21.17px;
   letter-spacing: 0%;
   color: #444445;
-  margin-top:10px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   padding: 0px 45px;
@@ -94,6 +95,7 @@ const TickIconStyle = styled.div`
 export const AddOrEditClusterModal = () => {
   const dispatch = useDispatch();
   const [selectedFlow, setSelectedFlow] = useState(null);
+  const [createNewClusterMethod, setCreateNewCusterMethod] = useState('VM');
 
   const isModalOpen = useSelector(
     ClustersSelectors.getIsAddorEditClusterModalOpen
@@ -117,6 +119,9 @@ export const AddOrEditClusterModal = () => {
       setSelectedFlow(null);
     }
   }, [isModalOpen]);
+  useEffect(() => {
+    dispatch(ClustersActions.setCreateClusterMethod(createNewClusterMethod));
+  }, [createNewClusterMethod]);
 
   return (
     <Modal
@@ -137,7 +142,7 @@ export const AddOrEditClusterModal = () => {
           borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
         >
           <div>
-            <LeftHolder >
+            <LeftHolder>
               <IconContainer
                 borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
               >
@@ -174,7 +179,6 @@ export const AddOrEditClusterModal = () => {
           <div>
             <LeftHolder>
               <IconContainer
-                
                 borderSelected={selectedFlow === KDFM.MANAGE_CLUSTER_FLOW}
               >
                 <ManageClusterIcon
@@ -206,6 +210,34 @@ export const AddOrEditClusterModal = () => {
           </div>
         </BulletContainer>
       </Container>
+      {selectedFlow === KDFM.CREATE_CLUSTER_FLOW && (
+        <div className="mt-4 row">
+          <div className="col-6">
+            <Button
+              variant={
+                createNewClusterMethod === 'VM' ? 'primary' : 'secondary'
+              }
+              onClick={() => setCreateNewCusterMethod('VM')}
+              type="button"
+            >
+              Virtual Machine / Instances
+            </Button>
+          </div>
+          <div className="col-6">
+            <Button
+              onClick={() => setCreateNewCusterMethod('Kubernetes')}
+              variant={
+                createNewClusterMethod === 'Kubernetes'
+                  ? 'primary'
+                  : 'secondary'
+              }
+              type="button"
+            >
+              Kubernetes
+            </Button>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 };
