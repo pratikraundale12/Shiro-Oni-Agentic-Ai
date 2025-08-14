@@ -38,7 +38,7 @@ export function* createUserByDFM(api, { payload }) {
       })
     );
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message || response?.message);
   }
 }
 
