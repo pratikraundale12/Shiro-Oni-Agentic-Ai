@@ -216,6 +216,10 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
       setValue('port', hostToEdit?.port);
       setValue('username', hostToEdit?.username);
       setValue('hostName', hostToEdit?.host_name);
+      setValue(
+        'isKeystoreCertificateAdd',
+        hostToEdit?.has_certificate.toString()
+      );
     }
   }, [hostToEdit]);
   const watchMethodCredentials = watch('methodForCredentials');
