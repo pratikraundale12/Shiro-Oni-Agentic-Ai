@@ -8,12 +8,13 @@ import { Button, Modal } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
   CreateClusterIcon,
+  InfoIcon,
   ManageClusterIcon,
   SelectedTickIconOrange,
 } from '../../../assets';
 import { theme } from '../../../styles';
 import { history } from '../../../helpers/history';
-
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 const Container = styled.div`
   display: flex;
   gap: 25px;
@@ -90,6 +91,21 @@ const TickIconStyle = styled.div`
   position: absolute;
   top: 10px;
   right: 10px;
+`;
+
+const Divstyled = styled.div`
+  border: 2px solid
+    ${({ borderSelected }) =>
+      borderSelected ? theme.colors.primary : '#DDE4F0'};
+  background-color: ${({ borderSelected }) =>
+    borderSelected ? '#f5f7fa' : '#fff'};
+  border-radius: 8px;
+  color: #444445;
+  font-family: Red Hat Display;
+  font-weight: 600;
+  font-size: 14px;
+  height: 40px;
+  cursor: pointer;
 `;
 
 export const AddOrEditClusterModal = () => {
@@ -211,30 +227,62 @@ export const AddOrEditClusterModal = () => {
         </BulletContainer>
       </Container>
       {selectedFlow === KDFM.CREATE_CLUSTER_FLOW && (
-        <div className="mt-4 row">
+        <div className="mt-4 row" style={{ height: '50px' }}>
           <div className="col-6">
-            <Button
-              variant={
-                createNewClusterMethod === 'VM' ? 'primary' : 'secondary'
-              }
+            <Divstyled
+              className=" h-100 w-100 d-flex justify-content-center align-items-center"
+              borderSelected={createNewClusterMethod === 'VM'}
               onClick={() => setCreateNewCusterMethod('VM')}
-              type="button"
             >
-              Virtual Machine / Instances
-            </Button>
+              {' '}
+              <span data-tooltip-id={`tooltip-VM`}>
+                <InfoIcon
+                  color={
+                    createNewClusterMethod === 'VM'
+                      ? theme.colors.primary
+                      : theme.colors.darkGrey2
+                  }
+                />
+              </span>
+              &nbsp; Virtual Machine / Instances
+            </Divstyled>
+            <ReactTooltip
+              id={`tooltip-VM`}
+              place="top"
+              content={'THIS IS DEMO TEXT FOR VM'}
+              style={{
+                whiteSpace: 'normal',
+                zIndex: 9999,
+              }}
+            />
           </div>
           <div className="col-6">
-            <Button
+            <Divstyled
+              className=" h-100 w-100 d-flex justify-content-center align-items-center"
+              borderSelected={createNewClusterMethod === 'Kubernetes'}
               onClick={() => setCreateNewCusterMethod('Kubernetes')}
-              variant={
-                createNewClusterMethod === 'Kubernetes'
-                  ? 'primary'
-                  : 'secondary'
-              }
-              type="button"
             >
-              Kubernetes
-            </Button>
+              {' '}
+              <span data-tooltip-id={`tooltip-Kubernetes`}>
+                <InfoIcon
+                  color={
+                    createNewClusterMethod === 'Kubernetes'
+                      ? theme.colors.primary
+                      : theme.colors.darkGrey2
+                  }
+                />
+              </span>{' '}
+              &nbsp;Kubernetes
+            </Divstyled>{' '}
+            <ReactTooltip
+              id={`tooltip-Kubernetes`}
+              place="top"
+              content={'THIS IS DEMO TEXT FOR KUBERNETES'}
+              style={{
+                whiteSpace: 'normal',
+                zIndex: 9999,
+              }}
+            />
           </div>
         </div>
       )}
