@@ -167,8 +167,8 @@ export const Grid = ({
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedRole, setSelectedRole] = useState(null);
   const [clusterSelectedValue, setClusterSelectedValue] = useState(null);
-  const [selectEvent, setSelectEvent] = useState(null);
-  const [selectEntity, setSelectEntity] = useState(null);
+  // const [selectEvent, setSelectEvent] = useState(null);
+  // const [selectEntity, setSelectEntity] = useState(null);
   const registryNodesData = useSelector(ClustersSelectors.getRegistryNodesData);
   const [scheduleType, setScheduleType] = useState(null);
 

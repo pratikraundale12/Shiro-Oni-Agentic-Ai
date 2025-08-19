@@ -1,13 +1,10 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 
-export const RefreshIcon = (
-  { width = 18, height = 18, color = '#444445' },
-  ...props
-) => (
+export const RefreshIcon = ({ width = 18, height = 18, color = '#444445' }) => (
   <svg
-    width={width}
-    height={height}
+    width={height}
+    height={width}
     viewBox="0 0 18 18"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

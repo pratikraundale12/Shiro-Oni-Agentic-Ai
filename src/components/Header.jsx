@@ -38,7 +38,7 @@ import {
   UsersActions,
 } from '../store';
 import { SchedularActions } from '../store/schedular';
-import { SettingsActions, SettingsSelectors } from '../store/settings';
+import { SettingsSelectors } from '../store/settings';
 import { useGlobalContext } from '../utils';
 import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';

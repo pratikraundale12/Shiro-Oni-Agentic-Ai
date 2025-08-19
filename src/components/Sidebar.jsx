@@ -23,7 +23,7 @@ import {
   LoadingSelectors,
   NamespacesActions,
 } from '../store';
-import { SettingsActions, SettingsSelectors } from '../store/settings';
+import { SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
 import { Loader } from './Loader';
 import DiscardFlowConfirmationModal from '../pages/AiFlowGenerator/DiscardFlowConfirmationModal';

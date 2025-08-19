@@ -126,7 +126,8 @@ export const ClustersActions = {
     `${prefix}setAllConfigPropertiesAndValue`
   ),
   setClusterSetupSelectedNiFiVersion: createAction(
-    `${prefix}setClusterSetupSelectedNiFiVersion`),
+    `${prefix}setClusterSetupSelectedNiFiVersion`
+  ),
   setCopyClusterModalOpen: createAction(`${prefix}setCopyClusterModalOpen`),
   setCopyClusterData: createAction(`${prefix}setCopyClusterData`),
   setclusterToLoginWithoutCred: createAction(
