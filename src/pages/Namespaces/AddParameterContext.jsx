@@ -283,7 +283,6 @@ const AddParameterContext = ({
     control,
     name: 'check',
   });
-
   useEffect(() => {
     if (check) {
       setValue('value', '');
@@ -295,12 +294,14 @@ const AddParameterContext = ({
       setValue(
         'value',
         parameterContextItem?.value === null
-          ? parameterContextItem?.value
-          : currentParameter[0]?.value
+          ? null
+          : !isEmpty(parameterContextItem?.value)
+            ? parameterContextItem?.value
+            : currentParameter[0]?.value
       );
       setSenstiiveValueChanged(false);
     }
-  }, [check, setValue]);
+  }, [check, setValue, parameterContextItem?.value]);
 
   const pcValue = watch('value');
   const pcDesc = watch('description');
@@ -391,7 +392,7 @@ const AddParameterContext = ({
                   placeholder={
                     isAddParameterContextOpen?.mode === 'add'
                       ? KDFM.ENTER_PARAMETER
-                      : parameterContextItem?.sensitive ||
+                      : parameterContextItem?.sensitive === true ||
                           parameterContextItem?.sensitive === 'true'
                         ? 'Sensitive Value Set'
                         : ''

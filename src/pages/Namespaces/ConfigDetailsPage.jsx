@@ -12,7 +12,10 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { SchedularSelectors } from '../../store/schedular/redux.js';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux.js';
 import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import ParameterContextTab from './ParameterContextTab';
 import ScheduleDeploymentTab from './ScheduleDetailsPage.jsx';
@@ -111,17 +114,33 @@ const ConfigDetailsPage = () => {
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
-  const breadcrumbDataOnUpgrade = [
-    {
-      label: KDFM.NIFI_FLOW,
-      path: '/process-group',
-      callback: () => {
-        dispatch(NamespacesActions.setSelectedNamespace({}));
-      },
-    },
-    { label: 'Flow Details', path: '/process-group/flow-details' },
-    { label: 'Configuration Details' },
-  ];
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+  const scheduleFlowType = useSelector(NamespacesSelectors.getScheduleFlowType);
+  const selectedNameSpace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const breadcrumbDataOnUpgrade = scheduleStartFlow
+    ? [
+        {
+          label: 'Process Group Details',
+          path: `/process-group/${selectedNameSpace?.id}`,
+        },
+        { label: 'Configuration Details' },
+      ]
+    : [
+        {
+          label: KDFM.NIFI_FLOW,
+          path: '/process-group',
+          callback: () => {
+            dispatch(NamespacesActions.setSelectedNamespace({}));
+          },
+        },
+        { label: 'Flow Details', path: '/process-group/flow-details' },
+        { label: 'Configuration Details' },
+      ];
+
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
@@ -143,6 +162,10 @@ const ConfigDetailsPage = () => {
   let type = '';
   if (versionSelected?.version > singleNameSpace?.version) {
     type = 'upgrade';
+  } else if (scheduleFlowType === 'RUNNING') {
+    type = 'start';
+  } else if (scheduleFlowType === 'STOPPED') {
+    type = 'stop';
   } else {
     type = 'downgrade';
   }
@@ -162,11 +185,14 @@ const ConfigDetailsPage = () => {
   }, [scheduleDeploymentFlow, scheduleUpgradeFromList]);
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
-  const selectedNameSpace = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
   const handleBackClick = () => {
-    history.push('/process-group/flow-details');
+    if (scheduleStartFlow === true) {
+      history.push(`/process-group/${selectedNameSpace?.id}`);
+      dispatch(SchedularActions.setScheduleFromList(false));
+    } else {
+      history.push('/process-group/flow-details');
+    }
+
     setScheduleDeployTime(null);
     dispatch(NamespacesActions.setScheduleTimeByRegistry(null));
   };
@@ -308,15 +334,25 @@ const ConfigDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {scheduleDeploymentFlow || scheduleUpgradeFromList
-              ? 'Schedule '
-              : ''}
-            {!isUpgrade ? formattedType : KDFM.DEPLOY_NAMESPACE}
-          </MainTitleHfour>{' '}
+            {scheduleStartFlow ? (
+              scheduleFlowType === 'RUNNING' ? (
+                'Schedule Start Flow'
+              ) : scheduleFlowType === 'STOPPED' ? (
+                'Schedule Stop Flow'
+              ) : null
+            ) : (
+              <>
+                {scheduleDeploymentFlow || scheduleUpgradeFromList
+                  ? 'Schedule '
+                  : ''}
+                {!isUpgrade ? formattedType : KDFM.DEPLOY_NAMESPACE}
+              </>
+            )}
+          </MainTitleHfour>
           :
           <MainTitleHfour className="mb-0">
             {!isUpgrade
-              ? selectedNameSpace.label
+              ? selectedNameSpace?.label
               : formDataRegistry?.selectedFlowName}
           </MainTitleHfour>
         </MainTitleDiv>

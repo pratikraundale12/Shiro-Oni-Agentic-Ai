@@ -8,6 +8,8 @@ import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
+  ClustersActions,
+  ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
@@ -19,6 +21,8 @@ import ListControllerService from './ListControllerServiceNamespace';
 import ListVariables from './Listvariables';
 import ParameterContext from './ParameterContext';
 import SummaryDetails from './SummaryDetails';
+import SanityVerifictionReport from './SanityVerifictionReport';
+import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -142,6 +146,20 @@ const ConfigDetailsPage = () => {
     GridSelectors.getGridBreadcrumb(state, 'namespaces')
   );
 
+  const selectedClusterMethod = useSelector(
+    NamespacesSelectors.getSelectedCluster
+  );
+  useEffect(() => {
+    if (!isEmpty(selectedClusterMethod?.value)) {
+      dispatch(ClustersActions.fetchClusters());
+    }
+  }, [dispatch, selectedClusterMethod]);
+  const clusters_new_list = useSelector(ClustersSelectors.getAllClustersList);
+  const matchedCluster = clusters_new_list.find(
+    cluster => cluster.id === selectedClusterMethod?.value
+  );
+  const hasSanityCheckAccess = matchedCluster?.view_sanity_check;
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'singleNamespaceData')
   );
@@ -160,6 +178,7 @@ const ConfigDetailsPage = () => {
             isAddParameterContextOpen={isAddParameterContextOpen}
             isParameterContextOpen={isParameterContextOpen}
             setIsParameterContextOpen={setIsParameterContextOpen}
+            fromSummaryDetails={true}
           />
         );
       case KDFM.VARIABLES:
@@ -175,6 +194,8 @@ const ConfigDetailsPage = () => {
 
       case 'Audit Log':
         return <AuditLog />;
+      case 'Sanity Verification Report':
+        return <SanityVerifictionReport />;
       default:
         return null;
     }
@@ -259,6 +280,16 @@ const ConfigDetailsPage = () => {
           >
             Audit Log
           </Tab>
+
+          {hasSanityCheckAccess === true && (
+            <Tab
+              active={activeTab === 'Sanity Verification Report'}
+              onClick={() => setActiveTab('Sanity Verification Report')}
+              className="nav-item"
+            >
+              Sanity Verification Report
+            </Tab>
+          )}
         </TabWrapper>
         <TabContent>{renderContent()}</TabContent>
       </GreyBoxNamespace>

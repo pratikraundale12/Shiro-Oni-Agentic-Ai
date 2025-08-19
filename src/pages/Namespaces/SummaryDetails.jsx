@@ -133,7 +133,11 @@ const SummaryDetails = () => {
                 }}
               >
                 <div>
-                  <span>{registryData?.url || 'N/A'}</span>
+                  <span>
+                    {registryData?.url ||
+                      singleNamespaceData?.registryUrl ||
+                      'N/A'}
+                  </span>
                 </div>
               </SummaryDetailsPtag>
             </div>

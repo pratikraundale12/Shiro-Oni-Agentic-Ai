@@ -42,19 +42,25 @@ const StyledButton = styled.button.withConfig({
         ? props.theme.colors.primary
         : props.variant === 'secondary'
           ? props.theme.colors.darker
-          : '#DDE4F0'}; /* Tertiary border color */
+          : props.variant === 'quaternary'
+            ? props.theme.colors.darker
+            : '#DDE4F0'}; /* Tertiary border color */
   color: ${props =>
     props.variant === 'primary'
       ? props.theme.colors.white
       : props.variant === 'secondary'
         ? props.theme.colors.darker
-        : props.theme.colors.white}; /* Tertiary text color */
+        : props.variant === 'quaternary'
+          ? props.theme.colors.darker
+          : props.theme.colors.darker}; /* Tertiary text color */
   background-color: ${props =>
     props.variant === 'primary'
       ? props.theme.colors.primary
       : props.variant === 'secondary'
         ? props.theme.colors.white
-        : props.theme.colors.darker}; /* Tertiary background color */
+        : props.variant === 'quaternary'
+          ? props.theme.colors.white
+          : '#F5F7FA'}; /* Tertiary background color */
   transition:
     background 0.3s ease-in-out,
     color 0.3s ease-in-out;
@@ -62,17 +68,25 @@ const StyledButton = styled.button.withConfig({
   &:hover {
     color: ${props =>
       props.variant === 'tertiary'
-        ? props.theme.colors.darker
-        : props.theme.colors.white};
+        ? 'props.theme.colors.darker'
+        : props.variant === 'quaternary'
+          ? props.theme.colors.darker
+          : props.theme.colors.white};
     background: ${props =>
       props.variant === 'primary'
         ? props.theme.colors.primaryActive
         : props.variant === 'secondary'
           ? props.theme.colors.darker
-          : props.theme.colors.white};
-    path {
-      fill: ${props => props.theme.colors.white};
-    }
+          : props.variant === 'quaternary'
+            ? props.theme.colors.white
+            : '#DDE4F0'};
+    ${props =>
+      props.variant !== 'quaternary' &&
+      `
+        path {
+          fill: ${props.theme.colors.white};
+        }
+      `}
   }
 
   &:disabled {

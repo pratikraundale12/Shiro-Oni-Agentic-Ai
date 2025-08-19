@@ -78,6 +78,10 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import SummarySanityCheck from '../pages/Namespaces/SummarySanityCheck.jsx';
+import InvalidProcessorDetails from '../pages/Namespaces/InvalidProcessorDetails.jsx';
+import DownloadHistory from '../pages/ActivityHistory/DownloadHistory.jsx';
+// import DeploymentStatistics from '../pages/Dashboard/DeploymentStatistics.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -145,6 +149,10 @@ export const ROUTES_MENU = [
         component: <ProcessGroupSummary />,
       },
       {
+        path: [':id/invalid-processors'],
+        component: <InvalidProcessorDetails />,
+      },
+      {
         path: 'upgrade',
         component: <Upgrade />,
       },
@@ -171,6 +179,10 @@ export const ROUTES_MENU = [
       {
         path: 'flow-validation',
         component: <FlowValidationPage />,
+      },
+      {
+        path: 'sanity-check-details',
+        component: <SummarySanityCheck />,
       },
     ],
     permission: 'view_namespace',
@@ -284,6 +296,10 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ActvityHistory />,
+      },
+      {
+        path: 'download-history',
+        component: <DownloadHistory />,
       },
     ],
     permission: 'view_history',

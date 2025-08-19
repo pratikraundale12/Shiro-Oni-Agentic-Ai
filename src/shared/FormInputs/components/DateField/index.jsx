@@ -125,6 +125,7 @@ const DateField = ({
               showTimeSelect
               timeIntervals={15}
               onChange={onChange}
+              autoComplete="off"
               selected={scheduleDeployTime ? scheduleDeployTime : field.value}
               placeholderText={placeholder}
               minDate={new Date()}

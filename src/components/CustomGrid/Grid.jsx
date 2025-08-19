@@ -124,6 +124,17 @@ export const Grid = ({
   sortingState,
   setSortingState,
   createdByAnsible = false,
+  setDownloadModalOpen,
+  isDownloadModalOpen,
+  removeSearch,
+  setIsExportReportOpen,
+  selectEvent,
+  setSelectEvent,
+  selectEntity,
+  setSelectEntity,
+  selectStatus,
+  setSelectStatus,
+  setRemoveSearch,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -159,6 +170,7 @@ export const Grid = ({
   const [selectEvent, setSelectEvent] = useState(null);
   const [selectEntity, setSelectEntity] = useState(null);
   const registryNodesData = useSelector(ClustersSelectors.getRegistryNodesData);
+  const [scheduleType, setScheduleType] = useState(null);
 
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
@@ -303,13 +315,26 @@ export const Grid = ({
               clusterSelectedValue?.label !== 'All' && {
                 clusterName: clusterSelectedValue?.label,
               }),
-            ...(location?.pathname?.includes('activity-history') &&
-              selectEvent?.value !== 'all' && {
-                event: selectEvent?.value,
+            ...(location?.pathname?.includes('schedule-deployment') &&
+              scheduleType?.value !== 'all' && {
+                type: scheduleType?.value,
               }),
             ...(location?.pathname?.includes('activity-history') &&
-              selectEntity?.value !== 'all' && {
-                entity: selectEntity?.value,
+              selectEvent &&
+              selectEvent.length > 0 && {
+                event: selectEvent.map(event => event.value).join(','),
+              }),
+
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEntity &&
+              selectEntity.length > 0 && {
+                entity: selectEntity.map(entity => entity.value).join(','),
+              }),
+
+            ...(location?.pathname?.includes('activity-history') &&
+              selectStatus &&
+              selectStatus.length > 0 && {
+                status: selectStatus.map(status => status.value).join(','),
               }),
 
             ...(location?.pathname?.match(
@@ -348,13 +373,26 @@ export const Grid = ({
             clusterSelectedValue?.label !== 'All' && {
               clusterName: clusterSelectedValue?.label,
             }),
-          ...(location?.pathname?.includes('activity-history') &&
-            selectEvent?.value !== 'all' && {
-              event: selectEvent?.value,
+          ...(location?.pathname?.includes('schedule-deployment') &&
+            scheduleType?.value !== 'all' && {
+              type: scheduleType?.value,
             }),
           ...(location?.pathname?.includes('activity-history') &&
-            selectEntity?.value !== 'all' && {
-              entity: selectEntity?.value,
+            selectEvent &&
+            selectEvent.length > 0 && {
+              event: selectEvent.map(event => event.value).join(','),
+            }),
+
+          ...(location?.pathname?.includes('activity-history') &&
+            selectEntity &&
+            selectEntity.length > 0 && {
+              entity: selectEntity.map(entity => entity.value).join(','),
+            }),
+
+          ...(location?.pathname?.includes('activity-history') &&
+            selectStatus &&
+            selectStatus.length > 0 && {
+              status: selectStatus.map(status => status.value).join(','),
             }),
 
           ...(location?.pathname?.match(
@@ -390,6 +428,8 @@ export const Grid = ({
     selectEvent,
     selectEntity,
     itemsPerPage,
+    scheduleToken,
+    selectStatus,
   ]);
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
@@ -424,7 +464,7 @@ export const Grid = ({
       ? filterClusterView(DATA)
       : DATA;
   useEffect(() => {
-    if (isEmpty(TABLE_DATA?.nodes)) {
+    if (isEmpty(TABLE_DATA?.nodes) && currentPage !== 1) {
       setCurrentPage(1);
     }
   }, [TABLE_DATA]);
@@ -568,9 +608,19 @@ export const Grid = ({
         selectEvent={selectEvent}
         selectEntity={selectEntity}
         setSelectEntity={setSelectEntity}
+        setSelectStatus={setSelectStatus}
+        selectStatus={selectStatus}
         setSortingState={setSortingState}
         setCurrentPage={setCurrentPage}
         isClusterLoggedIn={isClusterLoggedIn}
+        onItemsPerPageChange={setItemsPerPage}
+        scheduleType={scheduleType}
+        setScheduleType={setScheduleType}
+        isDownloadModalOpen={isDownloadModalOpen}
+        setDownloadModalOpen={setDownloadModalOpen}
+        removeSearch={removeSearch}
+        setIsExportReportOpen={setIsExportReportOpen}
+        setRemoveSearch={setRemoveSearch}
       />
       {module === 'nodes' &&
         !loading &&
@@ -578,7 +628,7 @@ export const Grid = ({
           <>{getRegistryNodesData()}</>
         )}
       <div className="mb-2 ps-1">
-        <Breadcrumb module={module} />
+        <Breadcrumb module={module} setRemoveSearch={setRemoveSearch} />
       </div>
 
       <TableContainer
@@ -606,6 +656,12 @@ export const Grid = ({
           next={next}
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={setItemsPerPage}
+          selectEntity={selectEntity}
+          setSelectEntity={setSelectEntity}
+          setSelectStatus={setSelectStatus}
+          selectStatus={selectStatus}
+          selectEvent={selectEvent}
+          setSelectEvent={setSelectEvent}
         />
       )}
     </Container>
@@ -640,4 +696,17 @@ Grid.propTypes = {
   sortingState: PropTypes.string,
   setSortingState: PropTypes.func,
   createdByAnsible: PropTypes.bool,
+  scheduleType: PropTypes.string,
+  setScheduleType: PropTypes.func,
+  setDownloadModalOpen: PropTypes.func,
+  isDownloadModalOpen: PropTypes.bool,
+  removeSearch: PropTypes.bool,
+  setIsExportReportOpen: PropTypes.func,
+  selectEntity: PropTypes.string,
+  setSelectEntity: PropTypes.func,
+  selectStatus: PropTypes.string,
+  setSelectStatus: PropTypes.func,
+  selectEvent: PropTypes.string,
+  setSelectEvent: PropTypes.func,
+  setRemoveSearch: PropTypes.func,
 };

@@ -39,6 +39,7 @@ export const namespacesAPI = api => {
     localOnly,
     use_service_account,
     is_from_toggle,
+    is_from_pg_details = false,
   }) => {
     const url =
       namespaceId &&
@@ -58,7 +59,11 @@ export const namespacesAPI = api => {
                 !is_from_toggle &&
                 window?.location?.pathname != '/controller-service'
               ? `controller-services/${clusterId}/namespace?use_service_account=true`
-              : `controller-services/${clusterId}/namespace`;
+              : is_from_pg_details &&
+                  namespaceId &&
+                  window?.location?.pathname != '/controller-service'
+                ? `controller-services/${clusterId}/namespace/${namespaceId}`
+                : `controller-services/${clusterId}/namespace`;
     return api.get(url);
   };
 
@@ -312,6 +317,47 @@ export const namespacesAPI = api => {
     );
   };
 
+  const fetchSanityCheckSummaryData = ({ namespaceId }) => {
+    return api.get(`namespace/${namespaceId}/sanity-check`);
+  };
+  const fetchLocalChanges = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/local-changes`
+    );
+  };
+
+  const revertLocalChanges = ({ clusterId, namespaceId }) => {
+    return api.post(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/revert-local-changes`
+    );
+  };
+
+  const deleteNamespace = ({ clusterId, namespaceId }) => {
+    return api.delete(`/clusters/${clusterId}/namespace/${namespaceId}`);
+  };
+
+  const getInvalidProcessorDetails = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespace/${namespaceId}/invalid-processors`
+    );
+  };
+  const fetchSanityReportAuditLog = ({ recordId }) => {
+    return api.get(`sanity-report/${recordId}`);
+  };
+
+  const getDeleteNamespaceDetails = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/namespace-details`
+    );
+  };
+
+  const fetchLastSanityReport = ({ namespaceId }) => {
+    return api.get(`/last-sanity-report/${namespaceId}`);
+  };
+
+  const refreshControllerService = ({ clusterId, controllerId }) =>
+    api.get(`controller-services/${clusterId}/service/${controllerId}`);
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -347,5 +393,14 @@ export const namespacesAPI = api => {
     fetchRegistryFlowDetails,
     fetchDuplicateScheduleData,
     fetchAddPropertyToAdd,
+    fetchSanityCheckSummaryData,
+    fetchLocalChanges,
+    revertLocalChanges,
+    deleteNamespace,
+    getInvalidProcessorDetails,
+    fetchSanityReportAuditLog,
+    getDeleteNamespaceDetails,
+    fetchLastSanityReport,
+    refreshControllerService,
   };
 };

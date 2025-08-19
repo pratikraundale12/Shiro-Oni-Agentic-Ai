@@ -1,9 +1,10 @@
+import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { AuthenticationActions } from '../authentication';
-import { GridSelectors } from '../grid';
+import { GridActions, GridSelectors } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
@@ -417,11 +418,19 @@ export function* updateParameterContext(api, { payload }) {
         id: '',
       })
     );
-  } else {
+    toast.success('Parameter context updated successfully');
+  } else if (response.ok) {
     yield call(fetchParameterContext, api, {
       initialCall: false,
       showError: true,
     });
+    toast.success('Parameter context updated successfully');
+  } else {
+    toast.error(
+      response?.message ||
+        response?.data?.message ||
+        'Failed to update parameter context'
+    );
   }
 }
 
@@ -469,7 +478,7 @@ export function* getStatusAndDeleteParameterContext(
     ],
   });
   if (response.ok && !response.data?.complete && response.data?.requestId) {
-    delay(1000);
+    yield delay(3500);
     yield call(getStatusAndDeleteParameterContext, api, {
       method: 'get',
       additionalData: { requestId: response.data?.requestId },
@@ -482,6 +491,8 @@ export function* getStatusAndDeleteParameterContext(
     yield call(getStatusAndDeleteParameterContext, api, {
       additionalData: { requestId: response.data?.requestId },
     });
+    yield put(NamespacesActions.fetchParameterContext());
+    yield put(NamespacesActions.setParameterEditingAction(false));
   } else {
     yield call(fetchParameterContext, api, {
       initialCall: false,
@@ -567,6 +578,7 @@ export function* addVariableServices(api, { payload }) {
     ],
   });
   if (response.ok && response.data?.requestId) {
+    toast.success('Variables added successfully');
     yield call(getStatusAndDeleteVariables, api, {
       method: 'get',
       additionalData: { requestId: response.data?.requestId },
@@ -698,13 +710,20 @@ export function* getControllerServiceList(api, action) {
   let namespaceIdentifier = '';
   let use_service_account = false;
   let isFromToggle = false;
+  let isFromPgDetails = false;
   if (action.payload) {
-    const { localOnly, namespaceId, use_service_ac, is_from_toggle } =
-      action.payload;
+    const {
+      localOnly,
+      namespaceId,
+      use_service_ac,
+      is_from_toggle,
+      is_from_pg_details,
+    } = action.payload;
     isLocalOnly = localOnly;
     namespaceIdentifier = namespaceId;
     use_service_account = use_service_ac;
     isFromToggle = is_from_toggle;
+    isFromPgDetails = is_from_pg_details;
   }
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
@@ -722,11 +741,14 @@ export function* getControllerServiceList(api, action) {
   let namespaceId = '';
   if (use_service_account === true && !isFromToggle) {
     namespaceId = '';
-  } else if (namespaceIdentifier?.length && (isFromToggle || isLocalOnly)) {
+  } else if (
+    namespaceIdentifier?.length &&
+    (isFromToggle || isLocalOnly || isFromPgDetails)
+  ) {
     namespaceId = namespaceIdentifier;
   } else if (
     (selectedNamespaceId?.id || selectedNamespace?.id) &&
-    (isFromToggle || isLocalOnly)
+    (isFromToggle || isLocalOnly || isFromPgDetails)
   ) {
     namespaceId = selectedNamespaceId?.id
       ? selectedNamespaceId?.id
@@ -745,16 +767,21 @@ export function* getControllerServiceList(api, action) {
         localOnly: isLocalOnly,
         use_service_account: use_service_account,
         is_from_toggle: isFromToggle,
+        is_from_pg_details: isFromPgDetails,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
   });
-  if (response.ok)
+  if (response.ok) {
     yield put(
-      NamespacesActions.getRootControllerServiceNamespace(response?.data)
+      NamespacesActions.getRootControllerServiceNamespace(
+        response?.data?.services
+      )
     );
-  else if (!response.ok) {
+    yield put(NamespacesActions.setCsPermissions(response?.data?.permissions));
+  } else if (!response.ok) {
     yield put(NamespacesActions.getRootControllerServiceNamespace([]));
+    yield put(NamespacesActions.setCsPermissions({}));
     toast.error(response.data.message);
   }
 }
@@ -1173,7 +1200,9 @@ export function* fetchFlowNameList(api, { payload }) {
 }
 
 export function* fetchVersionData(api, { payload }) {
+  const { isFromSchedule } = payload;
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedSchedule = yield select(SchedularSelectors.getSelectedSchedule);
   const gridData = yield select(
     GridSelectors.getNamespaceGridRegistry,
     'namespaces'
@@ -1189,7 +1218,9 @@ export function* fetchVersionData(api, { payload }) {
   );
   const childNamespace = yield select(NamespacesSelectors.getSelectedNamespace);
 
-  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-id'] = isFromSchedule
+    ? selectedSchedule?.cluster_id
+    : selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'fetchVersionData',
@@ -1197,8 +1228,10 @@ export function* fetchVersionData(api, { payload }) {
     apiMethod: api.fetchVersionData,
     apiParams: [
       {
-        clusterId: selectedCluster?.value,
-        registriesId: gridData?.id,
+        clusterId: isFromSchedule
+          ? selectedSchedule?.cluster_id
+          : selectedClusterToken?.id,
+        registriesId: gridData?.id || selectedSchedule?.registry_id,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,
         namespaceId:
@@ -1218,6 +1251,13 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+  const scheduleStartFlow = yield select(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+  // Extract ID from current URL
+  const currentPath = window.location.pathname;
+  const urlId = currentPath.split('/').pop();
+
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1235,7 +1275,11 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: !isUpgrade ? selectedNamespace?.id : null,
+        namespaceId: scheduleStartFlow
+          ? urlId
+          : !isUpgrade
+            ? selectedNamespace?.id
+            : null,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,
         version: payload?.version,
@@ -1245,6 +1289,9 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   });
   if (response.ok) {
     yield put(NamespacesActions.setRegistryAllDetails(response?.data));
+    if (isUpgrade) {
+      history.push('/process-group/flow-details');
+    } else history.push('/process-group/config-details');
   } else {
     toast.error(response?.message || response?.data?.message);
   }
@@ -1252,6 +1299,9 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
 
 export function* deployNamespaceByRegistryFlow(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const isSanityCheckAtDeploy = yield select(
+    NamespacesSelectors.getSanityCheckAtDeploy
+  );
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1275,19 +1325,27 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
     ],
   });
   if (response.ok) {
-    toast.success(response?.data?.message);
+    const cleanMessage = response?.data?.message?.replace(/<[^>]*>/g, '');
+    toast.success(cleanMessage);
     if (scheduleDeploy) {
       yield call(history.push, '/schedule-deployment');
       yield put(AuthenticationActions.setRoute('schedule-deployment'));
     } else {
-      yield put(NamespacesActions.setDeployedModal(true));
+      if (isSanityCheckAtDeploy) {
+        yield put(NamespacesActions.setSanityCheckDeployModalOpen(true));
+      } else {
+        yield put(NamespacesActions.setDeployedModal(true));
+      }
       yield put(
         NamespacesActions.setRegistryDeployResponseData(response?.data)
       );
       yield put(NamespacesActions.setFlowControlAfterDeploy(true));
     }
   } else {
-    toast.error(response?.message || response?.data?.message);
+    const cleanErrorMessage = (
+      response?.message || response?.data?.message
+    )?.replace(/<[^>]*>/g, '');
+    toast.error(cleanErrorMessage);
   }
 }
 export function* upgradeCluster(api, { payload }) {
@@ -1323,11 +1381,15 @@ export function* upgradeCluster(api, { payload }) {
       yield put(NamespacesActions.setDeployedModal(true));
       yield put(NamespacesActions.setFlowControlAfterUpgrade(true));
     }
-    toast.success(response?.data?.message);
+    const cleanMessage = response?.data?.message?.replace(/<[^>]*>/g, '');
+    toast.success(cleanMessage);
   }
 
   if (!response.ok) {
-    toast.error(response?.message || response?.data?.message, {
+    const cleanErrorMessage = (
+      response?.message || response?.data?.message
+    )?.replace(/<[^>]*>/g, '');
+    toast.error(cleanErrorMessage, {
       autoClose: 5000,
     });
   }
@@ -1381,6 +1443,7 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  const formDataRegistry = yield select(NamespacesSelectors.getDeployFormData);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
 
@@ -1390,7 +1453,7 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
     apiMethod: api.fetchDuplicateScheduleData,
     apiParams: [
       {
-        flowId: payload?.flowId,
+        flowId: payload?.flowId || formDataRegistry?.flow_name,
       },
     ],
   });
@@ -1401,7 +1464,7 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
   } else if (response?.status === 204) {
     if (payload?.mode == 'deploy') {
       yield put(NamespacesActions.deployNamespaceByRegistryFlow(payload));
-    } else if (payload?.mode == 'upgrade') {
+    } else if (payload?.mode !== 'deploy') {
       yield put(NamespacesActions.upgradeCluster(payload));
     }
   }
@@ -1439,14 +1502,274 @@ export function* fetchAddPropertyToAdd(api, { payload }) {
     toast.error(response?.message || response?.data?.message);
   }
 }
+
+export function* fetchLocalChanges(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchLocalChanges',
+    loadingSection: 'fetchLocalChanges',
+    apiMethod: api.fetchLocalChanges,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedNamespace?.value,
+      },
+    ],
+    successAction: NamespacesActions.fetchLocalChangesSuccess,
+  });
+
+  if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
+export function* revertLocalChanges(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'revertLocalChanges',
+    loadingSection: 'revertLocalChanges',
+    apiMethod: api.revertLocalChanges,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedNamespace?.value,
+      },
+    ],
+    successAction: NamespacesActions.revertLocalChangesSuccess,
+  });
+
+  if (response?.ok) {
+    yield put(NamespacesActions.setSelectedNamespace(response?.data));
+    toast.success('Local changes reverted successfully');
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
+export function* deleteNamespace(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteNamespace',
+    loadingSection: 'deleteNamespace',
+    apiMethod: api.deleteNamespace,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: payload,
+      },
+    ],
+  });
+
+  if (response.ok) {
+    toast.success('Process Group deleted successfully');
+    yield put(NamespacesActions.deleteNamespaceSuccess(payload));
+    yield put(
+      GridActions.fetchGrid({
+        module: 'namespaces',
+        params: {},
+      })
+    );
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
 //
+
+export function* fetchInvalidProcessorDetails(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    loadingSection: 'fetchInvalidProcessorDetails',
+    apiMethod: api.getInvalidProcessorDetails,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: payload?.namespaceId,
+      },
+    ],
+    successAction: NamespacesActions.fetchInvalidProcessorDetailsSuccess,
+  });
+  if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+export function* fetchSanityCheckSummaryData(api, { payload }) {
+  const namespace_Id = window.location.pathname.split('/').pop();
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchSanityCheckSummaryData',
+    loadingSection: 'fetchSanityCheckSummaryData',
+    apiMethod: api.fetchSanityCheckSummaryData,
+    apiParams: [
+      {
+        namespaceId: payload?.id,
+      },
+    ],
+  });
+  if (response.ok) {
+    yield put(
+      NamespacesActions.fetchLastSanityReport({
+        namespaceId: namespace_Id,
+      })
+    );
+    toast.success(response?.data?.message);
+    yield put(
+      NamespacesActions.setSanityCheckDetailSectionData(response?.data?.data)
+    );
+    if (isEmpty(response?.data?.data)) {
+      yield put(NamespacesActions.setDisplaySanityCheckCleanModal(true));
+    } else {
+      // yield call(history.push, '/process-group/sanity-check-details');
+    }
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+export function* fetchSanityReportAuditLog(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchSanityReportAuditLog',
+    loadingSection: 'fetchSanityReportAuditLog',
+    apiMethod: api.fetchSanityReportAuditLog,
+    apiParams: [
+      {
+        recordId: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield put(NamespacesActions.setSanityReportAuditData(response?.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
+export function* fetchDeleteNamespaceDetails(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchDeleteNamespaceDetails',
+    loadingSection: 'fetchDeleteNamespaceDetails',
+    apiMethod: api.getDeleteNamespaceDetails,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: payload?.namespaceId,
+      },
+    ],
+    successAction: NamespacesActions.fetchDeleteNamespaceDetailsSuccess,
+  });
+  if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
+export function* fetchLastSanityReport(api, { payload }) {
+  try {
+    const response = yield call(requestSaga, {
+      errorSection: 'fetchLastSanityReport',
+      loadingSection: 'fetchLastSanityReport',
+      apiMethod: api.fetchLastSanityReport,
+      apiParams: [payload],
+    });
+    if (response.ok) {
+      yield put(NamespacesActions.fetchLastSanityReportSuccess(response.data));
+    } else {
+      toast.error(response?.message || response?.data?.message);
+    }
+  } catch (error) {
+    toast.error(error.message || 'Failed to fetch last sanity report');
+  }
+}
+
+export function* refreshControllerService(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'refreshControllerService',
+    loadingSection: 'refreshControllerService',
+    apiMethod: api.refreshControllerService,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        controllerId: payload.controllerId,
+      },
+    ],
+    successAction: NamespacesActions.refreshControllerServiceSuccess,
+  });
+
+  if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
+    takeLatest(NamespacesActions.deleteNamespace, deleteNamespace, api),
     takeLatest(NamespacesActions.singleNamespaceData, singleNamespaceData, api),
     takeLatest(NamespacesActions.fetchDestNamespaces, fetchDestNamespaces, api),
     takeLatest(NamespacesActions.checkDestCluster, checkDestCluster, api),
     takeLatest(NamespacesActions.deployCluster, deployCluster, api),
+    takeLatest(NamespacesActions.fetchLocalChanges, fetchLocalChanges, api),
     takeLatest(
       NamespacesActions.updateNamespaceStatus,
       updateNamespaceStatus,
@@ -1561,6 +1884,36 @@ export function* namespacesSagas(api) {
       fetchAddPropertyToAdd,
       api
     ),
+    takeLatest(
+      NamespacesActions.fetchSanityCheckSummaryData,
+      fetchSanityCheckSummaryData,
+      api
+    ),
+    takeLatest(NamespacesActions.revertLocalChanges, revertLocalChanges, api),
+    takeLatest(
+      NamespacesActions.fetchInvalidProcessorDetails,
+      fetchInvalidProcessorDetails,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchSanityReportAuditLog,
+      fetchSanityReportAuditLog,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchDeleteNamespaceDetails,
+      fetchDeleteNamespaceDetails,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchLastSanityReport,
+      fetchLastSanityReport,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.refreshControllerService,
+      refreshControllerService,
+      api
+    ),
   ]);
 }
-//

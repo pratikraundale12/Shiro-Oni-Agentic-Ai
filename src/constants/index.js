@@ -81,7 +81,6 @@ export const CLUSTER_STATUS = {
 };
 
 export const MODULE_LIST_MAP = [
-  { label: 'All', value: 'all' },
   { label: 'Cluster', value: 'Cluster' },
   { label: 'Registry', value: 'Registry' },
   { label: 'Process Group', value: 'Process Group' },
@@ -99,16 +98,27 @@ export const MODULE_LIST_MAP = [
   { label: 'Rule scope', value: 'Rule scope' },
   { label: 'Rule', value: 'Rule' },
   { label: 'Data Flow Inventory', value: 'Data Flow Inventory' },
+  { label: 'Local Changes', value: 'Local Changes' },
+  { label: 'Audit', value: 'Audit' },
+  { label: 'Cluster Permission', value: 'Cluster Permission' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
-  { label: 'All', value: 'all' },
   { label: 'Success', value: 'Success' },
   { label: 'Failed', value: 'Failed' },
+  { label: 'Deployed', value: 'DEPLOYED' },
+  { label: 'Upgraded', value: 'UPGRADED' },
+  { label: 'Downgrade', value: 'DOWNGRADED' },
+  { label: 'Started', value: 'STARTED' },
+  { label: 'Stopped', value: 'STOPPED' },
+  { label: 'Deployed With Errors', value: 'DEPLOYED_WITH_ERRORS' },
+  { label: 'Upgraded With Errors', value: 'UPGRADED_WITH_ERRORS' },
+  { label: 'Downgraded With Errors', value: 'DOWNGRADED_WITH_ERRORS' },
+  { label: 'Started With Errors', value: 'STARTED_WITH_ERRORS' },
+  { label: 'Stopped With Errors', value: 'STOPPED_WITH_ERRORS' },
 ];
 
 export const ACTIVITY_EVENTS = [
-  { label: 'All', value: 'all' },
   { label: 'Add', value: 'Add' },
   { label: 'Create', value: 'Create' },
   { label: 'Create Cluster', value: 'Create Cluster' },
@@ -119,6 +129,8 @@ export const ACTIVITY_EVENTS = [
   { label: 'Downgrade', value: 'downgrade' },
   { label: 'Schedule Deploy', value: 'Schedule Deploy' },
   { label: 'Schedule Upgrade', value: 'Schedule upgrade' },
+  { label: 'Schedule Upgraded', value: 'Schedule upgraded' },
+  { label: 'Schedule Downgraded', value: 'Schedule downgraded' },
   { label: 'Schedule Downgrade', value: 'Schedule downgrade' },
   { label: 'Update', value: 'Update' },
   { label: 'Reject', value: 'Reject' },
@@ -140,6 +152,14 @@ export const ACTIVITY_EVENTS = [
   { label: 'Remove Nodes', value: 'Remove Nodes' },
   { label: 'Upgrade Cluster', value: 'Upgrade Cluster' },
   { label: 'Associate Registry', value: 'Associate Registry' },
+  { label: 'Enable', value: 'Enable' },
+  { label: 'Disable', value: 'Disable' },
+  { label: 'Revert', value: 'Revert' },
+  { label: 'Schedule Stop', value: 'Schedule Stop' },
+  { label: 'Schedule Start', value: 'Schedule Start' },
+  { label: 'Sanity Check', value: 'Sanity Check' },
+  { label: 'Download', value: 'Download' },
+  { label: 'Schedule Started', value: 'Schedule Started' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
@@ -232,6 +252,8 @@ export const KDFM = {
   SMTP_USER: 'SMTP  User',
   SMTP_PASS: 'SMTP  Password',
   FROM_EMAIL: 'From Email',
+  TO_EMAIL: 'To Email',
+  SEND_EMAIL: 'Send Email',
   META_TITLE: 'Meta Title',
   ACTIVATE: 'Activate',
   DEACTIVATE: 'Deactivate',
@@ -261,8 +283,13 @@ export const KDFM = {
   SMTP: 'Email Configuration',
   FLOW_CONTROL_WARNING:
     'The "Start" and "Stop" buttons will be hidden if all the processors are either invalid or disabled.',
+  SCHEDULE_FLOW_CONTROL_WARNING:
+    'The "Schedule Start" and "Schedule Stop" buttons will be hidden if all the processors are either invalid or disabled.',
+  SCHEDULE_AUTOMATIC_START_FLOW:
+    'The process group has been successfully deployed and is scheduled to start automatically at the specified date and time.',
 
   CHANGE_CONFIGURATION: 'Change Configuration',
+  LAST_SYNC: 'Last Sync Time',
   SECHEDULED_TIME: 'Scheduled Time',
   FLOW_STATE_AFTER_DEPLOY: 'Flow state after deploy',
   SCHEDULE_UPGRADE: 'Schedule Upgrade',
@@ -272,6 +299,8 @@ export const KDFM = {
   ITEMS_PER_PAGE: 20,
   USER_STORY: 'User Story',
   CHANGE_REQUEST: 'Change Request',
+  PLEASE_LOGIN_TO_CLUSTER: 'Please login to cluster',
+  SELECT_PROCESS_GROUP: 'Select Process Group',
 
   // License constants
   TRIAL: 'Trial',

@@ -17,7 +17,6 @@ const ContainerRangePicker = styled.div`
     margin-top: 2px;
     border-radius: 4px;
   }
-
   .rs-picker-daterange > .rs-input-group.rs-input-group-inside {
     flex-direction: row-reverse;
   }
@@ -41,7 +40,6 @@ const ContainerRangePicker = styled.div`
       }
     }
   }
-
   div > div > input {
     color: black !important;
     // background-color: #f5f7fa;
@@ -69,6 +67,7 @@ const StyledDateRangePickerInput = ({ value, handleChange, customRanges }) => {
           editable={false}
           showTime={false}
           format="MM/dd/yyyy"
+          disabledDate={date => date.getTime() > new Date().getTime()}
         />
       </ContainerRangePicker>
     </>

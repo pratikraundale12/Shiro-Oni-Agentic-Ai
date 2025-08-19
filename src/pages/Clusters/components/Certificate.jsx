@@ -2,17 +2,18 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import { KeyIcons } from '../../../assets';
+import { FullPageLoader } from '../../../components';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import { Modal, PasswordField } from '../../../shared';
+import { ClustersActions } from '../../../store';
 import { testCluster, testRegistry } from '../../../store/apis/clusters';
 import { UploadFile } from '../UploadFile';
 import { FailedTestModal } from './FailedTestModal';
-import { useDispatch } from 'react-redux';
-import { ClustersActions } from '../../../store';
-import { FullPageLoader } from '../../../components';
+import { isEmpty } from 'lodash';
 
 const schema = yup.object().shape({
   pfxFile: yup.mixed().required('PFX file is required'),
@@ -30,7 +31,7 @@ const ModalContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  margin-top: 38px;
+  margin-top: 12px;
   margin-bottom: 35px;
 `;
 
@@ -48,6 +49,12 @@ export const Certificate = ({
   activeTab,
   registryData,
   setSuccessModal,
+  setTestCertificateFile,
+  setTestCertificatePassword,
+  setTestCertificatePasswordForRegistry,
+  setTestCertificateFileForRegistry,
+  setUploadFileatEditTime,
+  data,
 }) => {
   const dispatch = useDispatch();
   const [failedModal, setFailedModal] = useState(false);
@@ -66,8 +73,12 @@ export const Certificate = ({
   });
 
   useEffect(() => {
-    if (isCertificateOpen) reset(DEFAULT_VALUES);
-  }, [isCertificateOpen]);
+    if (isCertificateOpen && activeTab === 'cluster') {
+      reset({
+        password: data?.service_account_certificate_password || '',
+      });
+    }
+  }, [isCertificateOpen, data, reset, activeTab]);
 
   const handleTest = async data => {
     const payload = new FormData();
@@ -76,9 +87,17 @@ export const Certificate = ({
       payload.append('nifi_url', clusterData.nifiUrl);
       payload.append('file', data.pfxFile);
       payload.append('passphrase', data.password);
-
+      payload.append('skip_credentials', false);
+      setTestCertificateFile(data.pfxFile);
+      setTestCertificatePassword(data.password);
+      setTestCertificateFileForRegistry('');
+      setTestCertificatePasswordForRegistry('');
       const response = await testCluster(payload);
       if (response.status === 200) {
+        if (!isEmpty(data)) {
+          setUploadFileatEditTime(true);
+        }
+
         setTestSuccess(true);
         setIsCertificateOpen(false);
         setSuccessModal(true);
@@ -98,7 +117,8 @@ export const Certificate = ({
       );
       payload.append('file', data.pfxFile);
       payload.append('passphrase', data.password);
-
+      setTestCertificateFileForRegistry(data.pfxFile);
+      setTestCertificatePasswordForRegistry(data.password);
       const response = await testRegistry(payload);
       if (response.status === 204) {
         setTestSuccess(true);
@@ -147,6 +167,10 @@ export const Certificate = ({
             label={KDFM.PFX_FILE}
             placeholder={KDFM.SELECT_PFX_FILE}
             errors={errors}
+            data={data}
+            isCertificateOpen={isCertificateOpen}
+            setIsCertificateOpen={setIsCertificateOpen}
+            activeTab={activeTab}
           />
           <PasswordField
             name="password"
@@ -179,4 +203,10 @@ Certificate.propTypes = {
   registryData: PropTypes.object,
   activeTab: PropTypes.string,
   setSuccessModal: PropTypes.func,
+  setTestCertificateFile: PropTypes.func,
+  setTestCertificatePassword: PropTypes.func,
+  setTestCertificateFileForRegistry: PropTypes.func,
+  setTestCertificatePasswordForRegistry: PropTypes.func,
+  data: PropTypes.any,
+  setUploadFileatEditTime: PropTypes.func,
 };

@@ -37,38 +37,114 @@ const ActiveButtonContainer = styled.div`
 `;
 
 const ActiveButtonDiv = styled.div`
-  height: 48px;
-  width: 48px;
-  max-width: 48px;
+  width: 100%;
+  gap: 12px;
   max-height: 48px;
   min-height: 48px;
-  min-width: 48px;
-  border: 1px solid #dde4f0;
+  padding: 8px;
+  border: 1px solid
+    ${({ className, isActive }) => {
+      if (isActive) {
+        if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+        if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      }
+      return '#dde4f0';
+    }};
   border-radius: 8px;
-  background-color: #f5f7fa;
-  cursor: pointer;
+  background-color: ${({ isActive, className }) => {
+    if (isActive) {
+      if (className?.includes('div-btn-1')) return '#58e715'; // green
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // red
+    }
+    return '#f5f7fa'; // default inactive
+  }};
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
+  justify-content: start;
+  color: ${({ isActive, className }) => {
+    if (isActive) {
+      if (className?.includes('div-btn-1')) return '#fff'; // green
+      if (className?.includes('div-btn-2')) return '#fff'; // red
+    }
+    return 'black'; // default inactive
+  }};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 23px;
 
   & span {
     position: absolute;
     top: 0px;
     right: 2px;
     font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     line-height: 23px;
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
+  &:hover {
+    background-color: ${({ disabled, hoverColor }) => {
+      if (disabled) return undefined; // no hover effect
+      if (hoverColor) return hoverColor;
+      return '#F6F7F9';
+    }};
 
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
+    border: 1px solid
+      ${({ className, isActive }) => {
+        if (isActive) {
+          if (className?.includes('div-btn-1')) return '#58e715';
+          if (className?.includes('div-btn-2')) return '#c52b2b';
+        }
+        return '#dde4f0';
+      }};
+
+    color: ${({ disabled, isActive }) => {
+      if (disabled) return undefined; // don't override the original color
+      return isActive ? '#000' : '#fff'; // active = black, inactive = white
+    }};
+
+    border-radius: 8px; // always applied, even on hover
+  }
+`;
+
+const ActiveButtonDivResetFlow = styled.div`
+  width: 100%;
+  gap: 12px;
+  max-height: 48px;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid
+    ${({ className, isActive }) => {
+      if (isActive) {
+        if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+        if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      }
+      return '#dde4f0';
+    }};
+  border-radius: 8px;
+  background-color: #dde4f0;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 23px;
+
+  & span {
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    font-family: ${props => props.theme.fontNato};
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 23px;
+    color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
 `;
 const CountDiv = styled.div`
@@ -138,6 +214,23 @@ const ConfigTitleHTwo = styled.div`
   border-bottom: 1px solid #ff7a00;
   width: fit-content;
 `;
+const IconCover = styled.div`
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #dde4f0;
+`;
+const TextDetails = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  text-transform: capitalize;
+  color: #444445;
+  margin-bottom: 25px;
+`;
 const ScheduleDeploymentTab = ({
   scheduleDeployTime,
   setScheduleDeployTime,
@@ -147,6 +240,10 @@ const ScheduleDeploymentTab = ({
   setScheduleErrors,
 }) => {
   const dispatch = useDispatch();
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+
   const timeDeployScheduleDeployment = useSelector(
     NamespacesSelectors.getScheduleTimeByRegistry
   );
@@ -158,6 +255,10 @@ const ScheduleDeploymentTab = ({
   );
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
+  );
+
+  const sigleNamespaceData = useSelector(
+    NamespacesSelectors.getFlowControlData
   );
   const { control, reset } = useForm({});
 
@@ -214,43 +315,74 @@ const ScheduleDeploymentTab = ({
           {(scheduleDeploymentFlow || scheduleUpgradeFromList) && (
             <CustomNine className="col-4 mb-3">
               <ActiveButtonContainer className="d-flex ">
+                <TextDetails className="col-lg-12">
+                  Processor Details
+                </TextDetails>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-1 mr-2"
-                    count={selectedNameSpace?.runningCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.runningCount
+                        : selectedNameSpace?.runningCount || 0
+                    }
                     activeColor="#58e715"
                   >
                     <TriangleIcons color="#B5BDC8" />
-                    <span>{selectedNameSpace?.runningCount || 0}</span>
+                    <span>
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.runningCount
+                        : selectedNameSpace?.runningCount || 0}
+                    </span>
                   </CountDiv>
                   <div>{KDFM.RUNNING_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-2 mr-2"
-                    count={selectedNameSpace?.stoppedCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.stoppedCount
+                        : selectedNameSpace?.stoppedCount || 0
+                    }
                     activeColor="#c52b2b"
                   >
                     <SquareBoxIcon color="#B5BDC8" />
-                    <span>{selectedNameSpace?.stoppedCount || 0}</span>
+                    <span>
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.stoppedCount
+                        : selectedNameSpace?.stoppedCount || 0}
+                    </span>
                   </CountDiv>
                   <div>{KDFM.STOPPED_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-3 mr-2"
-                    count={selectedNameSpace?.invalidCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.invalidCount
+                        : selectedNameSpace?.invalidCount || 0
+                    }
                     activeColor="#CF9F5D"
                   >
                     <TriangleExclamationMarkIcon color="#B5BDC8" />
-                    <span>{selectedNameSpace?.invalidCount || 0}</span>
+                    <span>
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.invalidCount
+                        : selectedNameSpace?.invalidCount || 0}
+                    </span>
                   </CountDiv>
                   <div>{KDFM.INVALID_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-4 mr-2"
-                    count={selectedNameSpace?.disabledCount || 0}
+                    count={
+                      scheduleStartFlow === true
+                        ? sigleNamespaceData?.disabledCount
+                        : selectedNameSpace?.disabledCount || 0
+                    }
                     activeColor="#2c7cf3"
                   >
                     <SmallNotThunderIcon
@@ -259,7 +391,9 @@ const ScheduleDeploymentTab = ({
                       color="#B5BDC8"
                     />
                     <StyledSpan>
-                      {selectedNameSpace?.disabledCount || 0}
+                      {scheduleStartFlow === true
+                        ? sigleNamespaceData?.disabledCount
+                        : selectedNameSpace?.disabledCount || 0}
                     </StyledSpan>
                   </CountDiv>
                   <div>{KDFM.DISABLED_PROCESSORS}</div>
@@ -274,54 +408,68 @@ const ScheduleDeploymentTab = ({
                 selectedNameSpace?.stoppedCount === 0
               ) ? (
                 <>
-                  <TextsvgDiv className="d-flex">
-                    <ActiveButtonDiv className="div-btn-1 mr-2">
-                      <ActiveButtonDiv
-                        className="div-btn-1 "
-                        isActive={activeButton === 'RUNNING'}
-                        activeColor="#58e715"
-                        hoverColor="#58e715"
-                        activeTextColor="#fff"
-                        onClick={() => handleUpdateStatus('RUNNING')}
-                      >
-                        <TriangleIcons color="#B5BDC8" />
-                      </ActiveButtonDiv>
-                    </ActiveButtonDiv>
-                    <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                  </TextsvgDiv>
-                  <TextsvgDiv className="d-flex">
-                    <ActiveButtonDiv className="div-btn-2 mr-2">
-                      <ActiveButtonDiv
-                        className="div-btn-1"
-                        isActive={activeButton === 'STOPPED'}
-                        activeColor="#c52b2b"
-                        hoverColor="#c52b2b"
-                        activeTextColor="#fff"
-                        onClick={() => handleUpdateStatus('STOPPED')}
-                      >
-                        <SquareBoxIcon color="#B5BDC8" />
-                      </ActiveButtonDiv>
-                    </ActiveButtonDiv>
-                    <div>{KDFM.STOPPED_FLOW}</div>
-                  </TextsvgDiv>
+                  <>
+                    {scheduleStartFlow === false && (
+                      <>
+                        <TextDetails className="col-lg-12">
+                          Control Action
+                        </TextDetails>
+                        {/* RUNNING Button */}
+                        <TextsvgDiv className="d-flex align-items-center mb-2">
+                          <ActiveButtonDiv
+                            className="div-btn-1 mr-2"
+                            isActive={activeButton === 'RUNNING'}
+                            activeColor="#58e715"
+                            hoverColor="#58e715"
+                            activeTextColor="#fff"
+                            onClick={() => handleUpdateStatus('RUNNING')}
+                          >
+                            <IconCover>
+                              <TriangleIcons color="#58e715" />
+                            </IconCover>
+                            <div>{KDFM.RUNNING_FLOW}</div>
+                          </ActiveButtonDiv>
+                        </TextsvgDiv>
+
+                        {/* STOPPED Button */}
+                        <TextsvgDiv className="d-flex align-items-center">
+                          <ActiveButtonDiv
+                            className="div-btn-2 mr-2"
+                            isActive={activeButton === 'STOPPED'}
+                            activeColor="#c52b2b"
+                            hoverColor="#c52b2b"
+                            activeTextColor="#fff"
+                            onClick={() => handleUpdateStatus('STOPPED')}
+                          >
+                            <IconCover>
+                              {' '}
+                              <SquareBoxIcon color="#c52b2b" />
+                            </IconCover>
+                            <div>{KDFM.STOPPED_FLOW}</div>
+                          </ActiveButtonDiv>
+                        </TextsvgDiv>
+                      </>
+                    )}
+                  </>
+
                   {activeButton && (
                     <TextsvgDiv className="d-flex">
-                      <ActiveButtonDiv className="div-btn-2 mr-2">
-                        <ActiveButtonDiv
-                          className="div-btn-1"
-                          onClick={() => {
-                            setActiveButton(null);
-                            dispatch(
-                              NamespacesActions.setFlowControlStateAtScheduleDeploy(
-                                null
-                              )
-                            );
-                          }}
-                        >
+                      <ActiveButtonDivResetFlow
+                        className="div-btn-1"
+                        onClick={() => {
+                          setActiveButton(null);
+                          dispatch(
+                            NamespacesActions.setFlowControlStateAtScheduleDeploy(
+                              null
+                            )
+                          );
+                        }}
+                      >
+                        <IconCover>
                           <CrossIcon color="#B5BDC8" />
-                        </ActiveButtonDiv>
-                      </ActiveButtonDiv>
-                      <div>Reset Flow</div>
+                        </IconCover>
+                        <div>Reset Flow</div>
+                      </ActiveButtonDivResetFlow>
                     </TextsvgDiv>
                   )}
                 </>

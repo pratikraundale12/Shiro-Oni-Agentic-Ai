@@ -38,7 +38,7 @@ import {
   UsersActions,
 } from '../store';
 import { SchedularActions } from '../store/schedular';
-import { SettingsSelectors } from '../store/settings';
+import { SettingsActions, SettingsSelectors } from '../store/settings';
 import { useGlobalContext } from '../utils';
 import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';
@@ -228,6 +228,8 @@ const ProfileDropdown = () => {
     const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
     const idToken = localStorage.getItem('keycloak_id_token');
     const keycloakUrl = storedConfig?.keycloak_url;
+    const keycloakRealm = storedConfig?.keycloak_realm;
+
     if (!idToken) {
       console.error('No ID token found for logout');
       return;
@@ -240,7 +242,7 @@ const ProfileDropdown = () => {
     localStorage.removeItem('keycloak_state_val');
 
     const logoutUrl =
-      `${keycloakUrl}/realms/DFM-DEV/protocol/openid-connect/logout?` +
+      `${keycloakUrl}/realms/${keycloakRealm}/protocol/openid-connect/logout?` +
       `id_token_hint=${idToken}&` +
       `post_logout_redirect_uri=${API_URL}/login`;
 
@@ -387,9 +389,6 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     ) {
       dispatch(RolesActions.setSelectedRole({}));
       dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
-    }
-    if (location.pathname !== '/controller-service') {
-      dispatch(NamespacesActions.getRootControllerServiceNamespace([]));
     }
   }, [dispatch, GridActions, window?.location?.pathname]);
 

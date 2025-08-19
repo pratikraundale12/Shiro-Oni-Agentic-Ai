@@ -78,11 +78,9 @@ const StyledSelectField = styled(SelectField)`
   & > div {
     margin-bottom: ${props => props.marginBottom || '4px'};
   }
-
   & label {
     margin-bottom: ${props => props.labelMargin || '2px'} !important;
   }
-
   /* Control styling (the main input area) */
   & .react-select__control {
     height: ${props => props.height || 'auto'};
@@ -92,17 +90,14 @@ const StyledSelectField = styled(SelectField)`
     margin-left: ${props => props.marginLeft || '0'};
     margin-right: ${props => props.marginRight || '0'};
   }
-
   /* Value container styling */
   & .react-select__value-container {
     padding: ${props => props.innerPadding || props.padding || '0 8px'};
   }
-
   /* Menu styling */
   & .react-select__menu {
     border-radius: ${props => props.menuBorderRadius || '4px'};
   }
-
   /* Option styling */
   & .react-select__option {
     padding: ${props => props.optionPadding || '8px 12px'};
@@ -223,9 +218,10 @@ export const DeploymentScheduleSettings = () => {
 
   useEffect(() => {
     const subscription = watch(value => {
+      const refreshSetting =
+        settingData?.refresh === 0 ? 'Off' : String(settingData?.refresh);
       const isModified =
-        value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
+        String(value.refresh) !== refreshSetting ||
         value.approver_groups !== settingData?.approver_groups ||
         value.group_email_id !== settingData?.group_email_id ||
         value.email_reminder_time !== settingData?.email_reminder_time;

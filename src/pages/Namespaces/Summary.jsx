@@ -9,6 +9,8 @@ import * as yup from 'yup';
 import {
   CrossIcon,
   DuplicateIcon,
+  ExclamationIcon,
+  InfoIcon,
   SmallNotThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
@@ -21,11 +23,13 @@ import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
+import { NAMESPACE_CONSTANTS } from '../../constants/namespace.constant';
 import { history } from '../../helpers/history';
-import { Button, Modal, ModalWithIcon } from '../../shared';
+import { Button, CheckboxField, Modal, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
+  ClustersActions,
   ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
@@ -36,11 +40,14 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
+import { theme } from '../../styles';
+import { DiffModalScheduleList } from '../ScheduleDeployment/DiffModalSchedule';
 import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymentModal';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
 import { DuplicateScheduleModal } from './DuplicateScheduleModal';
 import NamespaceDeploy from './NamespaceDeploy';
+import SanityCheckDeployModal from './SanityCheckDeployModal';
 import Upgrade from './Upgrade';
 import { FlowValidationSelectors } from '../../store/flowValidation';
 
@@ -189,41 +196,114 @@ const ActiveButtonContainer = styled.div`
 `;
 
 const ActiveButtonDiv = styled.div`
-  height: 48px;
-  width: 48px;
-  max-width: 48px;
+  width: 100%;
+  gap: 12px;
   max-height: 48px;
   min-height: 48px;
-  min-width: 48px;
-  border: 1px solid #dde4f0;
+  padding: 8px;
+  border: 1px solid
+    ${({ className, isActive }) => {
+      if (isActive) {
+        if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+        if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      }
+      return '#dde4f0';
+    }};
   border-radius: 8px;
-  background-color: #f5f7fa;
-  cursor: pointer;
+  background-color: ${({ isActive, className }) => {
+    if (isActive) {
+      if (className?.includes('div-btn-1')) return '#58e715'; // green
+      if (className?.includes('div-btn-2')) return '#c52b2b'; // red
+    }
+    return '#f5f7fa'; // default inactive
+  }};
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
+  justify-content: start;
+  color: ${({ isActive, className }) => {
+    if (isActive) {
+      if (className?.includes('div-btn-1')) return '#fff'; // green
+      if (className?.includes('div-btn-2')) return '#fff'; // red
+    }
+    return 'black'; // default inactive
+  }};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 23px;
 
   & span {
     position: absolute;
     top: 0px;
     right: 2px;
     font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     line-height: 23px;
     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
+  &:hover {
+    background-color: ${({ disabled, className, isActive, hoverColor }) => {
+      if (disabled) return undefined; // no hover effect
+      if (hoverColor) return hoverColor;
+      return '#F6F7F9';
+    }};
 
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
+    border: 1px solid
+      ${({ className, isActive }) => {
+        if (isActive) {
+          if (className?.includes('div-btn-1')) return '#58e715';
+          if (className?.includes('div-btn-2')) return '#c52b2b';
+        }
+        return '#dde4f0';
+      }};
+
+    color: ${({ disabled, isActive }) => {
+      if (disabled) return undefined; // don't override the original color
+      return isActive ? '#000' : '#fff'; // active = black, inactive = white
+    }};
+
+    border-radius: 8px; // always applied, even on hover
   }
-  .div-btn-1.disabled {
-    cursor: not-allowed;
+`;
+
+const ActiveButtonDivResetFlow = styled.div`
+  width: 100%;
+  gap: 12px;
+  max-height: 48px;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid
+    ${({ className, isActive }) => {
+      if (isActive) {
+        if (className?.includes('div-btn-1')) return '#58e715'; // Start (RUNNING) button
+        if (className?.includes('div-btn-2')) return '#c52b2b'; // Stop (STOPPED) button
+      }
+      return '#dde4f0';
+    }};
+  border-radius: 8px;
+  background-color: #dde4f0;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 23px;
+
+  & span {
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    font-family: ${props => props.theme.fontNato};
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 23px;
+    color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
 `;
 const BottomButtonDiv = styled.div`
@@ -306,13 +386,40 @@ const TextDiv = styled.div`
   display: flex;
   align-items: center;
 `;
-
+const SanityLabel = styled.h5`
+  font-family: ${props => props.theme.fontRedHat};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 18.52px;
+  text-align: left;
+  margin-bottom: 4px;
+`;
+const IconCover = styled.div`
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #dde4f0;
+`;
+const TextDetails = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  text-transform: capitalize;
+  color: #444445;
+  margin-bottom: 25px;
+`;
 export const scheduleSchema = yup.object().shape({
   approver_ids: yup.array().required('Approver is required'),
 });
 
 const Summary = () => {
   const dispatch = useDispatch();
+  const shouldRevertChanges = useSelector(
+    NamespacesSelectors.getShouldRevertChanges
+  );
   const selectedDestCluster =
     useSelector(NamespacesSelectors.getSelectedDestCluster) || [];
   const selectedCluster = useSelector(
@@ -334,6 +441,9 @@ const Summary = () => {
     NamespacesSelectors.getSelectedCluster
   );
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
+  const sanityCheckAfterDeploy = useSelector(
+    NamespacesSelectors.getSanityCheckAtDeploy
+  );
   let type = '';
   if (versionSelected?.version > selectedNameSpace?.version) {
     type = 'upgrade';
@@ -359,6 +469,28 @@ const Summary = () => {
     );
   const userStoryValue = useSelector(NamespacesSelectors.getUserStory);
   const changeRequestValue = useSelector(NamespacesSelectors.getChangeRequest);
+  const [openConfigDetailsModal, setOpenConfigDetailsModal] = useState(false);
+  const [isSanityCheckModalOpen, setIsSanityCheckModalOpen] = useState(false);
+  const selectedClusterMethod = useSelector(
+    NamespacesSelectors.getSelectedCluster
+  );
+
+  useEffect(() => {
+    if (!isEmpty(selectedClusterMethod?.value)) {
+      dispatch(ClustersActions.fetchClusters());
+    }
+  }, [dispatch, selectedClusterMethod]);
+
+  const clusters_new_list = useSelector(ClustersSelectors.getAllClustersList);
+  const matchedCluster = clusters_new_list.find(
+    cluster => cluster.id === selectedClusterMethod?.value
+  );
+  const hasSanityCheckAccess = matchedCluster?.view_sanity_check;
+
+  const handleSanityCheckModalSubmit = () => {
+    setIsSanityCheckModalOpen(false);
+    dispatch(NamespacesActions.setSanityCheckAtDeploy(true));
+  };
   const getChangedVariables = (originalVariables, updatedVariables) => {
     const updatedMap = updatedVariables.reduce((acc, item) => {
       acc[item.name] = item.value;
@@ -371,6 +503,8 @@ const Summary = () => {
     );
   };
   const getChangedObjects = (originalData, updatedData) => {
+    if (!originalData || !updatedData) return [];
+
     const updatedMap = updatedData.reduce((acc, item) => {
       acc[item.pgId] = item;
       return acc;
@@ -466,6 +600,9 @@ const Summary = () => {
         return rest;
       }),
     }));
+  const singleNamespaceData1 = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
 
   const newProcessorEC =
     registryAllDetails.controllerServicesData?.externalControllerServices?.filter(
@@ -544,6 +681,129 @@ const Summary = () => {
     ...(parameterReduxData?.inherited || []),
     ...(parameterReduxData?.parent || []),
   ];
+  const updatedParametersData = paramterDeployArray.map(item => ({
+    parameterName: item.name,
+    parameters: item.parameters,
+  }));
+  const currentParametersData = orignalParameterData.map(item => ({
+    parameterName: item.name,
+    parameters: item.parameters,
+  }));
+
+  const getChangedParameterObjects = (obj1, obj2) => {
+    const result = [];
+
+    obj1.forEach(group1 => {
+      const group2 = obj2.find(g => g.parameterName === group1.parameterName);
+      if (!group2) return;
+
+      const changedParameters = group1.parameters
+        .filter(param1 => {
+          const param2 = group2.parameters.find(p => p.name === param1.name);
+          if (!param2) return false;
+          return (
+            param1.value !== param2.value ||
+            param1.description !== param2.description
+          );
+        })
+        .map(param1 => {
+          const param2 = group2.parameters.find(p => p.name === param1.name);
+          return {
+            ...param2,
+            value: param1.value !== param2.value ? param2.value : 'N/A',
+            description:
+              param1.description !== param2.description
+                ? param2.description
+                : '',
+          };
+        });
+
+      if (changedParameters.length > 0) {
+        result.push({
+          parameterName: group1.parameterName,
+          parameters: changedParameters,
+        });
+      }
+    });
+
+    return result;
+  };
+
+  const getUpdatedPcForPayload = (obj1, obj2) => {
+    const result = [];
+
+    obj1.forEach(group1 => {
+      const group2 = obj2.find(g => g.parameterName === group1.parameterName);
+      if (!group2) return;
+
+      const changedParameters = group1.parameters
+        .filter(param1 => {
+          const param2 = group2.parameters.find(p => p.name === param1.name);
+          if (!param2) return false;
+
+          return (
+            param1.value !== param2.value ||
+            param1.description !== param2.description
+          );
+        })
+        .map(param1 => {
+          const param2 = group2.parameters.find(p => p.name === param1.name);
+          return { ...param2 };
+        });
+      if (changedParameters.length > 0) {
+        result.push({
+          parameterName: group1.parameterName,
+          parameters: changedParameters,
+        });
+      }
+    });
+
+    return result;
+  };
+
+  const getOriginalPcPayload = (obj1, obj2) => {
+    const result = [];
+
+    obj1.forEach(group1 => {
+      const group2 = obj2.find(g => g.parameterName === group1.parameterName);
+      if (!group2) return;
+
+      const changedParameters = group1.parameters
+        .filter(param1 => {
+          const param2 = group2.parameters.find(p => p.name === param1.name);
+          if (!param2) return false;
+
+          return (
+            param1.value !== param2.value ||
+            param1.description !== param2.description
+          );
+        })
+        .map(param1 => ({ ...param1 }));
+
+      if (changedParameters.length > 0) {
+        result.push({
+          parameterName: group1.parameterName,
+          parameters: changedParameters,
+        });
+      }
+    });
+
+    return result;
+  };
+  const parameterPayload = getUpdatedPcForPayload(
+    currentParametersData,
+    updatedParametersData
+  );
+
+  const originalPc = getOriginalPcPayload(
+    currentParametersData,
+    updatedParametersData
+  );
+
+  const newParametersData = getChangedParameterObjects(
+    currentParametersData,
+    updatedParametersData
+  );
 
   const PColdValues = orignalParameterData
     .filter(item1 =>
@@ -587,6 +847,12 @@ const Summary = () => {
   const checkFlowControlAfterDeploy = useSelector(
     NamespacesSelectors.getflowControlAfterDeploy
   );
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+
+  const scheduleFlowType = useSelector(NamespacesSelectors.getScheduleFlowType);
+
   const [isVariablesModalOpen, setVariablesModalOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -612,19 +878,36 @@ const Summary = () => {
     { label: 'Flow Validation', path: '/process-group/flow-validation' },
     { label: 'Summary' },
   ];
-  const breadcrumbDataOnUpgrade = [
-    {
-      label: KDFM.NIFI_FLOW,
-      path: '/process-group',
-      callback: () => {
-        dispatch(NamespacesActions.setSelectedNamespace({}));
-      },
-    },
-    { label: 'Flow Details', path: '/process-group/flow-details' },
-    { label: 'Configuration Details', path: '/process-group/config-details' },
-    { label: 'Flow Validation', path: '/process-group/flow-validation' },
-    { label: 'Summary' },
-  ];
+
+  const breadcrumbDataOnUpgrade = scheduleStartFlow
+    ? [
+        {
+          label: 'Process Group Details',
+          path: `/process-group/${selectedNameSpace?.id}`,
+        },
+        {
+          label: 'Configuration Details',
+          path: '/process-group/config-details',
+        },
+        { label: 'Summary' },
+      ]
+    : [
+        {
+          label: KDFM.NIFI_FLOW,
+          path: '/process-group',
+          callback: () => {
+            dispatch(NamespacesActions.setSelectedNamespace({}));
+          },
+        },
+        { label: 'Flow Details', path: '/process-group/flow-details' },
+        {
+          label: 'Configuration Details',
+          path: '/process-group/config-details',
+        },
+        { label: 'Flow Validation', path: '/process-group/flow-validation' },
+        { label: 'Summary' },
+      ];
+
   const [flowControlState, setFlowControlState] = useState(null);
   const getParamerterContext = async () => {
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
@@ -746,6 +1029,7 @@ const Summary = () => {
   };
 
   const handledeployByRegistry = () => {
+    setIsSanityCheckModalOpen(false);
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
       parameters: item.parameters,
@@ -763,13 +1047,14 @@ const Summary = () => {
         y: YcordUpdated || registryDetailsData?.positions[0]?.y,
       },
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
+      performSanity: sanityCheckAfterDeploy,
     };
 
     if (!isEmpty(variblesReduxData)) {
       payload.variablesData = variblesReduxData;
     }
-    if (!isEmpty(updatedData)) {
-      payload.parameterData = updatedData;
+    if (!isEmpty(parameterPayload)) {
+      payload.parameterData = parameterPayload;
     }
     if (!isEmpty(newControllerServiceData)) {
       payload.controllerServiceData = newControllerServiceData;
@@ -802,8 +1087,8 @@ const Summary = () => {
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
     }
-    if (!isEmpty(updatedData)) {
-      payload.payload.parameterData = updatedData;
+    if (!isEmpty(parameterPayload)) {
+      payload.payload.parameterData = parameterPayload;
     }
     if (!isEmpty(newControllerServiceData)) {
       payload.payload.controllerServiceData = newControllerServiceData;
@@ -834,7 +1119,7 @@ const Summary = () => {
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
       nameSpaceName: registryAllDetails?.processGroupName,
       oldVariablesData: orignalVariables,
-      oldParameterContextData: filteredArrayPCold,
+      oldParameterContextData: originalPc,
       previousControllerServices: { localServicesData: filteredCSArrayDiff },
       ...(userStoryValue && { user_story_url: userStoryValue }),
       ...(changeRequestValue && { change_request: changeRequestValue }),
@@ -845,8 +1130,8 @@ const Summary = () => {
     if (!isEmpty(variblesReduxData)) {
       payload.variablesData = variblesReduxData;
     }
-    if (!isEmpty(updatedData)) {
-      payload.parameterData = updatedData;
+    if (!isEmpty(parameterPayload)) {
+      payload.parameterData = parameterPayload;
     }
     if (!isEmpty(newControllerServiceData)) {
       payload.controllerServiceData = newControllerServiceData;
@@ -879,7 +1164,7 @@ const Summary = () => {
         namespaceStatus: flowControlSelectedScheduleStored,
         nameSpaceName: registryAllDetails?.processGroupName,
         oldVariablesData: orignalVariables,
-        oldParameterContextData: filteredArrayPCold,
+        oldParameterContextData: originalPc,
         previousControllerServices: { localServicesData: filteredCSArrayDiff },
         ...(userStoryValue && { user_story_url: userStoryValue }),
         ...(changeRequestValue && { change_request: changeRequestValue }),
@@ -887,8 +1172,8 @@ const Summary = () => {
       if (!isEmpty(variblesReduxData)) {
         payload.variablesData = variblesReduxData;
       }
-      if (!isEmpty(updatedData)) {
-        payload.parameterData = updatedData;
+      if (!isEmpty(parameterPayload)) {
+        payload.parameterData = parameterPayload;
       }
       if (!isEmpty(newControllerServiceData)) {
         payload.controllerServiceData = newControllerServiceData;
@@ -902,25 +1187,28 @@ const Summary = () => {
       }));
       const payload = {
         version: versionSelected?.version,
-        flowId: selectedNameSpace?.flowId,
-        namespaceId: checkDestCluster?.id,
-        namespaceStatus: flowControlSelectedScheduleStored,
-         validation_id: validationResult?.data?.validation_id,
+        flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
+        namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
+        registryId: registryData?.id || singleNamespaceData1?.registryId,
+        bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
+        namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
+        validation_id: validationResult?.data?.validation_id,
         payload: {
           namespaceId: checkDestCluster?.value,
           oldVariablesData: orignalVariables,
-          oldParameterContextData: filteredArrayPCold,
+          oldParameterContextData: originalPc,
           previousControllerServices: {
             localServicesData: filteredCSArrayDiff,
           },
         },
         previousVersion: selectedNameSpace?.version || 1,
-        flowName: selectedNameSpace?.flowName,
+        flowName: selectedNameSpace?.flowName || singleNamespaceData1?.flowName,
         isScheduled: true,
-        mode: 'upgrade',
-        type: type,
-        nameSpaceName: selectedNameSpace?.name,
+        mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
+        type: scheduleStartFlow ? scheduleflowtypeMethod : type,
+        nameSpaceName: selectedNameSpace?.name || singleNamespaceData1?.name,
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
+        revert_local_changes: shouldRevertChanges,
         position: {
           x: XcordUpdated || registryDetailsData?.positions[0]?.x,
           y: YcordUpdated || registryDetailsData?.positions[0]?.y,
@@ -931,8 +1219,8 @@ const Summary = () => {
       if (!isEmpty(variblesReduxData)) {
         payload.payload.variablesData = variblesReduxData;
       }
-      if (!isEmpty(updatedData)) {
-        payload.payload.parameterData = updatedData;
+      if (!isEmpty(parameterPayload)) {
+        payload.payload.parameterData = parameterPayload;
       }
       if (!isEmpty(newControllerServiceData)) {
         payload.payload.controllerServiceData = newControllerServiceData;
@@ -940,6 +1228,20 @@ const Summary = () => {
       dispatch(NamespacesActions.upgradeCluster(payload));
     }
   };
+  const scheduleflowtypeMethod =
+    scheduleFlowType === 'STOPPED'
+      ? 'stop'
+      : scheduleFlowType === 'RUNNING'
+        ? 'start'
+        : '';
+
+  const scheduleafterDeploy =
+    scheduleFlowType === 'STOPPED'
+      ? 'STOPPED'
+      : scheduleFlowType === 'RUNNING'
+        ? 'RUNNING'
+        : '';
+
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -947,35 +1249,39 @@ const Summary = () => {
     }));
     const payload = {
       version: versionSelected?.version,
-      flowId: selectedNameSpace?.flowId,
-      namespaceId: checkDestCluster?.id,
-      namespaceStatus: flowControlSelectedScheduleStored,
+      flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
+      namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
+      registryId: registryData?.id || singleNamespaceData1?.registryId,
+      bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
+      namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
       validation_id: validationResult?.data?.validation_id,
+      revert_local_changes: shouldRevertChanges,
       payload: {
         namespaceId: checkDestCluster?.value,
         oldVariablesData: orignalVariables,
-        oldParameterContextData: filteredArrayPCold,
+        oldParameterContextData: originalPc,
         previousControllerServices: { localServicesData: filteredCSArrayDiff },
       },
       previousVersion: selectedNameSpace?.version || 1,
-      flowName: selectedNameSpace?.flowName,
+      flowName: selectedNameSpace?.flowName || singleNamespaceData1?.flowName,
       isScheduled: true,
-      mode: 'upgrade',
-      nameSpaceName: selectedNameSpace?.name,
+      mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
+      nameSpaceName: selectedNameSpace?.name || singleNamespaceData1?.name,
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       position: {
         x: XcordUpdated || selectedNameSpace?.position?.x,
         y: YcordUpdated || selectedNameSpace?.position?.y,
       },
-      type: type,
+      type: scheduleStartFlow ? scheduleflowtypeMethod : type,
       ...(userStoryValue && { user_story_url: userStoryValue }),
       ...(changeRequestValue && { change_request: changeRequestValue }),
     };
+
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
     }
-    if (!isEmpty(updatedData)) {
-      payload.payload.parameterData = updatedData;
+    if (!isEmpty(parameterPayload)) {
+      payload.payload.parameterData = parameterPayload;
     }
     if (!isEmpty(newControllerServiceData)) {
       payload.payload.controllerServiceData = newControllerServiceData;
@@ -1083,12 +1389,249 @@ const Summary = () => {
   const provideRegistryFlowBtnText = () => {
     return isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE;
   };
+  const provideFlowConfigDetails = () => {
+    if (scheduleFlowType === 'RUNNING') {
+      return 'Scheduled Start Flow';
+    }
+    if (scheduleFlowType === 'STOPPED') {
+      return 'Scheduled Stop Flow';
+    }
+  };
   const getSelectedFlowName = () => {
     if (deployByRegistryFlow) return formDataRegistry?.selectedFlowName;
     return checkDestCluster?.name || formDataRegistry?.selectedFlowName;
   };
 
   const selectedFlowNameProvider = getSelectedFlowName();
+
+  // Helper to merge old and new variables for diff modal (only changed)
+  const getMergedVariablesData = (original, updated) => {
+    if (!original || !updated) return [];
+    const updatedMap = updated.reduce((acc, item) => {
+      acc[item.pgId] = item;
+      return acc;
+    }, {});
+    return original
+      .map(origPg => {
+        const updPg = updatedMap[origPg.pgId];
+        if (!updPg) return null;
+        // Map variable name to value for old and new
+        const updVarMap = (updPg.variables || []).reduce((acc, v) => {
+          acc[v.name] = v.value;
+          return acc;
+        }, {});
+        const origVarMap = (origPg.variables || []).reduce((acc, v) => {
+          acc[v.name] = v.value;
+          return acc;
+        }, {});
+        // Only include changed variables
+        const changedNames = Object.keys(updVarMap).filter(
+          name =>
+            origVarMap[name] !== undefined &&
+            updVarMap[name] !== origVarMap[name]
+        );
+        if (changedNames.length === 0) return null;
+        return {
+          pgId: origPg.pgId,
+          pgName: origPg.pgName,
+          variables: changedNames.map(name => ({
+            name,
+            old_value: origVarMap[name],
+            new_value: updVarMap[name],
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  // Helper to merge old and new parameters for diff modal (only changed)
+  const getMergedParametersData = (original, updated) => {
+    if (!original || !updated) return [];
+    return original
+      .map(origGroup => {
+        const updGroup = updated.find(
+          g => g.parameterName === origGroup.parameterName
+        );
+        if (!updGroup) return null;
+        // Map param name to value/desc for old and new
+        const updParamMap = (updGroup.parameters || []).reduce((acc, p) => {
+          acc[p.name] = { value: p.value, description: p.description };
+          return acc;
+        }, {});
+        const origParamMap = (origGroup.parameters || []).reduce((acc, p) => {
+          acc[p.name] = { value: p.value, description: p.description };
+          return acc;
+        }, {});
+        // Only include changed parameters
+        const changedNames = Object.keys(updParamMap).filter(name => {
+          const oldVal = origParamMap[name];
+          const newVal = updParamMap[name];
+          return (
+            oldVal &&
+            (oldVal.value !== newVal.value ||
+              oldVal.description !== newVal.description)
+          );
+        });
+        if (changedNames.length === 0) return null;
+        return {
+          parameterName: origGroup.parameterName,
+          parameters: changedNames.map(name => ({
+            name,
+            old_value: origParamMap[name],
+            new_value: updParamMap[name],
+            description:
+              updParamMap[name]?.description || origParamMap[name]?.description,
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  // Helper to merge old and new controller service properties for diff modal (only changed)
+  const getMergedControllerServicesData = (original, updated) => {
+    if (!original || !updated) return [];
+    // Flatten original to map by identifier
+    const origMap = (original || [])
+      .flatMap(item => item?.controllerData || [])
+      .reduce((acc, cs) => {
+        acc[cs.identifier] = cs;
+        return acc;
+      }, {});
+    return (updated || [])
+      .map(service => {
+        const orig = origMap[service.identifier];
+        if (!orig) return null;
+        // Map property name to value for old and new
+        const updPropMap = (service.properties || []).reduce((acc, p) => {
+          acc[p.name] = p.value;
+          return acc;
+        }, {});
+        const origPropMap = (orig.properties || []).reduce((acc, p) => {
+          acc[p.name] = p.value;
+          return acc;
+        }, {});
+        // Only include changed properties
+        const changedNames = Object.keys(updPropMap).filter(
+          name =>
+            origPropMap[name] !== undefined &&
+            updPropMap[name] !== origPropMap[name]
+        );
+        // Detect name change
+        const nameChanged =
+          service.name !== undefined &&
+          orig.name !== undefined &&
+          service.name !== orig.name;
+
+        if (changedNames.length === 0 && !nameChanged) return null;
+        return {
+          identifier: service.identifier,
+          name: orig.name,
+          new_name: nameChanged ? service.name : '',
+          properties: changedNames.map(name => ({
+            name,
+            old_value: origPropMap[name],
+            new_value: updPropMap[name],
+          })),
+        };
+      })
+      .filter(Boolean);
+  };
+
+  const mergedVariablesData = getMergedVariablesData(
+    registryAllDetails?.variablesData,
+    variblesReduxData
+  );
+  const mergedParametersData = getMergedParametersData(
+    currentParametersData,
+    updatedParametersData
+  );
+  const mergedControllerServicesData = getMergedControllerServicesData(
+    registryAllDetails?.controllerServicesData?.localServices,
+    controllerServiceReduxData?.localServicesData
+  );
+
+  // Function to determine loading text based on current operation
+  const getLoadingText = () => {
+    if (loadingregistry) {
+      if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
+        // For scheduled operations
+        if (scheduleStartFlow) {
+          // Handle schedule start/stop flow
+          if (scheduleFlowType === 'RUNNING') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STARTING_FLOW;
+          } else if (scheduleFlowType === 'STOPPED') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STOPPING_FLOW;
+          }
+        }
+        // For schedule deploy, check scheduleDeploymentFlow first
+        if (scheduleDeploymentFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        }
+        // For schedule upgrade/downgrade
+        if (scheduleUpgradeFromList) {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+        // Fallback for other schedule operations
+        if (deployByRegistryFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        } else {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+      } else {
+        // For manual operations
+        if (deployByRegistryFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_DEPLOYING_FLOW;
+        } else {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_DOWNGRADING_FLOW;
+        }
+      }
+    }
+    if (loadingreUpgradeFlow) {
+      if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
+        if (scheduleStartFlow) {
+          // Handle schedule start/stop flow
+          if (scheduleFlowType === 'RUNNING') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STARTING_FLOW;
+          } else if (scheduleFlowType === 'STOPPED') {
+            return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_STOPPING_FLOW;
+          }
+        }
+        // For schedule deploy, check scheduleDeploymentFlow first
+        if (scheduleDeploymentFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        }
+        // For schedule upgrade/downgrade
+        if (scheduleUpgradeFromList) {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+        // Fallback for other schedule operations
+        if (deployByRegistryFlow) {
+          return NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DEPLOYING_FLOW;
+        } else {
+          return type === 'upgrade'
+            ? NAMESPACE_CONSTANTS.LOADING_SCHEDULE_UPGRADING_FLOW
+            : NAMESPACE_CONSTANTS.LOADING_SCHEDULE_DOWNGRADING_FLOW;
+        }
+      } else {
+        return type === 'upgrade'
+          ? NAMESPACE_CONSTANTS.LOADING_UPGRADING_FLOW
+          : NAMESPACE_CONSTANTS.LOADING_DOWNGRADING_FLOW;
+      }
+    }
+    if (loadingreUpdateFlow) {
+      return NAMESPACE_CONSTANTS.LOADING_UPDATING_FLOW_STATUS;
+    }
+    return KDFM.LOADING;
+  };
+
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -1096,6 +1639,7 @@ const Summary = () => {
           loading={
             loadingregistry || loadingreUpdateFlow || loadingreUpgradeFlow
           }
+          text={getLoadingText()}
         />
         <TopTitleBar className="d-flex mb-3">
           <MainTitleDiv className="d-flex">
@@ -1103,14 +1647,18 @@ const Summary = () => {
               <TodoIcon />
             </ImageContainer>
             <MainTitleHfour className="mb-0">
-              {`${isScheduled ? 'Schedule ' : ''} ${
-                deploymentAction
-              } ${KDFM.NAMESPACE}`}
+              {scheduleStartFlow
+                ? scheduleFlowType === 'RUNNING'
+                  ? 'Schedule Start Flow'
+                  : scheduleFlowType === 'STOPPED'
+                    ? 'Schedule Stop Flow'
+                    : null
+                : `${isScheduled ? 'Schedule ' : ''}${deploymentAction} ${KDFM.NAMESPACE}`}
             </MainTitleHfour>
             :
             <MainTitleHfour className="mb-0">
               {!isUpgrade
-                ? selectedNameSpace.label
+                ? selectedNameSpace?.label
                 : formDataRegistry?.selectedFlowName}
             </MainTitleHfour>
           </MainTitleDiv>
@@ -1261,10 +1809,74 @@ const Summary = () => {
                           {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {versionSelected.version || ''}
+                          {versionSelected?.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
+                  )}
+                  <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                    <div className="summary-details">
+                      <SummaryDetailsHFourTag className="mb-2">
+                        {KDFM.CONFIGURATION_DETAILS}
+                      </SummaryDetailsHFourTag>
+                      <SummaryDetailsPtag
+                        onClick={() => {
+                          setOpenConfigDetailsModal(true);
+                        }}
+                        className="mb-0"
+                        style={{
+                          cursor: 'pointer',
+                          color: '#FF7A00',
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        View Configurations Details
+                      </SummaryDetailsPtag>
+                    </div>
+                  </UseColXl>
+                  {isRegistryDeploy && (
+                    <>
+                      <UseColXl className="col-xl-4 col-6 mb-4 pb-1 row">
+                        {hasSanityCheckAccess === true && (
+                          <div className="summary-details d-flex">
+                            <SummaryDetailsHFourTag className="mb-2">
+                              <CheckboxField
+                                name="check"
+                                label="Sanity Check and Deploy"
+                                checked={sanityCheckAfterDeploy}
+                                onChange={e =>
+                                  dispatch(
+                                    NamespacesActions.setSanityCheckAtDeploy(
+                                      e.target.checked
+                                    )
+                                  )
+                                }
+                              />
+                            </SummaryDetailsHFourTag>
+                            <div
+                              className="d-flex align-items-center ms-2"
+                              data-tooltip-id={`sanity-check-info`}
+                            >
+                              <InfoIcon color={theme.colors.primary} />
+                            </div>
+                            <ReactTooltip
+                              id={`sanity-check-info`}
+                              place="bottom"
+                              effect="solid"
+                              content={
+                                'This deployment will be performed using the DFM (Data Flow Manager) UI in NiFi. Also upon deployment, it ensures that all processors remain in the STOPPED state and are not scheduled to run automatically'
+                              }
+                              style={{
+                                width: '400px',
+                                whiteSpace: 'normal',
+                                wordWrap: 'break-word',
+                                zIndex: 10000,
+                              }}
+                            />
+                          </div>
+                        )}
+                      </UseColXl>
+                    </>
                   )}
                 </RowConfig>
               </UseColLg>
@@ -1295,7 +1907,9 @@ const Summary = () => {
                             {KDFM.FLOW_STATE_AFTER_DEPLOY}
                           </SummaryDetailsHFourTag>
                           <SummaryDetailsPtag className="mb-0">
-                            {flowControlSelectedScheduleStored || 'N/A'}
+                            {scheduleStartFlow
+                              ? scheduleafterDeploy
+                              : flowControlSelectedScheduleStored || 'N/A'}
                           </SummaryDetailsPtag>
                         </div>
                       </UseColXl>
@@ -1303,120 +1917,131 @@ const Summary = () => {
                   </UseColLg>
                 </>
               )}
-              {!scheduleDeploymentFlow && !scheduleUpgradeFromList && (
-                <>
-                  <div className="col-12 p-3">
-                    <ConfigTitle className="config-title">
-                      <ConfigTitleHTwo className="p-3 mb-0">
-                        <span>{KDFM.FLOW_CONTROL}</span>
-                      </ConfigTitleHTwo>
-                    </ConfigTitle>
-                  </div>
-                  {!deployByRegistryFlow && (
-                    <UseColLg className="col-lg-10 col-12 ">
-                      <RowConfig className="row p-3">
-                        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                          <div className="summary-details">
-                            <SummaryDetailsHFourTag className="mb-2">
-                              {KDFM.NAMESPACE}
-                            </SummaryDetailsHFourTag>
-                            <SummaryDetailsPtag className="mb-0">
-                              {checkDestCluster?.name}
-                            </SummaryDetailsPtag>
-                          </div>
-                        </UseColXl>
-                        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                          <div className="summary-details">
-                            <SummaryDetailsHFourTag className="mb-2">
-                              {KDFM.CURRENT_VERSION}
-                            </SummaryDetailsHFourTag>
-                            <SummaryDetailsPtag className="mb-0">
-                              {checkDestCluster?.version}
-                            </SummaryDetailsPtag>
-                          </div>
-                        </UseColXl>
-                        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                          <div className="summary-details">
-                            <SummaryDetailsHFourTag className="mb-2">
-                              {KDFM.UPDATED_VERSION}
-                            </SummaryDetailsHFourTag>
-                            <SummaryDetailsPtag className="mb-0">
-                              {versionSelected?.version}
-                            </SummaryDetailsPtag>
-                          </div>
-                        </UseColXl>
-                      </RowConfig>
-                    </UseColLg>
-                  )}
-                </>
-              )}
+              {!scheduleDeploymentFlow &&
+                !scheduleUpgradeFromList &&
+                !sanityCheckAfterDeploy && (
+                  <>
+                    <div className="col-12 p-3">
+                      <ConfigTitle className="config-title">
+                        <ConfigTitleHTwo className="p-3 mb-0">
+                          <span>{KDFM.FLOW_CONTROL}</span>
+                        </ConfigTitleHTwo>
+                      </ConfigTitle>
+                    </div>
+                    {!deployByRegistryFlow && (
+                      <UseColLg className="col-lg-10 col-12 ">
+                        <RowConfig className="row p-3">
+                          <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                            <div className="summary-details">
+                              <SummaryDetailsHFourTag className="mb-2">
+                                {KDFM.NAMESPACE}
+                              </SummaryDetailsHFourTag>
+                              <SummaryDetailsPtag className="mb-0">
+                                {checkDestCluster?.name}
+                              </SummaryDetailsPtag>
+                            </div>
+                          </UseColXl>
+                          <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                            <div className="summary-details">
+                              <SummaryDetailsHFourTag className="mb-2">
+                                {KDFM.CURRENT_VERSION}
+                              </SummaryDetailsHFourTag>
+                              <SummaryDetailsPtag className="mb-0">
+                                {checkDestCluster?.version}
+                              </SummaryDetailsPtag>
+                            </div>
+                          </UseColXl>
+                          <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                            <div className="summary-details">
+                              <SummaryDetailsHFourTag className="mb-2">
+                                {KDFM.UPDATED_VERSION}
+                              </SummaryDetailsHFourTag>
+                              <SummaryDetailsPtag className="mb-0">
+                                {versionSelected?.version}
+                              </SummaryDetailsPtag>
+                            </div>
+                          </UseColXl>
+                        </RowConfig>
+                      </UseColLg>
+                    )}
+                  </>
+                )}
             </RowConfig>
             <IconsvgDiv>
-              {!scheduleDeploymentFlow && !scheduleUpgradeFromList && (
-                <CustomNine className="col-4 mb-3">
+              {!scheduleDeploymentFlow &&
+                !scheduleUpgradeFromList &&
+                !sanityCheckAfterDeploy && (
+                  <CustomNine className="col-4 mb-3">
+                    <ActiveButtonContainer className="d-flex ">
+                      <TextDetails className="col-lg-12">
+                        Processor Details
+                      </TextDetails>
+                      <TextDiv className="d-flex">
+                        <CountDiv
+                          className="div-btn-1 mr-2"
+                          count={processStatus.runningCount}
+                          activeColor="#58e715"
+                        >
+                          <TriangleIcons color="#B5BDC8" />
+                          <span>{processStatus.runningCount || 0}</span>
+                        </CountDiv>
+                        <div>{KDFM.RUNNING_PROCESSORS}</div>
+                      </TextDiv>
+                      <TextDiv className="d-flex">
+                        <CountDiv
+                          className="div-btn-2 mr-2"
+                          count={processStatus.stoppedCount}
+                          activeColor="#c52b2b"
+                        >
+                          <SquareBoxIcon color="#B5BDC8" />
+                          <span>{processStatus.stoppedCount || 0}</span>
+                        </CountDiv>
+                        <div>{KDFM.STOPPED_PROCESSORS}</div>
+                      </TextDiv>
+                      <TextDiv className="d-flex">
+                        <CountDiv
+                          className="div-btn-3 mr-2"
+                          count={processStatus.invalidCount}
+                          activeColor="#CF9F5D"
+                        >
+                          <TriangleExclamationMarkIcon color="#B5BDC8" />
+                          <span>{processStatus.invalidCount || 0}</span>
+                        </CountDiv>
+                        <div>{KDFM.INVALID_PROCESSORS}</div>
+                      </TextDiv>
+                      <TextDiv className="d-flex">
+                        <CountDiv
+                          className="div-btn-4 mr-2"
+                          count={processStatus.disabledCount}
+                          activeColor="#2c7cf3"
+                        >
+                          <SmallNotThunderIcon
+                            width={20}
+                            height={20}
+                            color="#B5BDC8"
+                          />
+                          <StyledSpan>
+                            {processStatus.disabledCount || 0}
+                          </StyledSpan>
+                        </CountDiv>
+                        <div>{KDFM.DISABLED_PROCESSORS}</div>
+                      </TextDiv>
+                    </ActiveButtonContainer>
+                  </CustomNine>
+                )}
+              {!scheduleDeploymentFlow &&
+                !scheduleUpgradeFromList &&
+                !sanityCheckAfterDeploy && (
                   <ActiveButtonContainer className="d-flex ">
-                    <TextDiv className="d-flex">
-                      <CountDiv
-                        className="div-btn-1 mr-2"
-                        count={processStatus.runningCount}
-                        activeColor="#58e715"
-                      >
-                        <TriangleIcons color="#B5BDC8" />
-                        <span>{processStatus.runningCount || 0}</span>
-                      </CountDiv>
-                      <div>{KDFM.RUNNING_PROCESSORS}</div>
-                    </TextDiv>
-                    <TextDiv className="d-flex">
-                      <CountDiv
-                        className="div-btn-2 mr-2"
-                        count={processStatus.stoppedCount}
-                        activeColor="#c52b2b"
-                      >
-                        <SquareBoxIcon color="#B5BDC8" />
-                        <span>{processStatus.stoppedCount || 0}</span>
-                      </CountDiv>
-                      <div>{KDFM.STOPPED_PROCESSORS}</div>
-                    </TextDiv>
-                    <TextDiv className="d-flex">
-                      <CountDiv
-                        className="div-btn-3 mr-2"
-                        count={processStatus.invalidCount}
-                        activeColor="#CF9F5D"
-                      >
-                        <TriangleExclamationMarkIcon color="#B5BDC8" />
-                        <span>{processStatus.invalidCount || 0}</span>
-                      </CountDiv>
-                      <div>{KDFM.INVALID_PROCESSORS}</div>
-                    </TextDiv>
-                    <TextDiv className="d-flex">
-                      <CountDiv
-                        className="div-btn-4 mr-2"
-                        count={processStatus.disabledCount}
-                        activeColor="#2c7cf3"
-                      >
-                        <SmallNotThunderIcon
-                          width={20}
-                          height={20}
-                          color="#B5BDC8"
-                        />
-                        <StyledSpan>
-                          {processStatus.disabledCount || 0}
-                        </StyledSpan>
-                      </CountDiv>
-                      <div>{KDFM.DISABLED_PROCESSORS}</div>
-                    </TextDiv>
-                  </ActiveButtonContainer>
-                </CustomNine>
-              )}
-              {!scheduleDeploymentFlow && !scheduleUpgradeFromList && (
-                <ActiveButtonContainer className="d-flex ">
-                  {!(
-                    processStatus?.runningCount === 0 &&
-                    processStatus?.stoppedCount === 0
-                  ) ? (
-                    <>
-                      <TextsvgDiv className="d-flex">
-                        <ActiveButtonDiv className="div-btn-1 mr-2">
+                    <TextDetails className="col-lg-12">
+                      Control Action
+                    </TextDetails>
+                    {!(
+                      processStatus?.runningCount === 0 &&
+                      processStatus?.stoppedCount === 0
+                    ) ? (
+                      <>
+                        <TextsvgDiv className="d-flex">
                           <ActiveButtonDiv
                             className="div-btn-1"
                             isActive={activeButton === 'RUNNING'}
@@ -1428,15 +2053,15 @@ const Summary = () => {
                               handleUpdateStatus('RUNNING');
                             }}
                           >
-                            <TriangleIcons color="#B5BDC8" />
+                            <IconCover>
+                              <TriangleIcons color="#58e715" />
+                            </IconCover>
+                            <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
                           </ActiveButtonDiv>
-                        </ActiveButtonDiv>
-                        <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                      </TextsvgDiv>
-                      <TextsvgDiv className="d-flex">
-                        <ActiveButtonDiv className="div-btn-2 mr-2">
+                        </TextsvgDiv>
+                        <TextsvgDiv className="d-flex">
                           <ActiveButtonDiv
-                            className="div-btn-1"
+                            className="div-btn-2"
                             isActive={activeButton === 'STOPPED'}
                             activeColor="#c52b2b"
                             hoverColor="#c52b2b"
@@ -1446,34 +2071,38 @@ const Summary = () => {
                               handleUpdateStatus('STOPPED');
                             }}
                           >
-                            <SquareBoxIcon color="#B5BDC8" />
+                            <IconCover>
+                              <SquareBoxIcon color="#c52b2b" />
+                            </IconCover>
+                            <div>{KDFM.STOPPED_FLOW}</div>
                           </ActiveButtonDiv>
-                        </ActiveButtonDiv>
-                        <div>{KDFM.STOPPED_FLOW}</div>
-                      </TextsvgDiv>
-                      {activeButton && (
-                        <TextsvgDiv className="d-flex">
-                          <ActiveButtonDiv className="div-btn-2 mr-2">
-                            <ActiveButtonDiv
-                              className="div-btn-1"
+                        </TextsvgDiv>
+                        {activeButton && (
+                          <TextsvgDiv className="d-flex">
+                            <ActiveButtonDivResetFlow
+                              className="div-btn-3"
                               activeTextColor="#fff"
                               onClick={() => {
                                 setActiveButton(null);
                                 setFlowControlState(null);
                               }}
                             >
-                              <CrossIcon color="#B5BDC8" />
-                            </ActiveButtonDiv>
-                          </ActiveButtonDiv>
-                          <div>Reset Flow</div>
-                        </TextsvgDiv>
-                      )}
-                    </>
-                  ) : (
-                    <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
-                  )}
-                </ActiveButtonContainer>
-              )}
+                              <IconCover>
+                                {' '}
+                                <CrossIcon color="#B5BDC8" />{' '}
+                              </IconCover>
+                              <div>Reset Flow</div>
+                            </ActiveButtonDivResetFlow>
+                          </TextsvgDiv>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text_info">
+                        {KDFM.FLOW_CONTROL_WARNING}
+                      </div>
+                    )}
+                  </ActiveButtonContainer>
+                )}
             </IconsvgDiv>
           </ScrollSetGrey>
         </GreyBoxNamespace>
@@ -1485,7 +2114,11 @@ const Summary = () => {
             {isRegistryDeploy && !scheduleDeploymentFlow && (
               <Button
                 id="process-group-summary-deploy-btn"
-                onClick={handledeployByRegistry}
+                onClick={() => {
+                  sanityCheckAfterDeploy
+                    ? setIsSanityCheckModalOpen(true)
+                    : handledeployByRegistry();
+                }}
               >
                 {provideRegistryFlowBtnText()}
               </Button>
@@ -1515,7 +2148,9 @@ const Summary = () => {
                 size="md"
                 onClick={() => handleScheduleUpgrade()}
               >
-                {provideScheduleUpgradeBtnText()}
+                {scheduleStartFlow
+                  ? provideFlowConfigDetails()
+                  : provideScheduleUpgradeBtnText()}
               </Button>
             )}
           </BottomButtonDiv>
@@ -1596,7 +2231,49 @@ const Summary = () => {
           handleScheduleDeployDuplicate={handleScheduleDeployDuplicate}
           type={type}
         />
+        {openConfigDetailsModal && (
+          <DiffModalScheduleList
+            isModalOpen={openConfigDetailsModal}
+            setIsModalOpen={setOpenConfigDetailsModal}
+            title={`${
+              !isUpgrade
+                ? selectedNameSpace.label
+                : formDataRegistry?.selectedFlowName
+            }: ${
+              isScheduled && isUpgrade
+                ? 'Schedule Deployment'
+                : isScheduled && !isUpgrade
+                  ? `Schedule ${type === 'downgrade' ? 'Downgrade' : 'Upgrade'}`
+                  : !isScheduled && !isUpgrade
+                    ? type === 'downgrade'
+                      ? 'Downgrade'
+                      : 'Upgrade'
+                    : 'Deployment'
+            } Changes`}
+            versionText={`Version: ${
+              isUpgrade
+                ? versionSelected?.version
+                : checkDestCluster?.version || 'N/A'
+            }`}
+            isFromDeploySummary={true}
+            parametersData={mergedParametersData}
+            variablesData={mergedVariablesData}
+            csData={mergedControllerServicesData}
+          />
+        )}
+        <SanityCheckDeployModal />
       </MainContainer>
+      <ModalWithIcon
+        title={'Sanity Check Confirmation'}
+        primaryButtonText={'Confirm'}
+        secondaryButtonText="Cancel"
+        icon={<ExclamationIcon height={120} width={150} />}
+        isOpen={isSanityCheckModalOpen}
+        onRequestClose={() => setIsSanityCheckModalOpen(false)}
+        primaryText={'Would you like to perform a Sanity Check ?'}
+        secondaryText={'The process group will be automatically stopped'}
+        onSubmit={handledeployByRegistry}
+      />
     </>
   );
 };

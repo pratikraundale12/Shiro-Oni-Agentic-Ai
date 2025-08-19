@@ -1,10 +1,10 @@
 /*eslint-disable*/
 import React from 'react';
-import RegistryFormInputs from './RegistryFormInputs';
 import styled from 'styled-components';
 import { KDFM } from '../../../constants';
 import { Button } from '../../../shared';
 import CertificateTextDisplay from './CertificateTextDisplay';
+import RegistryFormInputs from './RegistryFormInputs';
 
 const Flex = styled.div`
   display: flex;
@@ -39,6 +39,11 @@ const RegistryFormSection = ({
   successModal,
   activeTab,
   clusterId,
+  registryData,
+  watchedFields,
+  isCertificateUser,
+  registeryCertificateOption,
+  setRegisteryCertificateOption,
 }) => {
   return (
     <>
@@ -46,9 +51,12 @@ const RegistryFormSection = ({
         register={register}
         errors={errors}
         testSuccess={testSuccess}
+        registeryCertificateOption={registeryCertificateOption}
+        setRegisteryCertificateOption={setRegisteryCertificateOption}
+        watchedFields={watchedFields}
       />
-      <Flex>
-        {test ? (
+      {watchedFields?.[7] === true ? (
+        <Flex>
           <>
             <div>
               <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
@@ -64,29 +72,28 @@ const RegistryFormSection = ({
                 {KDFM.ADD_CERTIFICATE}
               </Button>
             </div>
-            <ORText>OR</ORText>
-            <div>
-              <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
-              <Button
-                onClick={() => setIsCredOpen(true)}
-                disabled={
-                  testSuccess ||
-                  !dataFill ||
-                  checkDuplicateRegistry ||
-                  checkDuplicateRegistryName
-                }
-              >
-                {KDFM.ENTER_CREDENTIALS}
-              </Button>
-            </div>
+            {registeryCertificateOption === false && (
+              <>
+                <ORText>OR</ORText>
+                <div>
+                  <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
+                  <Button
+                    onClick={() => setIsCredOpen(true)}
+                    disabled={
+                      testSuccess ||
+                      !dataFill ||
+                      checkDuplicateRegistry ||
+                      checkDuplicateRegistryName
+                    }
+                  >
+                    {KDFM.ENTER_CREDENTIALS}
+                  </Button>
+                </div>
+              </>
+            )}
           </>
-        ) : (
-          <div>
-            <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
-            <Button onClick={testData}>{KDFM.TEST_REGISTRY}</Button>
-          </div>
-        )}
-      </Flex>
+        </Flex>
+      ) : null}
       {testSuccess && !successModal && (
         <CertificateTextDisplay
           clusterModule={false}

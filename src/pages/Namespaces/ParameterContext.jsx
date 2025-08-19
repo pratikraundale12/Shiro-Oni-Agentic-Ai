@@ -67,6 +67,7 @@ const ParameterContext = ({
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   isParameterContextOpen,
+  fromSummaryDetails = false,
 }) => {
   const [selectedParentContextId, setSelectedParentContextId] = useState('');
   const dispatch = useDispatch();
@@ -86,6 +87,9 @@ const ParameterContext = ({
   );
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
+  );
+  const pcEditLoading = useSelector(
+    NamespacesSelectors.getParameterEditingAction
   );
 
   const copyParameterDetailsData =
@@ -123,6 +127,7 @@ const ParameterContext = ({
     singleNamespaceData?.parameterContextId,
     deployOrUpgradeDetails?.parameterContextId,
   ]);
+  console.log('schduleParameterData', schduleParameterData);
 
   useEffect(() => {
     if (schedularFromList) {
@@ -278,7 +283,10 @@ const ParameterContext = ({
                   dispatch(
                     NamespacesActions.setParameterContextItem({
                       ...item,
-                      value: item?.sensitive ? null : item?.value,
+                      value:
+                        item?.sensitive === true || item?.sensitive === 'true'
+                          ? null
+                          : item?.value,
                       check: item?.value === '' ? true : false,
                     })
                   );
@@ -322,6 +330,8 @@ const ParameterContext = ({
       ),
     },
   ];
+  const uniqueDataSortedParameter = uniqBy(newlyAddParameters, 'name');
+
   const handleSaveParameterContext = async () => {
     if (!newlyAddParameters) return;
     const uniqueDataSorted = uniqBy(newlyAddParameters, 'name');
@@ -330,13 +340,10 @@ const ParameterContext = ({
         modifiedPayloadData: [...uniqueDataSorted],
       })
     );
+    dispatch(NamespacesActions.setParameterEditingAction(true));
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
     setIsParameterContextOpen({ isOpen: false, schedule: false });
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
-    setTimeout(() => {
-      dispatch(NamespacesActions.setNamespaceSummaryLoadingState(false));
-      dispatch(NamespacesActions.fetchParameterContext());
-    }, 1000);
     setSelectedParentContextId('');
     if (isParentEdit?.parent) {
       dispatch(
@@ -381,7 +388,7 @@ const ParameterContext = ({
         setTableStateData(updatedData);
       }
     } else if (schedularFromList) {
-      const updatedData = schduleParameterData.map(copyItem => {
+      const updatedData = schduleParameterData?.map(copyItem => {
         const match = newlyAddParameters.find(
           newItem => newItem.name.toLowerCase() === copyItem.name.toLowerCase()
         );
@@ -424,9 +431,12 @@ const ParameterContext = ({
       return a?.parentParameterId - b?.parentParameterId;
     });
   };
+
+  console.log(tableStateData, 'tableStateData');
+
   return (
     <>
-      <FullPageLoader loading={pcLoading} />
+      <FullPageLoader loading={pcLoading || pcEditLoading} />
       <DataWrapper>
         <ScrollSetGrey className="scroll-set-grey pe-1">
           {tableStateData && tableStateData.length > 0 ? (
@@ -452,7 +462,11 @@ const ParameterContext = ({
                 className="w-auto mt-2"
                 size="sm"
                 onClick={handleSaveParameterContext}
-                disabled={!canWrite}
+                disabled={
+                  fromSummaryDetails
+                    ? isEmpty(uniqueDataSortedParameter)
+                    : !canWrite
+                }
               >
                 Save
               </Button>
@@ -494,6 +508,7 @@ ParameterContext.propTypes = {
   setNewlyAddedParameterContext: PropTypes.func.isRequired,
   isParameterContextOpen: PropTypes.object,
   parameterContextId: PropTypes.string,
+  fromSummaryDetails: PropTypes.bool,
 };
 
 export default ParameterContext;

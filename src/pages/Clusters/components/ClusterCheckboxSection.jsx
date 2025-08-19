@@ -1,7 +1,9 @@
 /*eslint-disable*/
 import React from 'react';
 import styled from 'styled-components';
-import { CheckboxField } from '../../../shared';
+import { CheckboxField, RadioSelectField } from '../../../shared';
+import CertificateRadioSelect from './CertificateRadioSelect';
+import { isEmpty } from 'lodash';
 
 const CheckBoxFlex = styled.div`
   display: flex;
@@ -9,14 +11,26 @@ const CheckBoxFlex = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 10px;
 `;
+
+const CERTIFICATE_OPTIONS = [
+  { value: true, label: 'Yes' },
+  { value: false, label: 'No' },
+];
+
 const ClusterCheckBoxSection = ({
   approverEnable,
   setApproverEnable,
   setChangeRequestApproverEnable,
+  setApproverEnableForStartAndStop,
   setNotificationEnable,
   changeRequestEnable,
   notificationEnable,
+  approverEnableForStartAndStop,
+  certificateOption,
+  setCertificateOption,
+  data,
 }) => {
   return (
     <>
@@ -26,6 +40,12 @@ const ClusterCheckBoxSection = ({
           label="Need approval for the deployment schedule?"
           checked={approverEnable}
           onChange={e => setApproverEnable(e.target.checked)}
+        />
+        <CheckboxField
+          name="check"
+          label="Need approval for start/stop schedule?"
+          checked={approverEnableForStartAndStop}
+          onChange={e => setApproverEnableForStartAndStop(e.target.checked)}
         />
         {approverEnable && (
           <CheckboxField
@@ -42,6 +62,14 @@ const ClusterCheckBoxSection = ({
           onChange={e => setNotificationEnable(e.target.checked)}
         />
       </CheckBoxFlex>
+      <CertificateRadioSelect
+        name="certificateOption"
+        label="Do you want to use a certificate user as a service account?"
+        options={CERTIFICATE_OPTIONS}
+        value={certificateOption}
+        defaultValue={certificateOption}
+        onChange={val => setCertificateOption(val)}
+      />
     </>
   );
 };

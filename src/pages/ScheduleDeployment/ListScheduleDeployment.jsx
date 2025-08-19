@@ -9,21 +9,31 @@ import {
   CrossWithCircleIcon,
   DeleteDustbinIcon,
   DiffIcon,
+  ExclamationIcon,
+  GreenRightCircleIcon,
   OpenEyeIcon,
   PencilIcon,
   RejectIcon,
+  SanityCheckIcon,
+  SccheduleDeployIcon,
+  ScheduleDowngradeIcon,
+  ScheduleUpgrade,
   SortDownIcon,
   SortUpIcon,
+  SquareBoxIcon,
   ThreedotsIcon,
   TickIconWithCircle,
+  TriangleIcons,
 } from '../../assets';
-import { Grid, IconButton, TextRender } from '../../components';
+import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
   ClustersActions,
   GridActions,
+  LoadingSelectors,
+  NamespacesActions,
 } from '../../store';
 import {
   SchedularActions,
@@ -35,6 +45,7 @@ import { DiffModalScheduleList } from './DiffModalSchedule';
 import { GroupListModal } from './GroupListModal';
 import { RejectScheduleModal } from './RejectScheduleModal';
 import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
+import ScheduleSanityCheckModal from './ScheduleSanityCheckModal';
 import { StatusText } from './StatusText';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
 import { UserStoryModal } from './UserStoryModal';
@@ -125,6 +136,17 @@ const adjustDropdownPosition = (x, y, dropdownWidth, dropdownHeight) => {
   return { x: adjustedX, y: adjustedY };
 };
 
+const NoapproverText = styled.div`
+  font-family: 'Red Hat Display', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  text-align: left;
+  color: rgb(181, 181, 189);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+`;
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -138,6 +160,16 @@ export const ListScheduleDeployment = () => {
     SchedularSelectors.getSelectedClusterState
   );
   const selctedStatus = useSelector(SchedularSelectors.getSelectedStatusState);
+  const isSanityCheckModalOpen = useSelector(
+    SchedularSelectors.getIsSanityCheckModalOpen
+  );
+  const isSuccessSanityCheckModalOpen = useSelector(
+    SchedularSelectors.getIsSuccessSanityCheckModalOpen
+  );
+  const sanityCheckData = useSelector(
+    SchedularSelectors.getSanityAndDeployStatus
+  );
+
   const search = useSelector(SchedularSelectors.getSearchText);
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [sortingState, setSortingState] = useState('');
@@ -150,7 +182,6 @@ export const ListScheduleDeployment = () => {
       return column;
     });
   };
-
   useEffect(() => {
     history.push('/schedule-deployment');
   }, []);
@@ -158,6 +189,13 @@ export const ListScheduleDeployment = () => {
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setScheduleModal(true));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: item?.bucket_id,
+        flowId: item?.flow_id,
+        isFromSchedule: true,
+      })
+    );
   };
 
   const handleCancelModel = item => {
@@ -303,7 +341,12 @@ export const ListScheduleDeployment = () => {
   const getDefSchedule = async item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setIsDiffModalOpen(true));
-    dispatch(SchedularActions.fetchDiffScheduleData(item?.id));
+    dispatch(
+      SchedularActions.fetchDiffScheduleData({
+        schedule_id: item?.id,
+        event: '',
+      })
+    );
   };
   const handleUserStoryModal = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
@@ -357,15 +400,53 @@ export const ListScheduleDeployment = () => {
             wordWrap: 'break-word',
           }}
         />
+        {item?.state !== 'DEPLOYED' &&
+          item?.mode === 'deploy' &&
+          item?.has_sanity_permission === true && (
+            <IconButton
+              onClick={event => {
+                dispatch(SchedularActions.setSanityAndDeployStatus(null));
+                dispatch(NamespacesActions.setSanityReportAuditData(null));
+                dispatch(
+                  SchedularActions.setIsScheduleSanityCheckModalOpen(true)
+                );
+                dispatch(SchedularActions.setSelectedSchedule(item));
+                event.currentTarget.blur();
+                if (item?.last_sanity_check_id === null) {
+                  dispatch(SchedularActions.setSanityAndDeployStatus(null));
+                }
+                if (item?.last_sanity_check_id) {
+                  dispatch(
+                    NamespacesActions.fetchSanityReportAuditLog(
+                      sanityCheckData?.id || item?.last_sanity_check_id
+                    )
+                  );
+                }
+              }}
+              data-tooltip-id={`tooltip-group-sanity-check`}
+            >
+              <SanityCheckIcon />
+            </IconButton>
+          )}
+
+        <ReactTooltip
+          id={`tooltip-group-sanity-check`}
+          place="left"
+          content={'Sanity Check'}
+          style={{
+            width: '110px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+          }}
+        />
         {currentUserData?.role === 'superadmin' && (
           <>
             {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
               <>
                 {item?.state === 'PENDING' && (
                   <>
-                    {currentUser?.id === item?.deployer_id && (
-                      <>{editIconRender(item)}</>
-                    )}
+                    {(currentUser?.id === item?.deployer_id ||
+                      item?.can_reschedule) && <>{editIconRender(item)}</>}
                     {RejectIconRender(item)}
                     {ApprovIconRender(item)}
                   </>
@@ -374,14 +455,12 @@ export const ListScheduleDeployment = () => {
                   item?.state === 'STOPPED' ||
                   item?.state === 'REJECTED' ||
                   item?.state === 'FAILED') &&
-                  currentUser?.id === item?.deployer_id && (
-                    <>{editIconRender(item)}</>
-                  )}
+                  (currentUser?.id === item?.deployer_id ||
+                    item?.can_reschedule) && <>{editIconRender(item)}</>}
                 {item?.state === 'APPROVED' && (
                   <>
-                    {currentUser?.id === item?.deployer_id && (
-                      <>{editIconRender(item)}</>
-                    )}
+                    {(currentUser?.id === item?.deployer_id ||
+                      item?.can_reschedule) && <>{editIconRender(item)}</>}
                     {RejectIconRender(item)}
                     {stopIconRender(item)}
                   </>
@@ -391,9 +470,8 @@ export const ListScheduleDeployment = () => {
             {item?.action_by === 'NO_APPROVER_REQUIRED' &&
               item?.state === 'PENDING' && (
                 <>
-                  {currentUser?.id === item?.deployer_id && (
-                    <>{editIconRender(item)}</>
-                  )}
+                  {(currentUser?.id === item?.deployer_id ||
+                    item?.can_reschedule) && <>{editIconRender(item)}</>}
                   {stopIconRender(item)}
                 </>
               )}
@@ -408,17 +486,19 @@ export const ListScheduleDeployment = () => {
               {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
                 <>
                   {(item?.state === 'PENDING' ||
-                    item?.state === 'TIME_LAPSED') && (
-                    <>{editIconRender(item)}</>
-                  )}
-                  {item?.state === 'APPROVED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'REJECTED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'STOPPED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
+                    item?.state === 'TIME_LAPSED' ||
+                    item?.state === 'APPROVED' ||
+                    item?.state === 'REJECTED' ||
+                    item?.state === 'STOPPED' ||
+                    item?.state === 'FAILED') &&
+                    (currentUser?.id === item?.deployer_id ||
+                      item?.can_reschedule) && <>{editIconRender(item)}</>}
                 </>
               )}
               {item?.action_by === 'NO_APPROVER_REQUIRED' &&
-                item?.state === 'PENDING' && <>{editIconRender(item)}</>}
+                item?.state === 'PENDING' &&
+                (currentUser?.id === item?.deployer_id ||
+                  item?.can_reschedule) && <>{editIconRender(item)}</>}
             </>
           )}
         {/* NON SUPERADMIN + SCHEDULAR + IN APPROVER GROUP */}
@@ -430,46 +510,82 @@ export const ListScheduleDeployment = () => {
                 <>
                   {item?.state === 'PENDING' && (
                     <>
-                      {editIconRender(item)}
+                      {(currentUser?.id === item?.deployer_id ||
+                        item?.can_reschedule) && <>{editIconRender(item)}</>}
                       {RejectIconRender(item)}
                       {ApprovIconRender(item)}
                     </>
                   )}
-                  {item?.state === 'TIME_LAPSED' && <>{editIconRender(item)}</>}
+                  {(item?.state === 'TIME_LAPSED' ||
+                    item?.state === 'APPROVED' ||
+                    item?.state === 'STOPPED' ||
+                    item?.state === 'REJECTED' ||
+                    item?.state === 'FAILED') &&
+                    (currentUser?.id === item?.deployer_id ||
+                      item?.can_reschedule) && <>{editIconRender(item)}</>}
                   {item?.state === 'APPROVED' && (
                     <>
-                      {editIconRender(item)}
                       {RejectIconRender(item)}
                       {stopIconRender(item)}
                     </>
                   )}
-                  {item?.state === 'STOPPED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'REJECTED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
                 </>
               )}
               {item?.action_by === 'NO_APPROVER_REQUIRED' &&
-                item?.state === 'PENDING' && <>{editIconRender(item)}</>}
+                item?.state === 'PENDING' &&
+                (currentUser?.id === item?.deployer_id ||
+                  item?.can_reschedule) && <>{editIconRender(item)}</>}
             </>
           )}
         {/* NON SUPERADMIN + NON SCHEDULAR + IN APPROVER GROUP */}
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id !== item?.deployer_id &&
-          item?.action_by !== 'NO_APPROVER_REQUIRED' &&
           item?.is_scheduler_in_approver_group && (
             <>
-              {item?.state === 'PENDING' && (
+              {item?.action_by === 'NO_APPROVER_REQUIRED' &&
+                item?.state === 'PENDING' &&
+                item?.can_reschedule && <>{editIconRender(item)}</>}
+              {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
                 <>
-                  {RejectIconRender(item)}
-                  {ApprovIconRender(item)}
+                  {item?.state === 'PENDING' && (
+                    <>
+                      {item?.can_reschedule && <>{editIconRender(item)}</>}
+                      {RejectIconRender(item)}
+                      {ApprovIconRender(item)}
+                    </>
+                  )}
+                  {(item?.state === 'TIME_LAPSED' ||
+                    item?.state === 'APPROVED' ||
+                    item?.state === 'STOPPED' ||
+                    item?.state === 'REJECTED' ||
+                    item?.state === 'FAILED') && (
+                    <>{item?.can_reschedule && <>{editIconRender(item)}</>}</>
+                  )}
+                  {item?.state === 'APPROVED' && (
+                    <>
+                      {RejectIconRender(item)}
+                      {stopIconRender(item)}
+                    </>
+                  )}
                 </>
               )}
-              {item?.state === 'APPROVED' && (
-                <>
-                  {RejectIconRender(item)}
-                  {stopIconRender(item)}
-                </>
-              )}
+            </>
+          )}
+        {/* Non-superadmin, non-scheduler, not in approver group, but can reschedule */}
+        {currentUserData?.role !== 'superadmin' &&
+          currentUser?.id !== item?.deployer_id &&
+          !item?.is_scheduler_in_approver_group &&
+          item?.can_reschedule && (
+            <>
+              {item?.action_by === 'NO_APPROVER_REQUIRED' &&
+                item?.state === 'PENDING' && <>{editIconRender(item)}</>}
+              {item?.action_by !== 'NO_APPROVER_REQUIRED' &&
+                (item?.state === 'PENDING' ||
+                  item?.state === 'TIME_LAPSED' ||
+                  item?.state === 'APPROVED' ||
+                  item?.state === 'STOPPED' ||
+                  item?.state === 'REJECTED' ||
+                  item?.state === 'FAILED') && <>{editIconRender(item)}</>}
             </>
           )}
         <div className="position-relative">
@@ -620,7 +736,7 @@ export const ListScheduleDeployment = () => {
           )}
         </>
       ),
-      width: '13%',
+      width: '12%',
       resize: true,
     },
     {
@@ -648,13 +764,58 @@ export const ListScheduleDeployment = () => {
     {
       label: 'Version',
       renderCell: item => <TextRender text={item?.version} />,
-      width: '5%',
+      width: '4%',
       resize: true,
     },
     {
       label: 'Post Deploy State',
       renderCell: item => <TextRender text={item?.deployment_status} />,
-      width: '10%',
+      width: '8%',
+      resize: true,
+    },
+    {
+      label: 'Schedule Type',
+      renderCell: item => {
+        if (item.mode === 'start') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <TriangleIcons color="green" />
+              <TextRender text="Start" />
+            </div>
+          );
+        } else if (item.mode === 'stop') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <SquareBoxIcon color="red" />
+              <TextRender text="Stop" />
+            </div>
+          );
+        } else if (item.mode === 'deploy') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <SccheduleDeployIcon />
+              <TextRender text="Deploy" />
+            </div>
+          );
+        } else if (item.mode === 'upgrade') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <ScheduleUpgrade />
+              <TextRender text="Upgrade" />
+            </div>
+          );
+        } else if (item.mode === 'downgrade') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <ScheduleDowngradeIcon />
+              <TextRender text="Downgrade" />
+            </div>
+          );
+        } else {
+          return <TextRender text={item?.mode} />;
+        }
+      },
+      width: '8%',
       resize: true,
     },
     {
@@ -700,7 +861,7 @@ export const ListScheduleDeployment = () => {
       renderCell: item => (
         <TextRender text={item?.change_request ? item.change_request : 'N/A'} />
       ),
-      width: '10.2%',
+      width: '8%',
       resize: true,
     },
     {
@@ -732,7 +893,7 @@ export const ListScheduleDeployment = () => {
       label: 'Approver group/Approver',
       renderCell: item =>
         item?.action_by === 'NO_APPROVER_REQUIRED' ? (
-          <StatusText text={'No Approver Required'} item={item} />
+          <NoapproverText>No Approver Required</NoapproverText>
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
@@ -742,10 +903,7 @@ export const ListScheduleDeployment = () => {
     {
       label: 'Status',
       renderCell: item => (
-        <StatusText
-          text={item?.state === 'TIME_LAPSED' ? 'TIME LAPSED' : item?.state}
-          item={item}
-        />
+        <StatusText text={item?.state?.replace(/_/g, ' ')} item={item} />
       ),
       width: '8%',
       resize: true,
@@ -763,6 +921,7 @@ export const ListScheduleDeployment = () => {
       schedularId: selectedSchedule.id,
     };
     dispatch(SchedularActions.editScheduleByRegistry(payload));
+    setCurrentPage(1);
   };
   const handleApproveClick = () => {
     const payload = {
@@ -770,6 +929,7 @@ export const ListScheduleDeployment = () => {
       schedularId: selectedSchedule.id,
     };
     dispatch(SchedularActions.editScheduleByRegistry(payload));
+    setCurrentPage(1);
   };
   const handleRejectCrossClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
@@ -784,7 +944,15 @@ export const ListScheduleDeployment = () => {
     { value: 'REJECTED', label: 'Rejected' },
     { value: 'STOPPED', label: 'Stopped' },
     { value: 'FAILED', label: 'Failed' },
+    { value: 'IN_PROGRESS', label: 'In Progress' },
     { value: 'TIME_LAPSED', label: 'Time Lapsed' },
+    { value: 'DEPLOYED_WITH_ERRORS', label: ' Deployed with errors' },
+    { value: 'UPGRADED_WITH_ERRORS', label: 'Upgraded with errors' },
+    { value: 'DOWNGRADED_WITH_ERRORS', label: 'Downgraded with errors' },
+    { value: 'STARTED_WITH_ERRORS', label: 'Started with errors' },
+    { value: 'STOPPED_WITH_ERRORS', label: 'Stopped with errors' },
+    { value: 'UPGRADED', label: 'Upgraded' },
+    { value: 'DOWNGRADED', label: 'Downgraded' },
   ];
 
   const sortFns = {
@@ -851,8 +1019,45 @@ export const ListScheduleDeployment = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleDeployWithSanityCheck = () => {
+    dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+    dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(true));
+    dispatch(
+      SchedularActions.scheduleSanityAndDeploy({
+        schedularId: selectedSchedule?.id,
+        clusterId: selectedSchedule?.cluster_id,
+      })
+    );
+  };
+
+  useEffect(() => {
+    if (sanityCheckData && isEmpty(sanityCheckData?.data)) {
+      dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+      dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(true));
+      dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
+    }
+  }, [sanityCheckData, dispatch]);
+
+  useEffect(() => {
+    dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
+    dispatch(SchedularActions.setSanityAndDeployStatus(null));
+  }, [dispatch]);
+
+  const hadleSuccessSanityCheck = () => {
+    fetchRecords();
+    dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
+    dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+    dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
+  };
+
+  const statusLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'scheduleSanityAndDeploy')
+  );
+
   return (
     <>
+      <FullPageLoader loading={statusLoading} />
       <ModalWithIcon
         title={'Disapprove Deployment Schedule'}
         primaryButtonText={'Stop'}
@@ -880,8 +1085,16 @@ export const ListScheduleDeployment = () => {
         }
         onSubmit={handleApproveClick}
       />
-      <ScheduleDeploymentModal />
-      <RejectScheduleModal />
+      <ScheduleDeploymentModal
+        onConfirm={() => {
+          setCurrentPage(1);
+        }}
+      />{' '}
+      <RejectScheduleModal
+        onConfirm={() => {
+          setCurrentPage(1);
+        }}
+      />{' '}
       <TokenScheduleDeploymentModal />
       <UserStoryModal />
       <GroupListModal />
@@ -898,6 +1111,39 @@ export const ListScheduleDeployment = () => {
         setSortingState={setSortingState}
       />
       <DiffModalScheduleList />
+      <ScheduleSanityCheckModal fetchSchedule={fetchRecords} />
+      <ModalWithIcon
+        title="Sanity Check Confirmation"
+        primaryButtonText="Confirm"
+        secondaryButtonText="Cancel"
+        icon={<ExclamationIcon height={120} width={150} />}
+        isOpen={isSanityCheckModalOpen}
+        onRequestClose={() => {
+          dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+          dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(true));
+        }}
+        primaryText="Do you want to perform a Sanity Check before Scheduled Deployment?"
+        secondaryText="Process Group will be deployed in a stopped state. This action cannot be undone."
+        onSubmit={handleDeployWithSanityCheck}
+      />
+      {isEmpty(sanityCheckData?.data) && (
+        <ModalWithIcon
+          title={'Sanity Check'}
+          secondaryButtonText={'Close'}
+          icon={<GreenRightCircleIcon />}
+          isOpen={isSuccessSanityCheckModalOpen}
+          onRequestClose={() => {
+            dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
+            dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+            dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
+            dispatch(SchedularActions.setSanityAndDeployStatus(null));
+            fetchRecords();
+          }}
+          primaryText={'Sanity check passed with no errors or inconsistencies.'}
+          secondaryText="The configuration meets the required standards for a flow to get started"
+          onSubmit={hadleSuccessSanityCheck}
+        />
+      )}
     </>
   );
 };

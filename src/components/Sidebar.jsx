@@ -23,7 +23,7 @@ import {
   LoadingSelectors,
   NamespacesActions,
 } from '../store';
-import { SettingsSelectors } from '../store/settings';
+import { SettingsActions, SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
 import { Loader } from './Loader';
 import DiscardFlowConfirmationModal from '../pages/AiFlowGenerator/DiscardFlowConfirmationModal';
@@ -391,7 +391,7 @@ export const Sidebar = ({
 
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
-        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 2.1.14`}</span>
+        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 2.1.23`}</span>
       </KDFMVersion>
       {isAiFlowWarningModalOpen && (
         <DiscardFlowConfirmationModal

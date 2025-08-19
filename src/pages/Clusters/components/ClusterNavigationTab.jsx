@@ -5,6 +5,7 @@ import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import styled from 'styled-components';
 import { AuthenticationSelectors } from '../../../store';
 import { useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -36,6 +37,8 @@ const ClusterNavigationTab = ({
   setNewRegistry,
   isRegistryDetailDisable,
   data,
+  setClusterFormData = () => {},
+  certificateOption
 }) => {
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
   const isSuperAdmin = currentUserData?.role === 'superadmin';
@@ -47,6 +50,7 @@ const ClusterNavigationTab = ({
         onClick={() => {
           setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
           setNewRegistry(false);
+          setClusterFormData();
         }}
       >
         {KDFM.CLUSTER_DETAILS}
@@ -82,20 +86,23 @@ const ClusterNavigationTab = ({
           />
         )}
       </>
-      {isSuperAdmin && data && (
-        <NavButton
-          active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
-          onClick={() =>
-            Object.keys(data || {})?.length
-              ? setActiveTab(CLUSTER_MODULE_TABS.SERVICE_ACCOUNT)
-              : {}
-          }
-          disabled={isRegistryDetailDisable}
-          data-tooltip-id="navButtonTooltip"
-        >
-          {KDFM.SERVICE_ACCOUNT}
-        </NavButton>
-      )}
+      {data?.is_certificate_based_service_account === false && certificateOption === false &&
+        isSuperAdmin &&
+        data &&
+        location?.pathname === '/clusters/edit' && (
+          <NavButton
+            active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
+            onClick={() =>
+              Object.keys(data || {})?.length
+                ? setActiveTab(CLUSTER_MODULE_TABS.SERVICE_ACCOUNT)
+                : {}
+            }
+            disabled={isRegistryDetailDisable}
+            data-tooltip-id="navButtonTooltip"
+          >
+            {KDFM.SERVICE_ACCOUNT}
+          </NavButton>
+        )}
     </NavTabs>
   );
 };

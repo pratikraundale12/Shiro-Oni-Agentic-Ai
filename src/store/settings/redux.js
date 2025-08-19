@@ -10,6 +10,23 @@ export const SettingsActions = {
   flowValidationModalOpen: createAction(`${prefix}flowValidationModalOpen`),
   addNewValidationModalOpen: createAction(`${prefix}addNewValidationModalOpen`),
   downloadLogsZip: createAction(`${prefix}downloadLogsZip`),
+  downloadLogsRequest: createAction(`${prefix}downloadLogsRequest`),
+  downloadLogsSuccess: createAction(`${prefix}downloadLogsSuccess`),
+  downloadLogsFailure: createAction(`${prefix}downloadLogsFailure`),
+  verifyEmail: createAction(`${prefix}verifyEmail`),
+  verifyEmailSuccess: createAction(`${prefix}verifyEmailSuccess`),
+  setIsEmailVerified: createAction(`${prefix}setIsEmailVerified`),
+  fetchKeycloakUsers: createAction(`${prefix}fetchKeycloakUsers`),
+  setkeycloakUserFetched: createAction(`${prefix}setkeycloakUserFetched`),
+  setkeycloakUserListModalOpen: createAction(
+    `${prefix}setkeycloakUserListModalOpen`
+  ),
+  assignKeycloakRolesToUsers: createAction(
+    `${prefix}assignKeycloakRolesToUsers`
+  ),
+  keycloakTestCredentials: createAction(`${prefix}keycloakTestCredentials`),
+  setDisplayFetchUserBtn: createAction(`${prefix}setDisplayFetchUserBtn`),
+  setSettingsData: createAction(`${prefix}setSettingsData`),
 };
 
 // /* ------------- INITIAL STATE ------------- */
@@ -17,6 +34,12 @@ export const SETTING_INITIAL_STATE = {
   data: {},
   flowValidationModalOpen: false,
   addNewValidationModalOpen: false,
+  isDownloading: false,
+  emailVerified: false,
+  keycloakUserFetched: [],
+  keycloakUserListModalOpen: false,
+  displayFetchUserBtn: false,
+  settingsData: {},
 };
 
 // /* ------------- SELECTORS ------------------ */
@@ -25,6 +48,13 @@ export const SettingsSelectors = {
   getFlowValidationModal: state => state.settings.flowValidationModalOpen,
   getAddNewValidationModalOpen: state =>
     state.settings.addNewValidationModalOpen,
+  getIsDownloading: state => state.settings.isDownloading,
+  getEmailVerified: state => state.settings.emailVerified,
+  getKeycloakUserFetched: state => state.settings.keycloakUserFetched,
+  getkeycloakUserListModalOpen: state =>
+    state.settings.keycloakUserListModalOpen,
+  getdisplayFetchUserBtn: state => state.settings.displayFetchUserBtn,
+  getSettingsData: state => state.settings.settingsData,
 };
 
 // /* ------------- REDUCERS ------------------- */
@@ -47,6 +77,45 @@ const handleAddNewValidationModalOpen = (state, { payload }) => {
   };
 };
 
+const verifyEmailSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    emailVerified: payload?.verified,
+  };
+};
+
+const setIsEmailVerified = (state, { payload }) => {
+  return {
+    ...state,
+    emailVerified: payload,
+  };
+};
+const setSettingsData = (state, { payload }) => {
+  return {
+    ...state,
+    settingsData: payload,
+  };
+};
+
+const setkeycloakUserFetched = (state, { payload }) => {
+  return {
+    ...state,
+    keycloakUserFetched: payload,
+  };
+};
+const setkeycloakUserListModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    keycloakUserListModalOpen: payload,
+  };
+};
+const setDisplayFetchUserBtn = (state, { payload }) => {
+  return {
+    ...state,
+    displayFetchUserBtn: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
   builder
@@ -58,5 +127,23 @@ export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
     .addCase(
       SettingsActions.addNewValidationModalOpen,
       handleAddNewValidationModalOpen
-    );
+    )
+    .addCase(SettingsActions.downloadLogsRequest, state => {
+      state.isDownloading = true;
+    })
+    .addCase(SettingsActions.downloadLogsSuccess, state => {
+      state.isDownloading = false;
+    })
+    .addCase(SettingsActions.downloadLogsFailure, state => {
+      state.isDownloading = false;
+    })
+    .addCase(SettingsActions.verifyEmailSuccess, verifyEmailSuccess)
+    .addCase(SettingsActions.setIsEmailVerified, setIsEmailVerified)
+    .addCase(SettingsActions.setkeycloakUserFetched, setkeycloakUserFetched)
+    .addCase(
+      SettingsActions.setkeycloakUserListModalOpen,
+      setkeycloakUserListModalOpen
+    )
+    .addCase(SettingsActions.setDisplayFetchUserBtn, setDisplayFetchUserBtn)
+    .addCase(SettingsActions.setSettingsData, setSettingsData);
 });

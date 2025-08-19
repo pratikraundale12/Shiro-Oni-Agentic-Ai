@@ -41,13 +41,22 @@ export const EnableClusterRender = ({ item }) => {
 
   const handleClusterAction = () => {
     if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
-      dispatch(
-        AuthenticationActions.setClusterLogin({
-          label: item.name,
-          value: item.id,
-        })
-      );
-      dispatch(ClustersActions.fetchClusters());
+      if (item?.is_certificate_based_service_account) {
+        dispatch(
+          ClustersActions.setclusterToLoginWithoutCred({
+            label: item.name,
+            value: item.id,
+          })
+        );
+      } else {
+        dispatch(
+          AuthenticationActions.setClusterLogin({
+            label: item.name,
+            value: item.id,
+          })
+        );
+        dispatch(ClustersActions.fetchClusters());
+      }
     } else if (item?.status === CLUSTER_STATUS.CONNECTED) {
       dispatch(
         GridActions.fetchGrid({
@@ -72,6 +81,7 @@ export const EnableClusterRender = ({ item }) => {
         clustersToken?.filter(token => token.id === item?.id);
       const payload = { id: item?.id, token: tokenToRemove?.[0]?.token };
       dispatch(ClustersActions.clusterLogout(payload));
+
       if (clusterItem) {
         const cluster = JSON.parse(clusterItem);
         if (cluster.value === item.id) {

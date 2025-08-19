@@ -1,5 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Setting } from './Setting';
+import { AppSettings } from './AppSettings';
+import { DeploymentScheduleSettings } from './DeploymentScheduleSettings';
+import { LDAPSettings } from './LDAPSettings';
+import { EmailConfigurationSettings } from './EmailConfigurationSettings';
+import { ServiceAccountSettings } from './ServiceAccountSettings';
+import { SSOLoginSettings } from './SSOLoginSettings';
+import { ExportLogSettings } from './ExportLogSettings';
 import {
   AppIcon,
   DeploymentScheduleIcon,
@@ -10,15 +18,10 @@ import {
   ServiceAccountIcon,
   CurvedDocumentIcon,
 } from '../../assets';
-import { AppSettings } from './AppSettings';
-import { DeploymentScheduleSettings } from './DeploymentScheduleSettings';
-import { EmailConfigurationSettings } from './EmailConfigurationSettings';
 import FlowValidation from './FlowValidation';
-import { LDAPSettings } from './LDAPSettings';
-import { SSOLoginSettings } from './SSOLoginSettings';
-import { ServiceAccountSettings } from './ServiceAccountSettings';
-import { Setting } from './Setting';
-import { ExportLogSettings } from './ExportLogSettings';
+import { useDispatch } from 'react-redux';
+import { SettingsActions } from '../../store/settings';
+// import DeleteDownloadHistory from './DeleteDownloadHistory';
 
 const GreyBoxNamespace = styled.div`
   background-color: #ffffff;
@@ -89,7 +92,13 @@ const IconContent = styled.div`
 `;
 
 const SettingTab = () => {
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('AppSettings');
+  useEffect(() => {
+    if (activeTab !== 'EmailConfigurationSettings') {
+      dispatch(SettingsActions.setIsEmailVerified(false));
+    }
+  });
   const renderContent = () => {
     switch (activeTab) {
       case 'Setting':
@@ -235,6 +244,22 @@ const SettingTab = () => {
               </IconContent>
               Log Export
             </Tab>
+            {/* <Tab
+              active={activeTab === 'DeleteDownloadHistorySettings'}
+              onClick={() => setActiveTab('DeleteDownloadHistorySettings')}
+              className="nav-item d-flex"
+            >
+              <IconContent className="nav-item">
+                <CurvedDocumentIcon
+                  color={
+                    activeTab === 'DeleteDownloadHistorySettings'
+                      ? '#FF7A00'
+                      : '#444445'
+                  }
+                />
+              </IconContent>
+              Manage Download Activity History
+            </Tab> */}
           </TabWrapper>
         </TabsContainer>
         <TabContent>{renderContent()}</TabContent>

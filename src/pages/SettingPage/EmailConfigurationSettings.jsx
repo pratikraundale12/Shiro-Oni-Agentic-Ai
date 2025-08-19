@@ -13,8 +13,11 @@ import {
 import favicon from '../../assets/images/default-favicon.ico';
 import { EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, InputField, PasswordField } from '../../shared';
+import { Button, InputField, Modal, PasswordField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import { FullPageLoader } from '../../components';
+import { LoadingSelectors } from '../../store';
+import { isEmpty } from 'lodash';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -49,6 +52,15 @@ const StyledCancelButton = styled(Button)`
   gap: 10px;
   border-radius: 8px;
 `;
+const StyledVerifyEmailBtn = styled(Button)`
+  padding-top: 15px;
+  padding-bottom: 15px;
+  height: 50px;
+  width: 140px;
+  gap: 10px;
+  radius: 8px;
+  left: 140px;
+`;
 
 const StyledSaveButton = styled(Button)`
   padding-top: 15px;
@@ -68,26 +80,18 @@ const ButtonDiv = styled.div`
 export const settingSchema = yup.object().shape({
   from_email: yup
     .string()
-    .required('From email is required')
-    .nullable()
+    .required('From Email is required')
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
-
   smtp_service: yup
     .string()
     .nullable()
+    .transform(value => (value === '' ? null : value))
     .test(
-      'smtp-service-required',
-      'SMTP Service is required',
-      function (value) {
-        const { smtp_host, smtp_port, smtp_user, smtp_pass } = this.parent;
-        if (smtp_host || smtp_port || smtp_user || smtp_pass) {
-          return value ? true : false;
-        }
-        return true;
-      }
+      'not-empty',
+      'SMTP Service cannot be an empty',
+      value => value === null || value.trim().length > 0
     ),
-
   smtp_host: yup
     .string()
     .nullable()
@@ -113,24 +117,22 @@ export const settingSchema = yup.object().shape({
   smtp_user: yup
     .string()
     .nullable()
-    .test('smtp-user-required', 'SMTP User is required', function (value) {
-      const { smtp_service, smtp_host, smtp_port, smtp_pass } = this.parent;
-      if (smtp_service || smtp_host || smtp_port || smtp_pass) {
-        return value ? true : false;
-      }
-      return true;
-    }),
+    .transform(value => (value === '' ? null : value))
+    .test(
+      'not-empty',
+      'SMTP User cannot be an empty',
+      value => value === null || value.trim().length > 0
+    ),
 
   smtp_pass: yup
     .string()
     .nullable()
-    .test('smtp-pass-required', 'SMTP Password is required', function (value) {
-      const { smtp_service, smtp_host, smtp_port, smtp_user } = this.parent;
-      if (smtp_service || smtp_host || smtp_port || smtp_user) {
-        return value ? true : false;
-      }
-      return true;
-    }),
+    .transform(value => (value === '' ? null : value))
+    .test(
+      'not-empty',
+      'SMTP Password cannot be an empty',
+      value => value === null || value.trim().length > 0
+    ),
 });
 export const EmailConfigurationSettings = () => {
   const {
@@ -143,8 +145,14 @@ export const EmailConfigurationSettings = () => {
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
   const settingData = useSelector(SettingsSelectors.getSettings);
+  const isEmailVerified = useSelector(SettingsSelectors.getEmailVerified);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
+  const [isVerifyEmailOpen, setIsVerifyEmailOpen] = useState(false);
+  const [toEmail, setToEmail] = useState('');
+  const [emailError, setEmailError] = useState({});
+  const [changedData, setChangedData] = useState({});
+  const [disableSaveSetting, setDisableSaveSetting] = useState(true);
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
@@ -169,7 +177,11 @@ export const EmailConfigurationSettings = () => {
       settingData?.smtp_service
     );
     appendIfChanged('smtp_host', data?.smtp_host, settingData?.smtp_host);
-    appendIfChanged('smtp_port', data?.smtp_port, settingData?.smtp_port);
+    appendIfChanged(
+      'smtp_port',
+      Number(data?.smtp_port),
+      Number(settingData?.smtp_port)
+    );
     appendIfChanged('smtp_user', data?.smtp_user, settingData?.smtp_user);
     appendIfChanged('smtp_pass', data?.smtp_pass, settingData?.smtp_pass);
 
@@ -192,8 +204,33 @@ export const EmailConfigurationSettings = () => {
       }
     } finally {
       setLoading(false);
+      setChangedData({});
     }
   };
+  const smtpService = watch('smtp_service');
+  const smtpUser = watch('smtp_user');
+  const smtpPass = watch('smtp_pass');
+  const smtpPort = watch('smtp_port');
+  const smtpHost = watch('smtp_host');
+  const fromEmail = watch('from_email');
+  useEffect(() => {
+    if (smtpService === '') {
+      setValue('smtp_service', null);
+    }
+  }, [smtpService, setValue]);
+
+  useEffect(() => {
+    if (smtpUser === '') {
+      setValue('smtp_user', null);
+    }
+  }, [smtpUser, setValue]);
+
+  useEffect(() => {
+    if (smtpPass === '') {
+      setValue('smtp_pass', null);
+    }
+  }, [smtpPass, setValue]);
+
   useEffect(() => {
     if (settingData) {
       if (settingData?.favicon) {
@@ -227,7 +264,7 @@ export const EmailConfigurationSettings = () => {
         value.from_email !== settingData?.from_email ||
         value.smtp_service !== settingData?.smtp_service ||
         value.smtp_host !== settingData?.smtp_host ||
-        value.smtp_port !== settingData?.smtp_port ||
+        String(value.smtp_port) !== String(settingData?.smtp_port) ||
         value.smtp_user !== settingData?.smtp_user ||
         value.smtp_pass !== settingData?.smtp_pass;
       setIsChanged(isModified);
@@ -249,8 +286,95 @@ export const EmailConfigurationSettings = () => {
     }
   }
 
+  const handleVerifyEmail = () => {
+    setIsVerifyEmailOpen(true);
+  };
+
+  useEffect(() => {
+    if (Object.keys(errors).length) {
+      setIsVerifyEmailOpen(false);
+      setToEmail('');
+      setEmailError({});
+    }
+  }, [errors]);
+  const handleSendEmail = () => {
+    const changedSmtpData = {
+      ...(smtpService !== settingData?.smtp_service && {
+        smtp_service: smtpService,
+      }),
+      ...(smtpPass !== settingData?.smtp_pass && { smtp_pass: smtpPass }),
+      ...(smtpUser !== settingData?.smtp_user && { smtp_user: smtpUser }),
+      ...(smtpHost !== settingData?.smtp_host && { smtp_host: smtpHost }),
+      ...(Number(smtpPort) !== Number(settingData?.smtp_port) && {
+        smtp_port: Number(smtpPort),
+      }),
+      ...(fromEmail !== settingData?.from_email && { from_email: fromEmail }),
+    };
+    setChangedData(changedSmtpData);
+    if (!toEmail || !EMAIL_REGEX.test(toEmail)) {
+      setEmailError({
+        to_email: {
+          message: 'Please enter a valid email address.',
+        },
+      });
+      return;
+    } else {
+      dispatch(
+        SettingsActions.verifyEmail({
+          to_email: toEmail,
+          changedSmtpData: changedSmtpData,
+        })
+      );
+      setToEmail('');
+      setEmailError({});
+      setIsVerifyEmailOpen(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setToEmail('');
+    setEmailError({});
+    setIsVerifyEmailOpen(false);
+  };
+
+  useEffect(() => {
+    if (isEmailVerified && changedData) {
+      const isChanged =
+        ('smtp_pass' in changedData && changedData.smtp_pass !== smtpPass) ||
+        ('smtp_user' in changedData && changedData.smtp_user !== smtpUser) ||
+        ('smtp_host' in changedData && changedData.smtp_host !== smtpHost) ||
+        ('smtp_port' in changedData &&
+          Number(changedData.smtp_port) !== Number(smtpPort)) ||
+        ('from_email' in changedData && changedData.from_email !== fromEmail) ||
+        ('smtp_service' in changedData &&
+          changedData.smtp_service !== smtpService);
+      if (isEmailVerified && !isEmpty(Object.keys(changedData)) && !isChanged) {
+        setDisableSaveSetting(false);
+      } else {
+        setDisableSaveSetting(true);
+      }
+    }
+  }, [
+    isEmailVerified,
+    changedData,
+    smtpPass,
+    smtpUser,
+    smtpHost,
+    smtpPort,
+    fromEmail,
+    smtpService,
+  ]);
+
+  const handleChange = e => {
+    setToEmail(e.target.value);
+    setEmailError({});
+  };
+  const verifyEmailLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'verifyEmail')
+  );
   return (
     <Wrapper>
+      <FullPageLoader loading={verifyEmailLoading} />
       <form
         style={{
           display: 'flex',
@@ -268,7 +392,6 @@ export const EmailConfigurationSettings = () => {
               label={KDFM.SMTP_SERVICE}
               placeholder={KDFM.ENTER_SMTP_SERVICE}
               errors={errors}
-              required={true}
             />
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -285,6 +408,7 @@ export const EmailConfigurationSettings = () => {
           <div className="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-6">
             <InputField
               name="smtp_port"
+              type="number"
               register={register}
               icon={<CurvedDocumentTextIcon />}
               label={KDFM.SMTP_PORT}
@@ -303,7 +427,6 @@ export const EmailConfigurationSettings = () => {
               label={KDFM.SMTP_USER}
               placeholder={KDFM.ENTER_SMTP_USER}
               errors={errors}
-              required={true}
             />
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -316,7 +439,6 @@ export const EmailConfigurationSettings = () => {
               placeholder={KDFM.ENTER_SMTP_PASS}
               disableToggle={false}
               errors={errors}
-              required
             />
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -327,7 +449,7 @@ export const EmailConfigurationSettings = () => {
               label={KDFM.FROM_EMAIL}
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
-              required={true}
+              required
             />
           </div>
         </InputFields>
@@ -346,16 +468,45 @@ export const EmailConfigurationSettings = () => {
             >
               <ButtonText>Cancel</ButtonText>
             </StyledCancelButton>
+            <StyledVerifyEmailBtn
+              type="button"
+              onClick={() => handleVerifyEmail()}
+            >
+              <ButtonText>{'Verify Email'}</ButtonText>
+            </StyledVerifyEmailBtn>
             <StyledSaveButton
               type="submit"
               loading={loading}
-              disabled={!isChanged}
+              disabled={disableSaveSetting}
             >
               <ButtonText>{KDFM.SAVE_SETTINGS}</ButtonText>
             </StyledSaveButton>
           </ButtonDiv>
         </FlexWrapper>
       </form>
+      {isVerifyEmailOpen && (
+        <Modal
+          title={'Send Verification Email'}
+          size="sm"
+          onRequestClose={handleCancel}
+          isOpen={isVerifyEmailOpen}
+          primaryButtonText={KDFM.SEND_EMAIL}
+          secondaryButtonText={KDFM.CANCEL}
+          primaryButtonDisabled={!toEmail}
+          onSubmit={handleSubmit(handleSendEmail)}
+        >
+          <InputField
+            name="to_email"
+            value={toEmail}
+            onChange={handleChange}
+            icon={<SmsNotificationIcon />}
+            label={KDFM.TO_EMAIL}
+            placeholder={KDFM.ENTER_EMAIL}
+            required={true}
+            errors={emailError}
+          />
+        </Modal>
+      )}
     </Wrapper>
   );
 };

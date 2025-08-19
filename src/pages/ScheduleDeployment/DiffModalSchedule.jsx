@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -7,9 +8,11 @@ import { ActivityHistorySelectors } from '../../store/activityHistory';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import DiffModalFlowValidation from './DiffModalFlowValidation';
+import DiffLocalChanges from './DiffLocalChanges';
 import DiffScheduleCS from './DiffScheduleControllerService';
 import DiffScheduleParameter from './DiffScheduleParamter';
 import DiffScheduleVariables from './DiffScheduleVariables';
+import { history } from '../../helpers/history';
 const GreyBoxNamespace = styled.div`
   padding: 5px 10px 0px 10px;
   border-radius: 20px;
@@ -52,17 +55,40 @@ export const DiffModalScheduleList = props => {
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
   const selectedItem = useSelector(ActivityHistorySelectors.getSelectedItem);
+  const sanityCheckData = useSelector(
+    SchedularSelectors.getSanityAndDeployStatus
+  );
+  // Get isFromDeploySummary from props
+  const isFromDeploySummary = props?.isFromDeploySummary || false;
 
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
-        return <DiffScheduleParameter />;
+        return (
+          <DiffScheduleParameter
+            isFromDeploySummary={props?.isFromDeploySummary || false}
+            parametersData={props?.parametersData}
+          />
+        );
       case KDFM.VARIABLES:
-        return <DiffScheduleVariables />;
+        return (
+          <DiffScheduleVariables
+            isFromDeploySummary={props?.isFromDeploySummary || false}
+            variablesData={props?.variablesData}
+          />
+        );
       case KDFM.CONTROLLER_SERVICE:
-        return <DiffScheduleCS />;
+        return (
+          <DiffScheduleCS
+            isFromDeploySummary={props?.isFromDeploySummary || false}
+            csData={props?.csData}
+          />
+        );
       case 'Flow Validation':
         return <DiffModalFlowValidation />;
+      case 'Local Changes':
+        return <DiffLocalChanges />;
+
       default:
         return null;
     }
@@ -71,20 +97,36 @@ export const DiffModalScheduleList = props => {
   const closeModal = () => {
     dispatch(SchedularActions.setDiffAllData({}));
     dispatch(SchedularActions.setIsDiffModalOpen(false));
+    props?.setIsModalOpen && props?.setIsModalOpen(false);
     setActiveTab(KDFM.PARAMETER_CONTEXT);
+    dispatch(SchedularActions.setSanityAndDeployStatus(null));
   };
   const handleSetTab = tab => {
-    setActiveTab(tab);
+    if (tab === 'Sanity Check') {
+      setActiveTab(tab);
+    } else {
+      setActiveTab(tab);
+    }
+  };
+
+  const handleprocessGroupDetails = () => {
+    history.push('/process-group/' + sanityCheckData?.namespaceId);
   };
   return (
     <div {...props}>
       <Modal
         size="lg"
-        title={`${selectedSchedule?.namespace_name || selectedItem?.namespace} : Schedule Deployment Changes`}
-        isOpen={modalOpen}
+        title={
+          props?.title ||
+          `${selectedSchedule?.namespace_name || selectedItem?.namespace} : Schedule Deployment Changes`
+        }
+        isOpen={props?.isModalOpen || modalOpen}
         onRequestClose={closeModal}
-        primaryButtonText="Close"
-        onSubmit={() => closeModal()}
+        primaryButtonText={
+          sanityCheckData?.data ? 'Process Group Details' : null
+        }
+        secondaryButtonText="Close"
+        onSubmit={handleprocessGroupDetails}
         footerAlign="start"
         contentStyles={{ minWidth: '65%' }}
         noPadding={true}
@@ -101,7 +143,7 @@ export const DiffModalScheduleList = props => {
                 color: '#444445',
               }}
             >
-              {scheduleDiffData?.versionDetailText}
+              {props?.versionText || scheduleDiffData?.versionDetailText}
             </div>
           </div>
 
@@ -134,10 +176,31 @@ export const DiffModalScheduleList = props => {
             >
               Flow Validation{' '}
             </Tab>
+            {/* Conditionally render Local Changes tab */}
+            {!isFromDeploySummary && (
+              <Tab
+                active={activeTab === 'Local Changes'}
+                onClick={() => handleSetTab('Local Changes')}
+                className="nav-item"
+              >
+                Local Changes
+              </Tab>
+            )}
           </TabWrapper>
           <TabContent>{renderContent()}</TabContent>
         </GreyBoxNamespace>
       </Modal>
     </div>
   );
+};
+
+DiffModalScheduleList.propTypes = {
+  versionText: PropTypes.string,
+  title: PropTypes.string,
+  isModalOpen: PropTypes.bool,
+  setIsModalOpen: PropTypes.func,
+  isFromDeploySummary: PropTypes.bool,
+  parametersData: PropTypes.array,
+  variablesData: PropTypes.array,
+  csData: PropTypes.array,
 };

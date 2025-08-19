@@ -68,14 +68,6 @@ export const clustersAPI = api => {
     return api.post(`/clusters/${clusterId}/associate-registry`, payload);
   };
 
-  const createClusterServiceAcc = ({ payload }) => {
-    return api.post(`/clusters`, payload);
-  };
-
-  const updateClusterServiceAcc = ({ clusterId, payload }) => {
-    return api.patch(`/clusters/${clusterId}`, payload);
-  };
-
   const fetchAnsibleClusterData = ({ clusterId }) => {
     return api.get(`/clusters/${clusterId}/get-edit-details`);
   };
@@ -101,6 +93,12 @@ export const clustersAPI = api => {
     return api.post(`/clusters/config-properties/${version}`);
   };
 
+  const createClusterServiceAcc = ({ payload }) => {
+    return api.post(`/clusters`, payload);
+  };
+  const updateClusterServiceAcc = ({ clusterId, payload }) => {
+    return api.patch(`/clusters/${clusterId}`, payload);
+  };
   return {
     fetchClusters,
     fetchClusterList,
@@ -124,13 +122,13 @@ export const clustersAPI = api => {
     fetchRunningStatusCluster,
     fetchClusterMetrics,
     associateClusterWithRegistry,
-    createClusterServiceAcc,
-    updateClusterServiceAcc,
     fetchAnsibleClusterData,
     upgradeAnsibleCluster,
     updateNodesAnsibleCluster,
     deleteAnsibleClusterHard,
     fetchAnsibleCLusterProcessData,
     fetchAllConfigPropertiesWithValue,
+    createClusterServiceAcc,
+    updateClusterServiceAcc,
   };
 };

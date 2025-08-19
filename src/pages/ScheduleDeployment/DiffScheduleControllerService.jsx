@@ -5,6 +5,7 @@ import { SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { NoDataIcon } from '../../assets';
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -21,6 +22,7 @@ const ScrollSetGrey = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
 `;
+
 const PgHead = styled.div`
   font-family: Red Hat Display;
   font-size: 20px;
@@ -31,12 +33,14 @@ const PgHead = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 `;
+
 const GreyBoxNamespace = styled.div`
   background-color: #f5f7fa;
   padding: 5px 10px 0px 10px;
   border-radius: 15px;
   padding: 20px 15px 20px 15px;
 `;
+
 const TileHeader = styled.div`
   font-family: Red Hat Display;
   font-size: 17px;
@@ -47,6 +51,7 @@ const TileHeader = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 `;
+
 const TileItem = styled.div`
   font-family: Red Hat Display;
   font-size: 16px;
@@ -56,6 +61,7 @@ const TileItem = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 `;
+
 const NoDataText = styled.div`
   color: ${props => props.theme.colors.lightGrey3};
   font-family: ${props => props.theme.fontNato};
@@ -64,8 +70,12 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
-const DiffScheduleCS = () => {
+const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
+  const data = isFromDeploySummary
+    ? csData
+    : scheduleDiffData?.diffControllerServices;
+
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -86,52 +96,125 @@ const DiffScheduleCS = () => {
           </div>
         </div>
 
-        {scheduleDiffData?.diffControllerServices?.map(element => (
-          <div className="mt-4" key={element?.identifier}>
-            <PgHead className="mb-2">{element?.name}</PgHead>
-            <GreyBoxNamespace>
-              <div className="d-flex mb-3">
-                <TileHeader className="col-3"></TileHeader>
-                <TileHeader className="col-5">New</TileHeader>
-                <TileHeader className="col-4">Current</TileHeader>
-              </div>
-              {element?.property_differences?.map(item => (
-                <div className="row  " key={item?.name}>
-                  <TileHeader
-                    style={{
-                      backgroundColor: '#E9ECF1',
-                      height: '30px',
-                      color: theme.colors.primary,
-                    }}
-                    className="d-flex align-items-center mb-1"
-                  >
-                    <span className="">{item?.name}</span>
-                  </TileHeader>
-                  <div className="d-flex mb-1">
-                    <TileHeader className="col-3 d-flex align-items-center">
-                      Value
+        {data?.map(element => {
+          const properties =
+            element?.property_differences || element?.properties;
+          return (
+            <div className="mt-4" key={element?.identifier}>
+              <PgHead className="mb-2">
+                {element?.new_name || element?.name}
+              </PgHead>
+              <GreyBoxNamespace>
+                {/* Header row - same for both cases */}
+                <div className="d-flex mb-3">
+                  <TileHeader className="col-3"></TileHeader>
+                  <TileHeader className="col-5">New</TileHeader>
+                  <TileHeader className="col-4">Current</TileHeader>
+                </div>
+                {!isEmpty(element?.new_name) && (
+                  <div className="row" key={element?.name}>
+                    <TileHeader
+                      style={{
+                        backgroundColor: '#E9ECF1',
+                        height: '30px',
+                        color: theme.colors.primary,
+                      }}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <span className="">Service Name</span>
                     </TileHeader>
-                    <TileItem className="col-5 me-2">
-                      <div
+                    <div className="d-flex mb-1">
+                      <TileHeader className="col-3 d-flex align-items-center"></TileHeader>
+                      <TileItem className="col-5 me-2">
+                        <div
+                          style={{
+                            backgroundColor: '#E9ECF1',
+                            borderRadius: '12px',
+                          }}
+                          className="p-2"
+                        >
+                          {element?.new_name}
+                        </div>
+                      </TileItem>
+                      <TileItem className="col-4">
+                        <div
+                          style={{
+                            backgroundColor: '#E9ECF1',
+                            borderRadius: '12px',
+                          }}
+                          className="p-2"
+                        >
+                          {element?.name}
+                        </div>
+                      </TileItem>
+                    </div>
+                  </div>
+                )}
+                {properties?.map(item => {
+                  // Handle different data structures - both cases have new_value and old_value
+                  const newValue =
+                    item?.new_value === ''
+                      ? 'Empty String Set'
+                      : item?.new_value === null
+                        ? 'No Value set'
+                        : item?.new_value;
+
+                  const oldValue =
+                    item?.old_value === ''
+                      ? 'Empty String Set'
+                      : item?.old_value === null
+                        ? 'No Value set'
+                        : item?.old_value;
+
+                  return (
+                    <div className="row" key={item?.name}>
+                      <TileHeader
                         style={{
                           backgroundColor: '#E9ECF1',
-                          borderRadius: '12px',
+                          height: '30px',
+                          color: theme.colors.primary,
                         }}
-                        className="p-2"
+                        className="d-flex align-items-center mb-1"
                       >
-                        {item?.new_value || 'N/A'}
+                        <span className="">{item?.name}</span>
+                      </TileHeader>
+                      <div className="d-flex mb-1">
+                        <TileHeader className="col-3 d-flex align-items-center">
+                          Value
+                        </TileHeader>
+                        <TileItem className="col-5 me-2">
+                          <div
+                            style={{
+                              backgroundColor: '#E9ECF1',
+                              borderRadius: '12px',
+                            }}
+                            className="p-2"
+                          >
+                            {newValue || 'N/A'}
+                          </div>
+                        </TileItem>
+                        <TileItem className="col-4">
+                          <div
+                            style={{
+                              backgroundColor: '#E9ECF1',
+                              borderRadius: '12px',
+                            }}
+                            className="p-2"
+                          >
+                            {oldValue || 'N/A'}
+                          </div>
+                        </TileItem>
                       </div>
-                    </TileItem>
-                    <TileItem className="col-4 d-flex align-items-center">
-                      {item?.old_value || 'N/A'}
-                    </TileItem>
-                  </div>
-                </div>
-              ))}
-            </GreyBoxNamespace>
-          </div>
-        ))}
-        {isEmpty(scheduleDiffData?.diffControllerServices) && (
+                    </div>
+                  );
+                })}
+              </GreyBoxNamespace>
+            </div>
+          );
+        })}
+
+        {/* No data condition - check the selected data source */}
+        {isEmpty(data) && (
           <div className="d-flex flex-column align-items-center mt-5">
             <NoDataIcon width={130} />
             <NoDataText>No Data Found!!</NoDataText>
@@ -141,5 +224,10 @@ const DiffScheduleCS = () => {
     </DataWrapper>
   );
 };
-DiffScheduleCS.propTypes = {};
+
+DiffScheduleCS.propTypes = {
+  isFromDeploySummary: PropTypes.bool,
+  csData: PropTypes.array,
+};
+
 export default DiffScheduleCS;

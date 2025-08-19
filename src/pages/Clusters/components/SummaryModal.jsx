@@ -113,8 +113,10 @@ export const SummaryModal = ({
   edit,
   notificationEnable,
   approverEnable,
+  approverEnableForStartAndStop,
   tags,
   changeRequestEnable,
+  certificateOption,
 }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -136,18 +138,44 @@ export const SummaryModal = ({
   };
 
   const addCluster = async ({ registry_id }) => {
-    const data = {
-      name: clusterData?.clusterName,
-      nifi_url: clusterData?.nifiUrl,
-      registry_id: registry_id,
-      tag: tags,
-      notification_enable: notificationEnable,
-      approver_enable: approverEnable,
-      change_request_enable: changeRequestEnable,
-      ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
-      ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
-    };
-    const response = await createCluster(data);
+    const formData = new FormData();
+
+    formData.append('name', clusterData?.clusterName || '');
+    formData.append('nifi_url', clusterData?.nifiUrl || '');
+    formData.append('registry_id', registry_id);
+    formData.append('tag', tags);
+    formData.append('notification_enable', notificationEnable);
+    formData.append('approver_enable', approverEnable);
+    formData.append(
+      'start_stop_requires_approval',
+      approverEnableForStartAndStop
+    );
+    formData.append('is_certificate_based_service_account', certificateOption);
+    formData.append('change_request_enable', changeRequestEnable);
+
+    if (clusterData?.logs_url) {
+      formData.append('logs_url', clusterData.logs_url);
+    }
+
+    if (clusterData?.metrics_url) {
+      formData.append('metrics_url', clusterData.metrics_url);
+    }
+
+    if (clusterData?.service_account_certificate) {
+      formData.append(
+        'service_account_certificate',
+        clusterData.service_account_certificate
+      );
+    }
+
+    if (clusterData?.service_account_certificate_password) {
+      formData.append(
+        'service_account_certificate_password',
+        clusterData.service_account_certificate_password
+      );
+    }
+
+    const response = await createCluster(formData); // createCluster must handle FormData
 
     if (response?.status === 201) {
       setLoading(false);
@@ -169,7 +197,7 @@ export const SummaryModal = ({
     const response = await updateRegistry(id, payload);
     if (response?.id) {
       setLoading(false);
-      toast.success(response.message);
+      toast.success('Cluster updated successfully');
       history.push('/clusters');
     } else {
       setLoading(false);
@@ -186,6 +214,12 @@ export const SummaryModal = ({
     formdata.append('approver_enable', approverEnable);
     formdata.append('change_request_enable', changeRequestEnable);
     formdata.append('has_custom_service_account', false);
+    formdata.append(
+      'start_stop_requires_approval',
+      approverEnableForStartAndStop
+    );
+    formdata.append('is_certificate_based_service_account', certificateOption);
+    formdata.append('registry_id', registry_id);
 
     const id = clusterId;
     const response = await updateCluster(id, formdata);
@@ -366,6 +400,8 @@ SummaryModal.propTypes = {
   edit: PropTypes.bool,
   notificationEnable: PropTypes.bool,
   approverEnable: PropTypes.bool,
+  approverEnableForStartAndStop: PropTypes.bool,
   tags: PropTypes.string,
   changeRequestEnable: PropTypes.bool,
+  certificateOption: PropTypes.bool,
 };

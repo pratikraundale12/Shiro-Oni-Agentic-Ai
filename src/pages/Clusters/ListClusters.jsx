@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   ActiveIcon,
+  CopyIcon,
   DeleteDustbinIcon,
   DeleteSmallIcon,
   LogoutIcon,
@@ -37,13 +38,14 @@ import {
   NamespacesActions,
 } from '../../store';
 import { deleteCluster, updateCluster } from '../../store/index1';
+import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
 import { AddOrEditClusterModal } from './components/AddOrEditClusterSetupModal';
-import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { ClusterRegistryAssociationModal } from './components/ClusterRegistryAssociationModal';
 import AnimatedProgressBar from '../../shared/AnimatedProgressBar';
 import { ClusterProcessDisplayModal } from './components/ClusterProcessDisplayModal';
+import { ClusterLoginWithOutCredModal } from './components/ClusterLoginWithoutCredModal';
 
 const List = styled.div`
   width: 165px;
@@ -157,10 +159,16 @@ export const ListClusters = () => {
   );
   const [unInstallNiFi, setUninstallNiFi] = useState(false);
 
+  const [selectedCluster, setSelectedCluster] = useState({});
+  const isCopyClusterModalOpen = useSelector(
+    ClustersSelectors.getIsCopyClusterModalOpen
+  );
+  const copyClusterData = useSelector(ClustersSelectors.getCopyClusterData);
+  const originalClusterName = useSelector(
+    ClustersSelectors.getOriginalClusterName
+  );
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
-
-  const [selectedCluster, setSelectedCluster] = useState({});
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -197,6 +205,7 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setansibleClucterToEdit(''));
     dispatch(ClustersActions.setAnsibleClusterData({}));
     dispatch(ClustersActions.setAnsibleClusterNodeUpdate(''));
+    dispatch(ClustersActions.fetchClusters());
   }, [dispatch]);
 
   const handleHardDeleteAnsibleCluster = item => {
@@ -564,6 +573,32 @@ export const ListClusters = () => {
     }
   };
 
+  // const gridData = useSelector(state =>
+  //   GridSelectors.getGridData(state, 'clusters')
+  // );
+
+  // const handleCopyClusterClick = () => {
+  //   const copiedData = {
+  //     ...menuState.row,
+  //     id: undefined,
+  //     name: getNextUniqueName(menuState?.row?.name, gridData),
+  //   };
+  //   dispatch(
+  //     ClustersActions.setCopyClusterData({
+  //       data: copiedData,
+  //       originalName: menuState.row.name,
+  //     })
+  //   );
+  //   dispatch(ClustersActions.setCopyClusterModalOpen(true));
+  //   handleCloseMenu();
+  // };
+
+  const handleCopyClusterConfirm = () => {
+    history.push('/clusters/add', { state: copyClusterData });
+    dispatch(ClustersActions.setCopyClusterModalOpen(false));
+    dispatch(ClustersActions.setCopyClusterData(null));
+  };
+
   const handleMenuClick = (event, item) => {
     event.stopPropagation();
     setMenuState({
@@ -769,6 +804,18 @@ export const ListClusters = () => {
           </div>
         </div>
       </Modal>
+      <ModalWithIcon
+        title={'Copy Cluster'}
+        primaryButtonText={'Copy'}
+        secondaryButtonText={KDFM.CANCEL}
+        icon={<CopyIcon width={150} height={150} />}
+        isOpen={isCopyClusterModalOpen}
+        onSubmit={handleCopyClusterConfirm}
+        onRequestClose={() => {
+          dispatch(ClustersActions.setCopyClusterModalOpen(false));
+        }}
+        primaryText={`Are you sure you want to copy cluster "${originalClusterName}"?`}
+      />
       <Grid
         module="clusters"
         title={KDFM.CLUSTER_LIST}
@@ -790,6 +837,7 @@ export const ListClusters = () => {
         selectedCluster={selectedCluster}
         sortingState={sortingState}
       />
+      <ClusterLoginWithOutCredModal />
     </>
   );
 };

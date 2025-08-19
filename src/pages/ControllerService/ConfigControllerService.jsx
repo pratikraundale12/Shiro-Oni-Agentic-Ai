@@ -248,8 +248,8 @@ export const ConfigControllerService = ({
     },
   ];
 
-  const { register, handleSubmit, reset } = useForm({});
-
+  const { register, handleSubmit, reset, watch } = useForm({});
+  const serviceName = watch('name');
   const updateProperties = (targetObject, newProperties) => {
     const existingProperties = targetObject.properties || [];
     const updatedProperties = [...existingProperties];
@@ -323,7 +323,18 @@ export const ConfigControllerService = ({
     }
     setUpdatedData([]);
   };
+  useEffect(() => {
+    const filteredUpdatedData = updatedData.filter(updatedItem => {
+      const existsInOriginal = listPropertyTableData.some(
+        originalItem =>
+          originalItem?.name === updatedItem?.name &&
+          originalItem?.old_val === updatedItem?.value
+      );
+      return !existsInOriginal;
+    });
 
+    setUpdatedData(filteredUpdatedData);
+  }, [listPropertyTableData]);
   useEffect(() => {
     reset({
       name: selectedItemFromList?.name || '',
@@ -340,6 +351,9 @@ export const ConfigControllerService = ({
       footerAlign="start"
       contentStyles={{ maxWidth: '60%', maxHeight: '70%' }}
       secondaryButtonText="Back"
+      primaryButtonDisabled={
+        isEmpty(updatedData) && serviceName === selectedItemFromList?.name
+      }
     >
       <ModalBody className="modal-body">
         <div className=" row d-flex justify-content-between">

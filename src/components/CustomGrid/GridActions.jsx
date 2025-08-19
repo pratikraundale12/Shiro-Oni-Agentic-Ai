@@ -1,11 +1,27 @@
 /* eslint-disable */
-import { debounce, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { useForm } from 'react-hook-form';
-import { endOfDay, startOfDay } from 'date-fns';
+import {
+  addHours,
+  addMinutes,
+  endOfDay,
+  endOfHour,
+  endOfMinute,
+  isSameDay,
+  isSameHour,
+  isSameMinute,
+  startOfDay,
+  startOfHour,
+  startOfMinute,
+  subHours,
+  subMinutes,
+} from 'date-fns';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -18,6 +34,7 @@ import {
 import {
   ACCESS_OPTIONS,
   ACTIVITY_EVENTS,
+  ACTIVITY_STATUS_OPTIONS,
   KDFM,
   MODULE_LIST_MAP,
   SEARCH_INPUT_ERROR,
@@ -31,6 +48,7 @@ import {
   FieldErrorMessage,
   SelectField,
 } from '../../shared';
+import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
 import {
   AuthenticationSelectors,
   ClustersActions,
@@ -43,6 +61,7 @@ import {
   RegistryActions,
   RolesActions,
   RolesSelectors,
+  UsersActions,
   UsersSelectors,
 } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
@@ -52,6 +71,8 @@ import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../FullPageLoader';
+import { use } from 'react';
+import { SettingsActions } from '../../store/settings';
 
 const Flex = styled.div`
   display: flex;
@@ -137,6 +158,7 @@ const StyledSelectField = styled(SelectField)`
     overflow: hidden;
   }
 `;
+
 const DropdownContainer = styled.div`
   min-width: 175px;
   max-width: 175px;
@@ -222,10 +244,19 @@ export const GridActions = ({
   setSortingState,
   setCurrentPage,
   isClusterLoggedIn = true,
+  onItemsPerPageChange,
+  scheduleType,
+  setScheduleType,
+  selectStatus,
+  setSelectStatus,
+  removeSearch = false,
+  setIsExportReportOpen,
+  setRemoveSearch,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
+  const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
   const accessType = useSelector(RolesSelectors.getAccessType);
   const userModalOpen = useSelector(UsersSelectors.getUserModalOpen);
   const roles = useSelector(RolesSelectors.getRoles);
@@ -234,6 +265,11 @@ export const GridActions = ({
   );
   const { setState } = useGlobalContext();
   const [searchValue, setSearchValue] = useState('');
+  useEffect(() => {
+    if (removeSearch && (module === 'namespaces' || module === 'users')) {
+      setSearchValue('');
+    }
+  }, [removeSearch]);
   const uniqueRoles = useMemo(() => {
     return Array.from(new Set(roles.map(role => role.name))).map(name => {
       return roles.find(role => role.name === name);
@@ -267,12 +303,52 @@ export const GridActions = ({
     NamespacesSelectors.getSelectedNamespace
   );
 
+  function getDynamicRangeStartEnd(start, end) {
+    if (!start || !end) return [null, null];
+
+    // Only round if EXACTLY the same minute
+    if (isSameMinute(start, end)) {
+      return [startOfMinute(start), endOfMinute(end)];
+    }
+
+    // Optional: remove this block if you don't want rounding
+    // if (isSameHour(start, end)) {
+    //   return [startOfHour(start), endOfHour(end)];
+    // }
+
+    // If same day and covering full day, round
+    if (isSameDay(start, end)) {
+      const sameTime =
+        start.getHours() === 0 &&
+        start.getMinutes() === 0 &&
+        start.getSeconds() === 0 &&
+        end.getHours() === 23 &&
+        end.getMinutes() === 59;
+      if (sameTime) {
+        return [startOfDay(start), endOfDay(end)];
+      }
+      return [start, end]; // keep original times
+    }
+
+    // Different days → keep exact
+    return [start, end];
+  }
+
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'activityHistory')
+  );
+  const gridDataNamespace = useSelector(state =>
+    GridSelectors.getGridData(state, 'namespaces')
+  );
+
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
     setState(prev => ({ ...prev, search: null }));
     setSearchValue('');
     setSearchErrorMsg({});
     inputRef.current.value = '';
+    setCurrentPage(1);
+    onItemsPerPageChange(10);
 
     if (module === 'clusters') {
       setValue('is_active', null);
@@ -293,6 +369,10 @@ export const GridActions = ({
     }
 
     if (module === 'namespaces') {
+      if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
+        return;
+      }
+      dispatch(SettingsActions.fetchSettings());
       dispatch(
         GridSagsActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
@@ -308,6 +388,7 @@ export const GridActions = ({
           clusterId,
           params: {
             page: 1,
+            limit: 10,
             ...(selectedRange && {
               start_date: selectedRange?.[0]?.toISOString(),
               end_date: selectedRange?.[1]?.toISOString(),
@@ -363,49 +444,69 @@ export const GridActions = ({
       selectedRole ||
       clusterSelectedValue ||
       selectEvent ||
-      selectEntity
+      selectEntity ||
+      scheduleType ||
+      selectStatus
     ) {
-      dispatch(
-        GridSagsActions.fetchGrid({
-          module,
-          clusterId,
-          params: {
-            page: 1,
-            id: scheduleToken,
-            ...(search && { search: search }),
-            ...(watchStatus &&
-              watchStatus !== 'all' && {
-                [getModuleBasedStatusKey(module)]: watchStatus,
+      if (module === 'namespaces' && selectedCluster?.value === '') {
+        return;
+      } else {
+        dispatch(
+          GridSagsActions.fetchGrid({
+            module,
+            clusterId,
+            params: {
+              page: 1,
+              limit: itemPerClusterList || 10,
+              id: scheduleToken,
+              ...(search && { search: search }),
+              ...(watchStatus &&
+                watchStatus !== 'all' && {
+                  [getModuleBasedStatusKey(module)]: watchStatus,
+                }),
+              ...(selectedRange && {
+                start_date: selectedRange?.[0]?.toISOString(),
+                end_date: selectedRange?.[1]?.toISOString(),
               }),
-            ...(selectedRange && {
-              start_date: selectedRange?.[0]?.toISOString(),
-              end_date: selectedRange?.[1]?.toISOString(),
-            }),
-            ...(location?.pathname?.includes('user-management') &&
-              selectedRole?.value !== 'all' && {
-                role_id: selectedRole?.value,
-              }),
-            ...(location?.pathname?.includes('schedule-deployment') &&
-              clusterSelectedValue?.label !== 'All' && {
-                clusterName: clusterSelectedValue?.label,
-              }),
-            ...(location?.pathname?.includes('activity-history') &&
-              selectEvent?.value !== 'all' && {
-                event: selectEvent?.value,
-              }),
-            ...(location?.pathname?.includes('activity-history') &&
-              selectEntity?.value !== 'all' && {
-                entity: selectEntity?.value,
-              }),
-            ...(location?.pathname?.match(
-              /user-management|clusters|schedule-deployment|activity-history/
-            ) &&
-              sortingState && {
-                sort: sortingState,
-              }),
-          },
-        })
-      );
+              ...(location?.pathname?.includes('user-management') &&
+                selectedRole?.value !== 'all' && {
+                  role_id: selectedRole?.value,
+                }),
+              ...(location?.pathname?.includes('schedule-deployment') &&
+                clusterSelectedValue?.label !== 'All' && {
+                  clusterName: clusterSelectedValue?.label,
+                }),
+              ...(location?.pathname?.includes('activity-history') &&
+                selectEvent &&
+                selectEvent.length > 0 && {
+                  event: selectEvent.map(event => event.value).join(','),
+                }),
+
+              ...(location?.pathname?.includes('activity-history') &&
+                selectEntity &&
+                selectEntity.length > 0 && {
+                  entity: selectEntity.map(entity => entity.value).join(','),
+                }),
+
+              ...(location?.pathname?.includes('activity-history') &&
+                selectStatus &&
+                selectStatus.length > 0 && {
+                  status: selectStatus.map(status => status.value).join(','),
+                }),
+              ...(location?.pathname?.includes('schedule-deployment') &&
+                scheduleType?.value !== 'all' && {
+                  type: scheduleType?.value,
+                }),
+              ...(location?.pathname?.match(
+                /user-management|clusters|schedule-deployment|activity-history/
+              ) &&
+                sortingState && {
+                  sort: sortingState,
+                }),
+            },
+          })
+        );
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -416,6 +517,8 @@ export const GridActions = ({
     selectedRange,
     selectEvent,
     selectEntity,
+    scheduleType,
+    selectStatus,
   ]);
   const [canWrite, setCanWrite] = useState(false); // State to store canWrite value
   const gridPermissions = useSelector(state =>
@@ -429,7 +532,17 @@ export const GridActions = ({
     }
   }, [gridPermissions]);
 
+  const registryData = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
+
   const handleClick = () => {
+    if (isEmpty(registryData)) {
+      toast.error(
+        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
+      );
+      return;
+    }
     history.push('/process-group/DeployPage');
     dispatch(NamespacesActions.setdeployRegistryFlow(true));
   };
@@ -437,6 +550,12 @@ export const GridActions = ({
     LoadingSelectors.getLoading(state, 'fetchDashboard')
   );
   const handleScheduleClick = () => {
+    if (isEmpty(registryData)) {
+      toast.error(
+        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
+      );
+      return;
+    }
     history.push('/process-group/DeployPage');
     dispatch(NamespacesActions.setdeployRegistryFlow(false));
     dispatch(NamespacesActions.setScheduleByRegistry(true));
@@ -444,11 +563,22 @@ export const GridActions = ({
 
   const handleChange = value => {
     setCurrentPage(1);
+    let [start, end] = value;
+    if (
+      start &&
+      end &&
+      start.toDateString() === end.toDateString() &&
+      start.getTime() === end.getTime()
+    ) {
+      const adjustedEnd = new Date(end);
+      adjustedEnd.setHours(23, 59, 0, 0);
+      end = adjustedEnd;
+    }
+
+    const [dynamicStart, dynamicEnd] = getDynamicRangeStartEnd(start, end);
+
     dispatch(
-      SchedularActions.setScheduleSelectRange([
-        startOfDay(value?.[0]),
-        endOfDay(value?.[1]),
-      ])
+      SchedularActions.setScheduleSelectRange([dynamicStart, dynamicEnd])
     );
     if (!value) {
       dispatch(SchedularActions.setScheduleSelectRange([]));
@@ -506,10 +636,41 @@ export const GridActions = ({
       placement: 'left',
     },
     {
+      label: 'Last 1 hour',
+      value: [subHours(new Date(), 1), new Date()],
+      placement: 'left',
+    },
+    // {
+    //   label: 'Last 30 minutes',
+    //   value: [subMinutes(new Date(), 30), new Date()],
+    //   placement: 'left',
+    // },
+    // {
+    //   label: 'Last 15 minutes',
+    //   value: [subMinutes(new Date(), 15), new Date()],
+    //   placement: 'left',
+    // },
+    {
+      label: 'Next 1 hour',
+      value: [new Date(), addHours(new Date(), 1)],
+      placement: 'left',
+    },
+    // {
+    //   label: 'Next 30 minutes',
+    //   value: [new Date(), addMinutes(new Date(), 30)],
+    //   placement: 'left',
+    // },
+    // {
+    //   label: 'Next 15 minutes',
+    //   value: [new Date(), addMinutes(new Date(), 15)],
+    //   placement: 'left',
+    // },
+    {
       label: 'Today',
       value: [startOfDay(new Date()), endOfDay(new Date())],
       placement: 'left',
     },
+
     {
       label: 'Last 7 Days',
       value: [
@@ -550,14 +711,23 @@ export const GridActions = ({
     setCurrentPage(1);
     setSelectedRole(selectedOption);
   };
-  const handleEventChange = selectedEventOption => {
+
+  // Updated to handle arrays for multi-select
+  const handleEventChange = selectedEventOptions => {
     setCurrentPage(1);
-    setSelectEvent(selectedEventOption);
+    setSelectEvent(selectedEventOptions); // This will now be an array
   };
-  const handleEntityChange = selectedEntityOption => {
+
+  const handleStatusChange = selectedStatusOptions => {
     setCurrentPage(1);
-    setSelectEntity(selectedEntityOption);
+    setSelectStatus(selectedStatusOptions); // This will now be an array
   };
+
+  const handleEntityChange = selectedEntityOptions => {
+    setCurrentPage(1);
+    setSelectEntity(selectedEntityOptions); // This will now be an array
+  };
+
   const handleClusterChange = selectedClusterOption => {
     setCurrentPage(1);
     setClusterSelectedValue(selectedClusterOption);
@@ -576,14 +746,16 @@ export const GridActions = ({
       setClusterSelectedValue(null);
       dispatch(SchedularActions.setSelectedClusterState(null));
       setSortingState(null);
+      setScheduleType(null);
     } else if (module === 'activityHistory') {
       setValue('is_active', null);
       setState(prev => ({ ...prev, search: null }));
       setSearchValue('');
       setSearchErrorMsg({});
       inputRef.current.value = '';
-      setSelectEvent(null);
-      setSelectEntity(null);
+      setSelectEvent([]); // Changed to empty array
+      setSelectEntity([]); // Changed to empty array
+      setSelectStatus([]);
       setSortingState(null);
     } else if (module === 'users') {
       setValue('is_active', null);
@@ -606,50 +778,40 @@ export const GridActions = ({
 
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
+  const handleExportReport = () => {
+    setIsExportReportOpen(true);
+  };
+
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchEmailReport')
+  );
+
   return (
     <>
       <Flex className="flex-wrap gap-2">
-        <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
-        {title && (
-          <Flex>
-            <ImageContainer>
-              <TodoIcon width={22} height={24} />
-            </ImageContainer>
-            <Title>
-              <span>{title}</span>
-              {module === 'namespaces' && Boolean(gridCount) && (
-                <span>({gridCount})</span>
-              )}
-            </Title>
-          </Flex>
-        )}
+        <FullPageLoader loading={loading || loadingNamespaces} />
+        <Flex>
+          <ImageContainer>
+            <TodoIcon width={22} height={24} />
+          </ImageContainer>
+          <Title>
+            <span>{title}</span>
+            {module === 'namespaces' && Boolean(gridCount) && (
+              <span>({gridCount})</span>
+            )}
+          </Title>
+        </Flex>
         {module === 'scheduler' && (
           <>
             {
               <ButtonsContainerScheduleList>
-                {selectedCluster?.value && (
-                  <Button
-                    size="md"
-                    onClick={() => history.push('/process-group')}
-                  >
-                    <div
-                      className="d-flex "
-                      style={{ fontSize: '14px', fontWeight: '750' }}
-                    >
-                      <ScheduleDeploymentIcon
-                        height={19}
-                        width={19}
-                        color={'#fff'}
-                      />
-                      Schedule Deployment
-                    </div>
-                  </Button>
-                )}
-
                 <DateRangePickerInput
                   value={selectedRange}
                   handleChange={handleChange}
                   customRanges={customRanges}
+                  showTime={{ format: 'hh:mm A' }}
+                  format="YYYY-MM-DD hh:mm A"
+                  placeholder={['Start Time', 'End Time']}
                 />
                 <DropdownContainer>
                   <StyledSelectField
@@ -671,6 +833,43 @@ export const GridActions = ({
                     backgroundColor={theme.colors.lightGrey}
                   />
                 </DropdownContainer>
+                <DropdownContainer>
+                  <StyledSelectField
+                    size="sm"
+                    name="scheduleType"
+                    control={control}
+                    options={[
+                      { label: 'All', value: 'all' },
+                      { label: 'Start', value: 'start' },
+                      { label: 'Stop', value: 'stop' },
+                      { label: 'Deploy', value: 'deploy' },
+                      { label: 'Upgrade', value: 'upgrade' },
+                      { label: 'Downgrade', value: 'downgrade' },
+                    ]}
+                    value={scheduleType}
+                    placeholder="Schedule Type"
+                    onChange={setScheduleType}
+                    backgroundColor={theme.colors.lightGrey}
+                  />
+                </DropdownContainer>
+                {/* {selectedCluster?.value && (
+                  <Button
+                    size="md"
+                    onClick={() => history.push('/process-group')}
+                  >
+                    <div
+                      className="d-flex "
+                      style={{ fontSize: '14px', fontWeight: '750' }}
+                    >
+                      <ScheduleDeploymentIcon
+                        height={19}
+                        width={19}
+                        color={'#fff'}
+                      />
+                      Schedule Deployment
+                    </div>
+                  </Button>
+                )} */}
               </ButtonsContainerScheduleList>
             }
           </>
@@ -749,6 +948,29 @@ export const GridActions = ({
                 </div>
               </Button>
             )}
+          {module === 'scheduler' && (
+            <>
+              {' '}
+              {selectedCluster?.value && (
+                <Button
+                  size="md"
+                  onClick={() => history.push('/process-group')}
+                >
+                  <div
+                    className="d-flex "
+                    style={{ fontSize: '14px', fontWeight: '750' }}
+                  >
+                    <ScheduleDeploymentIcon
+                      height={19}
+                      width={19}
+                      color={'#fff'}
+                    />
+                    Schedule Deployment
+                  </div>
+                </Button>
+              )}
+            </>
+          )}
           {module === 'users' && (
             <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
           )}
@@ -764,28 +986,73 @@ export const GridActions = ({
           )}
           {module === 'activityHistory' && (
             <>
-              <StyledSelectField
-                size="sm"
-                name="activityEvent"
-                title={KDFM.SELECT_EVENT}
-                className="entity-dropdown"
-                placeholder={KDFM.SELECT_EVENT}
-                options={ACTIVITY_EVENTS}
-                value={selectEvent}
-                backgroundColor={theme.colors.lightGrey}
-                onChange={handleEventChange}
-              />
-              <StyledSelectField
-                size="sm"
-                name="entityName"
-                className="entity-dropdown"
-                title={KDFM.SELECT_ENTITY}
-                placeholder={KDFM.SELECT_ENTITY}
-                options={MODULE_LIST_MAP}
-                value={selectEntity}
-                backgroundColor={theme.colors.lightGrey}
-                onChange={handleEntityChange}
-              />
+              <div>
+                <MultiSelectField
+                  name="activityEvent"
+                  control={control}
+                  label={KDFM.SELECT_EVENT}
+                  placeholder={KDFM.SELECT_EVENT}
+                  options={ACTIVITY_EVENTS}
+                  customValue={selectEvent}
+                  customOnChange={(onChange, selectedOptions) => {
+                    handleEventChange(selectedOptions);
+                    onChange(selectedOptions);
+                  }}
+                  wrapperCustomClass="entity-dropdown"
+                  customWidth="275px"
+                  enableCheckboxes={true}
+                  selectAllLabel="Select All"
+                  hideMultipleOptions={true}
+                  enableSelectAll={true} // Enable select all
+                />
+              </div>
+              <div>
+                <MultiSelectField
+                  name="entityName"
+                  control={control}
+                  label={KDFM.SELECT_ENTITY}
+                  placeholder={KDFM.SELECT_ENTITY}
+                  options={MODULE_LIST_MAP}
+                  customValue={selectEntity}
+                  enableSelectAll={true} // Enable select all
+                  selectAllLabel="Select All"
+                  customOnChange={(onChange, selectedOptions) => {
+                    handleEntityChange(selectedOptions);
+                    onChange(selectedOptions);
+                  }}
+                  wrapperCustomClass="entity-dropdown"
+                  customWidth="275px"
+                  enableCheckboxes={true}
+                  hideMultipleOptions={true}
+                />
+              </div>
+              <div>
+                <MultiSelectField
+                  name="activityStatus"
+                  control={control}
+                  label="Select Status"
+                  placeholder="Select Status"
+                  options={ACTIVITY_STATUS_OPTIONS}
+                  customValue={selectStatus}
+                  customOnChange={(onChange, selectedOptions) => {
+                    handleStatusChange(selectedOptions);
+                    onChange(selectedOptions);
+                  }}
+                  wrapperCustomClass="entity-dropdown"
+                  customWidth="275px"
+                  enableCheckboxes={true}
+                  hideMultipleOptions={true}
+                  enableSelectAll={true} // Enable select all
+                  selectAllLabel="Select All"
+                />
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <div>
+                  {!isEmpty(gridData) && (
+                    <Button onClick={handleExportReport}>Export Report</Button>
+                  )}
+                </div>
+              </div>
               <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
             </>
           )}
@@ -800,23 +1067,40 @@ export const GridActions = ({
               >
                 {buttonText}
               </Button>
-            )}
+            )}{' '}
+          {module === 'users' && userPermissions.includes('add_user') && (
+            //
+            <Button
+              icon={<PlusCircleIcon width={16} height={16} color="white" />}
+              onClick={() => {
+                dispatch(UsersActions.setUserModalOpen(true));
+                dispatch(UsersActions.setAddNewUser(true));
+                setRemoveSearch(true);
+                setState(prevState => ({ ...prevState, search: null }));
+                setCurrentPage(1);
+                dispatch(SchedularActions.setSearchText(null));
+                setSearchValue('');
+              }}
+              size="sm"
+            >
+              Add User
+            </Button>
+          )}
           {userPermissions.includes(getButtonPermissions(module)) &&
             !userModalOpen && <Modal />}
         </ButtonsContainer>
 
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
-            {module === 'namespaces' &&
-              location.pathname === '/process-group' && (
-                <>
-                  {selectedCluster?.value && (
-                    <Button
-                      id="process-group-list-schdule-deployment"
-                      size="md"
-                      disabled={isButtonDisabled}
-                      onClick={() => handleScheduleClick()}
-                    >
+            {module === 'namespaces' && !isEmpty(gridDataNamespace) && (
+              <>
+                {selectedCluster?.value && (
+                  <Button
+                    id="process-group-list-schdule-deployment"
+                    size="md"
+                    disabled={isButtonDisabled}
+                    onClick={() => handleScheduleClick()}
+                  >
                       <div
                         className="d-flex "
                         style={{ fontSize: '14px', fontWeight: '750' }}
@@ -979,4 +1263,7 @@ GridActions.propTypes = {
   selectedRole: PropTypes.string,
   sortingState: PropTypes.string,
   setValue: PropTypes.func,
+  onItemsPerPageChange: PropTypes.func.isRequired,
+  setIsExportReportOpen: PropTypes.func,
+  setRemoveSearch: PropTypes.func,
 };
