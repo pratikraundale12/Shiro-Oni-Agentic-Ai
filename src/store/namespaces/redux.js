@@ -261,6 +261,13 @@ export const NamespacesActions = {
   ),
   setCsPermissions: createAction(`${prefix}setCsPermissions`),
   setKeepParameters: createAction(`${prefix}setKeepParameters`),
+  fetchServiceDefinition: createAction(`${prefix}fetchServiceDefinition`),
+  fetchServiceDefinitionSuccess: createAction(
+    `${prefix}fetchServiceDefinitionSuccess`
+  ),
+  fetchServiceDefinitionFailure: createAction(
+    `${prefix}fetchServiceDefinitionFailure`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -387,6 +394,9 @@ export const NAMESPACES_INITIAL_STATE = {
   lastSanityReportData: {},
   csPermissions: {},
   keepParameterForDeploy: true,
+  serviceDefinition: null,
+  serviceDefinitionLoading: false,
+  serviceDefinitionError: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -523,6 +533,10 @@ export const NamespacesSelectors = {
     state.namespaces.refreshedControllerService,
   getCsPermissions: state => state.namespaces.csPermissions,
   getKeepParameters: state => state.namespaces.keepParameterForDeploy,
+  getServiceDefinition: state => state.namespaces.serviceDefinition,
+  getServiceDefinitionLoading: state =>
+    state.namespaces.serviceDefinitionLoading,
+  getServiceDefinitionError: state => state.namespaces.serviceDefinitionError,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1238,6 +1252,24 @@ const setKeepParameters = (state, { payload }) => {
   };
 };
 
+const fetchServiceDefinitionSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    serviceDefinition: payload,
+    serviceDefinitionLoading: false,
+    serviceDefinitionError: null,
+  };
+};
+
+const fetchServiceDefinitionFailure = (state, { payload }) => {
+  return {
+    ...state,
+    serviceDefinition: null,
+    serviceDefinitionLoading: false,
+    serviceDefinitionError: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1530,6 +1562,14 @@ export const namespacesReducer = createReducer(
         NamespacesActions.refreshControllerServiceSuccess,
         refreshControllerServiceSuccess
       )
-      .addCase(NamespacesActions.setKeepParameters, setKeepParameters);
+      .addCase(NamespacesActions.setKeepParameters, setKeepParameters)
+      .addCase(
+        NamespacesActions.fetchServiceDefinitionSuccess,
+        fetchServiceDefinitionSuccess
+      )
+      .addCase(
+        NamespacesActions.fetchServiceDefinitionFailure,
+        fetchServiceDefinitionFailure
+      );
   }
 );

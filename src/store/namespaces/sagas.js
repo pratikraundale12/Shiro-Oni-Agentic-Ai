@@ -1754,6 +1754,35 @@ export function* refreshControllerService(api, { payload }) {
   }
 }
 
+export function* fetchServiceDefinition(api, { payload }) {
+  const { group, artifact, version, type } = payload || {};
+
+  try {
+    const response = yield call(api.getServiceDefinition, {
+      group,
+      artifact,
+      version,
+      type,
+    });
+
+    if (response.ok) {
+      yield put(NamespacesActions.fetchServiceDefinitionSuccess(response.data));
+    } else {
+      yield put(
+        NamespacesActions.fetchServiceDefinitionFailure(
+          response.problem || 'Failed to fetch service definition'
+        )
+      );
+    }
+  } catch (error) {
+    yield put(
+      NamespacesActions.fetchServiceDefinitionFailure(
+        error.message || 'An error occurred'
+      )
+    );
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -1906,6 +1935,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.refreshControllerService,
       refreshControllerService,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchServiceDefinition,
+      fetchServiceDefinition,
       api
     ),
   ]);

@@ -358,6 +358,30 @@ export const namespacesAPI = api => {
   const refreshControllerService = ({ clusterId, controllerId }) =>
     api.get(`controller-services/${clusterId}/service/${controllerId}`);
 
+  const getServiceDefinition = ({
+    group,
+    artifact,
+    version,
+    type,
+    instanceIdentifier,
+  }) => {
+    const queryParams = new URLSearchParams();
+
+    if (group) queryParams.append('group', group);
+    if (artifact) queryParams.append('artifact', artifact);
+    if (version) queryParams.append('version', version);
+    if (type) queryParams.append('type', type);
+    if (instanceIdentifier)
+      queryParams.append('instanceIdentifier', instanceIdentifier);
+
+    const queryString = queryParams.toString();
+    const url = queryString
+      ? `/get-service-definition?${queryString}`
+      : '/get-service-definition';
+
+    return api.get(url);
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -402,5 +426,6 @@ export const namespacesAPI = api => {
     getDeleteNamespaceDetails,
     fetchLastSanityReport,
     refreshControllerService,
+    getServiceDefinition,
   };
 };

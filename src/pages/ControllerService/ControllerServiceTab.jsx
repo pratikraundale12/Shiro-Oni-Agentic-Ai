@@ -198,24 +198,25 @@ const ControllerServiceTab = ({
   const [externalControllerServices, setExternalControllerServices] = useState(
     controllerServicesData?.externalControllerServices
   );
-    const refreshedControllerService = useSelector(
-      NamespacesSelectors.getRefreshedControllerService
-    );
-
-     useEffect(() => {
-  if (!refreshedControllerService?.data?.id) return;
-
-  setExternalControllerServices(prevList =>
-    prevList?.map(item =>
-      item?.updatedValue === refreshedControllerService.data.id || item?.id === refreshedControllerService.data.id
-        ? {
-            ...item,
-            controllerService: [refreshedControllerService.data],
-          }
-        : item
-    )
+  const refreshedControllerService = useSelector(
+    NamespacesSelectors.getRefreshedControllerService
   );
-}, [refreshedControllerService]);
+
+  useEffect(() => {
+    if (!refreshedControllerService?.data?.id) return;
+
+    setExternalControllerServices(prevList =>
+      prevList?.map(item =>
+        item?.updatedValue === refreshedControllerService.data.id ||
+        item?.id === refreshedControllerService.data.id
+          ? {
+              ...item,
+              controllerService: [refreshedControllerService.data],
+            }
+          : item
+      )
+    );
+  }, [refreshedControllerService]);
 
   const [
     externalControllerServicesTableData,
@@ -567,13 +568,15 @@ const ControllerServiceTab = ({
 
   const [refreshingRowId, setRefreshingRowId] = useState(null);
   const handleRefreshClick = item => {
-    const serviceId = item?.controllerService?.length ? item?.controllerService[0]?.id : item?.configuredData?.id || item?.id || item?.updatedValue;
+    const serviceId = item?.controllerService?.length
+      ? item?.controllerService[0]?.id
+      : item?.configuredData?.id || item?.id || item?.updatedValue;
     setRefreshingRowId(serviceId);
     const result = dispatch(
       NamespacesActions.refreshControllerService({
         controllerId: serviceId,
       })
-    );    
+    );
     if (result && typeof result.finally === 'function') {
       result.finally(() => setRefreshingRowId(null));
     } else {
@@ -721,9 +724,11 @@ const ControllerServiceTab = ({
           state === 'INVALID' ||
           state === 'VALIDATING' ||
           state === 'DISABLING' ||
-          (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');  
-        const serviceId = item?.controllerService?.length ? item?.controllerService[0]?.id : item?.id || item?.updatedValue;
-  
+          (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
+        const serviceId = item?.controllerService?.length
+          ? item?.controllerService[0]?.id
+          : item?.id || item?.updatedValue;
+
         return (
           <div className="d-flex align-items-center justify-content-center">
             {/* Settings Button */}
@@ -1049,7 +1054,9 @@ const ControllerServiceTab = ({
           state === 'VALIDATING' ||
           state === 'DISABLING' ||
           (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
-        const serviceId = item?.configuredData ? item?.configuredData?.id : item?.controllerService[0]?.id || item?.id || item?.updatedValue;
+        const serviceId = item?.configuredData
+          ? item?.configuredData?.id
+          : item?.controllerService[0]?.id || item?.id || item?.updatedValue;
 
         return (
           <div className="d-flex align-items-center justify-content-center">
@@ -1623,6 +1630,19 @@ const ControllerServiceTab = ({
   };
 
   const handleSettingClick = item => {
+    console.log(item, 'line no. 1626');
+
+    // Dispatch the action to fetch service definition
+    dispatch(
+      NamespacesActions.fetchServiceDefinition({
+        group: item?.bundle?.group,
+        artifact: item?.bundle?.artifact,
+        version: item?.bundle?.version,
+        type: item?.type,
+        instanceIdentifier: item?.instanceIdentifier,
+      })
+    );
+
     const filteredData =
       !isEmpty(item?.properties) &&
       item?.properties
@@ -1836,7 +1856,7 @@ const ControllerServiceTab = ({
     );
     setExternalControllerServices(updatedControllerServices);
   }, [externalControllerServicesTableData]);
-  
+
   useEffect(() => {
     const collapsibles = [];
     if (isUpgrade) {

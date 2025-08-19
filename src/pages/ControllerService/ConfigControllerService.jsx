@@ -59,8 +59,14 @@ export const ConfigControllerService = ({
   referenceListPropertyTableData = [],
   setReferenceListPropertyTableData = () => {},
 }) => {
-  
+  console.log(listPropertyTableData, 'aaaaaaaaaaaaaaa line no. 62');
+
   const dispatch = useDispatch();
+  const serviceDefinition = useSelector(
+    NamespacesSelectors.getServiceDefinition
+  );
+ console.log(serviceDefinition,'mmmmmmmmmmmm');
+ 
   const isModalOpenDropdownProperty = useSelector(
     NamespacesSelectors.getAddPropertyDropdownModal
   );
@@ -97,6 +103,7 @@ export const ConfigControllerService = ({
     const sortedList = listPropertyTableData.filter(
       element => element.displayName !== item.displayName
     );
+    
     const sortedListAfterDelete = referenceListPropertyTableData?.filter(
       element => element.displayName !== item.displayName
     );
