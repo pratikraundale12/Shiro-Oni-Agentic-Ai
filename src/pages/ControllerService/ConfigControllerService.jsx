@@ -59,7 +59,6 @@ export const ConfigControllerService = ({
   referenceListPropertyTableData = [],
   setReferenceListPropertyTableData = () => {},
 }) => {
-  console.log(listPropertyTableData, 'aaaaaaaaaaaaaaa line no. 62');
 
   const dispatch = useDispatch();
   const serviceDefinition = useSelector(
@@ -103,7 +102,7 @@ export const ConfigControllerService = ({
     const sortedList = listPropertyTableData.filter(
       element => element.displayName !== item.displayName
     );
-    
+
     const sortedListAfterDelete = referenceListPropertyTableData?.filter(
       element => element.displayName !== item.displayName
     );
@@ -398,7 +397,7 @@ export const ConfigControllerService = ({
           </div>
         </div>
         <Table
-          data={listPropertyTableData || []}
+          data={serviceDefinition?.properties || []}
           columns={COLUMNS}
           className="variables-table"
         />
