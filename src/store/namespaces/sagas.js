@@ -1755,7 +1755,8 @@ export function* refreshControllerService(api, { payload }) {
 }
 
 export function* fetchServiceDefinition(api, { payload }) {
-  const { group, artifact, version, type } = payload || {};
+  const { group, artifact, version, type, instanceIdentifier, properties } =
+    payload || {};
 
   try {
     const response = yield call(api.getServiceDefinition, {
@@ -1763,6 +1764,8 @@ export function* fetchServiceDefinition(api, { payload }) {
       artifact,
       version,
       type,
+      instanceIdentifier,
+      properties,
     });
 
     if (response.ok) {

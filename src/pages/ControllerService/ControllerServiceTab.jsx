@@ -1640,6 +1640,7 @@ const ControllerServiceTab = ({
         version: item?.bundle?.version,
         type: item?.type,
         instanceIdentifier: item?.instanceIdentifier,
+        properties: item?.properties,
       })
     );
 

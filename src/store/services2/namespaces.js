@@ -364,6 +364,7 @@ export const namespacesAPI = api => {
     version,
     type,
     instanceIdentifier,
+    properties,
   }) => {
     const queryParams = new URLSearchParams();
 
@@ -373,13 +374,13 @@ export const namespacesAPI = api => {
     if (type) queryParams.append('type', type);
     if (instanceIdentifier)
       queryParams.append('instanceIdentifier', instanceIdentifier);
-
     const queryString = queryParams.toString();
+
     const url = queryString
       ? `/get-service-definition?${queryString}`
       : '/get-service-definition';
 
-    return api.get(url);
+    return api.post(url, { properties });
   };
 
   return {
