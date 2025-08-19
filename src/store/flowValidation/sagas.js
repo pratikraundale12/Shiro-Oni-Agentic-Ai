@@ -229,6 +229,29 @@ export function* validateDeploymentFlowSaga(api, { payload }) {
   }
 }
 
+export function* uploadFlowSaga(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'uploadFlow',
+    loadingSection: 'uploadFlow',
+    apiMethod: api.uploadFlow,
+    apiParams: [payload],
+    successAction: FlowValidationActions.uploadFlowSuccess,
+  });
+
+  if (response.ok) {
+    toast.success('Flow uploaded successfully!');
+    // Refresh the flows list after successful upload
+    yield put(FlowValidationActions.fetchFlows());
+  } else {
+    toast.error(response?.data?.message || 'Failed to upload flow');
+    yield put(
+      FlowValidationActions.uploadFlowFailure(
+        response?.data?.message || 'Upload failed'
+      )
+    );
+  }
+}
+
 export function* flowValidationSagas(api) {
   yield all([
     takeLatest(FlowValidationActions.ruleScopeFetch, ruleScopeFetch, api),
@@ -250,5 +273,6 @@ export function* flowValidationSagas(api) {
       validateDeploymentFlowSaga,
       api
     ),
+    takeLatest(FlowValidationActions.uploadFlow, uploadFlowSaga, api),
   ]);
 }

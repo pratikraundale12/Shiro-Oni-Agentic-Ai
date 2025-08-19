@@ -24,6 +24,8 @@ export const flowValidationAPI = api => {
   const validateDeploymentFlow = (clusterId, data) =>
     api.post(`/clusters/${clusterId}/validate-deployment-flow`, data);
 
+  const uploadFlow = data => api.post('/inventry-flow/upload', data);
+
   return {
     ruleScopeApi,
     fetchRuleApi,
@@ -41,5 +43,6 @@ export const flowValidationAPI = api => {
     getFlows,
     setRulePriorityApi,
     validateDeploymentFlow,
+    uploadFlow,
   };
 };
