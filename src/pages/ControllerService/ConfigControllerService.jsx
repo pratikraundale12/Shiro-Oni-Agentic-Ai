@@ -59,13 +59,11 @@ export const ConfigControllerService = ({
   referenceListPropertyTableData = [],
   setReferenceListPropertyTableData = () => {},
 }) => {
-
+  
   const dispatch = useDispatch();
   const serviceDefinition = useSelector(
     NamespacesSelectors.getServiceDefinition
   );
- console.log(serviceDefinition,'mmmmmmmmmmmm');
- 
   const isModalOpenDropdownProperty = useSelector(
     NamespacesSelectors.getAddPropertyDropdownModal
   );
@@ -397,7 +395,7 @@ export const ConfigControllerService = ({
           </div>
         </div>
         <Table
-          data={serviceDefinition?.properties || []}
+          data={listPropertyTableData || []}
           columns={COLUMNS}
           className="variables-table"
         />

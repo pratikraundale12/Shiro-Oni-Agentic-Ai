@@ -9,6 +9,7 @@ const ValueRender = ({
   handleAddValueModal,
   setSelectedPropertyToEdit,
 }) => {
+
   const dispatch = useDispatch();
   const handleOpenPropertyDropDownModal = item => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(true));
@@ -21,7 +22,7 @@ const ValueRender = ({
           'Empty String Set'
         ) : item?.sensitive && item?.value !== null ? (
           'Sensitive value set'
-        ) : item?.dropDownName  ? (
+        ) : item?.dropDownName ? (
           <div> {item?.dropDownName}</div>
         ) : item?.value ? (
           <div>{item?.value}</div>

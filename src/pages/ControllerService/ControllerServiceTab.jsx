@@ -153,6 +153,7 @@ const ControllerServiceTab = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
+  
   const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
@@ -162,6 +163,7 @@ const ControllerServiceTab = ({
   );
   const [controllerServicesData, setControllerServicesData] =
     useState(csReduxData);
+
   useEffect(() => {
     if (
       !csReduxData ||
@@ -252,9 +254,12 @@ const ControllerServiceTab = ({
 
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
     useState(false);
+  const serviceDefinition = useSelector(
+    NamespacesSelectors.getServiceDefinition
+  );
 
   const [listPropertyTableData, setListPropertTableData] = useState(
-    selectedItemFromList?.properties
+    serviceDefinition?.properties || selectedItemFromList?.properties || []
   );
   const [referenceListPropertyTableData, setReferenceListPropertyTableData] =
     useState([]);
@@ -1629,22 +1634,47 @@ const ControllerServiceTab = ({
     });
   };
 
+  useEffect(() => {
+    if (serviceDefinition) {
+      const updatedItem = {
+        ...selectedItemFromList,
+        properties: serviceDefinition?.properties || [],
+      };
+
+      const filteredData =
+        !isEmpty(updatedItem?.properties) &&
+        updatedItem?.properties
+          ?.filter(
+            prop =>
+              isEmpty(prop?.dependencies) ||
+              prop?.dependencies?.every(dep =>
+                updatedItem?.properties?.some(
+                  obj =>
+                    obj?.name === dep?.propertyName &&
+                    dep?.dependentValues?.includes(obj?.value)
+                )
+              )
+          )
+          .map(prop => ({
+            ...prop,
+            old_val: prop?.value,
+          }));
+
+      setListPropertTableData(filteredData);
+
+      const properties = updatedItem?.properties?.map(prop => ({
+        ...prop,
+        old_val: prop?.value,
+      }));
+
+      setReferenceListPropertyTableData(properties);
+    }
+  }, [serviceDefinition]);
+
   const handleSettingClick = item => {
-    console.log(item, 'line no. 1626');
-
-    // Dispatch the action to fetch service definition
-    dispatch(
-      NamespacesActions.fetchServiceDefinition({
-        group: item?.bundle?.group,
-        artifact: item?.bundle?.artifact,
-        version: item?.bundle?.version,
-        type: item?.type,
-        instanceIdentifier: item?.instanceIdentifier,
-        properties: item?.properties,
-      })
-    );
-
-    const filteredData =
+    setSelectedItemFromList(item);
+    if(isEmpty(serviceDefinition?.properties)) {
+          const filteredData =
       !isEmpty(item?.properties) &&
       item?.properties
         ?.filter(
@@ -1664,14 +1694,25 @@ const ControllerServiceTab = ({
         }));
     setSelectedItemFromList(item);
     setListPropertTableData(filteredData);
-    const properties = item?.properties?.map(item => ({
-      ...item,
-      old_val: item?.value,
-    }));
-    setReferenceListPropertyTableData(properties);
+    }
+    if (!isEmpty(controllerServicesData?.localServices)) {
+      dispatch(
+        NamespacesActions.fetchServiceDefinition({
+          group: item?.bundle?.group,
+          artifact: item?.bundle?.artifact,
+          version: item?.bundle?.version,
+          type: item?.type,
+          instanceIdentifier: item?.instanceIdentifier,
+          properties: item?.properties,
+        })
+      );
+    }
+
     setIsPropertyResponse(true);
     setIsNewlyAddedExternalServiceResponse(false);
     setIsStateChangeResponse(false);
+    
+
     const match = externalControllerServices?.some(data => {
       if (data.controllerService?.length) {
         return data.controllerService.some(
@@ -1687,6 +1728,7 @@ const ControllerServiceTab = ({
         data?.updatedValue === item.updatedValue
       );
     });
+
     setisFromExternalService(match ? true : false);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
