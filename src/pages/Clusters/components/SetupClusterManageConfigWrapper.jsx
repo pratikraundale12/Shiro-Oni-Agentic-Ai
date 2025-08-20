@@ -65,7 +65,9 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
     dispatch(ClustersActions.getSingleConfigData(configItem?.id));
     history.push('/clusters/new-config-details');
   };
-
+  const createClusterVisKubernetes = useSelector(
+    ClustersSelectors.getCreateClusterMethod
+  );
   const COLUMNS = [
     {
       label: 'Name',
@@ -143,6 +145,14 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
       dispatch(ClustersActions.setLastVisitedTab('manage_config'));
     };
   }, [dispatch]);
+  const handleAddConfig = () => {
+    if (createClusterVisKubernetes === 'VM') {
+      history.push('/clusters/new-config-details');
+    } else {
+      history.push('/clusters/add-new-config');
+    }
+  };
+
   return (
     <Wrapper>
       <FullPageLoader loading={loading} />
@@ -155,7 +165,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
               <Button
                 size="md"
                 onClick={() => {
-                  history.push('/clusters/new-config-details');
+                  handleAddConfig();
                 }}
                 className="w-auto px-3"
                 style={{ minWidth: 'auto' }}

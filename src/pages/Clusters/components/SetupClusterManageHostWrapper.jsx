@@ -70,6 +70,9 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
     LoadingSelectors.getLoading(state, 'fetchHostNodesList')
   );
   const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
+  const createClusterVisKubernetes = useSelector(
+    ClustersSelectors.getCreateClusterMethod
+  );
   const COLUMNS = [
     {
       label: 'Host Name',
@@ -201,14 +204,114 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       width: '10%',
     },
   ];
+  const COLUMNS_KUBERNETSTES_FLOW = [
+    {
+      label: 'Host Name',
+      renderCell: item => (
+        <div className="d-flex gap-2">{item?.host_name || 'N/A'}</div>
+      ),
+
+      resize: true,
+      width: '20%',
+    },
+    {
+      label: 'Host IP',
+      renderCell: item => (
+        <div className="d-flex gap-2">
+          {item?.host_ip}
+          <span data-tooltip-id={`copy-${item?.host_ip}-host-url`}>
+            <CopyToClipboard copyItem={item?.host_ip} />
+          </span>
+          <ReactTooltip
+            id={`copy-${item?.host_ip}-host-url`}
+            place="bottom"
+            effect="solid"
+            content={'Copy URL'}
+            style={{
+              width: '100px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
+        </div>
+      ),
+
+      resize: true,
+      width: '38%',
+    },
+    {
+      label: 'Port No.',
+      renderCell: item => <>{item?.port}</>,
+      resize: true,
+      width: '10%',
+    },
+    {
+      label: 'Username',
+      renderCell: item => (
+        <>
+          {' '}
+          {}
+          {item?.username}
+        </>
+      ),
+      resize: true,
+      width: '12%',
+    },
+    {
+      label: 'Status',
+      renderCell: item => (
+        <StatusRender
+          status={item?.status === 'Active' ? 'Active' : 'Inactive'}
+          redColor="#FF0000"
+        />
+      ),
+      resize: true,
+      width: '10%',
+    },
+    {
+      label: 'Actions',
+      renderCell: item => (
+        <ActionTd>
+          <IconButton
+            onClick={() => {
+              setHostToEdit(item);
+              dispatch(ClustersActions.setIsAddHostIPModalOpen(true));
+            }}
+            className="pencil-icon-schedule-list"
+          >
+            <PencilIcon width={16} height={16} />
+          </IconButton>
+          {!item?.is_selected && (
+            <IconButton
+              onClick={() => {
+                setIsDeleteModalOpen(true);
+                setHostToDelete(item);
+              }}
+              className="pencil-icon-schedule-list"
+            >
+              <DeleteSmallIcon width={16} height={16} color="red" />
+            </IconButton>
+          )}
+        </ActionTd>
+      ),
+      resize: true,
+      width: '10%',
+    },
+  ];
   useEffect(() => {
-    dispatch(
-      ClustersActions.fetchHostNodesList({
-        selected: true,
-        clusterId: null,
-        update_node: false,
-      })
-    );
+    if (createClusterVisKubernetes === 'VM') {
+      dispatch(
+        ClustersActions.fetchHostNodesList({
+          selected: true,
+          clusterId: null,
+          update_node: false,
+        })
+      );
+    } else {
+      dispatch(ClustersActions.fetchMasterHostNodesList());
+    }
+
     return () => {
       ClustersActions.setHostIpList([]);
       dispatch(ClustersActions.setLastVisitedTab('manage_host'));
@@ -259,7 +362,11 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           <div className="ms-3 me-3">
             <Table
               data={listHostIpData || []}
-              columns={COLUMNS}
+              columns={
+                createClusterVisKubernetes === 'VM'
+                  ? COLUMNS
+                  : COLUMNS_KUBERNETSTES_FLOW
+              }
               customNoDataText="No Host IP Available"
               tableWithFullHeight={true}
             />

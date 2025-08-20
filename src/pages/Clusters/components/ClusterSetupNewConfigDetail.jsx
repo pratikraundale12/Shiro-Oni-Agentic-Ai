@@ -367,7 +367,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .required('Comment is required')
       .test(
         'no-leading-trailing-spaces',
-        'Username must not start or end with a space',
+        'comments must not start or end with a space',
         value => value === value?.trim()
       ),
     username: yup
@@ -387,7 +387,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Password must not start or end with a space',
         value => value === value?.trim()
       )
-      .min(10, 'Password must be minimum 10 in length'),
+      .min(12, 'Password must be minimum 12 in length'),
     directory: yup
       .string()
       .required('Directory is required')
@@ -439,7 +439,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .required('Comment is required')
       .test(
         'no-leading-trailing-spaces',
-        'Username must not start or end with a space',
+        'comments must not start or end with a space',
         value => value === value?.trim()
       ),
     directory: yup

@@ -3,7 +3,7 @@ import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
-import { ClustersActions } from './redux';
+import { ClustersActions, ClustersSelectors } from './redux';
 import { toast } from 'react-toastify';
 import { history } from '../../helpers/history';
 import { GridActions } from '../grid';
@@ -117,7 +117,24 @@ export function* fetchHostNodesList(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
+export function* fetchMasterHostNodesList(api) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchMasterHostNodesList',
+    loadingSection: 'fetchMasterHostNodesList',
+    apiMethod: api.fetchMasterHostNodesList,
+    apiParams: [],
+  });
+  if (response.ok) {
+    yield put(ClustersActions.setHostIpList(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
 export function* addIndividualHost(api, { payload }) {
+  const createClusterVisKubernetes = yield select(
+    ClustersSelectors.getCreateClusterMethod
+  );
   const response = yield call(requestSaga, {
     errorSection: 'addIndividualHost',
     loadingSection: 'addIndividualHost',
@@ -127,19 +144,26 @@ export function* addIndividualHost(api, { payload }) {
   if (response.ok) {
     toast.success('Node Added Successfully');
     yield put(ClustersActions.setIsAddHostIPModalOpen(false));
-    yield put(
-      ClustersActions.fetchHostNodesList({
-        selected: true,
-        clusterId: null,
-        update_node: false,
-      })
-    );
+    if (createClusterVisKubernetes === 'VM') {
+      yield put(
+        ClustersActions.fetchHostNodesList({
+          selected: true,
+          clusterId: null,
+          update_node: false,
+        })
+      );
+    } else {
+      yield put(ClustersActions.fetchMasterHostNodesList());
+    }
   } else {
     toast.error(response?.data?.message);
     yield put(ClustersActions.setIsAddHostIPModalOpen(false));
   }
 }
 export function* deleteIndividualHost(api, { payload }) {
+  const createClusterVisKubernetes = yield select(
+    ClustersSelectors.getCreateClusterMethod
+  );
   const response = yield call(requestSaga, {
     errorSection: 'deleteIndividualHost',
     loadingSection: 'deleteIndividualHost',
@@ -148,18 +172,25 @@ export function* deleteIndividualHost(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Deleted Successfully');
-    yield put(
-      ClustersActions.fetchHostNodesList({
-        selected: true,
-        clusterId: null,
-        update_node: false,
-      })
-    );
+    if (createClusterVisKubernetes === 'VM') {
+      yield put(
+        ClustersActions.fetchHostNodesList({
+          selected: true,
+          clusterId: null,
+          update_node: false,
+        })
+      );
+    } else {
+      yield put(ClustersActions.fetchMasterHostNodesList());
+    }
   } else {
     toast.error(response?.data?.message);
   }
 }
 export function* updateIndividualHost(api, { payload }) {
+  const createClusterVisKubernetes = yield select(
+    ClustersSelectors.getCreateClusterMethod
+  );
   const response = yield call(requestSaga, {
     errorSection: 'updateIndividualHost',
     loadingSection: 'updateIndividualHost',
@@ -169,13 +200,17 @@ export function* updateIndividualHost(api, { payload }) {
   if (response.ok) {
     toast.success('Node Updated Successfully');
     yield put(ClustersActions.setIsAddHostIPModalOpen(false));
-    yield put(
-      ClustersActions.fetchHostNodesList({
-        selected: true,
-        clusterId: null,
-        update_node: false,
-      })
-    );
+    if (createClusterVisKubernetes === 'VM') {
+      yield put(
+        ClustersActions.fetchHostNodesList({
+          selected: true,
+          clusterId: null,
+          update_node: false,
+        })
+      );
+    } else {
+      yield put(ClustersActions.fetchMasterHostNodesList());
+    }
   } else {
     toast.error(response?.data?.message);
     yield put(ClustersActions.setIsAddHostIPModalOpen(false));
@@ -554,6 +589,32 @@ export function* fetchAllConfigPropertiesWithValue(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
+export function* fetchConfigFieldsForKubernetes(api) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchConfigFieldsForKubernetes',
+    loadingSection: 'fetchConfigFieldsForKubernetes',
+    apiMethod: api.fetchConfigFieldsForKubernetes,
+    apiParams: [],
+  });
+  if (response.ok) {
+    yield put(ClustersActions.setKubernetesConfigFields(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* createConfigForKubernetesCluster(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'createConfigForKubernetesCluster',
+    loadingSection: 'createConfigForKubernetesCluster',
+    apiMethod: api.createConfigForKubernetesCluster,
+    apiParams: [{ payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message);
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
 
 export function* clustersSagas(api) {
   yield all([
@@ -645,6 +706,16 @@ export function* clustersSagas(api) {
     takeLatest(
       ClustersActions.fetchAllConfigPropertiesWithValue,
       fetchAllConfigPropertiesWithValue,
+      api
+    ),
+    takeLatest(
+      ClustersActions.fetchMasterHostNodesList,
+      fetchMasterHostNodesList,
+      api
+    ),
+    takeLatest(
+      ClustersActions.fetchConfigFieldsForKubernetes,
+      fetchConfigFieldsForKubernetes,
       api
     ),
   ]);

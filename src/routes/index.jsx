@@ -78,6 +78,7 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import ClusterSetupNewConfigKubernetes from '../pages/Clusters/components/ClusterSetupNewConfigKubernetes.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -111,6 +112,10 @@ export const ROUTES_MENU = [
       {
         path: ['new-config-details'],
         component: <ClusterSetupNewConfigDetailsPage />,
+      },
+      {
+        path: ['add-new-config'],
+        component: <ClusterSetupNewConfigKubernetes />,
       },
       {
         path: [':id'],

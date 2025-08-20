@@ -129,6 +129,14 @@ export const ClustersActions = {
     `${prefix}setClusterSetupSelectedNiFiVersion`
   ),
   setCreateClusterMethod: createAction(`${prefix}setCreateClusterMethod`),
+  fetchMasterHostNodesList: createAction(`${prefix}fetchMasterHostNodesList`),
+  fetchConfigFieldsForKubernetes: createAction(
+    `${prefix}fetchConfigFieldsForKubernetes`
+  ),
+  setKubernetesConfigFields: createAction(`${prefix}setKubernetesConfigFields`),
+  createConfigForKubernetesCluster: createAction(
+    `${prefix}createConfigForKubernetesCluster`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -179,6 +187,7 @@ export const CLUSTERS_INITIAL_STATE = {
   allConfigPropertiesAndValue: {},
   clusterSetupSelectedNiFiVersion: null,
   createClusterMethod: 'vm',
+  kubernetesConfigFields: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -242,8 +251,9 @@ export const ClustersSelectors = {
     state.clusters.allConfigPropertiesAndValue,
   getClusterSetupSelectedNiFiVersion: state =>
     state.clusters.clusterSetupSelectedNiFiVersion,
+  getCreateClusterMethod: state => state.clusters.createClusterMethod,
+  getKubernetesConfigFields: state => state.clusters.kubernetesConfigFields,
 };
-
 /* ------------- REDUCERS ------------------- */
 const fetchClusterListSuccess = (state, { payload }) => {
   const list = payload?.map(item => ({
@@ -542,6 +552,12 @@ const setCreateClusterMethod = (state, { payload }) => {
     createClusterMethod: payload,
   };
 };
+const setKubernetesConfigFields = (state, { payload }) => {
+  return {
+    ...state,
+    kubernetesConfigFields: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -674,6 +690,10 @@ export const clustersReducer = createReducer(
         ClustersActions.setClusterSetupSelectedNiFiVersion,
         setClusterSetupSelectedNiFiVersion
       )
-      .addCase(ClustersActions.setCreateClusterMethod, setCreateClusterMethod);
+      .addCase(ClustersActions.setCreateClusterMethod, setCreateClusterMethod)
+      .addCase(
+        ClustersActions.setKubernetesConfigFields,
+        setKubernetesConfigFields
+      );
   }
 );

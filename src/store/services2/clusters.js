@@ -100,6 +100,15 @@ export const clustersAPI = api => {
   const fetchAllConfigPropertiesWithValue = ({ version }) => {
     return api.post(`/clusters/config-properties/${version}`);
   };
+  const fetchMasterHostNodesList = () => {
+    return api.get(`cluster-nodes/list-master-nodes`);
+  };
+  const fetchConfigFieldsForKubernetes = () => {
+    return api.get(`/config-fields`);
+  };
+  const createConfigForKubernetesCluster = ({ payload }) => {
+    return api.post(`/create-config`, payload);
+  };
 
   return {
     fetchClusters,
@@ -132,5 +141,8 @@ export const clustersAPI = api => {
     deleteAnsibleClusterHard,
     fetchAnsibleCLusterProcessData,
     fetchAllConfigPropertiesWithValue,
+    fetchMasterHostNodesList,
+    fetchConfigFieldsForKubernetes,
+    createConfigForKubernetesCluster,
   };
 };
