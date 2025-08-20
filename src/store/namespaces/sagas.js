@@ -1758,29 +1758,22 @@ export function* fetchServiceDefinition(api, { payload }) {
   const { group, artifact, version, type, instanceIdentifier, properties } =
     payload || {};
 
-  try {
-    const response = yield call(api.getServiceDefinition, {
-      group,
-      artifact,
-      version,
-      type,
-      instanceIdentifier,
-      properties,
-    });
+  const response = yield call(api.getServiceDefinition, {
+    group,
+    artifact,
+    version,
+    type,
+    instanceIdentifier,
+    properties,
+  });
 
-    if (response.ok) {
-      yield put(NamespacesActions.fetchServiceDefinitionSuccess(response.data));
-    } else {
-      yield put(
-        NamespacesActions.fetchServiceDefinitionFailure(
-          response.problem || 'Failed to fetch service definition'
-        )
-      );
-    }
-  } catch (error) {
+  if (response.ok) {
+    yield put(NamespacesActions.fetchServiceDefinitionSuccess(response.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
     yield put(
       NamespacesActions.fetchServiceDefinitionFailure(
-        error.message || 'An error occurred'
+        response.problem || 'Failed to fetch service definition'
       )
     );
   }
