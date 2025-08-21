@@ -145,6 +145,9 @@ const PropertyDropdownModal = ({
     const selectedNameOnDeploy = propertyOptionsDeploy.find(
       element => element.id === data.value
     )?.label;
+    const selectedNameOnNewAddService = propertyOptionsDeploy.find(
+      element => element.id === data.value
+    )?.name;
     const selectedId = proprtyOptionsArray.find(
       element => element.value === data.value
     )?.id;
@@ -154,7 +157,8 @@ const PropertyDropdownModal = ({
         name: selectedPropertyToEdit.name,
         value: data.value === '' ? null : !isAlphabet ? data.value : selectedId,
         sensitive: false,
-        dropDownName: selectedName ?? selectedNameOnDeploy,
+        dropDownName:
+          selectedName ?? selectedNameOnDeploy ?? selectedNameOnNewAddService,
       },
     ]);
 
@@ -169,7 +173,10 @@ const PropertyDropdownModal = ({
                   : !isAlphabet
                     ? data.value
                     : selectedId,
-              dropDownName: selectedName ?? selectedNameOnDeploy,
+              dropDownName:
+                selectedName ??
+                selectedNameOnDeploy ??
+                selectedNameOnNewAddService,
               empty_string_set: false,
             }
           : item
@@ -187,7 +194,10 @@ const PropertyDropdownModal = ({
                     : !isAlphabet
                       ? data.value
                       : selectedId,
-                dropDownName: selectedName ?? selectedNameOnDeploy,
+                dropDownName:
+                  selectedName ??
+                  selectedNameOnDeploy ??
+                  selectedNameOnNewAddService,
                 empty_string_set: false,
               }
             : item
