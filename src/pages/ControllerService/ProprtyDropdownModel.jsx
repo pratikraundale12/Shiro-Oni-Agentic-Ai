@@ -206,9 +206,10 @@ const PropertyDropdownModal = ({
       element => element.name === selectedNewValue
     );
 
-    const selectedPayload = isFromExternalService
-      ? selectedObject
-      : selectedObjectNewService;
+    const selectedPayload =
+      serviceDefinition?.properties?.length === 0
+        ? selectedObjectNewService
+        : selectedObject;
 
     selectedNewValue !== null &&
       dispatch(
