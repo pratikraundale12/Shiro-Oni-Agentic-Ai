@@ -1745,7 +1745,10 @@ const ControllerServiceTab = ({
       setListPropertTableData(filteredData);
     }
 
-    if (!isEmpty(controllerServicesData?.localServices)) {
+    if (
+      !isEmpty(controllerServicesData?.localServices) &&
+      isEmpty(listPropertyTableData)
+    ) {
       dispatch(
         NamespacesActions.fetchServiceDefinition({
           group: item?.bundle?.group,
