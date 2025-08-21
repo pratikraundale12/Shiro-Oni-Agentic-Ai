@@ -940,6 +940,14 @@ export function* getNewPropertyControllerService(api, { payload }) {
 export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
 
+  let serviceTypes = [];
+  if (
+    payload?.serviceImplementation &&
+    Array.isArray(payload.serviceImplementation)
+  ) {
+    serviceTypes = payload.serviceImplementation.map(service => service.type);
+  }
+
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -948,24 +956,26 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
   );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const apiParams = {
+    clusterId: selectedCluster?.value,
+    serviceName: payload?.isFromExternalService ? payload?.type : serviceTypes,
+  };
+
   const response = yield call(requestSaga, {
     errorSection: 'getNewPropertyControllerServiceUpdated',
     loadingSection: 'getNewPropertyControllerServiceUpdated',
     apiMethod: api.getNewPropertyControllerServiceUpdated,
-    apiParams: [
-      {
-        clusterId: selectedCluster?.value,
-        serviceName: payload?.type,
-      },
-    ],
+    apiParams: [apiParams],
     successAction: NamespacesActions.fetchVariableListSuccess,
   });
-  if (response.ok)
+  if (response.ok) {
     yield put(
       NamespacesActions.setPropertyOptionOnDeploy(response?.data?.data)
     );
-  else if (!response.ok)
+  } else {
     toast.error(response?.message || response?.data?.message);
+  }
 }
 
 export function* addControllerServicePropertyByDropdown(api, { payload }) {

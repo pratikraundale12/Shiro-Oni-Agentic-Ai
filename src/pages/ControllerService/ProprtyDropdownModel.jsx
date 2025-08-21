@@ -64,6 +64,7 @@ const PropertyDropdownModal = ({
   const isModalOpen = useSelector(
     NamespacesSelectors.getAddPropertyDropdownModal
   );
+
   useEffect(() => {
     const updatedOptions =
       selectedPropertyToEdit?.allowableValues?.map(element => ({
@@ -200,12 +201,19 @@ const PropertyDropdownModal = ({
       );
     setAddNewProperty(false);
   };
+
   useEffect(() => {
     if (isModalOpen) {
+      const payload = {
+        selectedPropertyToEdit,
+        isFromExternalService: isFromExternalService,
+        type: selectedPropertyToEdit?.type,
+        serviceImplementation:
+          extractedProperties?.[0]?.serviceImplementation || [],
+      };
+
       dispatch(
-        NamespacesActions.getNewPropertyControllerServiceUpdated(
-          selectedPropertyToEdit
-        )
+        NamespacesActions.getNewPropertyControllerServiceUpdated(payload)
       );
       {
         selectedPropertyToEdit?.add &&
