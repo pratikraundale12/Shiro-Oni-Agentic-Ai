@@ -138,10 +138,10 @@ const SelectField = ({
   const error = hasError(errors, name);
 
   const normalizeOptions = options => {
-    return options.map(option => {
-      if (option.label && option.value) {
+    return options.map(option => {      
+      if (option.label && option.value && option.label !== option.value) {        
         return option;
-      } else {
+      } else {        
         return {
           ...option,
           label: option?.name || option?.type || option?.label || 'Unknown',
@@ -162,7 +162,7 @@ const SelectField = ({
 
   const sortedOptions = sortAlphabetically
     ? sortOptionsAlphabetically(options)
-    : options;
+    : normalizeOptions(options);
   const getBorderColor = ({ isFocused }) => {
     if (isFocused && !error) return theme.colors.darker;
     if (error) return theme.colors.error;
@@ -182,7 +182,8 @@ const SelectField = ({
       width: 10,
     },
   });
-
+  console.log('sortedOptions----', sortedOptions);
+  
   const customStyles = {
     indicatorSeparator: () => ({ display: 'none' }),
     indicatorsContainer: styles => ({
@@ -320,7 +321,8 @@ const SelectField = ({
       </Container>
     );
   }
-
+  console.log('defaultValue----', defaultValue);
+  
   return (
     <Container className={className} title={title}>
       <Controller
