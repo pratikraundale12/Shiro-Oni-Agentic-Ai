@@ -143,9 +143,9 @@ const SelectField = ({
         return option;
       } else {
         return {
-          label: option?.name || option?.type || 'Unknown',
-          value: option?.id || option?.value || 'Unknown',
           ...option,
+          label: option?.name || option?.type || option?.label || 'Unknown',
+          value: option?.id || option?.value || 'Unknown',
         };
       }
     });

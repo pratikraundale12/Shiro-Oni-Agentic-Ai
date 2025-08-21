@@ -137,26 +137,39 @@ const PropertyDropdownModal = ({
   const selectedProperty = watch('value');
 
   const handleFormSubmit = data => {
+    const regex = /^[a-zA-Z\s'-]+$/;
+    const isAlphabet = regex.test(data.value);
+    const selectedName = proprtyOptionsArray.find(
+      element => element.value === data.value
+    )?.label;
+    const selectedNameOnDeploy = propertyOptionsDeploy.find(
+      element => element.id === data.value
+    )?.label;
+    const selectedId = proprtyOptionsArray.find(
+      element => element.value === data.value
+    )?.id;
     setUpdatedData(() => [
       ...filterData,
       {
         name: selectedPropertyToEdit.name,
-        value: data.value === '' ? null : data.value,
+        value: data.value === '' ? null : !isAlphabet ? data.value : selectedId,
         sensitive: false,
-        dropDownName: selectedName,
+        dropDownName: selectedName ?? selectedNameOnDeploy,
       },
     ]);
 
-    const selectedName = proprtyOptionsArray.find(
-      element => element.value === data.value
-    )?.label;
     setListPropertTableData(prevData =>
       prevData.map(item =>
         item.name === selectedPropertyToEdit.name
           ? {
               ...item,
-              value: data.value === '' ? null : data.value,
-              dropDownName: selectedName,
+              value:
+                data.value === ''
+                  ? null
+                  : !isAlphabet
+                    ? data.value
+                    : selectedId,
+              dropDownName: selectedName ?? selectedNameOnDeploy,
               empty_string_set: false,
             }
           : item
@@ -168,8 +181,13 @@ const PropertyDropdownModal = ({
           item.name === selectedPropertyToEdit.name
             ? {
                 ...item,
-                value: data.value === '' ? null : data.value,
-                dropDownName: selectedName,
+                value:
+                  data.value === ''
+                    ? null
+                    : !isAlphabet
+                      ? data.value
+                      : selectedId,
+                dropDownName: selectedName ?? selectedNameOnDeploy,
                 empty_string_set: false,
               }
             : item
@@ -278,6 +296,9 @@ const PropertyDropdownModal = ({
       ? selecetdData?.value?.replace(/^#\{(.+)\}$/, '$1')
       : '';
   };
+
+  console.log('propertyOptionsDeploy----', propertyOptionsDeploy);
+
   return (
     <div>
       <Modal
