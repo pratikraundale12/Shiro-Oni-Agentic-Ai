@@ -153,7 +153,7 @@ const ControllerServiceTab = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
-  
+
   const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
@@ -589,6 +589,7 @@ const ControllerServiceTab = ({
     }
   };
 
+  // deploy setting external service
   const COLUMNS = [
     {
       label: 'Name',
@@ -741,7 +742,7 @@ const ControllerServiceTab = ({
               <>
                 <button
                   className="border-0 bg-white"
-                  onClick={() => handleSettingClick(stateItem)}
+                  onClick={() => handleSettingClickExternal(stateItem)}
                   data-tooltip-id={`Settings-${item?.id}`}
                   aria-label="Settings"
                   disabled={
@@ -1070,7 +1071,7 @@ const ControllerServiceTab = ({
               <>
                 <button
                   className="border-0 bg-white"
-                  onClick={() => handleSettingClick(stateItem)}
+                  onClick={() => handleSettingClickExternal(stateItem)}
                   data-tooltip-id={`Settings-${item?.id}`}
                   aria-label="Settings"
                   disabled={
@@ -1671,30 +1672,79 @@ const ControllerServiceTab = ({
     }
   }, [serviceDefinition]);
 
+  const handleSettingClickExternal = item => {
+    setSelectedItemFromList(item);
+    if (isEmpty(serviceDefinition?.properties)) {
+      const filteredData =
+        !isEmpty(item?.properties) &&
+        item?.properties
+          ?.filter(
+            item =>
+              isEmpty(item?.dependencies) ||
+              item?.dependencies?.every(dep =>
+                item?.properties?.some(
+                  obj =>
+                    obj?.name === dep?.propertyName &&
+                    dep?.dependentValues?.includes(obj?.value)
+                )
+              )
+          )
+          .map(item => ({
+            ...item,
+            old_val: item?.value,
+          }));
+      setSelectedItemFromList(item);
+      setListPropertTableData(filteredData);
+    }
+    setIsPropertyResponse(true);
+    setIsNewlyAddedExternalServiceResponse(false);
+    setIsStateChangeResponse(false);
+
+    const match = externalControllerServices?.some(data => {
+      if (data.controllerService?.length) {
+        return data.controllerService.some(
+          service =>
+            service?.id === item?.id || service?.id === item?.identifier
+        );
+      }
+      if (data?.configured && data?.configuredData?.id === item?.id) {
+        return true;
+      }
+      return (
+        item?.updatedValue !== undefined &&
+        data?.updatedValue === item.updatedValue
+      );
+    });
+
+    setisFromExternalService(match ? true : false);
+    dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
+  };
+
   const handleSettingClick = item => {
     setSelectedItemFromList(item);
-    if(isEmpty(serviceDefinition?.properties)) {
-          const filteredData =
-      !isEmpty(item?.properties) &&
-      item?.properties
-        ?.filter(
-          item =>
-            isEmpty(item?.dependencies) ||
-            item?.dependencies?.every(dep =>
-              item?.properties?.some(
-                obj =>
-                  obj?.name === dep?.propertyName &&
-                  dep?.dependentValues?.includes(obj?.value)
+    if (isEmpty(serviceDefinition?.properties)) {
+      const filteredData =
+        !isEmpty(item?.properties) &&
+        item?.properties
+          ?.filter(
+            item =>
+              isEmpty(item?.dependencies) ||
+              item?.dependencies?.every(dep =>
+                item?.properties?.some(
+                  obj =>
+                    obj?.name === dep?.propertyName &&
+                    dep?.dependentValues?.includes(obj?.value)
+                )
               )
-            )
-        )
-        .map(item => ({
-          ...item,
-          old_val: item?.value,
-        }));
-    setSelectedItemFromList(item);
-    setListPropertTableData(filteredData);
+          )
+          .map(item => ({
+            ...item,
+            old_val: item?.value,
+          }));
+      setSelectedItemFromList(item);
+      setListPropertTableData(filteredData);
     }
+
     if (!isEmpty(controllerServicesData?.localServices)) {
       dispatch(
         NamespacesActions.fetchServiceDefinition({
@@ -1711,7 +1761,6 @@ const ControllerServiceTab = ({
     setIsPropertyResponse(true);
     setIsNewlyAddedExternalServiceResponse(false);
     setIsStateChangeResponse(false);
-    
 
     const match = externalControllerServices?.some(data => {
       if (data.controllerService?.length) {

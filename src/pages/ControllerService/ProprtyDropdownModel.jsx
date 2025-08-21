@@ -80,16 +80,34 @@ const PropertyDropdownModal = ({
   const newPropertyToAdd = useSelector(
     NamespacesSelectors.getNewProprtyToAddControllerService
   );
+
   const newResponseAddedProperty = useSelector(
     NamespacesSelectors.getResponseNewAddedProperty
   );
+
   const propertyOptionOnDeploy = useSelector(
     NamespacesSelectors.getPropertyOptionOnDeploy
   );
-  const optionsToNewPropertyAdd = newPropertyToAdd?.map(element => ({
+
+  const serviceDefinition = useSelector(
+    NamespacesSelectors.getServiceDefinition
+  );
+
+  const extractedProperties = serviceDefinition?.properties?.filter(
+    prop => prop?.name === selectedPropertyToEdit?.name
+  );
+
+  // change data here
+  const optionsToNewPropertyAdd =
+    extractedProperties?.[0]?.serviceImplementation?.map(element => ({
+      value: element?.name,
+      label: element?.name,
+    }));
+  const optionsToNewPropertyAddNewService = newPropertyToAdd?.map(element => ({
     value: element?.name,
     label: element?.name,
   }));
+
   const [propertyOptionsDeploy, setPropertyOptionsDeploy] = useState([
     { value: '', label: 'No value set' },
   ]);
@@ -162,12 +180,23 @@ const PropertyDropdownModal = ({
   };
 
   const handleNewService = () => {
-    const selectedObject = newPropertyToAdd.find(
+    const selectedObject = extractedProperties?.[0]?.serviceImplementation.find(
       element => element.name === selectedNewValue
     );
+    const selectedObjectNewService = newPropertyToAdd.find(
+      element => element.name === selectedNewValue
+    );
+
+    const selectedPayload =
+      serviceDefinition?.properties?.length === 0
+        ? selectedObjectNewService
+        : selectedObject;
+
     selectedNewValue !== null &&
       dispatch(
-        NamespacesActions.addControllerServicePropertyByDropdown(selectedObject)
+        NamespacesActions.addControllerServicePropertyByDropdown(
+          selectedPayload
+        )
       );
     setAddNewProperty(false);
   };
@@ -363,7 +392,11 @@ const PropertyDropdownModal = ({
                 <StyledSelectField
                   name="newService"
                   size="sm"
-                  options={optionsToNewPropertyAdd}
+                  options={
+                    serviceDefinition?.properties?.length === 0
+                      ? optionsToNewPropertyAddNewService
+                      : optionsToNewPropertyAdd
+                  }
                   control={control}
                   placeholder="Select Service"
                   backgroundColor={theme.colors.lightGrey}
