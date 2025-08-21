@@ -959,7 +959,11 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
 
   const apiParams = {
     clusterId: selectedCluster?.value,
-    serviceName: payload?.isFromExternalService ? payload?.type : serviceTypes,
+    serviceName: payload?.isFromExternalService
+      ? payload?.type
+      : serviceTypes && serviceTypes.length > 0
+        ? serviceTypes
+        : payload?.type,
   };
 
   const response = yield call(requestSaga, {
