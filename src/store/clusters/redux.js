@@ -137,6 +137,24 @@ export const ClustersActions = {
   createConfigForKubernetesCluster: createAction(
     `${prefix}createConfigForKubernetesCluster`
   ),
+  fetchConfigListForKubernetes: createAction(
+    `${prefix}fetchConfigListForKubernetes`
+  ),
+  setListConfigListKubernetes: createAction(
+    `${prefix}setListConfigListKubernetes`
+  ),
+  setkubeCofigToEdit: createAction(`${prefix}setkubeCofigToEdit`),
+  deleteKubeConfig: createAction(`${prefix}deleteKubeConfig`),
+  createKubernetesCluster: createAction(`${prefix}createKubernetesCluster`),
+  fetchConfigVersionsPerConfig: createAction(
+    `${prefix}fetchConfigVersionsPerConfig`
+  ),
+  setkubConfigVersion: createAction(`${prefix}setkubConfigVersion`),
+  setkubeHostModalOpen: createAction(`${prefix}setkubeHostModalOpen`),
+  createKubernetesMasterNodeCluster: createAction(
+    `${prefix}createKubernetesMasterNodeCluster`
+  ),
+  deleteMasterNodeConfig: createAction(`${prefix}deleteMasterNodeConfig`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -187,7 +205,11 @@ export const CLUSTERS_INITIAL_STATE = {
   allConfigPropertiesAndValue: {},
   clusterSetupSelectedNiFiVersion: null,
   createClusterMethod: 'vm',
-  kubernetesConfigFields: [],
+  kubernetesConfigFields: {},
+  listConfigListKubernetes: [],
+  kubeCofigToEdit: {},
+  kubConfigVersion: [],
+  kubeHostModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -253,7 +275,12 @@ export const ClustersSelectors = {
     state.clusters.clusterSetupSelectedNiFiVersion,
   getCreateClusterMethod: state => state.clusters.createClusterMethod,
   getKubernetesConfigFields: state => state.clusters.kubernetesConfigFields,
+  getlistConfigListKubernetes: state => state.clusters.listConfigListKubernetes,
+  getkubeCofigToEdit: state => state.clusters.kubeCofigToEdit,
+  getkubConfigVersion: state => state.clusters.kubConfigVersion,
+  getkubeHostModalOpen: state => state.clusters.kubeHostModalOpen,
 };
+
 /* ------------- REDUCERS ------------------- */
 const fetchClusterListSuccess = (state, { payload }) => {
   const list = payload?.map(item => ({
@@ -558,6 +585,30 @@ const setKubernetesConfigFields = (state, { payload }) => {
     kubernetesConfigFields: payload,
   };
 };
+const setListConfigListKubernetes = (state, { payload }) => {
+  return {
+    ...state,
+    listConfigListKubernetes: payload,
+  };
+};
+const setkubeCofigToEdit = (state, { payload }) => {
+  return {
+    ...state,
+    kubeCofigToEdit: payload,
+  };
+};
+const setkubConfigVersion = (state, { payload }) => {
+  return {
+    ...state,
+    kubConfigVersion: payload,
+  };
+};
+const setkubeHostModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    kubeHostModalOpen: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -694,6 +745,13 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setKubernetesConfigFields,
         setKubernetesConfigFields
-      );
+      )
+      .addCase(
+        ClustersActions.setListConfigListKubernetes,
+        setListConfigListKubernetes
+      )
+      .addCase(ClustersActions.setkubeCofigToEdit, setkubeCofigToEdit)
+      .addCase(ClustersActions.setkubConfigVersion, setkubConfigVersion)
+      .addCase(ClustersActions.setkubeHostModalOpen, setkubeHostModalOpen);
   }
 );

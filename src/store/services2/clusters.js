@@ -101,7 +101,8 @@ export const clustersAPI = api => {
     return api.post(`/clusters/config-properties/${version}`);
   };
   const fetchMasterHostNodesList = () => {
-    return api.get(`cluster-nodes/list-master-nodes`);
+    const url = `cluster-nodes/list-master-nodes`;
+    return api.get(url);
   };
   const fetchConfigFieldsForKubernetes = () => {
     return api.get(`/config-fields`);
@@ -109,7 +110,21 @@ export const clustersAPI = api => {
   const createConfigForKubernetesCluster = ({ payload }) => {
     return api.post(`/create-config`, payload);
   };
-
+  const fetchConfigListForKubernetes = () => {
+    return api.get(`/list-configs`);
+  };
+  const createKubernetesCluster = ({ payload }) => {
+    return api.post(`/kube/create-cluster`, payload);
+  };
+  const deleteKubeConfig = ({ id }) => api.delete(`/delete-kube-config/${id}`);
+  const fetchConfigVersionsPerConfig = ({ config_name }) => {
+    return api.get(`/config-version?config_name=${config_name}`);
+  };
+  const createKubernetesMasterNodeCluster = ({ payload }) => {
+    return api.post(`/clusters/add-master-node`, payload);
+  };
+  const deleteMasterNodeConfig = ({ id }) =>
+    api.delete(`/delete-master-node/${id}`);
   return {
     fetchClusters,
     fetchClusterList,
@@ -144,5 +159,11 @@ export const clustersAPI = api => {
     fetchMasterHostNodesList,
     fetchConfigFieldsForKubernetes,
     createConfigForKubernetesCluster,
+    fetchConfigListForKubernetes,
+    deleteKubeConfig,
+    createKubernetesCluster,
+    fetchConfigVersionsPerConfig,
+    createKubernetesMasterNodeCluster,
+    deleteMasterNodeConfig,
   };
 };

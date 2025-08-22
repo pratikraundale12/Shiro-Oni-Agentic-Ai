@@ -29,6 +29,7 @@ import {
 import { AddHostIPModal } from './AddHostIPModal';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
 import { theme } from '../../../styles';
+import { KubernetesAddHostModal } from './KubeAddHostModal';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -206,74 +207,20 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
   ];
   const COLUMNS_KUBERNETSTES_FLOW = [
     {
-      label: 'Host Name',
+      label: 'Kubernetes Cluster Name',
       renderCell: item => (
-        <div className="d-flex gap-2">{item?.host_name || 'N/A'}</div>
+        <div className="d-flex gap-2">{item?.kube_cluster_name || 'N/A'}</div>
       ),
 
       resize: true,
-      width: '20%',
+      width: '80%',
     },
-    {
-      label: 'Host IP',
-      renderCell: item => (
-        <div className="d-flex gap-2">
-          {item?.host_ip}
-          <span data-tooltip-id={`copy-${item?.host_ip}-host-url`}>
-            <CopyToClipboard copyItem={item?.host_ip} />
-          </span>
-          <ReactTooltip
-            id={`copy-${item?.host_ip}-host-url`}
-            place="bottom"
-            effect="solid"
-            content={'Copy URL'}
-            style={{
-              width: '100px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-              zIndex: 10000,
-            }}
-          />
-        </div>
-      ),
 
-      resize: true,
-      width: '38%',
-    },
-    {
-      label: 'Port No.',
-      renderCell: item => <>{item?.port}</>,
-      resize: true,
-      width: '10%',
-    },
-    {
-      label: 'Username',
-      renderCell: item => (
-        <>
-          {' '}
-          {}
-          {item?.username}
-        </>
-      ),
-      resize: true,
-      width: '12%',
-    },
-    {
-      label: 'Status',
-      renderCell: item => (
-        <StatusRender
-          status={item?.status === 'Active' ? 'Active' : 'Inactive'}
-          redColor="#FF0000"
-        />
-      ),
-      resize: true,
-      width: '10%',
-    },
     {
       label: 'Actions',
       renderCell: item => (
         <ActionTd>
-          <IconButton
+          {/* <IconButton
             onClick={() => {
               setHostToEdit(item);
               dispatch(ClustersActions.setIsAddHostIPModalOpen(true));
@@ -281,7 +228,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
             className="pencil-icon-schedule-list"
           >
             <PencilIcon width={16} height={16} />
-          </IconButton>
+          </IconButton> */}
           {!item?.is_selected && (
             <IconButton
               onClick={() => {
@@ -296,7 +243,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
         </ActionTd>
       ),
       resize: true,
-      width: '10%',
+      width: '20%',
     },
   ];
   useEffect(() => {
@@ -325,27 +272,39 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <TableContainer>
           <div className="d-flex justify-content-between mt-3 mb-3">
-            <div className="ms-3 mt-2">
-              <div style={{ fontSize: '14px', fontWeight: '600' }}>Legends</div>
-              <NotePadIcon
-                height="21"
-                width="21"
-                color={theme.colors.primary}
-              />{' '}
-              : Host with certificates &nbsp;&nbsp;
-              <NotePadIcon
-                height="21"
-                width="21"
-                color={theme.colors.darkGrey}
-              />{' '}
-              : Host with no certificates
-            </div>
+            {
+              <div className="ms-3 mt-2">
+                {createClusterVisKubernetes === 'VM' && (
+                  <>
+                    <div style={{ fontSize: '14px', fontWeight: '600' }}>
+                      Legends
+                    </div>
+                    <NotePadIcon
+                      height="21"
+                      width="21"
+                      color={theme.colors.primary}
+                    />{' '}
+                    : Host with certificates &nbsp;&nbsp;
+                    <NotePadIcon
+                      height="21"
+                      width="21"
+                      color={theme.colors.darkGrey}
+                    />{' '}
+                    : Host with no certificates
+                  </>
+                )}
+              </div>
+            }
             <div className="col-auto me-3">
               <Button
                 size="md"
-                onClick={() =>
-                  dispatch(ClustersActions.setIsAddHostIPModalOpen(true))
-                }
+                onClick={() => {
+                  if (createClusterVisKubernetes === 'VM') {
+                    dispatch(ClustersActions.setIsAddHostIPModalOpen(true));
+                  } else {
+                    dispatch(ClustersActions.setkubeHostModalOpen(true));
+                  }
+                }}
                 className="w-auto px-3"
                 style={{ minWidth: 'auto' }}
               >
@@ -379,9 +338,19 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           icon={<DeleteDustbinIcon />}
           isOpen={isDeleteModalOpen}
           onSubmit={() => {
-            dispatch(
-              ClustersActions.deleteIndividualHost({ hostId: hostToDelete?.id })
-            );
+            if (createClusterVisKubernetes === 'VM') {
+              dispatch(
+                ClustersActions.deleteIndividualHost({
+                  hostId: hostToDelete?.id,
+                })
+              );
+            } else {
+              dispatch(
+                ClustersActions.deleteMasterNodeConfig({
+                  hostId: hostToDelete?.id,
+                })
+              );
+            }
             setIsDeleteModalOpen(false);
           }}
           onRequestClose={() => {
@@ -419,6 +388,10 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
         </BottomButtonDiv>
       </BottomButton>
       <AddHostIPModal hostToEdit={hostToEdit} setHostToEdit={setHostToEdit} />
+      <KubernetesAddHostModal
+        ostToEdit={hostToEdit}
+        setHostToEdit={setHostToEdit}
+      />
     </Wrapper>
   );
 };

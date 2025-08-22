@@ -607,10 +607,94 @@ export function* createConfigForKubernetesCluster(api, { payload }) {
     errorSection: 'createConfigForKubernetesCluster',
     loadingSection: 'createConfigForKubernetesCluster',
     apiMethod: api.createConfigForKubernetesCluster,
-    apiParams: [{ payload: payload?.payload }],
+    apiParams: [{ payload: payload }],
   });
   if (response?.ok) {
     toast.success(response?.data?.message);
+    yield call(history.push, '/clusters/setup-cluster');
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* fetchConfigListForKubernetes(api) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchConfigListForKubernetes',
+    loadingSection: 'fetchConfigListForKubernetes',
+    apiMethod: api.fetchConfigListForKubernetes,
+    apiParams: [],
+  });
+  if (response.ok) {
+    yield put(ClustersActions.setListConfigListKubernetes(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* deleteKubeConfig(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteKubeConfig',
+    loadingSection: 'deleteKubeConfig',
+    apiMethod: api.deleteKubeConfig,
+    apiParams: [{ id: payload?.id }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message);
+    yield put(ClustersActions.fetchConfigListForKubernetes());
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* createKubernetesCluster(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'createKubernetesCluster',
+    loadingSection: 'createKubernetesCluster',
+    apiMethod: api.createKubernetesCluster,
+    apiParams: [{ payload: payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message);
+    yield call(history.push, '/clusters');
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* fetchConfigVersionsPerConfig(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchConfigVersionsPerConfig',
+    loadingSection: 'fetchConfigVersionsPerConfig',
+    apiMethod: api.fetchConfigVersionsPerConfig,
+    apiParams: [{ config_name: payload?.config_name }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setkubConfigVersion(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* createKubernetesMasterNodeCluster(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'createKubernetesMasterNodeCluster',
+    loadingSection: 'createKubernetesMasterNodeCluster',
+    apiMethod: api.createKubernetesMasterNodeCluster,
+    apiParams: [{ payload: payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message);
+    yield put(ClustersActions.setkubeHostModalOpen(false));
+    yield put(ClustersActions.fetchMasterHostNodesList());
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* deleteMasterNodeConfig(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteMasterNodeConfig',
+    loadingSection: 'deleteMasterNodeConfig',
+    apiMethod: api.deleteMasterNodeConfig,
+    apiParams: [{ id: payload?.hostId }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message);
+    yield put(ClustersActions.fetchMasterHostNodesList());
   } else {
     toast.error(response?.data?.error);
   }
@@ -716,6 +800,37 @@ export function* clustersSagas(api) {
     takeLatest(
       ClustersActions.fetchConfigFieldsForKubernetes,
       fetchConfigFieldsForKubernetes,
+      api
+    ),
+    takeLatest(
+      ClustersActions.createConfigForKubernetesCluster,
+      createConfigForKubernetesCluster,
+      api
+    ),
+    takeLatest(
+      ClustersActions.fetchConfigListForKubernetes,
+      fetchConfigListForKubernetes,
+      api
+    ),
+    takeLatest(ClustersActions.deleteKubeConfig, deleteKubeConfig, api),
+    takeLatest(
+      ClustersActions.createKubernetesCluster,
+      createKubernetesCluster,
+      api
+    ),
+    takeLatest(
+      ClustersActions.fetchConfigVersionsPerConfig,
+      fetchConfigVersionsPerConfig,
+      api
+    ),
+    takeLatest(
+      ClustersActions.createKubernetesMasterNodeCluster,
+      createKubernetesMasterNodeCluster,
+      api
+    ),
+    takeLatest(
+      ClustersActions.deleteMasterNodeConfig,
+      deleteMasterNodeConfig,
       api
     ),
   ]);
