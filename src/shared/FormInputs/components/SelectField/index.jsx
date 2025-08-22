@@ -138,18 +138,20 @@ const SelectField = ({
   const error = hasError(errors, name);
 
   const normalizeOptions = options => {
-    return options.map(option => {      
-      if (option.label && option.value && option.label !== option.value) {        
+
+    return options.map(option => {
+      if (option.label && option.value && option.label !== option.value) {
         return option;
-      } else {        
+      } else {
         return {
           ...option,
           label: option?.name || option?.type || option?.label || 'Unknown',
-          value: option?.id || option?.value || 'Unknown',
+          value: option?.id ?? (option?.value !== undefined ? option.value : 'Unknown'),
         };
       }
     });
   };
+  
 
   const sortOptionsAlphabetically = options => {
     const normalizedOptions = normalizeOptions(options);
@@ -182,7 +184,7 @@ const SelectField = ({
       width: 10,
     },
   });
-  
+
   const customStyles = {
     indicatorSeparator: () => ({ display: 'none' }),
     indicatorsContainer: styles => ({
@@ -320,7 +322,7 @@ const SelectField = ({
       </Container>
     );
   }
-  
+
   return (
     <Container className={className} title={title}>
       <Controller
