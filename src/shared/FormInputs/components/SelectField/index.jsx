@@ -182,7 +182,6 @@ const SelectField = ({
       width: 10,
     },
   });
-  console.log('sortedOptions----', sortedOptions);
   
   const customStyles = {
     indicatorSeparator: () => ({ display: 'none' }),
@@ -321,7 +320,6 @@ const SelectField = ({
       </Container>
     );
   }
-  console.log('defaultValue----', defaultValue);
   
   return (
     <Container className={className} title={title}>

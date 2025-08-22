@@ -307,8 +307,6 @@ const PropertyDropdownModal = ({
       : '';
   };
 
-  console.log('propertyOptionsDeploy----', propertyOptionsDeploy);
-
   return (
     <div>
       <Modal
