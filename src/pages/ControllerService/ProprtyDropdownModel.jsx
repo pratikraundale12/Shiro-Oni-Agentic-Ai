@@ -216,10 +216,11 @@ const PropertyDropdownModal = ({
       element => element.name === selectedNewValue
     );
 
-    const selectedPayload =
-      serviceDefinition?.properties?.length === 0
-        ? selectedObjectNewService
-        : selectedObject;
+    const selectedPayload = isFromExternalService
+      ? selectedObjectNewService
+      : selectedObject && !isEmpty(selectedObject)
+        ? selectedObject
+        : selectedObjectNewService;
 
     selectedNewValue !== null &&
       dispatch(
@@ -432,7 +433,10 @@ const PropertyDropdownModal = ({
                   options={
                     isFromExternalService
                       ? optionsToNewPropertyAddNewService
-                      : optionsToNewPropertyAdd
+                      : optionsToNewPropertyAdd &&
+                          optionsToNewPropertyAdd.length > 0
+                        ? optionsToNewPropertyAdd
+                        : optionsToNewPropertyAddNewService
                   }
                   control={control}
                   placeholder="Select Service"
