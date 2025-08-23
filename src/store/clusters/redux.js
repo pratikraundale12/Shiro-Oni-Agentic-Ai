@@ -706,7 +706,6 @@ export const clustersReducer = createReducer(
       )
       .addCase(ClustersActions.setCopyClusterModalOpen, setCopyClusterModalOpen)
       .addCase(ClustersActions.setCopyClusterData, setCopyClusterData)
-      .addCase(ClustersActions.setclusterListItems, setclusterListItems)
       .addCase(
         ClustersActions.setclusterToLoginWithoutCred,
         setclusterToLoginWithoutCred
