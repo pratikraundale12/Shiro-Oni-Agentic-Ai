@@ -653,6 +653,10 @@ export function* createKubernetesCluster(api, { payload }) {
   if (response?.ok) {
     toast.success(response?.data?.message);
     yield call(history.push, '/clusters');
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+    );
   } else {
     toast.error(response?.data?.error);
   }

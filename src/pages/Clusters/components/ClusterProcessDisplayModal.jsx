@@ -80,6 +80,22 @@ const CreationModelThirdPartySteps = [
   { step: 'Custom metrics agent', status: 'completed' },
   { step: 'NiFi cluster flow election', status: 'completed' },
 ];
+const CreationModelKubeSteps = [
+  { step: 'Play: NiFi AWS install', status: 'completed' },
+  { step: 'Check kubeconfig', status: 'completed' },
+  { step: 'Validate aws_region input', status: 'completed' },
+  {
+    step: 'Verify aws/helm/kubectl and cluster connectivity',
+    status: 'completed',
+  },
+  { step: 'Read values and derive feature flags', status: 'completed' },
+  { step: 'Ensure namespace nifi', status: 'completed' },
+  { step: 'cert-manager install/upgrade', status: 'completed' },
+  { step: 'Ensure gp3 StorageClass (EBS CSI)', status: 'completed' },
+  { step: 'Deploy/Upgrade NiFi via Helm', status: 'completed' },
+  { step: 'Collect NiFi pods/services', status: 'completed' },
+];
+
 const deleteModalSteps = [
   {
     step: 'Connectivity check',
@@ -301,9 +317,11 @@ export const ClusterProcessDisplayModal = ({
     if (processExeName === 'delete') {
       return deleteModalSteps;
     } else if (processExeName === 'creation') {
-      return processData?.has_third_party_cert
-        ? CreationModelThirdPartySteps
-        : CreationmodelSteps;
+      return processData?.isKubeCluster
+        ? CreationModelKubeSteps
+        : processData?.has_third_party_cert
+          ? CreationModelThirdPartySteps
+          : CreationmodelSteps;
     } else if (processExeName === 'restart') {
       return RestartModalSteps;
     } else if (processExeName === 'stop') {
