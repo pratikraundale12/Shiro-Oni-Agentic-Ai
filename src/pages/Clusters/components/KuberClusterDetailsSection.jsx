@@ -402,7 +402,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                     control={control}
                     required
                     rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                    placeholder="Upload kubernetes config file"
+                    placeholder="Upload SSH Key File"
                     errors={errors}
                     fileLable="File"
                     validExtensionsArray={[
@@ -416,7 +416,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                     ]}
                     acceptString={'.txt,.yaml,.yml'}
                     errorText={'YAML or PFX'}
-                    label="Kubernetes config file"
+                    label="SSH Key File"
                   />
                 </div>
               </div>
