@@ -1673,33 +1673,34 @@ const ControllerServiceTab = ({
   }, [serviceDefinition]);
 
   const handleSettingClickExternal = item => {
-    setSelectedItemFromList(item);
-    if (isEmpty(serviceDefinition?.properties)) {
-      const filteredData =
-        !isEmpty(item?.properties) &&
-        item?.properties
-          ?.filter(
-            item =>
-              isEmpty(item?.dependencies) ||
-              item?.dependencies?.every(dep =>
-                item?.properties?.some(
-                  obj =>
-                    obj?.name === dep?.propertyName &&
-                    dep?.dependentValues?.includes(obj?.value)
-                )
+    const filteredData =
+      !isEmpty(item?.properties) &&
+      item?.properties
+        ?.filter(
+          item =>
+            isEmpty(item?.dependencies) ||
+            item?.dependencies?.every(dep =>
+              item?.properties?.some(
+                obj =>
+                  obj?.name === dep?.propertyName &&
+                  dep?.dependentValues?.includes(obj?.value)
               )
-          )
-          .map(item => ({
-            ...item,
-            old_val: item?.value,
-          }));
-      setSelectedItemFromList(item);
-      setListPropertTableData(filteredData);
-    }
+            )
+        )
+        .map(item => ({
+          ...item,
+          old_val: item?.value,
+        }));
+    setSelectedItemFromList(item);
+    setListPropertTableData(filteredData);
+    const properties = item?.properties?.map(item => ({
+      ...item,
+      old_val: item?.value,
+    }));
+    setReferenceListPropertyTableData(properties);
     setIsPropertyResponse(true);
     setIsNewlyAddedExternalServiceResponse(false);
     setIsStateChangeResponse(false);
-
     const match = externalControllerServices?.some(data => {
       if (data.controllerService?.length) {
         return data.controllerService.some(
@@ -1715,12 +1716,9 @@ const ControllerServiceTab = ({
         data?.updatedValue === item.updatedValue
       );
     });
-
     setisFromExternalService(match ? true : false);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
-
-const [lastClickedItemId, setLastClickedItemId] = useState(null);
 
 const handleSettingClick = (item) => {
   setSelectedItemFromList(item);
@@ -1749,8 +1747,7 @@ const handleSettingClick = (item) => {
 
   // 🔹 Check: API tabhi chale jab naya item ho
   if (
-    !isEmpty(controllerServicesData?.localServices) &&
-    (lastClickedItemId !== item?.id && lastClickedItemId !== item?.identifier)
+    !isEmpty(controllerServicesData?.localServices) 
   ) {
     dispatch(
       NamespacesActions.fetchServiceDefinition({
@@ -1762,7 +1759,6 @@ const handleSettingClick = (item) => {
         properties: item?.properties,
       })
     );
-    setLastClickedItemId(item?.id || item?.identifier); // ✅ last clicked update
   }
 
   setIsPropertyResponse(true);
