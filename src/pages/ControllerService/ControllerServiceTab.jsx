@@ -1720,6 +1720,8 @@ const ControllerServiceTab = ({
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
+const [lastClickedItemId, setLastClickedItemId] = useState(null);
+
 const handleSettingClick = (item) => {
   setSelectedItemFromList(item);
 
@@ -1747,7 +1749,8 @@ const handleSettingClick = (item) => {
 
   // 🔹 Check: API tabhi chale jab naya item ho
   if (
-    !isEmpty(controllerServicesData?.localServices) 
+    !isEmpty(controllerServicesData?.localServices) &&
+    (lastClickedItemId !== item?.id && lastClickedItemId !== item?.identifier)
   ) {
     dispatch(
       NamespacesActions.fetchServiceDefinition({
@@ -1759,6 +1762,7 @@ const handleSettingClick = (item) => {
         properties: item?.properties,
       })
     );
+    setLastClickedItemId(item?.id || item?.identifier); // ✅ last clicked update
   }
 
   setIsPropertyResponse(true);
