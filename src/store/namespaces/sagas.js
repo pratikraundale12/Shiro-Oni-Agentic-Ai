@@ -938,6 +938,8 @@ export function* getNewPropertyControllerService(api, { payload }) {
 }
 
 export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
+  console.log('payload', payload);
+
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
 
   let serviceTypes = [];
@@ -959,6 +961,7 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
 
   const apiParams = {
     clusterId: selectedCluster?.value,
+    namespaceId: payload?.namespaceId,
     serviceName: payload?.isFromExternalService
       ? payload?.type
       : serviceTypes && serviceTypes.length > 0

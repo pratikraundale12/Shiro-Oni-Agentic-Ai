@@ -36,6 +36,9 @@ const PropertyDropdownModal = ({
   isFromControllerServieTab = false,
 }) => {
   const dispatch = useDispatch();
+  const checkDestCluster = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const [addNewProperty, setAddNewProperty] = useState(false);
   const [isRefParams, setIsRefParams] = useState(false);
   const [proprtyOptionsArray, setPropertyOptionsArray] = useState([
@@ -241,17 +244,23 @@ const PropertyDropdownModal = ({
           extractedProperties?.[0]?.serviceImplementation || [],
       };
 
+      // Only add namespaceId if checkDestCluster?.value exists
+      if (checkDestCluster?.value) {
+        payload.namespaceId = checkDestCluster.value;
+      }
+
       dispatch(
         NamespacesActions.getNewPropertyControllerServiceUpdated(payload)
       );
-      {
-        selectedPropertyToEdit?.add &&
-          dispatch(
-            NamespacesActions.getNewPropertyControllerService(
-              selectedPropertyToEdit
-            )
-          );
+
+      if (selectedPropertyToEdit?.add) {
+        dispatch(
+          NamespacesActions.getNewPropertyControllerService(
+            selectedPropertyToEdit
+          )
+        );
       }
+
       setAddNewProperty(false);
       setIsRefParams(false);
     }
