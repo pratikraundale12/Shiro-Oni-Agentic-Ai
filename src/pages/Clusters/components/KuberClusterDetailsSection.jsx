@@ -11,8 +11,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { isEmpty, uniqBy } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { ClustersActions, ClustersSelectors } from '../../../store';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  LoadingSelectors,
+} from '../../../store';
 import PemUploadField from '../PEMUploadFile';
+import { FullPageLoader } from '../../../components';
 const Container = styled.div`
   background-color: ${props => props.theme.colors.lightGrey};
   border-radius: 20px;
@@ -61,6 +66,12 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     ClustersSelectors.getlistConfigListKubernetes
   );
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
+  const kubeClusterIDEdit = useSelector(
+    ClustersSelectors.getansibleClucterToEdit
+  );
+  const kubeUpgradeData = useSelector(
+    ClustersSelectors.getkubeClusterUpgradeData
+  );
 
   const hostOptions = listHostIpData
     ?.filter(ele => !ele?.is_selected)
@@ -68,11 +79,20 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       label: ele?.kube_cluster_name,
       value: ele?.id,
     }));
+  const hostOptionsOnUpgrade = listHostIpData?.map(ele => ({
+    label: ele?.kube_cluster_name,
+    value: ele?.id,
+  }));
 
   const configOptionsUnsorted = kubeConfigList
     ?.filter(ele => !ele?.is_part_of_cluster)
     ?.map(ele => ({ label: ele?.config_name, value: ele?.config_name }));
+  const allconfigOptionsUnsorted = kubeConfigList?.map(ele => ({
+    label: ele?.config_name,
+    value: ele?.config_name,
+  }));
   const configOptions = uniqBy(configOptionsUnsorted, 'value');
+  const configOptionsOnUpgrade = uniqBy(allconfigOptionsUnsorted, 'value');
   const configVerionsList = useSelector(ClustersSelectors.getkubConfigVersion);
   const configVersionOption =
     (!isEmpty(configVerionsList) &&
@@ -160,13 +180,16 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       );
     }
   }, [configNameValue]);
-
   const handleCreateCluster = data => {
     const payload = new FormData();
     payload.append('clusterName', data?.clusterName);
     payload.append('configName', data?.configName);
     payload.append('configVersion', data?.configVersion);
     payload.append('cluster_type', data?.cluster_type);
+    payload.append(
+      'operationType',
+      !isEmpty(kubeClusterIDEdit) ? 'upgrade' : 'create'
+    );
     payload.append('host', data?.host);
     if (formSchemaCluster === 'eks') {
       payload.append('aws_region', data?.aws_region);
@@ -183,11 +206,31 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
 
     dispatch(ClustersActions.createKubernetesCluster(payload));
   };
+  useEffect(() => {
+    if (!isEmpty(kubeClusterIDEdit)) {
+      dispatch(
+        ClustersActions.fetchKubeClusterDataToUpgrade({ id: kubeClusterIDEdit })
+      );
+    }
+  }, [kubeClusterIDEdit]);
+  useEffect(() => {
+    if (!isEmpty(kubeUpgradeData) && !isEmpty(kubeClusterIDEdit)) {
+      setValue('clusterName', kubeUpgradeData?.name);
+      setValue('host', kubeUpgradeData?.master_node?.id);
+      setValue('configName', kubeUpgradeData?.config_name);
+      setValue('configVersion', kubeUpgradeData?.config_version);
+    }
+  }, [kubeUpgradeData]);
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchKubeClusterDataToUpgrade')
+  );
 
-  //
   return (
     <>
-      <Title title={'Create Cluster'} />
+      <Title
+        title={!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
+      />
+      <FullPageLoader loading={loading} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <div className="mt-3 ms-3 me-3">
@@ -205,6 +248,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                 register={register}
                 errors={errors}
                 icon={<QRIcons />}
+                disabled={!isEmpty(kubeClusterIDEdit)}
               />
             </div>
           </div>
@@ -219,9 +263,14 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                 register={register}
                 errors={errors}
                 control={control}
-                options={hostOptions || []}
+                options={
+                  !isEmpty(kubeClusterIDEdit)
+                    ? hostOptionsOnUpgrade || []
+                    : hostOptions || []
+                }
                 placeholder={'Select Kubernetes Cluster Name'}
                 required={true}
+                disabled={!isEmpty(kubeClusterIDEdit)}
               />
             </div>
             <div className="col-6">
@@ -234,7 +283,11 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                 register={register}
                 errors={errors}
                 control={control}
-                options={configOptions || []}
+                options={
+                  !isEmpty(kubeClusterIDEdit)
+                    ? configOptionsOnUpgrade || []
+                    : configOptions || []
+                }
                 placeholder={KDFM.SELECT_CONFIG_NAME}
                 required={true}
               />
@@ -257,7 +310,9 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
               />
             </div>
             <div className="col-6">
-              <LabelSelect className="mb-3">Cluster Type</LabelSelect>
+              <LabelSelect className="mb-3">
+                Kubernetes cluster type
+              </LabelSelect>
               <SelectField
                 name="cluster_type"
                 icon={<QRIcons />}
@@ -275,6 +330,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                 }
                 placeholder={KDFM.SELECT_CONFIG_VERSION}
                 required={true}
+                disabled={!isEmpty(kubeClusterIDEdit)}
               />
             </div>
           </div>
@@ -405,7 +461,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                     errors={errors}
                     fileLable="File"
                     validExtensionsArray={[
-                      //   '.pem',
+                      '.pem',
                       //   '.pfx',
                       //   '.p12',
                       //   '.jks',
@@ -413,8 +469,8 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                       '.yaml',
                       '.yml',
                     ]}
-                    acceptString={'.txt,.yaml,.yml'}
-                    errorText={'YAML or PFX'}
+                    acceptString={'.txt,.yaml,.yml,.pem'}
+                    errorText={'YAML,PEM or PFX'}
                     label="SSH Key File"
                   />
                 </div>
@@ -430,7 +486,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
           </Button>
 
           <Button type="submit" onClick={handleSubmit(handleCreateCluster)}>
-            Create Cluster
+            {!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
           </Button>
         </BottomButtonDiv>
       </BottomButton>

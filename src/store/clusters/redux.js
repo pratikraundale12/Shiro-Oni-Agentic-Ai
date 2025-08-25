@@ -155,6 +155,10 @@ export const ClustersActions = {
     `${prefix}createKubernetesMasterNodeCluster`
   ),
   deleteMasterNodeConfig: createAction(`${prefix}deleteMasterNodeConfig`),
+  fetchKubeClusterDataToUpgrade: createAction(
+    `${prefix}fetchKubeClusterDataToUpgrade`
+  ),
+  setkubeClusterUpgradeData: createAction(`${prefix}setkubeClusterUpgradeData`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -210,6 +214,7 @@ export const CLUSTERS_INITIAL_STATE = {
   kubeCofigToEdit: {},
   kubConfigVersion: [],
   kubeHostModalOpen: false,
+  kubeClusterUpgradeData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -279,6 +284,7 @@ export const ClustersSelectors = {
   getkubeCofigToEdit: state => state.clusters.kubeCofigToEdit,
   getkubConfigVersion: state => state.clusters.kubConfigVersion,
   getkubeHostModalOpen: state => state.clusters.kubeHostModalOpen,
+  getkubeClusterUpgradeData: state => state.clusters.kubeClusterUpgradeData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -609,6 +615,12 @@ const setkubeHostModalOpen = (state, { payload }) => {
     kubeHostModalOpen: payload,
   };
 };
+const setkubeClusterUpgradeData = (state, { payload }) => {
+  return {
+    ...state,
+    kubeClusterUpgradeData: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -752,6 +764,10 @@ export const clustersReducer = createReducer(
       )
       .addCase(ClustersActions.setkubeCofigToEdit, setkubeCofigToEdit)
       .addCase(ClustersActions.setkubConfigVersion, setkubConfigVersion)
-      .addCase(ClustersActions.setkubeHostModalOpen, setkubeHostModalOpen);
+      .addCase(ClustersActions.setkubeHostModalOpen, setkubeHostModalOpen)
+      .addCase(
+        ClustersActions.setkubeClusterUpgradeData,
+        setkubeClusterUpgradeData
+      );
   }
 );

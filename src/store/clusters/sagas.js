@@ -703,6 +703,19 @@ export function* deleteMasterNodeConfig(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
+export function* fetchKubeClusterDataToUpgrade(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchKubeClusterDataToUpgrade',
+    loadingSection: 'fetchKubeClusterDataToUpgrade',
+    apiMethod: api.fetchKubeClusterDataToUpgrade,
+    apiParams: [{ id: payload?.id }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setkubeClusterUpgradeData(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
 
 export function* clustersSagas(api) {
   yield all([
@@ -835,6 +848,11 @@ export function* clustersSagas(api) {
     takeLatest(
       ClustersActions.deleteMasterNodeConfig,
       deleteMasterNodeConfig,
+      api
+    ),
+    takeLatest(
+      ClustersActions.fetchKubeClusterDataToUpgrade,
+      fetchKubeClusterDataToUpgrade,
       api
     ),
   ]);

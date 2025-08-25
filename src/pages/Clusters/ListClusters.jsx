@@ -180,6 +180,9 @@ export const ListClusters = () => {
   });
 
   const handleEditAnsibleCluster = item => {
+    if (item?.is_kube_cluster) {
+      dispatch(ClustersActions.setCreateClusterMethod('Kubernetes'));
+    }
     dispatch(ClustersActions.setansibleClucterToEdit(item?.id));
     dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
 
@@ -197,6 +200,7 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setansibleClucterToEdit(''));
     dispatch(ClustersActions.setAnsibleClusterData({}));
     dispatch(ClustersActions.setAnsibleClusterNodeUpdate(''));
+    dispatch(ClustersActions.setkubeClusterUpgradeData({}));
   }, [dispatch]);
 
   const handleHardDeleteAnsibleCluster = item => {
@@ -369,14 +373,16 @@ export const ListClusters = () => {
                               <span>{KDFM.VIEW}</span>
                             </Item>
                           )}
-                          {item.edit_cluster && item?.created_by_ansible && (
-                            <Item
-                              onClick={() => handleEditAnsibleCluster(item)}
-                            >
-                              <PencilIcon width={16} height={16} />
-                              <span>Upgrade</span>
-                            </Item>
-                          )}
+                          {item.edit_cluster &&
+                            (item?.created_by_ansible ||
+                              item?.is_kube_cluster) && (
+                              <Item
+                                onClick={() => handleEditAnsibleCluster(item)}
+                              >
+                                <PencilIcon width={16} height={16} />
+                                <span>Upgrade</span>
+                              </Item>
+                            )}
                           {item.edit_cluster && item?.created_by_ansible && (
                             <Item
                               onClick={() =>

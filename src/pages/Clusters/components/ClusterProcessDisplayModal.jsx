@@ -81,8 +81,8 @@ const CreationModelThirdPartySteps = [
   { step: 'NiFi cluster flow election', status: 'completed' },
 ];
 const CreationModelKubeSteps = [
-  { step: 'Play: NiFi AWS install', status: 'completed' },
-  { step: 'Check kubeconfig', status: 'completed' },
+  { step: 'Verify chart_path & values_file', status: 'completed' },
+  { step: 'Resolve kubeconfig for EKS', status: 'completed' },
   { step: 'Validate aws_region input', status: 'completed' },
   {
     step: 'Verify aws/helm/kubectl and cluster connectivity',
