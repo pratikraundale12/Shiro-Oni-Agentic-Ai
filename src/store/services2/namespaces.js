@@ -225,9 +225,15 @@ export const namespacesAPI = api => {
       `/controller-services/${clusterId}/service-type?type=${type}&group=${group}&artifact=${artifact}&version=${version}`
     );
 
-  const getNewPropertyControllerServiceUpdated = ({ clusterId, serviceName }) =>
+  const getNewPropertyControllerServiceUpdated = ({
+    clusterId,
+    serviceName,
+    namespaceId,
+  }) =>
     api.get(
-      `/${clusterId}/controller-service-types?serviceName=${serviceName}`
+      `/${clusterId}/controller-service-types?serviceName=${serviceName}${
+        namespaceId ? `&namespaceId=${namespaceId}` : ''
+      }`
     );
 
   const addControllerServicePropertyByDropdown = ({

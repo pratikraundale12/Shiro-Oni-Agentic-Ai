@@ -959,6 +959,7 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
 
   const apiParams = {
     clusterId: selectedCluster?.value,
+    namespaceId: payload?.namespaceId,
     serviceName: payload?.isFromExternalService
       ? payload?.type
       : serviceTypes && serviceTypes.length > 0
