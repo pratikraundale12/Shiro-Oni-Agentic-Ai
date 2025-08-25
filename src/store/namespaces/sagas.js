@@ -938,8 +938,6 @@ export function* getNewPropertyControllerService(api, { payload }) {
 }
 
 export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
-  console.log('payload', payload);
-
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
 
   let serviceTypes = [];
