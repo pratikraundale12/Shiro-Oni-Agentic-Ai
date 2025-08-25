@@ -1720,70 +1720,75 @@ const ControllerServiceTab = ({
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
-  const handleSettingClick = item => {
-    setSelectedItemFromList(item);
-    if (isEmpty(serviceDefinition?.properties)) {
-      const filteredData =
-        !isEmpty(item?.properties) &&
-        item?.properties
-          ?.filter(
-            item =>
-              isEmpty(item?.dependencies) ||
-              item?.dependencies?.every(dep =>
-                item?.properties?.some(
-                  obj =>
-                    obj?.name === dep?.propertyName &&
-                    dep?.dependentValues?.includes(obj?.value)
-                )
+const [lastClickedItemId, setLastClickedItemId] = useState(null);
+
+const handleSettingClick = (item) => {
+  setSelectedItemFromList(item);
+
+  if (isEmpty(serviceDefinition?.properties)) {
+    const filteredData =
+      !isEmpty(item?.properties) &&
+      item?.properties
+        ?.filter(
+          prop =>
+            isEmpty(prop?.dependencies) ||
+            prop?.dependencies?.every(dep =>
+              item?.properties?.some(
+                obj =>
+                  obj?.name === dep?.propertyName &&
+                  dep?.dependentValues?.includes(obj?.value)
               )
-          )
-          .map(item => ({
-            ...item,
-            old_val: item?.value,
-          }));
-      setSelectedItemFromList(item);
-      setListPropertTableData(filteredData);
-    }
+            )
+        )
+        .map(prop => ({
+          ...prop,
+          old_val: prop?.value,
+        }));
+    setListPropertTableData(filteredData);
+  }
 
-    if (
-      !isEmpty(controllerServicesData?.localServices) &&
-      isEmpty(listPropertyTableData)
-    ) {
-      dispatch(
-        NamespacesActions.fetchServiceDefinition({
-          group: item?.bundle?.group,
-          artifact: item?.bundle?.artifact,
-          version: item?.bundle?.version,
-          type: item?.type,
-          instanceIdentifier: item?.instanceIdentifier,
-          properties: item?.properties,
-        })
+  // 🔹 Check: API tabhi chale jab naya item ho
+  if (
+    !isEmpty(controllerServicesData?.localServices) &&
+    (lastClickedItemId !== item?.id && lastClickedItemId !== item?.identifier)
+  ) {
+    dispatch(
+      NamespacesActions.fetchServiceDefinition({
+        group: item?.bundle?.group,
+        artifact: item?.bundle?.artifact,
+        version: item?.bundle?.version,
+        type: item?.type,
+        instanceIdentifier: item?.instanceIdentifier,
+        properties: item?.properties,
+      })
+    );
+    setLastClickedItemId(item?.id || item?.identifier); // ✅ last clicked update
+  }
+
+  setIsPropertyResponse(true);
+  setIsNewlyAddedExternalServiceResponse(false);
+  setIsStateChangeResponse(false);
+
+  const match = externalControllerServices?.some(data => {
+    if (data.controllerService?.length) {
+      return data.controllerService.some(
+        service =>
+          service?.id === item?.id || service?.id === item?.identifier
       );
     }
+    if (data?.configured && data?.configuredData?.id === item?.id) {
+      return true;
+    }
+    return (
+      item?.updatedValue !== undefined &&
+      data?.updatedValue === item.updatedValue
+    );
+  });
 
-    setIsPropertyResponse(true);
-    setIsNewlyAddedExternalServiceResponse(false);
-    setIsStateChangeResponse(false);
+  setisFromExternalService(match ? true : false);
+  dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
+};
 
-    const match = externalControllerServices?.some(data => {
-      if (data.controllerService?.length) {
-        return data.controllerService.some(
-          service =>
-            service?.id === item?.id || service?.id === item?.identifier
-        );
-      }
-      if (data?.configured && data?.configuredData?.id === item?.id) {
-        return true;
-      }
-      return (
-        item?.updatedValue !== undefined &&
-        data?.updatedValue === item.updatedValue
-      );
-    });
-
-    setisFromExternalService(match ? true : false);
-    dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
-  };
 
   const handleConfigure = item => {
     setIsNewlyAddedExternalServiceResponse(true);
