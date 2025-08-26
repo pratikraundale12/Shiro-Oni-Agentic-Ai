@@ -158,9 +158,13 @@ const ControllerServiceTab = ({
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const csReduxData = useSelector(NamespacesSelectors.getCsLocalData);
+  console.log('csReduxData', csReduxData);
+  
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
+  console.log('registryDetailsData', registryDetailsData?.controllerServicesData?.localServices);
+  
   const [controllerServicesData, setControllerServicesData] =
     useState(csReduxData);
 
@@ -1723,6 +1727,7 @@ const ControllerServiceTab = ({
 const [lastClickedItemId, setLastClickedItemId] = useState(null);
 
 const handleSettingClick = (item) => {
+  setListPropertTableData(null);
   setSelectedItemFromList(item);
 
   if (isEmpty(serviceDefinition?.properties)) {
@@ -1744,7 +1749,7 @@ const handleSettingClick = (item) => {
           ...prop,
           old_val: prop?.value,
         }));
-    setListPropertTableData(filteredData);
+    setListPropertTableData([]);
   }
 
   // 🔹 Check: API tabhi chale jab naya item ho
@@ -2090,6 +2095,8 @@ const handleSettingClick = (item) => {
     refreshingRowId,
     refreshedControllerService,
   ]);
+  console.log('localServices', localServices);
+  
 
   const checkIfLocalCsConfigured = useSelector(
     NamespacesSelectors.getIsLocalCsConfigured

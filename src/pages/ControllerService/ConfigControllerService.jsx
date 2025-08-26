@@ -59,6 +59,11 @@ export const ConfigControllerService = ({
   referenceListPropertyTableData = [],
   setReferenceListPropertyTableData = () => {},
 }) => {
+  console.log('referenceListPropertyTableData', referenceListPropertyTableData);
+  console.log('listPropertyTableData', listPropertyTableData);
+  
+
+  
   
   const dispatch = useDispatch();
   const serviceDefinition = useSelector(
