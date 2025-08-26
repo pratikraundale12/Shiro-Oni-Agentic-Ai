@@ -96,6 +96,9 @@ const PropertyDropdownModal = ({
   const serviceDefinition = useSelector(
     NamespacesSelectors.getServiceDefinition
   );
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
 
   const extractedProperties = serviceDefinition?.properties?.filter(
     prop => prop?.name === selectedPropertyToEdit?.name
@@ -393,9 +396,10 @@ const PropertyDropdownModal = ({
                   name="value"
                   size="sm"
                   options={
-                    !isUpgrade ||
-                    isFromExternalService ||
-                    !selectedPropertyToEdit?.add
+                    (!isUpgrade ||
+                      isFromExternalService ||
+                      !selectedPropertyToEdit?.add) &&
+                    scheduleStartFlow === true
                       ? proprtyOptionsArray
                       : propertyOptionsDeploy
                   }

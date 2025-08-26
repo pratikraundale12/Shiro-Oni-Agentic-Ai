@@ -939,6 +939,9 @@ export function* getNewPropertyControllerService(api, { payload }) {
 
 export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const singleNamespaceData1 = yield select(
+    NamespacesSelectors.getSingleNamespaceData
+  );
 
   let serviceTypes = [];
   if (
@@ -959,7 +962,7 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
 
   const apiParams = {
     clusterId: selectedCluster?.value,
-    namespaceId: payload?.namespaceId,
+    namespaceId: payload?.namespaceId || singleNamespaceData1?.parentGroupId,
     serviceName: payload?.isFromExternalService
       ? payload?.type
       : serviceTypes && serviceTypes.length > 0
@@ -974,7 +977,6 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
     apiParams: [apiParams],
     successAction: NamespacesActions.fetchVariableListSuccess,
   });
-  console.log(response?.data?.data, 'kkkkkkkkkkkkkkkkkkkkkkkkk');
 
   if (response.ok) {
     yield put(
