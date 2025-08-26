@@ -107,6 +107,7 @@ const PropertyDropdownModal = ({
       value: element?.name,
       label: element?.name,
     }));
+
   const optionsToNewPropertyAddNewService = newPropertyToAdd?.map(element => ({
     value: element?.name,
     label: element?.name,
@@ -128,12 +129,18 @@ const PropertyDropdownModal = ({
       const uniqueArray = Array.from(
         new Map(mergedArray.map(item => [item.id, item])).values()
       );
+
       return uniqueArray;
     });
   }, [propertyOptionOnDeploy]);
 
+  useEffect(() => {
+    setPropertyOptionsDeploy([{ value: '', label: 'No value set' }]);
+  }, []);
+
   const handleClose = () => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(false));
+    setPropertyOptionsDeploy([{ value: '', label: 'No value set' }]);
   };
   const { handleSubmit, control, watch, reset } = useForm({});
   const selectedNewValue = watch('newService');
@@ -208,6 +215,7 @@ const PropertyDropdownModal = ({
       );
     }
     toast.success(KDFM.PROPERTY_EDITED);
+    dispatch(NamespacesActions.setResponseNewAddedProprty(null));
     handleClose();
   };
 

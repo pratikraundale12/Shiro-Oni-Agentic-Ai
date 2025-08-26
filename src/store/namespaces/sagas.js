@@ -974,6 +974,8 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
     apiParams: [apiParams],
     successAction: NamespacesActions.fetchVariableListSuccess,
   });
+  console.log(response?.data?.data, 'kkkkkkkkkkkkkkkkkkkkkkkkk');
+
   if (response.ok) {
     yield put(
       NamespacesActions.setPropertyOptionOnDeploy(response?.data?.data)

@@ -197,8 +197,7 @@ const ControllerServiceTab = ({
   );
   const propertyUpdateResponse = useSelector(
     NamespacesSelectors.getPropertyUpdateResponse
-  );  console.log('registryDetailsData', registryDetailsData?.controllerServicesData?.localServices);
-
+  );
   const [externalControllerServices, setExternalControllerServices] = useState(
     controllerServicesData?.externalControllerServices
   );
@@ -2093,7 +2092,6 @@ const handleSettingClick = (item) => {
     refreshingRowId,
     refreshedControllerService,
   ]);
-  console.log('localServices', localServices);
   
 
   const checkIfLocalCsConfigured = useSelector(
