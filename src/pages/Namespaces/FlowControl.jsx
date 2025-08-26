@@ -313,19 +313,41 @@ const FlowControl = () => {
 
   const handleConfirmUpdateStatus = () => {
     dispatch(NamespacesActions.updateNamespaceStatus(confirmDialogue.action));
+    setConfirmDialogue(prev => ({
+      ...prev,
+      state: false,
+    }));
+  };
+
+  useEffect(() => {
     setConfirmDialogue({
       state: false,
       action: '',
       text: '',
       forPopup: false,
     });
-  };
+  }, []);
 
   const { id } = useParams();
   useEffect(() => {
     dispatch(NamespacesActions.setSourceNamespaceId(id));
     dispatch(NamespacesActions.singleNamespaceData(id));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (sigleNamespaceData) {
+      if (sigleNamespaceData?.runningCount > 0) {
+        setActiveButton('RUNNING');
+      } else if (
+        sigleNamespaceData?.runningCount === 0 &&
+        sigleNamespaceData?.stoppedCount > 0
+      ) {
+        setActiveButton('STOPPED');
+      } else {
+        setActiveButton(null);
+      }
+    }
+  }, [sigleNamespaceData?.runningCount, sigleNamespaceData?.stoppedCount]);
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
@@ -372,7 +394,16 @@ const FlowControl = () => {
 
   return (
     <DataWrapper>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader
+        loading={loading}
+        text={
+          confirmDialogue?.text === 'stop'
+            ? 'Stopping Flow ...'
+            : confirmDialogue?.text === 'start'
+              ? 'Starting Flow ...'
+              : 'Loading'
+        }
+      />
       <ScrollSetGrey className="scroll-set-grey pe-1">
         <IconsvgDiv className="row">
           <CustomNine className="col-md-6 mb-3">

@@ -329,6 +329,9 @@ export const GridActions = ({
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'activityHistory')
   );
+  const gridDataNamespace = useSelector(state =>
+    GridSelectors.getGridData(state, 'namespaces')
+  );
 
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
@@ -999,7 +1002,7 @@ export const GridActions = ({
         </ButtonsContainer>
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
-            {module === 'namespaces' && (
+            {module === 'namespaces' && !isEmpty(gridDataNamespace) && (
               <>
                 {selectedCluster?.value && (
                   <Button

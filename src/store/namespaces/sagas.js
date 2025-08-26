@@ -1318,7 +1318,8 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
     ],
   });
   if (response.ok) {
-    toast.success(response?.data?.message);
+    const cleanMessage = response?.data?.message?.replace(/<[^>]*>/g, '');
+    toast.success(cleanMessage);
     if (scheduleDeploy) {
       yield call(history.push, '/schedule-deployment');
       yield put(AuthenticationActions.setRoute('schedule-deployment'));
@@ -1334,7 +1335,10 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
       yield put(NamespacesActions.setFlowControlAfterDeploy(true));
     }
   } else {
-    toast.error(response?.message || response?.data?.message);
+    const cleanErrorMessage = (
+      response?.message || response?.data?.message
+    )?.replace(/<[^>]*>/g, '');
+    toast.error(cleanErrorMessage);
   }
 }
 export function* upgradeCluster(api, { payload }) {
@@ -1370,11 +1374,15 @@ export function* upgradeCluster(api, { payload }) {
       yield put(NamespacesActions.setDeployedModal(true));
       yield put(NamespacesActions.setFlowControlAfterUpgrade(true));
     }
-    toast.success(response?.data?.message);
+    const cleanMessage = response?.data?.message?.replace(/<[^>]*>/g, '');
+    toast.success(cleanMessage);
   }
 
   if (!response.ok) {
-    toast.error(response?.message || response?.data?.message, {
+    const cleanErrorMessage = (
+      response?.message || response?.data?.message
+    )?.replace(/<[^>]*>/g, '');
+    toast.error(cleanErrorMessage, {
       autoClose: 5000,
     });
   }

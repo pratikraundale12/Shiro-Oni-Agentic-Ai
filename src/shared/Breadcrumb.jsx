@@ -49,7 +49,7 @@ const Breadcrumb = ({
   path,
   onClick,
   fromDetailPage = false,
-  setRemoveSearch,
+  setRemoveSearch = () => {},
 }) => {
   const dispatch = useDispatch();
   const breadcrumbs = useSelector(state =>

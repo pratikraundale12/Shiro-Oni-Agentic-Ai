@@ -422,7 +422,10 @@ const NamespaceDeploy = ({
                       className={`div-btn-1 ${
                         checkStartFlowCondition() ? 'disabled' : ''
                       }`}
-                      isActive={activeButtonPopup === 'RUNNING'}
+                      isActive={
+                        activeButtonPopup === 'RUNNING' ||
+                        checkStartFlowCondition()
+                      }
                       activeColor="#58e715"
                       hoverColor="#58e715"
                       activeTextColor="#fff"
@@ -442,7 +445,10 @@ const NamespaceDeploy = ({
                       className={`div-btn-2 ${
                         checkStopFlowCondition() ? 'disabled' : ''
                       }`}
-                      isActive={activeButtonPopup === 'STOPPED'}
+                      isActive={
+                        activeButtonPopup === 'STOPPED' ||
+                        checkStopFlowCondition()
+                      }
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"

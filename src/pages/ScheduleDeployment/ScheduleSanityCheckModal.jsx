@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -89,7 +90,7 @@ const MessageTextSuccess = styled.span`
   font-size: 16px;
 `;
 
-const ScheduleSanityCheckModal = () => {
+const ScheduleSanityCheckModal = ({ fetchSchedule }) => {
   const dispatch = useDispatch();
   const sanityCheckData = useSelector(
     SchedularSelectors.getSanityAndDeployStatus
@@ -134,6 +135,9 @@ const ScheduleSanityCheckModal = () => {
       isOpen={isOpen}
       onRequestClose={() => {
         dispatch(SchedularActions.setIsScheduleSanityCheckModalOpen(false));
+        if (!isEmpty(responseData?.data?.sanity_details)) {
+          fetchSchedule();
+        }
       }}
       size="md"
       primaryButtonText={'Quick Fixes'}
@@ -221,3 +225,7 @@ const ScheduleSanityCheckModal = () => {
 };
 
 export default ScheduleSanityCheckModal;
+
+ScheduleSanityCheckModal.propTypes = {
+  fetchSchedule: PropTypes.func,
+};
