@@ -1315,6 +1315,21 @@ const Summary = () => {
     }
   }, [checkDestCluster, deployOrUpgradeDetails]);
 
+  useEffect(() => {
+    if (checkDestCluster) {
+      if (checkDestCluster?.runningCount > 0) {
+        setActiveButton('RUNNING');
+      } else if (
+        checkDestCluster?.runningCount === 0 &&
+        checkDestCluster?.stoppedCount > 0
+      ) {
+        setActiveButton('STOPPED');
+      } else {
+        setActiveButton(null);
+      }
+    }
+  }, [checkDestCluster?.runningCount, checkDestCluster?.stoppedCount]);
+
   const StyledSpan = styled.span`
     margin-left: 4px !important;
   `;
