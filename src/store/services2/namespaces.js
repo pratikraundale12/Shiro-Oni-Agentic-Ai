@@ -312,6 +312,12 @@ export const namespacesAPI = api => {
     );
   };
 
+  // TODO: more meaningful service name
+  const deleteCluster = ({ clusterIdToDelete, deleteType }) =>
+    api.delete(
+      `clusters/delete-kube-cluster/${clusterIdToDelete}/${deleteType}`
+    );
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -347,5 +353,6 @@ export const namespacesAPI = api => {
     fetchRegistryFlowDetails,
     fetchDuplicateScheduleData,
     fetchAddPropertyToAdd,
+    deleteCluster,
   };
 };
