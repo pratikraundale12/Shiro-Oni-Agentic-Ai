@@ -138,18 +138,20 @@ const SelectField = ({
   const error = hasError(errors, name);
 
   const normalizeOptions = options => {
+
     return options.map(option => {
-      if (option.label && option.value) {
+      if (option.label && option.value && option.label !== option.value) {
         return option;
       } else {
         return {
-          label: option?.name || option?.type || 'Unknown',
-          value: option?.id || option?.value || 'Unknown',
           ...option,
+          label: option?.name || option?.type || option?.label || 'Unknown',
+          value: option?.id ?? (option?.value !== undefined ? option.value : 'Unknown'),
         };
       }
     });
   };
+  
 
   const sortOptionsAlphabetically = options => {
     const normalizedOptions = normalizeOptions(options);
@@ -162,7 +164,7 @@ const SelectField = ({
 
   const sortedOptions = sortAlphabetically
     ? sortOptionsAlphabetically(options)
-    : options;
+    : normalizeOptions(options);
   const getBorderColor = ({ isFocused }) => {
     if (isFocused && !error) return theme.colors.darker;
     if (error) return theme.colors.error;

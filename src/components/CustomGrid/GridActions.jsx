@@ -533,6 +533,25 @@ export const GridActions = ({
   };
 
   const handleChange = value => {
+     if (!value) {
+      dispatch(SchedularActions.setScheduleSelectRange([]));
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module,
+          clusterId,
+          params: {
+            page: 1,
+            id: scheduleToken,
+            ...(search && { search: search }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && {
+                [getModuleBasedStatusKey(module)]: watchStatus,
+              }),
+          },
+        })
+      );
+      return;
+    }
     setCurrentPage(1);
     let [start, end] = value;
     if (
@@ -551,24 +570,6 @@ export const GridActions = ({
     dispatch(
       SchedularActions.setScheduleSelectRange([dynamicStart, dynamicEnd])
     );
-    if (!value) {
-      dispatch(SchedularActions.setScheduleSelectRange([]));
-      dispatch(
-        GridSagsActions.fetchGrid({
-          module,
-          clusterId,
-          params: {
-            page: 1,
-            id: scheduleToken,
-            ...(search && { search: search }),
-            ...(watchStatus &&
-              watchStatus !== 'all' && {
-                [getModuleBasedStatusKey(module)]: watchStatus,
-              }),
-          },
-        })
-      );
-    }
   };
 
   const customRanges = [
