@@ -203,7 +203,6 @@ const DiffScheduleParameter = ({
 
   // Function to check if a parameter is sensitive
   const isSensitiveParameter = parameterName => {
-    console.log(parameterName, 'asdfg');
     const sensitiveKeywords = [
       'password',
       'secret',
@@ -223,8 +222,6 @@ const DiffScheduleParameter = ({
 
   // Function to mask sensitive values
   const maskSensitiveValue = (value, parameterName) => {
-    console.log(value, parameterName);
-
     if (isSensitiveParameter(parameterName)) {
       return '******';
     }
