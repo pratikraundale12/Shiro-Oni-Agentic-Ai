@@ -219,7 +219,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       payload.append('aws_secret_access_key', data?.aws_secret_access_key);
       payload.append('aws_session_token', data?.aws_session_token);
     }
-    if (formSchemaCluster === 'ec2') {
+    if (formSchemaCluster === 'ec2' && isEmpty(kubeUpgradeData)) {
       payload.append('ec2_bastion_host', data?.ec2_bastion_host);
       payload.append('ec2_ssh_username', data?.ec2_ssh_username);
       payload.append('ec2_local_forward_port', data?.ec2_local_forward_port);

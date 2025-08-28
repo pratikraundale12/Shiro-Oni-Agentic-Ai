@@ -44,6 +44,7 @@ import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { ClusterRegistryAssociationModal } from './components/ClusterRegistryAssociationModal';
 import AnimatedProgressBar from '../../shared/AnimatedProgressBar';
 import { ClusterProcessDisplayModal } from './components/ClusterProcessDisplayModal';
+import EKSClusterDeleteModal from './components/EksClusterDeleteModal';
 
 const List = styled.div`
   width: 165px;
@@ -789,6 +790,7 @@ export const ListClusters = () => {
         setSortingState={setSortingState}
       />
       <ClusterSuccessModal />
+      <EKSClusterDeleteModal />
       <ClusterProcessDisplayModal
         isProcessModalOpen={isProcessModalOpen}
         setIsProcessModalOpen={setIsProcessModalOpen}
