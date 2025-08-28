@@ -80,7 +80,7 @@ const CreationModelThirdPartySteps = [
   { step: 'Custom metrics agent', status: 'completed' },
   { step: 'NiFi cluster flow election', status: 'completed' },
 ];
-const CreationModelKubeSteps = [
+const CreationModelKubeStepsEKS = [
   { step: 'Verify chart_path & values_file', status: 'completed' },
   { step: 'Resolve kubeconfig for EKS', status: 'completed' },
   { step: 'Validate aws_region input', status: 'completed' },
@@ -94,6 +94,18 @@ const CreationModelKubeSteps = [
   { step: 'Ensure gp3 StorageClass (EBS CSI)', status: 'completed' },
   { step: 'Deploy/Upgrade NiFi via Helm', status: 'completed' },
   { step: 'Collect NiFi pods/services', status: 'completed' },
+];
+const CreationModelKubeStepsEC2 = [
+  { step: 'Verify chart_path & values_file', status: 'completed' },
+  { step: 'Read values and derive feature flags', status: 'completed' },
+  { step: 'Validate EC2 SSH inputs', status: 'completed' },
+  { step: 'Verify kubectl/helm on remote', status: 'completed' },
+  { step: 'Prepare remote workdir', status: 'completed' },
+  { step: 'Resolve kubeconfig on remote', status: 'completed' },
+  { step: 'Ensure namespace', status: 'completed' },
+  { step: 'cert-manager install/upgrade (remote)', status: 'completed' },
+  { step: 'Deploy/Upgrade NiFi via Helm (remote)', status: 'completed' },
+  { step: 'Collect NiFi pods/services (remote)', status: 'completed' },
 ];
 
 const deleteModalSteps = [
@@ -310,18 +322,19 @@ export const ClusterProcessDisplayModal = ({
     status: ele.status,
     step: ele?.step,
   }));
-
   const processExeName =
     selectedCluster?.process_name || ansibleClusterCreationData?.process_name;
   const getReferencObjectForComparison = processExeName => {
     if (processExeName === 'delete') {
       return deleteModalSteps;
     } else if (processExeName === 'creation') {
-      return processData?.isKubeCluster
-        ? CreationModelKubeSteps
-        : processData?.has_third_party_cert
-          ? CreationModelThirdPartySteps
-          : CreationmodelSteps;
+      return processData?.isKubeCluster && processData?.cluster_type === 'eks'
+        ? CreationModelKubeStepsEKS
+        : processData?.isKubeCluster && processData?.cluster_type === 'ec2'
+          ? CreationModelKubeStepsEC2
+          : processData?.has_third_party_cert
+            ? CreationModelThirdPartySteps
+            : CreationmodelSteps;
     } else if (processExeName === 'restart') {
       return RestartModalSteps;
     } else if (processExeName === 'stop') {
@@ -329,7 +342,11 @@ export const ClusterProcessDisplayModal = ({
     } else if (processExeName === 'start') {
       return StartModalSteps;
     } else if (processExeName === 'upgrade') {
-      return UpgradeModalSteps;
+      return processData?.isKubeCluster && processData?.cluster_type === 'eks'
+        ? CreationModelKubeStepsEKS
+        : processData?.isKubeCluster && processData?.cluster_type === 'ec2'
+          ? CreationModelKubeStepsEC2
+          : UpgradeModalSteps;
     } else if (processExeName === 'update-nodes') {
       return processData?.has_third_party_cert
         ? nodesAddThirdPartyModalSteps

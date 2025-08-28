@@ -146,7 +146,29 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     ec2_local_forward_port: yup.string().required('Post is required'),
     ec2_ssh_pem_file: yup.mixed().required('File is required'),
   });
-  let schemaForm = formSchemaCluster === 'eks' ? schemaEKS : schemaEC2;
+  const schemaUpgradeEC2 = yup.object().shape({
+    clusterName: yup
+      .string()
+      .required('Cluster name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Cluster name must not start or end with a space.',
+        value => value === value?.trim()
+      )
+      .matches(
+        /^[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*$/,
+        'Cluster name must contain only letters, numbers, underscores, or hyphens.'
+      ),
+    host: yup.string().required('Master Node is required'),
+    configName: yup.string().required('Config name is required'),
+    configVersion: yup.string().required('Config version is required'),
+  });
+  let schemaForm =
+    formSchemaCluster === 'eks'
+      ? schemaEKS
+      : isEmpty(kubeUpgradeData)
+        ? schemaEC2
+        : schemaUpgradeEC2;
   const {
     register,
     control,
@@ -219,6 +241,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       setValue('host', kubeUpgradeData?.master_node?.id);
       setValue('configName', kubeUpgradeData?.config_name);
       setValue('configVersion', kubeUpgradeData?.config_version);
+      setValue('cluster_type', kubeUpgradeData?.cluster_type);
     }
   }, [kubeUpgradeData]);
   const loading = useSelector(state =>
@@ -400,81 +423,82 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
               </div>
             </>
           )}
-          {clusterType === 'ec2' && (
+          {clusterType === 'ec2' && isEmpty(kubeUpgradeData) && (
             <>
-              {' '}
-              <div className="row mt-3">
-                <div className="col-6">
-                  <LabelSelect className="mb-3">
-                    Bastion Host (Public IP / DNS){' '}
-                    <span style={{ color: 'red' }}>*</span>
-                  </LabelSelect>
-                  <InputField
-                    name="ec2_bastion_host"
-                    type="text"
-                    placeholder={'Enter Bastion Host'}
-                    required={true}
-                    register={register}
-                    errors={errors}
-                    icon={<QRIcons />}
-                  />
+              <>
+                <div className="row mt-3">
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Bastion Host (Public IP / DNS){' '}
+                      <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="ec2_bastion_host"
+                      type="text"
+                      placeholder={'Enter Bastion Host'}
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      SSH User <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="ec2_ssh_username"
+                      type="text"
+                      placeholder="Enter SSH User"
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                    />
+                  </div>
                 </div>
-                <div className="col-6">
-                  <LabelSelect className="mb-3">
-                    SSH User <span style={{ color: 'red' }}>*</span>
-                  </LabelSelect>
-                  <InputField
-                    name="ec2_ssh_username"
-                    type="text"
-                    placeholder="Enter SSH User"
-                    required={true}
-                    register={register}
-                    errors={errors}
-                    icon={<QRIcons />}
-                  />
+                <div className="row">
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Local Forward Port <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="ec2_local_forward_port"
+                      type="text"
+                      placeholder="Enter Local Forward Port"
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                    />
+                  </div>
+                  <div className="col-6">
+                    {/* <LabelSelect className="mb-3"> */}
+                    <PemUploadField
+                      name="ec2_ssh_pem_file"
+                      watch={watch}
+                      control={control}
+                      required
+                      rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                      placeholder="Upload SSH Key File"
+                      errors={errors}
+                      fileLable="File"
+                      validExtensionsArray={[
+                        '.pem',
+                        //   '.pfx',
+                        //   '.p12',
+                        //   '.jks',
+                        '.txt',
+                        '.yaml',
+                        '.yml',
+                      ]}
+                      acceptString={'.txt,.yaml,.yml,.pem'}
+                      errorText={'YAML,PEM or PFX'}
+                      label="SSH Key File"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-6">
-                  <LabelSelect className="mb-3">
-                    Local Forward Port <span style={{ color: 'red' }}>*</span>
-                  </LabelSelect>
-                  <InputField
-                    name="ec2_local_forward_port"
-                    type="text"
-                    placeholder="Enter Local Forward Port"
-                    required={true}
-                    register={register}
-                    errors={errors}
-                    icon={<QRIcons />}
-                  />
-                </div>
-                <div className="col-6">
-                  {/* <LabelSelect className="mb-3"> */}
-                  <PemUploadField
-                    name="ec2_ssh_pem_file"
-                    watch={watch}
-                    control={control}
-                    required
-                    rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                    placeholder="Upload SSH Key File"
-                    errors={errors}
-                    fileLable="File"
-                    validExtensionsArray={[
-                      '.pem',
-                      //   '.pfx',
-                      //   '.p12',
-                      //   '.jks',
-                      '.txt',
-                      '.yaml',
-                      '.yml',
-                    ]}
-                    acceptString={'.txt,.yaml,.yml,.pem'}
-                    errorText={'YAML,PEM or PFX'}
-                    label="SSH Key File"
-                  />
-                </div>
-              </div>
+              </>
             </>
           )}
         </div>
