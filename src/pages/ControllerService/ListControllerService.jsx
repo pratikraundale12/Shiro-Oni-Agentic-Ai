@@ -200,13 +200,29 @@ export const ListControllerService = () => {
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
+  const fetchingClusters = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusters')
+  );
+  const [hasTriedFetchingClusters, setHasTriedFetchingClusters] =
+    useState(false);
   useEffect(() => {
-    if (isEmpty(selectedCluster?.value)) {
+    if (!fetchingClusters) {
+      setHasTriedFetchingClusters(true);
+    }
+  }, [fetchingClusters]);
+
+  useEffect(() => {
+    if (
+      hasTriedFetchingClusters &&
+      !fetchingClusters &&
+      isEmpty(selectedCluster?.value)
+    ) {
       toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
         toastId: 'please-login-cluster-toast',
       });
     }
-  }, [selectedCluster]);
+  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
+
   useEffect(() => {
     setIsUserCanWrite(csPermission?.canWrite);
   }, [csPermission]);
