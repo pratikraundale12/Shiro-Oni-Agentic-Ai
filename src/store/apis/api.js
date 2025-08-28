@@ -16,19 +16,17 @@ API.interceptors.request.use(config => {
   return options;
 });
 
-// remove token when user get unauthorized status (401)
-// API.interceptors.response.use(
-//   response => response,
-//   error => {
-//     if (
-//       error.response.status === 401 &&
-//       window.location.pathname !== '/login'
-//     ) {
-//       localStorage.removeItem(ACCESS_TOKEN);
-//       window.location.replace('/login');
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+// Response Interceptor for handling 401
+API.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.status === 401) {
+      localStorage.clear();
+      localStorage.removeItem(ACCESS_TOKEN);
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default API;

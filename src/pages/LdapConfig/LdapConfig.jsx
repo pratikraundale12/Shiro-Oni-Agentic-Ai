@@ -841,9 +841,8 @@ export const LdapConfig = () => {
               module="ldap"
             />
             <SyncButton
-              icon={<PlusCircleIcon width={16} height={16} color="black" />}
+              icon={<PlusCircleIcon width={16} height={16} color="#fff" />}
               onClick={handleOpenAddModal}
-              variant="secondary"
               size="sm"
             >
               Add New Role
