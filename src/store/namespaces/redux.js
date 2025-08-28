@@ -212,7 +212,6 @@ export const NamespacesActions = {
   setLocalServiceInUpgrade: createAction(`${prefix}setLocalServiceInUpgrade`),
   setUserStory: createAction(`${prefix}setUserStory`),
   setChangeRequest: createAction(`${prefix}setChangeRequest`),
-  deleteCluster: createAction(`${prefix}deleteCluster`), // TODO: more meaningful action name
 };
 
 /* ------------- INITIAL STATE ------------- */

@@ -1440,35 +1440,6 @@ export function* fetchAddPropertyToAdd(api, { payload }) {
   }
 }
 
-export function* deleteCluster(api, { payload }) {
-  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const clustersToken = JSON.parse(
-    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
-  );
-  const selectedClusterToken = clustersToken.find(
-    item => item.id === selectedCluster?.value
-  );
-  api.headers['x-cluster-id'] = selectedClusterToken?.id;
-  api.headers['x-cluster-token'] = selectedClusterToken?.token;
-
-  const response = yield call(requestSaga, {
-    errorSection: 'deleteCluster',
-    loadingSection: 'deleteCluster',
-    apiMethod: api.deleteCluster,
-    apiParams: [
-      {
-        clusterIdToDelete: payload?.id,
-        deleteType: payload?.type || 'db_only',
-      },
-    ],
-  });
-  if (response.ok) {
-    toast.success('Cluster deleted Successfully');
-    // yield put(NamespacesActions.getClusterList()); // call get cluster list api
-  } else {
-    toast.error(response?.message || response?.data?.message);
-  }
-}
 //
 export function* namespacesSagas(api) {
   yield all([
@@ -1591,7 +1562,6 @@ export function* namespacesSagas(api) {
       fetchAddPropertyToAdd,
       api
     ),
-    takeLatest(NamespacesActions.deleteCluster, deleteCluster, api),
   ]);
 }
 //
