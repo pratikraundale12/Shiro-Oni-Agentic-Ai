@@ -92,11 +92,17 @@ export const clustersAPI = api => {
     clusterId,
     process_id,
     process_name,
+    cluster_type,
   }) => {
-    return api.get(
-      `/clusters/${clusterId}/ansible-logs?process_id=${process_id}&process_name=${process_name}`
-    );
+    let url = `/clusters/${clusterId}/ansible-logs?process_id=${process_id}&process_name=${process_name}`;
+
+    if (cluster_type) {
+      url += `&cluster_type=${cluster_type}`;
+    }
+
+    return api.get(url);
   };
+
   const fetchAllConfigPropertiesWithValue = ({ version }) => {
     return api.post(`/clusters/config-properties/${version}`);
   };

@@ -451,10 +451,24 @@ export const ClusterProcessDisplayModal = ({
         process_name:
           selectedCluster?.process_name ||
           ansibleClusterCreationData?.process_name,
+        ...(selectedCluster?.cluster_type ||
+        ansibleClusterCreationData?.cluster_type
+          ? {
+              cluster_type:
+                selectedCluster?.cluster_type ||
+                ansibleClusterCreationData?.cluster_type,
+            }
+          : {}),
       };
       dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
     }
-  }, [isProcessModalOpen, isModalOpen]);
+  }, [
+    isProcessModalOpen,
+    isModalOpen,
+    dispatch,
+    selectedCluster,
+    ansibleClusterCreationData,
+  ]);
 
   useEffect(() => {
     let intervalId;
@@ -469,6 +483,14 @@ export const ClusterProcessDisplayModal = ({
           process_name:
             selectedCluster?.process_name ||
             ansibleClusterCreationData?.process_name,
+          ...(selectedCluster?.cluster_type ||
+          ansibleClusterCreationData?.cluster_type
+            ? {
+                cluster_type:
+                  selectedCluster?.cluster_type ||
+                  ansibleClusterCreationData?.cluster_type,
+              }
+            : {}),
         };
         dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
       }, 2000);
@@ -479,7 +501,14 @@ export const ClusterProcessDisplayModal = ({
         clearInterval(intervalId);
       }
     };
-  }, [isProcessModalOpen, isModalOpen, dispatch, progress]);
+  }, [
+    isProcessModalOpen,
+    isModalOpen,
+    progress,
+    dispatch,
+    selectedCluster,
+    ansibleClusterCreationData,
+  ]);
 
   const extractNumberFromTimeString = timeString => {
     if (typeof timeString !== 'string') {

@@ -554,6 +554,7 @@ export function* deleteAnsibleClusterHard(api, { payload }) {
 }
 
 export function* fetchAnsibleCLusterProcessData(api, { payload }) {
+  const { cluster_type } = payload || {};
   const response = yield call(requestSaga, {
     errorSection: 'fetchAnsibleCLusterProcessData',
     loadingSection: 'fetchAnsibleCLusterProcessData',
@@ -563,6 +564,7 @@ export function* fetchAnsibleCLusterProcessData(api, { payload }) {
         clusterId: payload?.clusterId,
         process_id: payload?.process_id,
         process_name: payload?.process_name,
+        ...(cluster_type && { cluster_type }),
       },
     ],
   });
