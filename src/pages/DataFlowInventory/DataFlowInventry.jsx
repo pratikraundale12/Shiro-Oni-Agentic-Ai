@@ -30,7 +30,7 @@ import { AddNewBucketModal } from '../AiFlowGenerator/AddNewBucketModal';
 import { FlowAddToRegistryModal } from '../AiFlowGenerator/FlowAddToRegistryModal';
 import { FlowAddedSuccessModal } from '../AiFlowGenerator/FlowAddedSuccessModal';
 import FlowAlreadyExistModal from '../AiFlowGenerator/FlowAlreadyExistModal';
-import { Button } from '../../shared';
+import { Button, SelectField } from '../../shared';
 import FlowUploadModal from './FlowUploadModal';
 
 // Styled Components
@@ -297,6 +297,37 @@ const LoadingSpinner = styled.div`
     }
   }
 `;
+const StyledSelectField = styled(SelectField)`
+  margin-bottom: 0;
+  min-width: 11.5rem;
+
+  &.entity-dropdown {
+    min-width: 10rem;
+  }
+
+  > div {
+    margin-top: 0;
+  }
+  /* Apply fixed width to dropdown options */
+  .react-select__menu {
+    width: 175px;
+  }
+
+  .react-select__menu-list {
+    max-width: 175px;
+    white-space: wrap;
+    text-overflow: ellipsis;
+  }
+
+  .react-select__option {
+    max-width: 175px;
+    word-break: break-all;
+    overflow: hidden;
+  }
+  .react-select__control {
+    padding: 5px 4px;
+  }
+`;
 
 const DataFlowInventory = () => {
   const dispatch = useDispatch();
@@ -325,6 +356,12 @@ const DataFlowInventory = () => {
   );
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [flowUploadModalOpen, setFlowUploadModalOpen] = useState(false);
+  const [selectedFlowByDefalut, setSelectedFlowByDefalut] = useState(null);
+
+  const handleChange = option => {
+    setSelectedFlowByDefalut(option); // 👈 yahan pura option object rakho
+    dispatch(FlowValidationActions.fetchFlows(option?.value));
+  };
 
   useEffect(() => {
     if (!isEmpty(bucketListData)) {
@@ -463,6 +500,16 @@ const DataFlowInventory = () => {
             <HeaderContainer>
               <Title>Data Flow Inventory</Title>
               <div className="d-flex align-items-center justify-content-center gap-2">
+                <StyledSelectField
+                  name="selectflows"
+                  placeholder="Select Flow"
+                  value={selectedFlowByDefalut}
+                  onChange={handleChange}
+                  options={[
+                    { label: 'Ready-made Flows', value: 'existingFlows' },
+                    { label: 'User-defined Flows', value: 'uploadFlows' },
+                  ]}
+                />
                 <Button
                   onClick={() => {
                     setFlowUploadModalOpen(true);
@@ -475,6 +522,7 @@ const DataFlowInventory = () => {
                   onClick={() => {
                     dispatch(FlowValidationActions.fetchFlows());
                     setSearchTerm('');
+                    setSelectedFlowByDefalut(null);
                   }}
                 >
                   <RefreshIcon />

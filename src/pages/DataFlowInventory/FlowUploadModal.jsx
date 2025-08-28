@@ -5,12 +5,14 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { InputField, Modal } from '../../shared';
 import { PropertyIcon } from '../../assets';
 import {
   FlowValidationActions,
   FlowValidationSelectors,
 } from '../../store/flowValidation';
+import { useEffect } from 'react';
 
 // Validation schema
 const validationSchema = yup.object({
@@ -172,13 +174,13 @@ const FlowUploadModal = ({ setFlowUploadModalOpen, flowUploadModalOpen }) => {
 
   const onRequestClose = () => {
     reset();
+    // Reset the upload flow state to allow modal to open again
+    dispatch(FlowValidationActions.resetUploadFlow());
     setFlowUploadModalOpen(false);
   };
 
   const onSubmit = async data => {
     try {
-      console.log('Form Data:', data);
-
       const uploadData = new FormData();
       uploadData.append('flow_name', data.name);
       uploadData.append('comments', data.comments || '');
@@ -193,25 +195,46 @@ const FlowUploadModal = ({ setFlowUploadModalOpen, flowUploadModalOpen }) => {
       if (data.destination_icon?.[0]) {
         uploadData.append('destination_icon', data.destination_icon[0]);
       }
-
-      console.log('Upload Data:', uploadData);
-
       // Dispatch the upload flow action
       dispatch(FlowValidationActions.uploadFlow(uploadData));
 
-      // Close modal on success
-      onRequestClose();
+      // Don't close modal here, let the useEffect handle it after success
     } catch (error) {
       console.error('Upload failed:', error);
     }
   };
 
-  // Watch for upload success to close modal
+  // Watch for upload success to close modal and refresh flows
   React.useEffect(() => {
     if (uploadFlowState.success) {
+      // Refresh the flows list
+      dispatch(FlowValidationActions.fetchFlows());
       onRequestClose();
     }
-  }, [uploadFlowState.success]);
+  }, [uploadFlowState.success, dispatch]);
+
+  // Watch for upload errors
+  useEffect(() => {
+    if (uploadFlowState.error) {
+      toast.error(
+        uploadFlowState.error?.message || 'Upload failed. Please try again.'
+      );
+    }
+  }, [uploadFlowState.error]);
+
+  // Reset upload flow state when component unmounts
+  useEffect(() => {
+    return () => {
+      dispatch(FlowValidationActions.resetUploadFlow());
+    };
+  }, [dispatch]);
+
+  // Reset upload flow state when modal opens to ensure clean state
+  useEffect(() => {
+    if (flowUploadModalOpen) {
+      dispatch(FlowValidationActions.resetUploadFlow());
+    }
+  }, [flowUploadModalOpen, dispatch]);
 
   const modalContent = (
     <FormContainer>

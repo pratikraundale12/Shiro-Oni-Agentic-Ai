@@ -17,7 +17,12 @@ export const flowValidationAPI = api => {
   const deleteRule = id => api.delete(`/rule/${id}`);
   const emailReportApi = data => api.post(`/namespace/email-report`, data);
   const validateRandomFlowApi = data => api.post(`/validate-random-flow`, data);
-  const getFlows = () => api.get('/inventry-flow');
+  const getFlows = flowType => {
+    if (flowType) {
+      return api.get(`/inventry-flow?type=${flowType}`);
+    }
+    return api.get(`/inventry-flow`);
+  };
   const setRulePriorityApi = (ruleScopeId, data) =>
     api.put(`/rule-priority/${ruleScopeId}`, data);
 

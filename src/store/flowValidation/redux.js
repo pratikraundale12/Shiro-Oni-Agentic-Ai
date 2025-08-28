@@ -47,6 +47,7 @@ export const FlowValidationActions = {
   uploadFlow: createAction(`${prefix}uploadFlow`),
   uploadFlowSuccess: createAction(`${prefix}uploadFlowSuccess`),
   uploadFlowFailure: createAction(`${prefix}uploadFlowFailure`),
+  resetUploadFlow: createAction(`${prefix}resetUploadFlow`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -263,6 +264,15 @@ const uploadFlowFailure = (state, { payload }) => ({
   },
 });
 
+const resetUploadFlow = state => ({
+  ...state,
+  uploadFlow: {
+    loading: false,
+    success: null,
+    error: null,
+  },
+});
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
   FlowValidation_INITIAL_STATE,
@@ -314,6 +324,7 @@ export const flowValidationReducer = createReducer(
       )
       .addCase(FlowValidationActions.uploadFlow, uploadFlow)
       .addCase(FlowValidationActions.uploadFlowSuccess, uploadFlowSuccess)
-      .addCase(FlowValidationActions.uploadFlowFailure, uploadFlowFailure);
+      .addCase(FlowValidationActions.uploadFlowFailure, uploadFlowFailure)
+      .addCase(FlowValidationActions.resetUploadFlow, resetUploadFlow);
   }
 );

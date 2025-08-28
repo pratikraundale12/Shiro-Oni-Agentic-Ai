@@ -243,7 +243,7 @@ export function* uploadFlowSaga(api, { payload }) {
     // Refresh the flows list after successful upload
     yield put(FlowValidationActions.fetchFlows());
   } else {
-    toast.error(response?.data?.message || 'Failed to upload flow');
+    toast.error(response?.data?.error || 'Failed to upload flow');
     yield put(
       FlowValidationActions.uploadFlowFailure(
         response?.data?.message || 'Upload failed'
