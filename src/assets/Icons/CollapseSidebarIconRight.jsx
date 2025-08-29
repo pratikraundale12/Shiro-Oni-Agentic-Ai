@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export const CollapseSidebarIconRight = (
-  width = '14',
-  height = '14',
-  color = '#444445'
-) => (
+export const CollapseSidebarIconRight = ({
+  width = 20,
+  height = 20,
+  color = '#444445',
+}) => (
   <svg
     width={width}
     height={height}
@@ -45,7 +45,7 @@ export const CollapseSidebarIconRight = (
 );
 
 CollapseSidebarIconRight.propTypes = {
-  width: PropTypes.string,
-  height: PropTypes.string,
+  width: PropTypes.number,
+  height: PropTypes.number,
   stroke: PropTypes.string,
 };

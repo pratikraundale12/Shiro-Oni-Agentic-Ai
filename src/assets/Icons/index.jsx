@@ -113,6 +113,7 @@ export * from './RightArrowIcon';
 export * from './RightCircleIcon';
 export * from './RightIcon';
 export * from './RightInCircleIcon';
+export * from './RightDirectionIcon';
 export * from './RunningProcessor';
 export * from './SSOLoginIcon';
 export * from './ScheduleDeploymentIcon';
