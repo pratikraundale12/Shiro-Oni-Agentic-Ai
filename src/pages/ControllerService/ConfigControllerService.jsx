@@ -61,6 +61,9 @@ export const ConfigControllerService = ({
 }) => {
   
   const dispatch = useDispatch();
+  const serviceDefinition = useSelector(
+    NamespacesSelectors.getServiceDefinition
+  );
   const isModalOpenDropdownProperty = useSelector(
     NamespacesSelectors.getAddPropertyDropdownModal
   );
@@ -97,6 +100,7 @@ export const ConfigControllerService = ({
     const sortedList = listPropertyTableData.filter(
       element => element.displayName !== item.displayName
     );
+
     const sortedListAfterDelete = referenceListPropertyTableData?.filter(
       element => element.displayName !== item.displayName
     );
