@@ -13,7 +13,6 @@ import {
   RefreshIcon,
   SettingSmallIcon,
   SmallSearchIcon,
-  // TodoIcon,
   TriangleExclamationMarkIcon,
 } from '../../assets';
 
@@ -626,7 +625,6 @@ export const ListControllerService = () => {
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2">
-            {/* <TodoIcon width={22} height={24} /> */}
             <HeadingStyle>Controller Services List</HeadingStyle>
           </div>
         </div>

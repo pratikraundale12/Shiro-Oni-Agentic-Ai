@@ -29,7 +29,6 @@ import {
   RefreshIcon,
   ScheduleDeploymentIcon,
   SmallSearchIcon,
-  // TodoIcon,
 } from '../../assets';
 import {
   ACCESS_OPTIONS,
@@ -533,7 +532,7 @@ export const GridActions = ({
   };
 
   const handleChange = value => {
-     if (!value) {
+    if (!value) {
       dispatch(SchedularActions.setScheduleSelectRange([]));
       dispatch(
         GridSagsActions.fetchGrid({
@@ -760,9 +759,6 @@ export const GridActions = ({
         <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
         <FullPageLoader loading={loading} />
         <Flex>
-          {/* <ImageContainer>
-            <TodoIcon width={22} height={24} />
-          </ImageContainer> */}
           <Title>
             <span>{title}</span>
             {module === 'namespaces' && Boolean(gridCount) && (

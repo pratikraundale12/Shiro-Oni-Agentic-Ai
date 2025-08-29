@@ -11,7 +11,6 @@ import {
   GreenRightCircleIcon,
   // PlusCircleIcon,
   SmallSearchIcon,
-  // TodoIcon,
 } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { history } from '../../helpers/history';
@@ -40,10 +39,6 @@ const Flex = styled.div`
   justify-content: space-between;
   gap: 8px;
 `;
-
-// const ImageContainer = styled.div`
-//   margin-bottom: 0.8rem;
-// `;
 
 const ButtonsContainer = styled(Flex)`
   gap: 0.5rem;
@@ -530,9 +525,6 @@ export const ModuleAccess = () => {
     <>
       <Flex>
         <Flex>
-          {/* <ImageContainer>
-            <TodoIcon width={22} height={24} />
-          </ImageContainer> */}
           <Title>DFM Role Management</Title>
         </Flex>
         <ButtonsContainer>

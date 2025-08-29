@@ -7,13 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import * as Yup from 'yup';
-import {
-  LinkIcon,
-  PlusCircleIcon,
-  QRIcons,
-  TagIcon,
-  // TodoIcon,
-} from '../../assets';
+import { LinkIcon, PlusCircleIcon, QRIcons, TagIcon } from '../../assets';
 import { FullPageLoader } from '../../components';
 import { Table } from '../../components/CustomGrid/Table';
 import {
@@ -609,9 +603,6 @@ export const LdapConfig = () => {
       {loading && <FullPageLoader loading={loading} />}
       <Heading>
         <Flex>
-          {/* <ImageContainer>
-            <TodoIcon width={22} height={24} />
-          </ImageContainer> */}
           <Title>LDAP Configuration Fields</Title>
         </Flex>
       </Heading>
