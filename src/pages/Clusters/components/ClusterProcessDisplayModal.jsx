@@ -293,6 +293,33 @@ const RegistryModalSteps = [
     status: 'completed',
   },
 ];
+const deleteEKSClusterSteps = [
+  { step: 'Read values for flags', status: 'completed' },
+  { step: 'Resolve kubeconfig for EKS', status: 'completed' },
+  { step: 'Uninstall NiFi (EKS)', status: 'completed' },
+];
+const deleteEC2ClusterSteps = [
+  {
+    step: 'Read values for flags',
+    status: 'completed',
+  },
+  {
+    step: 'Validate EC2 SSH inputs',
+    status: 'completed',
+  },
+  {
+    step: 'Verify kubectl/helm on remote',
+    status: 'completed',
+  },
+  {
+    step: 'Resolve kubeconfig on remote',
+    status: 'completed',
+  },
+  {
+    step: ' NiFi uninstall (remote)',
+    status: 'completed',
+  },
+];
 export const ClusterProcessDisplayModal = ({
   isProcessModalOpen,
   setIsProcessModalOpen,
@@ -324,9 +351,14 @@ export const ClusterProcessDisplayModal = ({
   }));
   const processExeName =
     selectedCluster?.process_name || ansibleClusterCreationData?.process_name;
+
   const getReferencObjectForComparison = processExeName => {
     if (processExeName === 'delete') {
-      return deleteModalSteps;
+      return processData?.isKubeCluster && processData?.cluster_type === 'eks'
+        ? deleteEKSClusterSteps
+        : processData?.isKubeCluster && processData?.cluster_type === 'ec2'
+          ? deleteEC2ClusterSteps
+          : deleteModalSteps;
     } else if (processExeName === 'creation') {
       return processData?.isKubeCluster && processData?.cluster_type === 'eks'
         ? CreationModelKubeStepsEKS

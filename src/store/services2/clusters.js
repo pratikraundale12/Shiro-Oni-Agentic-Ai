@@ -134,6 +134,11 @@ export const clustersAPI = api => {
   const fetchKubeClusterDataToUpgrade = ({ id }) => {
     return api.get(`/clusters/${id}/get-upgrade-details`);
   };
+  const deleteClusterKube = ({ clusterIdToDelete, deleteType, payload }) =>
+    api.post(
+      `clusters/delete-kube-cluster/${clusterIdToDelete}/${deleteType}`,
+      payload
+    );
   return {
     fetchClusters,
     fetchClusterList,
@@ -175,5 +180,6 @@ export const clustersAPI = api => {
     createKubernetesMasterNodeCluster,
     deleteMasterNodeConfig,
     fetchKubeClusterDataToUpgrade,
+    deleteClusterKube,
   };
 };

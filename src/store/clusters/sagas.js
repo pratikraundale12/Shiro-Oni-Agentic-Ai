@@ -719,6 +719,36 @@ export function* fetchKubeClusterDataToUpgrade(api, { payload }) {
   }
 }
 
+export function* deleteClusterKube(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteClusterKube',
+    loadingSection: 'deleteClusterKube',
+    apiMethod: api.deleteClusterKube,
+    apiParams: [
+      {
+        clusterIdToDelete: payload?.clusterIdToDelete,
+        deleteType: payload?.deleteType || 'db_only',
+        payload: payload?.payloadData,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success('Cluster deleted Successfully');
+    yield put(
+      GridActions.fetchGrid({
+        module: 'clusters',
+        params: { page: 1, sort: 'name', limit: 10 },
+      })
+    );
+    yield put(ClustersActions.setIsOpenDeleteKubeClusterModal(false));
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+    );
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
 export function* clustersSagas(api) {
   yield all([
     takeLatest(
@@ -857,5 +887,6 @@ export function* clustersSagas(api) {
       fetchKubeClusterDataToUpgrade,
       api
     ),
+    takeLatest(ClustersActions.deleteClusterKube, deleteClusterKube, api),
   ]);
 }

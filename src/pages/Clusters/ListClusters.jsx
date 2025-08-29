@@ -143,6 +143,7 @@ export const ListClusters = () => {
   const { state, setState } = useGlobalContext();
   const [deactiveId, setDeactiveId] = useState(null);
   const [deleteHardId, setDeleteHardId] = useState(null);
+  const [deleteKubeClusterData, setDeleteKubeClusterData] = useState({});
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
   const menuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -479,7 +480,20 @@ export const ListClusters = () => {
                                 </Item>
                               )}
                               {item.delete_cluster &&
-                                !item.created_by_ansible && (
+                                !item.created_by_ansible &&
+                                item?.is_kube_cluster && (
+                                  <Item
+                                    onClick={() =>
+                                      handleClick('deleteKube', item.id, item)
+                                    }
+                                  >
+                                    <DeleteSmallIcon width={18} height={18} />
+                                    <span> Delete</span>
+                                  </Item>
+                                )}
+                              {item.delete_cluster &&
+                                !item.created_by_ansible &&
+                                !item?.is_kube_cluster && (
                                   <Item
                                     onClick={() =>
                                       handleClick('deleteHard', item.id)
@@ -665,6 +679,10 @@ export const ListClusters = () => {
       setDeleteHardId(id);
       setSelectedCluster({});
     }
+    if (type === 'deleteKube') {
+      setDeleteKubeClusterData(item);
+      dispatch(ClustersActions.setIsOpenDeleteKubeClusterModal(true));
+    }
   };
 
   useEffect(() => {
@@ -790,7 +808,7 @@ export const ListClusters = () => {
         setSortingState={setSortingState}
       />
       <ClusterSuccessModal />
-      <EKSClusterDeleteModal />
+      <EKSClusterDeleteModal deleteKubeClusterData={deleteKubeClusterData} />
       <ClusterProcessDisplayModal
         isProcessModalOpen={isProcessModalOpen}
         setIsProcessModalOpen={setIsProcessModalOpen}

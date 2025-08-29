@@ -159,6 +159,10 @@ export const ClustersActions = {
     `${prefix}fetchKubeClusterDataToUpgrade`
   ),
   setkubeClusterUpgradeData: createAction(`${prefix}setkubeClusterUpgradeData`),
+  setIsOpenDeleteKubeClusterModal: createAction(
+    `${prefix}setIsOpenDeleteKubeClusterModal`
+  ),
+  deleteClusterKube: createAction(`${prefix}deleteClusterKube`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -215,6 +219,7 @@ export const CLUSTERS_INITIAL_STATE = {
   kubConfigVersion: [],
   kubeHostModalOpen: false,
   kubeClusterUpgradeData: {},
+  isOpenDeleteKubeClusterModal: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -285,6 +290,8 @@ export const ClustersSelectors = {
   getkubConfigVersion: state => state.clusters.kubConfigVersion,
   getkubeHostModalOpen: state => state.clusters.kubeHostModalOpen,
   getkubeClusterUpgradeData: state => state.clusters.kubeClusterUpgradeData,
+  getisOpenDeleteKubeClusterModal: state =>
+    state.clusters.isOpenDeleteKubeClusterModal,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -621,6 +628,12 @@ const setkubeClusterUpgradeData = (state, { payload }) => {
     kubeClusterUpgradeData: payload,
   };
 };
+const setIsOpenDeleteKubeClusterModal = (state, { payload }) => {
+  return {
+    ...state,
+    isOpenDeleteKubeClusterModal: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -768,6 +781,10 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setkubeClusterUpgradeData,
         setkubeClusterUpgradeData
+      )
+      .addCase(
+        ClustersActions.setIsOpenDeleteKubeClusterModal,
+        setIsOpenDeleteKubeClusterModal
       );
   }
 );
