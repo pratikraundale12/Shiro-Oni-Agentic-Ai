@@ -81,10 +81,12 @@ const Breadcrumb = ({
   return (
     <BreadcrumbContainer id={module}>
       {data?.map((breadcrumb, index) => (
-        <BreadcrumbItem key={index} id={module + breadcrumb?.label}>
-          <span onClick={() => handleClick(breadcrumb)}>
-            {breadcrumb.label}
-          </span>
+        <BreadcrumbItem
+          key={index}
+          id={module + breadcrumb?.label}
+          onClick={() => handleClick(breadcrumb)}
+        >
+          <span>{breadcrumb.label}</span>
           {index !== data.length - 1 && (
             <BreadcrumbSeparator>&gt;</BreadcrumbSeparator>
           )}
