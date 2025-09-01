@@ -175,7 +175,7 @@ const ConfigDetailsPage = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-};
+  };
   useEffect(() => {
     if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
       setActiveTab(KDFM.SCHEDULE_DETAILS);
