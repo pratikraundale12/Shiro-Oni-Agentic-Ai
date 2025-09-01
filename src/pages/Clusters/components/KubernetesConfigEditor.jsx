@@ -48,8 +48,6 @@ const EditorKubernetesConfig = ({
           width="100%"
           language="yaml"
           value={yamlValue || configDefaultValue?.valuesYaml || ''}
-          //   defaultValue={configDefaultValue?.valuesYaml}
-          //   onMount={() => {}}
           onChange={handleYamlChange}
           options={{
             minimap: { enabled: false },

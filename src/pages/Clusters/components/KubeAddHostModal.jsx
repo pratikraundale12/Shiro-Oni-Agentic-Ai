@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -47,9 +47,6 @@ const UploadWrapper = styled.div`
 export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
   const dispatch = useDispatch();
   const isModalOpen = useSelector(ClustersSelectors.getkubeHostModalOpen);
-  //   const createClusterVisKubernetes = useSelector(
-  //     ClustersSelectors.getCreateClusterMethod
-  //   );
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
@@ -134,7 +131,6 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
                 register={register}
                 errors={errors}
                 icon={<DocumentTextIcon />}
-                // disabled={}
               />
             </div>{' '}
           </div>
@@ -151,19 +147,9 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
                     placeholder="Upload kubernetes config file"
                     errors={errors}
                     fileLable="File"
-                    validExtensionsArray={[
-                      //   '.pem',
-                      //   '.pfx',
-                      //   '.p12',
-                      //   '.jks',
-                      '.txt',
-                      '.yaml',
-                      '.yml',
-                    ]}
+                    validExtensionsArray={['.txt', '.yaml', '.yml']}
                     acceptString={'.txt,.yaml,.yml'}
-                    // acceptString={'.pem,.pfx,.p12,.jks,.txt,.yaml'}
                     errorText={'YAML or PFX'}
-                    // disabled={}
                     label="Kubernetes config file"
                   />
                 </ModalContainer>

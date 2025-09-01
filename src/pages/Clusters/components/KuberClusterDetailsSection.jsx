@@ -16,8 +16,8 @@ import {
   ClustersSelectors,
   LoadingSelectors,
 } from '../../../store';
-import PemUploadField from '../PEMUploadFile';
 import { FullPageLoader } from '../../../components';
+import KubeClusterConfigDetailsModal from './KubeClusterConfigdetailsModal';
 const Container = styled.div`
   background-color: ${props => props.theme.colors.lightGrey};
   border-radius: 20px;
@@ -40,28 +40,10 @@ const LabelSelect = styled.div`
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
 `;
-const UploadWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  color: #ff7a00;
-  margin-bottom: 12px;
-  padding: 5px 12px;
-  background-color: white;
-  font-weight: bold;
-  border: 1px solid #ff7a00;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
-
-  &:hover {
-    background-color: rgb(253, 250, 245);
-  }
-`;
 const KubeClusterDetailsSection = ({ activeTab }) => {
   const dispatch = useDispatch();
   const [formSchemaCluster, setFormSchemaCluster] = useState('eks');
+  const [openAddConfigModal, setOpenAddConfigModal] = useState(false);
   const kubeConfigList = useSelector(
     ClustersSelectors.getlistConfigListKubernetes
   );
@@ -247,7 +229,13 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchKubeClusterDataToUpgrade')
   );
-
+  const onError = errors => {
+    if (isEmpty(errors)) {
+      handleSubmit(handleCreateCluster)();
+    } else {
+      setOpenAddConfigModal(true);
+    }
+  };
   return (
     <>
       <Title
@@ -357,150 +345,6 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
               />
             </div>
           </div>
-          {clusterType === 'eks' && (
-            <>
-              {' '}
-              <div className="row mt-3">
-                <div className="col-6">
-                  <LabelSelect className="mb-3">
-                    AWS Region <span style={{ color: 'red' }}>*</span>
-                  </LabelSelect>
-                  <InputField
-                    name="aws_region"
-                    type="text"
-                    placeholder={'Enter AWS Region'}
-                    required={true}
-                    register={register}
-                    errors={errors}
-                    icon={<QRIcons />}
-                  />
-                </div>
-                <div className="col-6">
-                  <LabelSelect className="mb-3">
-                    AWS Access Key Id <span style={{ color: 'red' }}>*</span>
-                  </LabelSelect>
-                  <InputField
-                    name="aws_access_key_id"
-                    type="text"
-                    placeholder="Enter AWS Access Key Id"
-                    required={true}
-                    register={register}
-                    errors={errors}
-                    icon={<QRIcons />}
-                  />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-6">
-                  <LabelSelect className="mb-3">
-                    AWS Secret Access Key{' '}
-                    <span style={{ color: 'red' }}>*</span>
-                  </LabelSelect>
-                  <InputField
-                    name="aws_secret_access_key"
-                    type="text"
-                    placeholder="Enter AWS Secret Access Key"
-                    required={true}
-                    register={register}
-                    errors={errors}
-                    icon={<QRIcons />}
-                  />
-                </div>
-                <div className="col-6">
-                  <LabelSelect className="mb-3">
-                    AWS Session Token <span style={{ color: 'red' }}>*</span>
-                  </LabelSelect>
-                  <InputField
-                    name="aws_session_token"
-                    type="text"
-                    placeholder={'Enter AWS Session Token'}
-                    register={register}
-                    errors={errors}
-                    icon={<QRIcons />}
-                    required={true}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-          {clusterType === 'ec2' && isEmpty(kubeUpgradeData) && (
-            <>
-              <>
-                <div className="row mt-3">
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      Bastion Host (Public IP / DNS){' '}
-                      <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="ec2_bastion_host"
-                      type="text"
-                      placeholder={'Enter Bastion Host'}
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
-                  </div>
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      SSH User <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="ec2_ssh_username"
-                      type="text"
-                      placeholder="Enter SSH User"
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      Local Forward Port <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="ec2_local_forward_port"
-                      type="text"
-                      placeholder="Enter Local Forward Port"
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
-                  </div>
-                  <div className="col-6">
-                    {/* <LabelSelect className="mb-3"> */}
-                    <PemUploadField
-                      name="ec2_ssh_pem_file"
-                      watch={watch}
-                      control={control}
-                      required
-                      rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                      placeholder="Upload SSH Key File"
-                      errors={errors}
-                      fileLable="File"
-                      validExtensionsArray={[
-                        '.pem',
-                        //   '.pfx',
-                        //   '.p12',
-                        //   '.jks',
-                        '.txt',
-                        '.yaml',
-                        '.yml',
-                      ]}
-                      acceptString={'.txt,.yaml,.yml,.pem'}
-                      errorText={'YAML,PEM or PFX'}
-                      label="SSH Key File"
-                    />
-                  </div>
-                </div>
-              </>
-            </>
-          )}
         </div>
       </Container>
       <BottomButton className="bottom-button-divs d-flex">
@@ -509,11 +353,27 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
             {KDFM.BACK}
           </Button>
 
-          <Button type="submit" onClick={handleSubmit(handleCreateCluster)}>
+          <Button
+            type="submit"
+            onClick={handleSubmit(handleCreateCluster, onError)}
+          >
             {!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
           </Button>
         </BottomButtonDiv>
       </BottomButton>
+      <KubeClusterConfigDetailsModal
+        register={register}
+        errors={errors}
+        openAddConfigModal={openAddConfigModal}
+        setOpenAddConfigModal={setOpenAddConfigModal}
+        clusterType={clusterType}
+        control={control}
+        watch={watch}
+        handleCreateCluster={handleCreateCluster}
+        handleSubmit={handleSubmit}
+        reset={reset}
+        kubeClusterIDEdit={kubeClusterIDEdit}
+      />
     </>
   );
 };

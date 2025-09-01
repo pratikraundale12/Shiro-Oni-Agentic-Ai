@@ -85,9 +85,6 @@ const ClusterSetupNewConfigKubernetes = () => {
   const dispatch = useDispatch();
   const [errorsInEditor, setErrorsInEditor] = useState([]);
   const [yamlValue, setYamlValue] = useState('');
-  //   const configToEdit = useSelector(
-  //     ClustersSelectors.getUpdateConfigClusterSetupData
-  //   );
   const configDefaultValue = useSelector(
     ClustersSelectors.getKubernetesConfigFields
   );
