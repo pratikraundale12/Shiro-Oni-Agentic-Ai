@@ -1174,13 +1174,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <span className="nav-text ms-1">{item.name}</span>
                   </div>
 
-                  <LessArrowIcon
-                    color={
-                      item?.path === selectedTitle?.[0]?.path
-                        ? theme.colors.white
-                        : 'black'
-                    }
-                  />
+                  <LessArrowIcon color={theme.colors.white} />
                 </Item>
               ))}
             </List>
