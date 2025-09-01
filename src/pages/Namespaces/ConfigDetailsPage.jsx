@@ -175,9 +175,7 @@ const ConfigDetailsPage = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    dispatch(NamespacesActions.setSelectedNamespace({}));
-    history.push('/process-group');
-  };
+};
   useEffect(() => {
     if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
       setActiveTab(KDFM.SCHEDULE_DETAILS);
