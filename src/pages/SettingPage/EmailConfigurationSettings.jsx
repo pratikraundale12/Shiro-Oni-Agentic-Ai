@@ -445,7 +445,7 @@ export const EmailConfigurationSettings = () => {
             <InputField
               name="from_email"
               register={register}
-              icon={<SmsNotificationIcon width="20" height="20" />}
+              icon={<SmsNotificationIcon />}
               label={KDFM.FROM_EMAIL}
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
@@ -499,7 +499,7 @@ export const EmailConfigurationSettings = () => {
             name="to_email"
             value={toEmail}
             onChange={handleChange}
-            icon={<SmsNotificationIcon width="20" height="20" />}
+            icon={<SmsNotificationIcon />}
             label={KDFM.TO_EMAIL}
             placeholder={KDFM.ENTER_EMAIL}
             required={true}
