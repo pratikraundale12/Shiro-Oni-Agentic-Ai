@@ -570,7 +570,7 @@ export const ClusterProcessDisplayModal = ({
   useEffect(() => {
     const extractedTime = extractNumberFromTimeString('1 mins');
     if (extractedTime !== null && !isNaN(extractedTime)) {
-      setInitialisingTime(10 * 1000);
+      setInitialisingTime(180 * 1000);
     }
   }, [processData]);
 

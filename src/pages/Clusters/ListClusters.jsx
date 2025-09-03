@@ -348,6 +348,7 @@ export const ListClusters = () => {
                   handleHardDeleteFailedAnsibleCluster
                 }
                 handleOpenProgressModal={handleOpenProgressModal}
+                handleClick={handleClick}
               >
                 {menuState.isVisible && item.id === menuState.row.id && (
                   <DropdownPortal>
