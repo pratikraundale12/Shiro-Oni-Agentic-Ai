@@ -1,341 +1,323 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Button, CheckboxField } from '../../../shared';
+import { Table } from '../../../components';
+import GroupUserIcon from '../../../assets/Icons/GroupUserIcon';
+import NewUserIcon from '../../../assets/Icons/NewUserIcon';
+import {
+  NamespacesSelectors,
+  RolesActions,
+  RolesSelectors,
+} from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
 
-const ComponentContainer = styled.div`
+const Container = styled.div`
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+`;
+
+const MainContent = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  background-color: white;
+  min-height: calc(100vh - 210px);
+  border: 1px solid #dde4f0;
 `;
 
-const SectionTitle = styled.h4`
-  font-size: 16px;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 12px 0;
+const Sidebar = styled.div`
+  width: 280px;
+  background-color: #f8f9fa;
+  border-right: 1px solid #e9ecef;
+  padding: 0;
 `;
 
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const Label = styled.label`
+const SidebarItem = styled.div`
+  padding: 12px 24px;
   font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-`;
+  color: #495057;
+  cursor: pointer;
+  border-bottom: 1px solid #e9ecef;
 
-// const Input = styled.input`
-//   padding: 10px 12px;
-//   border: 1px solid #d1d5db;
-//   border-radius: 6px;
-//   font-size: 14px;
-//   transition: border-color 0.2s ease;
+  ${props =>
+    props.active &&
+    `
+    background-color: #fff3e0;
+    color: #ff6b35;
+    font-weight: 500;
+  `}
 
-//   &:focus {
-//     outline: none;
-//     border-color: #ff6b35;
-//     box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
-//   }
-// `;
-
-const Select = styled.select`
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  background: white;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+  &:hover {
+    background-color: #f1f3f4;
   }
 `;
 
-const TextArea = styled.textarea`
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  min-height: 80px;
-  resize: vertical;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
-  }
+const ContentArea = styled.div`
+  flex: 1;
+  padding: 0;
 `;
 
-const CheckboxContainer = styled.div`
+const TabContainer = styled.div`
+  display: flex;
+  border-bottom: 1px solid #e9ecef;
+  background-color: white;
+`;
+
+const Tab = styled.button`
+  background: none;
+  border: none;
+  padding: 16px 24px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #6c757d;
+  border-bottom: 2px solid transparent;
   display: flex;
   align-items: center;
   gap: 8px;
-`;
-
-const Checkbox = styled.input`
-  width: 16px;
-  height: 16px;
-  accent-color: #ff6b35;
-`;
-
-const CheckboxLabel = styled.label`
-  font-size: 14px;
-  color: #374151;
-  cursor: pointer;
-`;
-
-const Button = styled.button`
-  background: #ff6b35;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  align-self: flex-start;
-
-  &:hover {
-    background: #e55a2b;
-  }
-
-  &:disabled {
-    background: #d1d5db;
-    cursor: not-allowed;
-  }
-`;
-
-const ClusterGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  margin-top: 8px;
-`;
-
-const ClusterCard = styled.div`
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 12px;
-  background: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: #ff6b35;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
 
   ${props =>
-    props.selected &&
+    props.active &&
     `
-    border-color: #ff6b35;
-    background: #fff7f3;
+    color: #ff6b35;
+    border-bottom-color: #ff6b35;
   `}
 `;
 
-const ClusterName = styled.div`
-  font-weight: 500;
-  color: #1f2937;
-  margin-bottom: 4px;
+const TabIcon = styled.span`
+  font-size: 16px;
 `;
 
-const ClusterStatus = styled.div`
-  font-size: 12px;
-  color: ${props => (props.status === 'active' ? '#059669' : '#dc2626')};
+const SearchContainer = styled.div`
+  padding: 16px 24px;
+  background-color: #f8f9fa;
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+
+  &::placeholder {
+    color: #6c757d;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #ff6b35;
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+  }
+`;
+
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+`;
+
+const ButtonsContainer = styled(Flex)`
+  gap: 0.5rem;
+`;
+
+const Title = styled.h3`
+  font-family: ${props => props.theme.fontNato};
+  font-weight: 500;
+  font-size: 20px;
+  margin-left: 10px;
 `;
 
 const NiFiClusterAccessManagement = () => {
-  const [formData, setFormData] = useState({
-    selectedClusters: [],
-    accessType: 'read',
-    permissions: {
-      canManageNodes: false,
-      canViewMetrics: true,
-      canManageUsers: false,
-      canAccessRegistry: false,
-    },
-    customPolicies: '',
-    notificationSettings: {
-      emailAlerts: true,
-      slackAlerts: false,
-    },
-  });
+  // const [accessMode, setAccessMode] = useState('nifi-cluster');
+  const [activeTab, setActiveTab] = useState('groups');
+  const [activeSidebarItem, setActiveSidebarItem] = useState();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [permissions, setPermissions] = useState({});
 
-  const availableClusters = [
-    { id: 'cluster1', name: 'Production Cluster', status: 'active' },
-    { id: 'cluster2', name: 'Development Cluster', status: 'active' },
-    { id: 'cluster3', name: 'Testing Cluster', status: 'inactive' },
-    { id: 'cluster4', name: 'Staging Cluster', status: 'active' },
+  // Access the NiFi policies in your component
+  const clusterNiFiPolicies = useSelector(
+    RolesSelectors.getClusterNiFiPolicies
+  );
+
+  console.log('clusterNiFiPolicies', clusterNiFiPolicies);
+
+  const sidebarItems = [
+    ...(clusterNiFiPolicies[0]?.accessPolicies?.map(policy => policy.name) ||
+      []),
   ];
 
-  const handleClusterSelection = clusterId => {
-    setFormData(prev => ({
-      ...prev,
-      selectedClusters: prev.selectedClusters.includes(clusterId)
-        ? prev.selectedClusters.filter(id => id !== clusterId)
-        : [...prev.selectedClusters, clusterId],
-    }));
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handlePermissionChange = (permission, checked) => {
-    setFormData(prev => ({
-      ...prev,
-      permissions: {
-        ...prev.permissions,
-        [permission]: checked,
+  // Dynamic column definitions based on sidebar items
+  const getDynamicColumns = nameColumnLabel => {
+    const columns = [
+      {
+        label: nameColumnLabel,
+        renderCell: item => (
+          <div style={{ fontSize: '14px', color: '#212529' }}>{item.name}</div>
+        ),
+        width: '25%',
       },
-    }));
+    ];
+
+    // Add dynamic columns for each sidebar item
+    sidebarItems.forEach(sidebarItem => {
+      columns.push({
+        label: sidebarItem,
+        renderCell: item => (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <CheckboxField
+              name={`${sidebarItem}-${item.name}`}
+              checked={permissions[`${sidebarItem}-${item.name}`] || false}
+              onChange={() => handlePermissionChange(sidebarItem, item.name)}
+            />
+          </div>
+        ),
+        width: `${75 / sidebarItems.length}%`,
+      });
+    });
+
+    return columns;
   };
 
-  const handleNotificationChange = (setting, checked) => {
-    setFormData(prev => ({
+  const GROUPS_COLUMNS = getDynamicColumns('All Groups');
+  const USERS_COLUMNS = getDynamicColumns('All Users');
+
+  const handlePermissionChange = (sidebarItem, itemName) => {
+    const permissionKey = `${sidebarItem}-${itemName}`;
+    setPermissions(prev => ({
       ...prev,
-      notificationSettings: {
-        ...prev.notificationSettings,
-        [setting]: checked,
-      },
+      [permissionKey]: !prev[permissionKey],
     }));
   };
+  const dispatch = useDispatch();
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  console.log('selectedCluster', selectedCluster);
 
-  const handleSave = () => {
-    console.log('NiFi Cluster Access Management Settings:', formData);
-    // Handle save logic here
-  };
+  useEffect(() => {
+    // Fetch users for a specific cluster
+    dispatch(
+      RolesActions.fetchClusterUsers({
+        clusterId: selectedCluster?.value,
+      })
+    );
+    // Fetch user groups for a specific cluster
+    dispatch(
+      RolesActions.fetchClusterUserGroups({
+        clusterId: selectedCluster?.value,
+      })
+    );
+
+    // Fetch NiFi policies for a specific cluster
+    dispatch(
+      RolesActions.fetchClusterNiFiPolicies({
+        clusterId: selectedCluster?.value,
+      })
+    );
+  }, [dispatch, selectedCluster]);
+
+  // Access the users in your component
+  const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
+  const userIdentities = clusterUsers?.map(name => {
+    return {
+      name: name?.component?.identity,
+    };
+  });
+
+  const clusterUserGroups = useSelector(RolesSelectors.getClusterUserGroups);
+  const userGroupIdentities = clusterUserGroups?.map(name => {
+    return {
+      name: name?.component?.identity,
+    };
+  });
 
   return (
-    <ComponentContainer>
-      <SectionTitle>NiFi Cluster Access Management</SectionTitle>
+    <>
+      <Flex>
+        <Flex>
+          <Title>Cluster Access Management</Title>
+        </Flex>
+        <ButtonsContainer>
+          <Button size="sm">Save Changes</Button>
+        </ButtonsContainer>
+      </Flex>
+      <Container>
+        <MainContent>
+          <Sidebar>
+            {sidebarItems.map(item => (
+              <SidebarItem
+                key={item}
+                active={activeSidebarItem === item}
+                onClick={() => setActiveSidebarItem(item)}
+              >
+                {item}
+              </SidebarItem>
+            ))}
+          </Sidebar>
 
-      <FormGroup>
-        <Label>Select Clusters</Label>
-        <ClusterGrid>
-          {availableClusters.map(cluster => (
-            <ClusterCard
-              key={cluster.id}
-              selected={formData.selectedClusters.includes(cluster.id)}
-              onClick={() => handleClusterSelection(cluster.id)}
-            >
-              <ClusterName>{cluster.name}</ClusterName>
-              <ClusterStatus status={cluster.status}>
-                {cluster.status === 'active' ? '● Active' : '● Inactive'}
-              </ClusterStatus>
-            </ClusterCard>
-          ))}
-        </ClusterGrid>
-      </FormGroup>
+          <ContentArea>
+            <TabContainer>
+              <Tab
+                active={activeTab === 'groups'}
+                onClick={() => setActiveTab('groups')}
+              >
+                <TabIcon>
+                  <GroupUserIcon />
+                </TabIcon>
+                Groups
+              </Tab>
+              <Tab
+                active={activeTab === 'users'}
+                onClick={() => setActiveTab('users')}
+              >
+                <TabIcon>
+                  <NewUserIcon />
+                </TabIcon>
+                Users
+              </Tab>
+            </TabContainer>
 
-      <FormGroup>
-        <Label>Access Type</Label>
-        <Select
-          value={formData.accessType}
-          onChange={e => handleInputChange('accessType', e.target.value)}
-        >
-          <option value="read">Read Only</option>
-          <option value="write">Read & Write</option>
-          <option value="admin">Cluster Administrator</option>
-        </Select>
-      </FormGroup>
+            {activeTab === 'groups' && (
+              <>
+                <SearchContainer>
+                  <SearchInput
+                    type="text"
+                    placeholder="Search Group Names"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                  />
+                </SearchContainer>
 
-      <FormGroup>
-        <Label>Cluster Permissions</Label>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.permissions.canManageNodes}
-              onChange={e =>
-                handlePermissionChange('canManageNodes', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Can Manage Cluster Nodes</CheckboxLabel>
-          </CheckboxContainer>
+                <Table
+                  data={userGroupIdentities}
+                  columns={GROUPS_COLUMNS}
+                  className="groups-table"
+                />
+              </>
+            )}
 
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.permissions.canViewMetrics}
-              onChange={e =>
-                handlePermissionChange('canViewMetrics', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Can View Cluster Metrics</CheckboxLabel>
-          </CheckboxContainer>
+            {activeTab === 'users' && (
+              <>
+                <SearchContainer>
+                  <SearchInput
+                    type="text"
+                    placeholder="Search User Names"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                  />
+                </SearchContainer>
 
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.permissions.canManageUsers}
-              onChange={e =>
-                handlePermissionChange('canManageUsers', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Can Manage Cluster Users</CheckboxLabel>
-          </CheckboxContainer>
-
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.permissions.canAccessRegistry}
-              onChange={e =>
-                handlePermissionChange('canAccessRegistry', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Can Access Registry</CheckboxLabel>
-          </CheckboxContainer>
-        </div>
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Custom Policies (JSON)</Label>
-        <TextArea
-          placeholder='{"policy1": "value1", "policy2": "value2"}'
-          value={formData.customPolicies}
-          onChange={e => handleInputChange('customPolicies', e.target.value)}
-        />
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Notification Settings</Label>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.notificationSettings.emailAlerts}
-              onChange={e =>
-                handleNotificationChange('emailAlerts', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Email Alerts</CheckboxLabel>
-          </CheckboxContainer>
-
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.notificationSettings.slackAlerts}
-              onChange={e =>
-                handleNotificationChange('slackAlerts', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Slack Alerts</CheckboxLabel>
-          </CheckboxContainer>
-        </div>
-      </FormGroup>
-
-      <Button onClick={handleSave}>Save Cluster Access Settings</Button>
-    </ComponentContainer>
+                <Table
+                  data={userIdentities}
+                  columns={USERS_COLUMNS}
+                  className="users-table"
+                />
+              </>
+            )}
+          </ContentArea>
+        </MainContent>
+      </Container>
+    </>
   );
 };
 

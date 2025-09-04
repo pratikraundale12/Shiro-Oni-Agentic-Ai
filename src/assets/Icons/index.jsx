@@ -171,3 +171,5 @@ export * from './DowngradeWithErrorIcon';
 export * from './UpgradeIcon';
 export * from './UpgradeWithErrorIcon';
 export * from './FailureIcon';
+export * from './GroupUserIcon';
+export * from './NewUserIcon';

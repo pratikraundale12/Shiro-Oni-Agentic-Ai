@@ -2,6 +2,7 @@ import { toast } from 'react-toastify';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { requestSaga } from '../helpers/request_sagas';
 import { RolesActions, RolesSelectors } from './redux';
+import { NamespacesSelectors } from '../namespaces';
 
 export function* fetchRoles(api) {
   const response = yield call(requestSaga, {
@@ -152,6 +153,60 @@ export function* editRole(api, { payload }) {
   yield put(RolesActions.setInActiveUserIdModelOpen(false));
 }
 
+export function* fetchClusterUsers(
+  api,
+  { payload: { clusterId, params = {} } }
+) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchClusterUsers',
+    loadingSection: 'fetchClusterUsers',
+    apiMethod: api.fetchClusterUsers,
+    apiParams: [{ clusterId, params }],
+    successAction: RolesActions.fetchClusterUsersSuccess,
+  });
+  if (response?.data?.message) {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* fetchClusterUserGroups(
+  api,
+  { payload: { clusterId, params = {} } }
+) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchClusterUserGroups',
+    loadingSection: 'fetchClusterUserGroups',
+    apiMethod: api.fetchClusterUserGroups,
+    apiParams: [{ clusterId, params }],
+    successAction: RolesActions.fetchClusterUserGroupsSuccess,
+  });
+  if (response?.data?.message) {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* fetchClusterNiFiPolicies(
+  api,
+  { payload: { clusterId, params = {} } }
+) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchClusterNiFiPolicies',
+    loadingSection: 'fetchClusterNiFiPolicies',
+    apiMethod: api.fetchClusterNiFiPolicies,
+    apiParams: [{ clusterId, params }],
+    successAction: RolesActions.fetchClusterNiFiPoliciesSuccess,
+  });
+  if (response?.data?.message) {
+    toast.error(response?.data?.message);
+  }
+}
+
 export function* rolesSagas(api) {
   yield all([
     takeLatest(RolesActions.fetchRoles, fetchRoles, api),
@@ -161,5 +216,16 @@ export function* rolesSagas(api) {
     takeLatest(RolesActions.fetchLdap, fetchLdap, api),
     takeLatest(RolesActions.deleteRole, deleteRole, api),
     takeLatest(RolesActions.editRole, editRole, api),
+    takeLatest(RolesActions.fetchClusterUsers, fetchClusterUsers, api),
+    takeLatest(
+      RolesActions.fetchClusterUserGroups,
+      fetchClusterUserGroups,
+      api
+    ),
+    takeLatest(
+      RolesActions.fetchClusterNiFiPolicies,
+      fetchClusterNiFiPolicies,
+      api
+    ),
   ]);
 }

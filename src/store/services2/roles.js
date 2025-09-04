@@ -15,6 +15,15 @@ export const rolesAPI = api => {
   const editRole = ({ payload = {}, roleId }) =>
     api.patch(`roles/${roleId}`, payload);
 
+  const fetchClusterUsers = ({ clusterId, params = {} }) =>
+    api.get(`/clusters/${clusterId}/users`, params);
+
+  const fetchClusterUserGroups = ({ clusterId, params = {} }) =>
+    api.get(`/clusters/${clusterId}/user_groups`, params);
+
+  const fetchClusterNiFiPolicies = ({ clusterId, params = {} }) =>
+    api.get(`/clusters/${clusterId}/nifi_policies`, params);
+
   return {
     fetchClustersRolesAccess,
     fetchRoleClusters,
@@ -24,5 +33,8 @@ export const rolesAPI = api => {
     fetchLdap,
     deleteRole,
     editRole,
+    fetchClusterUsers,
+    fetchClusterUserGroups,
+    fetchClusterNiFiPolicies,
   };
 };
