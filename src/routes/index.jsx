@@ -36,7 +36,7 @@ import {
   ListNamespaces,
   ListUsers,
   Login,
-  ModuleAccess,
+  // ModuleAccess,
   NotFound,
   ReadyFlowGallary,
   Reset,
@@ -69,6 +69,7 @@ import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 import SummarySanityCheck from '../pages/Namespaces/SummarySanityCheck.jsx';
 import InvalidProcessorDetails from '../pages/Namespaces/InvalidProcessorDetails.jsx';
 import DownloadHistory from '../pages/ActivityHistory/DownloadHistory.jsx';
+import AccessManagementTypes from '../pages/Role&Permission/AccessManagementTypes.jsx';
 // import DeploymentStatistics from '../pages/Dashboard/DeploymentStatistics.jsx';
 
 export const ROUTES_MENU = [
@@ -210,7 +211,7 @@ export const ROUTES_MENU = [
     pages: [
       {
         path: '',
-        component: <ModuleAccess />,
+        component: <AccessManagementTypes />,
       },
       {
         path: ['cluster-access'],
