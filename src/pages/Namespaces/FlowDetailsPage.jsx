@@ -265,11 +265,13 @@ const FlowDetailsPage = () => {
       x:
         storedXcord ||
         xStateCoordinate ||
-        registryDetailsData?.position?.[0]?.x,
+        registryDetailsData?.position?.[0]?.x ||
+        0,
       y:
         storedYcord ||
         yStateCoordinate ||
-        registryDetailsData?.position?.[0]?.y,
+        registryDetailsData?.position?.[0]?.y ||
+        0,
       width: 384,
       height: 176,
       color: theme.colors.primary,
@@ -661,7 +663,8 @@ const FlowDetailsPage = () => {
                         value={
                           storedXcord ||
                           xStateCoordinate ||
-                          selectedNameSpace?.position?.x
+                          selectedNameSpace?.position?.x ||
+                          0
                         }
                         icon={<CanvasXIcon />}
                         onChange={e => handleXCoordinateChangeInput(e)}
@@ -676,7 +679,8 @@ const FlowDetailsPage = () => {
                         value={
                           storedYcord ||
                           yStateCoordinate ||
-                          selectedNameSpace?.position?.y
+                          selectedNameSpace?.position?.y ||
+                          0
                         }
                         icon={<CanvasYIcon />}
                         onChange={e => handleYCoordinateChangeInput(e)}
