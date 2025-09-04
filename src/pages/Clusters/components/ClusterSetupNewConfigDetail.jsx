@@ -1109,19 +1109,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       />
       <OuterContainer>
         <div className="row px-3">
-          <div className="col-4">
-            <InputField
-              label={KDFM.CONFIG_NAME}
-              name="configName"
-              type="text"
-              placeholder={KDFM.ENTER_CONFIG_NAME}
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-              disabled={!isEmpty(configToEdit)}
-            />
-          </div>
+          {' '}
           <div className="col-4">
             <StyledSelectField
               label={KDFM.NIFI_VERSION}
@@ -1135,6 +1123,19 @@ const ClusterSetupNewConfigDetailsPage = () => {
               placeholder={KDFM.SELECT_NIFI_VERSION}
               height="54px"
               labelMargin="0px"
+              disabled={!isEmpty(configToEdit)}
+            />
+          </div>
+          <div className="col-4">
+            <InputField
+              label={KDFM.CONFIG_NAME}
+              name="configName"
+              type="text"
+              placeholder={KDFM.ENTER_CONFIG_NAME}
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
               disabled={!isEmpty(configToEdit)}
             />
           </div>
