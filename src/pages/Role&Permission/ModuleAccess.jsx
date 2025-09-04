@@ -115,7 +115,7 @@ const MODULES = [
     label: 'Cluster',
     value: 'cluster',
   },
-   {
+  {
     label: 'Cluster Setup',
     value: 'cluster_setup',
   },
@@ -188,6 +188,7 @@ const EXCLUDE_DELETE_PERMISSION = [
   'data_inventory',
   'flow_validation',
   'cluster_setup',
+  'registry',
 ];
 
 const CellRender = ({
@@ -264,7 +265,7 @@ export const ModuleAccess = () => {
         'view_registry',
         'add_registry',
         'edit_registry',
-        'delete_registry',
+        // 'delete_registry',
       ].includes(element?.name)
     );
 
@@ -492,7 +493,7 @@ export const ModuleAccess = () => {
     const registryPolicies = [
       'add_registry',
       'edit_registry',
-      'delete_registry',
+      // 'delete_registry',
     ];
     const clusterSetupPolicy = ['add_cluster_setup'];
 
