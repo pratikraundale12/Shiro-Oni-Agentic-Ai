@@ -44,6 +44,10 @@ export const FlowValidationActions = {
   resetDeploymentFlowValidation: createAction(
     `${prefix}resetDeploymentFlowValidation`
   ),
+  uploadFlow: createAction(`${prefix}uploadFlow`),
+  uploadFlowSuccess: createAction(`${prefix}uploadFlowSuccess`),
+  uploadFlowFailure: createAction(`${prefix}uploadFlowFailure`),
+  resetUploadFlow: createAction(`${prefix}resetUploadFlow`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -65,6 +69,11 @@ export const FlowValidation_INITIAL_STATE = {
   flows: [],
   rulePriority: null,
   deploymentFlowValidation: null,
+  uploadFlow: {
+    loading: false,
+    success: null,
+    error: null,
+  },
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -89,6 +98,7 @@ export const FlowValidationSelectors = {
   getRulePriority: state => state.flowValidation.rulePriority,
   getDeploymentFlowValidation: state =>
     state.flowValidation.deploymentFlowValidation,
+  getUploadFlow: state => state.flowValidation.uploadFlow,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -224,6 +234,45 @@ const resetDeploymentFlowValidation = state => ({
   deploymentFlowValidation: null,
 });
 
+const uploadFlow = state => ({
+  ...state,
+  uploadFlow: {
+    ...state.uploadFlow,
+    loading: true,
+    success: null,
+    error: null,
+  },
+});
+
+const uploadFlowSuccess = (state, { payload }) => ({
+  ...state,
+  uploadFlow: {
+    ...state.uploadFlow,
+    loading: false,
+    success: payload,
+    error: null,
+  },
+});
+
+const uploadFlowFailure = (state, { payload }) => ({
+  ...state,
+  uploadFlow: {
+    ...state.uploadFlow,
+    loading: false,
+    success: null,
+    error: payload,
+  },
+});
+
+const resetUploadFlow = state => ({
+  ...state,
+  uploadFlow: {
+    loading: false,
+    success: null,
+    error: null,
+  },
+});
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
   FlowValidation_INITIAL_STATE,
@@ -272,6 +321,10 @@ export const flowValidationReducer = createReducer(
       .addCase(
         FlowValidationActions.resetDeploymentFlowValidation,
         resetDeploymentFlowValidation
-      );
+      )
+      .addCase(FlowValidationActions.uploadFlow, uploadFlow)
+      .addCase(FlowValidationActions.uploadFlowSuccess, uploadFlowSuccess)
+      .addCase(FlowValidationActions.uploadFlowFailure, uploadFlowFailure)
+      .addCase(FlowValidationActions.resetUploadFlow, resetUploadFlow);
   }
 );

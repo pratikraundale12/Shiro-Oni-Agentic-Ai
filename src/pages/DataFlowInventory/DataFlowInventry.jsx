@@ -30,6 +30,8 @@ import { AddNewBucketModal } from '../AiFlowGenerator/AddNewBucketModal';
 import { FlowAddToRegistryModal } from '../AiFlowGenerator/FlowAddToRegistryModal';
 import { FlowAddedSuccessModal } from '../AiFlowGenerator/FlowAddedSuccessModal';
 import FlowAlreadyExistModal from '../AiFlowGenerator/FlowAlreadyExistModal';
+import { Button, SelectField } from '../../shared';
+import FlowUploadModal from './FlowUploadModal';
 
 // Styled Components
 const Container = styled.div`
@@ -295,6 +297,37 @@ const LoadingSpinner = styled.div`
     }
   }
 `;
+const StyledSelectField = styled(SelectField)`
+  margin-bottom: 0;
+  min-width: 11.5rem;
+
+  &.entity-dropdown {
+    min-width: 10rem;
+  }
+
+  > div {
+    margin-top: 0;
+  }
+  /* Apply fixed width to dropdown options */
+  .react-select__menu {
+    width: 175px;
+  }
+
+  .react-select__menu-list {
+    max-width: 175px;
+    white-space: wrap;
+    text-overflow: ellipsis;
+  }
+
+  .react-select__option {
+    max-width: 175px;
+    word-break: break-all;
+    overflow: hidden;
+  }
+  .react-select__control {
+    padding: 5px 4px;
+  }
+`;
 
 const DataFlowInventory = () => {
   const dispatch = useDispatch();
@@ -322,6 +355,13 @@ const DataFlowInventory = () => {
     AiFlowGeneratorSelectors.getIsFlowAlreadyAddedSuccessFully
   );
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
+  const [flowUploadModalOpen, setFlowUploadModalOpen] = useState(false);
+  const [selectedFlowByDefalut, setSelectedFlowByDefalut] = useState(null);
+
+  const handleChange = option => {
+    setSelectedFlowByDefalut(option); // 👈 yahan pura option object rakho
+    dispatch(FlowValidationActions.fetchFlows(option?.value));
+  };
 
   useEffect(() => {
     if (!isEmpty(bucketListData)) {
@@ -452,43 +492,64 @@ const DataFlowInventory = () => {
   };
 
   return (
-    <Container>
-      <FullPageLoader loading={loading} />
-      <MainContent>
-        <ContentArea>
-          <HeaderContainer>
-            <Title>Data Flow Inventory</Title>
-            <RefreshButton
-              onClick={() => {
-                dispatch(FlowValidationActions.fetchFlows());
-                setSearchTerm('');
-              }}
-            >
-              <RefreshIcon />
-            </RefreshButton>
-          </HeaderContainer>
+    <>
+      <Container>
+        <FullPageLoader loading={loading} />
+        <MainContent>
+          <ContentArea>
+            <HeaderContainer>
+              <Title>Data Flow Inventory</Title>
+              <div className="d-flex align-items-center justify-content-center gap-2">
+                <StyledSelectField
+                  name="selectflows"
+                  placeholder="Select Flow"
+                  value={selectedFlowByDefalut}
+                  onChange={handleChange}
+                  options={[
+                    { label: 'Ready-made Flows', value: 'existingFlows' },
+                    { label: 'User-defined Flows', value: 'uploadFlows' },
+                  ]}
+                />
+                <Button
+                  onClick={() => {
+                    setFlowUploadModalOpen(true);
+                  }}
+                >
+                  Upload
+                </Button>
 
-          <SearchContainer>
-            <SmallSearchIcon
-              width={18}
-              height={18}
-              color={theme.colors.darkGrey1}
-            />
-            <Search
-              type="search"
-              placeholder="Search by Title, Description"
-              onChange={handleSearch}
-              value={searchTerm}
-            />
-          </SearchContainer>
+                <RefreshButton
+                  onClick={() => {
+                    dispatch(FlowValidationActions.fetchFlows());
+                    setSearchTerm('');
+                    setSelectedFlowByDefalut(null);
+                  }}
+                >
+                  <RefreshIcon />
+                </RefreshButton>
+              </div>
+            </HeaderContainer>
 
-          {isEmpty(selectedCluster?.value) ? (
-            <div className="d-flex flex-column align-items-center justify-content-center h-100">
-              <NoDataIcon width={130} />
-              <NoDataText>Please login to your cluster first</NoDataText>
-            </div>
-          ) : (
-            <>
+            <SearchContainer>
+              <SmallSearchIcon
+                width={18}
+                height={18}
+                color={theme.colors.darkGrey1}
+              />
+              <Search
+                type="search"
+                placeholder="Search by Title, Description"
+                onChange={handleSearch}
+                value={searchTerm}
+              />
+            </SearchContainer>
+
+            {isEmpty(selectedCluster?.value) ? (
+              <div className="d-flex flex-column align-items-center justify-content-center h-100">
+                <NoDataIcon width={130} />
+                <NoDataText>Please login to your cluster first</NoDataText>
+              </div>
+            ) : (
               <GalleryContainer onScroll={handleScroll}>
                 {paginatedFlows?.length === 0 ? (
                   <div className="d-flex flex-column align-items-center mt-5">
@@ -617,47 +678,53 @@ const DataFlowInventory = () => {
                   </>
                 )}
               </GalleryContainer>
-            </>
-          )}
-        </ContentArea>
-      </MainContent>
-      {openAddToRegistryModal && (
-        <FlowAddToRegistryModal
-          isModalOpen={openAddToRegistryModal}
-          setIsModalOpen={setOpenAddToRegistryModal}
-          bucketList={buckets || []}
-          defaultFlowName={selectedFlow?.name || 'Flow'}
-          handleAddToRegistry={handleAddToRegistry}
-          handleClose={() => {
-            setOpenAddToRegistryModal(false);
-          }}
-          setIsAddNewBucketModalOpen={setIsAddNewBucketModalOpen}
-          refresh={() => {
-            dispatch(FlowValidationActions.fetchFlows());
-          }}
-          setIsFlowAddedSuccessModalOpen={setIsFlowAddedSuccessModalOpen}
+            )}
+          </ContentArea>
+        </MainContent>
+        {openAddToRegistryModal && (
+          <FlowAddToRegistryModal
+            isModalOpen={openAddToRegistryModal}
+            setIsModalOpen={setOpenAddToRegistryModal}
+            bucketList={buckets || []}
+            defaultFlowName={selectedFlow?.name || 'Flow'}
+            handleAddToRegistry={handleAddToRegistry}
+            handleClose={() => {
+              setOpenAddToRegistryModal(false);
+            }}
+            setIsAddNewBucketModalOpen={setIsAddNewBucketModalOpen}
+            refresh={() => {
+              dispatch(FlowValidationActions.fetchFlows());
+            }}
+            setIsFlowAddedSuccessModalOpen={setIsFlowAddedSuccessModalOpen}
+          />
+        )}
+        {isAddNewBucketModalOpen && (
+          <AddNewBucketModal
+            isModalOpen={isAddNewBucketModalOpen}
+            setIsModalOpen={setIsAddNewBucketModalOpen}
+            isDataInventory={true}
+          />
+        )}
+        {isFlowAddedSuccessModalOpen && (
+          <FlowAddedSuccessModal
+            isModalOpen={isFlowAddedSuccessModalOpen}
+            handleClose={handleSuccessModalClose}
+            handleSubmit={handleSuccessModalSuccess}
+          />
+        )}
+        <FlowAlreadyExistModal
+          isModalOpen={isFlowAlreadyAddedSuccessFully}
+          handleClose={handleAlreadyAddedModalClose}
+          handleSubmit={hadleFlowAlreadyAdded}
+        />
+      </Container>
+      {flowUploadModalOpen && (
+        <FlowUploadModal
+          flowUploadModalOpen={flowUploadModalOpen}
+          setFlowUploadModalOpen={setFlowUploadModalOpen}
         />
       )}
-      {isAddNewBucketModalOpen && (
-        <AddNewBucketModal
-          isModalOpen={isAddNewBucketModalOpen}
-          setIsModalOpen={setIsAddNewBucketModalOpen}
-          isDataInventory={true}
-        />
-      )}
-      {isFlowAddedSuccessModalOpen && (
-        <FlowAddedSuccessModal
-          isModalOpen={isFlowAddedSuccessModalOpen}
-          handleClose={handleSuccessModalClose}
-          handleSubmit={handleSuccessModalSuccess}
-        />
-      )}
-      <FlowAlreadyExistModal
-        isModalOpen={isFlowAlreadyAddedSuccessFully}
-        handleClose={handleAlreadyAddedModalClose}
-        handleSubmit={hadleFlowAlreadyAdded}
-      />
-    </Container>
+    </>
   );
 };
 

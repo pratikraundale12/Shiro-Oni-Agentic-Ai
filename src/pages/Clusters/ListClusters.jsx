@@ -157,7 +157,7 @@ export const ListClusters = () => {
   const failedClusterNiFiDeleteOpen = useSelector(
     ClustersSelectors.getIsFailedClusterDeleteModalOpen
   );
-  const [unInstallNiFi, setUninstallNiFi] = useState(false);
+  const [unInstallNiFi, setUninstallNiFi] = useState(true);
 
   const [selectedCluster, setSelectedCluster] = useState({});
   const isCopyClusterModalOpen = useSelector(
