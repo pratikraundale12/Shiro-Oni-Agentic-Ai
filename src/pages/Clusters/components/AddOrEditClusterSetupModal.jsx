@@ -3,7 +3,11 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { ClustersActions, ClustersSelectors } from '../../../store';
+import {
+  AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
+} from '../../../store';
 import { Modal } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
@@ -96,6 +100,7 @@ const TickIconStyle = styled.div`
 export const AddOrEditClusterModal = () => {
   const dispatch = useDispatch();
   const [selectedFlow, setSelectedFlow] = useState(null);
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
 
   const isModalOpen = useSelector(
     ClustersSelectors.getIsAddorEditClusterModalOpen
@@ -133,41 +138,47 @@ export const AddOrEditClusterModal = () => {
       footerAlign="start"
     >
       <Container>
-        <BulletContainer
-          onClick={() => {
-            setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
-          }}
-          borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
-        >
-          <div>
-            <LeftHolder>
-              <IconContainer
-                borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
-              >
-                <CreateClusterIcon
-                  height="60"
-                  width="60"
-                  color={theme.colors.primary}
-                />
-              </IconContainer>
-            </LeftHolder>
-            <RightHolder>
-              <div>
+        {currentUser?.permissions?.includes('add_cluster_setup') && (
+          <BulletContainer
+            onClick={() => {
+              setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
+            }}
+            borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
+          >
+            <div>
+              <LeftHolder>
+                <IconContainer
+                  borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
+                >
+                  <CreateClusterIcon
+                    height="60"
+                    width="60"
+                    color={theme.colors.primary}
+                  />
+                </IconContainer>
+              </LeftHolder>
+              <RightHolder>
                 <div>
-                  <HighLightText>{KDFM.CREATE_NEW_CLUSTER_TITLE}</HighLightText>
+                  <div>
+                    <HighLightText>
+                      {KDFM.CREATE_NEW_CLUSTER_TITLE}
+                    </HighLightText>
+                  </div>
+                  <div>
+                    <BottomText>
+                      {KDFM.CREATE_NEW_CLUSTER_DESCRIPTION}
+                    </BottomText>
+                  </div>
                 </div>
-                <div>
-                  <BottomText>{KDFM.CREATE_NEW_CLUSTER_DESCRIPTION}</BottomText>
-                </div>
-              </div>
-              {selectedFlow === KDFM.CREATE_CLUSTER_FLOW && (
-                <TickIconStyle>
-                  <SelectedTickIconOrange height="25" width="25" />
-                </TickIconStyle>
-              )}
-            </RightHolder>
-          </div>
-        </BulletContainer>
+                {selectedFlow === KDFM.CREATE_CLUSTER_FLOW && (
+                  <TickIconStyle>
+                    <SelectedTickIconOrange height="25" width="25" />
+                  </TickIconStyle>
+                )}
+              </RightHolder>
+            </div>
+          </BulletContainer>
+        )}
         <BulletContainer
           onClick={() => {
             setSelectedFlow(KDFM.MANAGE_CLUSTER_FLOW);
@@ -177,7 +188,6 @@ export const AddOrEditClusterModal = () => {
           <div>
             <LeftHolder>
               <IconContainer
-                
                 borderSelected={selectedFlow === KDFM.MANAGE_CLUSTER_FLOW}
               >
                 <ManageClusterIcon
