@@ -12,30 +12,32 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 
 const Container = styled.div`
-  background-color: #f8f9fa;
-  min-height: 100vh;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #fbfcff;
+  overflow: hidden;
+  border: 1px solid #dde4f0;
+  padding: 20px 15px;
+  border-radius: 20px;
 `;
 
 const MainContent = styled.div`
   display: flex;
-  background-color: white;
-  min-height: calc(100vh - 210px);
-  border: 1px solid #dde4f0;
 `;
 
 const Sidebar = styled.div`
-  width: 280px;
+  min-width: 280px;
   background-color: #f8f9fa;
-  border-right: 1px solid #e9ecef;
-  padding: 0;
+  border: 1px solid #dde4f0;
+  border-radius: 20px;
+  padding: 14px 6px;
+  overflow: hidden;
 `;
 
 const SidebarItem = styled.div`
-  padding: 12px 24px;
-  font-size: 14px;
-  color: #495057;
+  padding: 10px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #444445;
   cursor: pointer;
   border-bottom: 1px solid #e9ecef;
 
@@ -66,15 +68,16 @@ const TabContainer = styled.div`
 const Tab = styled.button`
   background: none;
   border: none;
-  padding: 16px 24px;
-  font-size: 14px;
+  padding: 18px 16px;
+  font-size: 16px;
   cursor: pointer;
-  color: #6c757d;
+  color: #444445;
   border-bottom: 2px solid transparent;
   display: flex;
   align-items: center;
   gap: 8px;
-
+  font-weight: 600;
+  line-height: 24px;
   ${props =>
     props.active &&
     `
@@ -88,8 +91,7 @@ const TabIcon = styled.span`
 `;
 
 const SearchContainer = styled.div`
-  padding: 16px 24px;
-  background-color: #f8f9fa;
+  padding: 16px 0;
 `;
 
 const SearchInput = styled.input`
@@ -129,6 +131,20 @@ const Title = styled.h3`
   margin-left: 10px;
 `;
 
+const TableHeight = styled(Table)`
+  height: calc(100vh - 410px);
+
+  & thead th {
+    text-align: center;
+  }
+  & thead th:first-child {
+    text-align: left;
+  }
+`;
+const LeftsidebarScroll = styled.div`
+  max-height: calc(100vh - 370px);
+`;
+
 const NiFiClusterAccessManagement = () => {
   // const [accessMode, setAccessMode] = useState('nifi-cluster');
   const [activeTab, setActiveTab] = useState('groups');
@@ -148,6 +164,8 @@ const NiFiClusterAccessManagement = () => {
       []),
   ];
 
+  const nameData = ['naman', 'adarsh', 'view', 'edit', 'delete', 'manage'];
+
   // Dynamic column definitions based on sidebar items
   const getDynamicColumns = nameColumnLabel => {
     const columns = [
@@ -161,7 +179,7 @@ const NiFiClusterAccessManagement = () => {
     ];
 
     // Add dynamic columns for each sidebar item
-    sidebarItems.forEach(sidebarItem => {
+    nameData.forEach(sidebarItem => {
       columns.push({
         label: sidebarItem,
         renderCell: item => (
@@ -173,7 +191,7 @@ const NiFiClusterAccessManagement = () => {
             />
           </div>
         ),
-        width: `${75 / sidebarItems.length}%`,
+        width: '20%',
       });
     });
 
@@ -233,7 +251,7 @@ const NiFiClusterAccessManagement = () => {
 
   return (
     <>
-      <Flex>
+      <Flex className="mb-4">
         <Flex>
           <Title>Cluster Access Management</Title>
         </Flex>
@@ -242,17 +260,19 @@ const NiFiClusterAccessManagement = () => {
         </ButtonsContainer>
       </Flex>
       <Container>
-        <MainContent>
+        <MainContent className="gap-3">
           <Sidebar>
-            {sidebarItems.map(item => (
-              <SidebarItem
-                key={item}
-                active={activeSidebarItem === item}
-                onClick={() => setActiveSidebarItem(item)}
-              >
-                {item}
-              </SidebarItem>
-            ))}
+            <LeftsidebarScroll className="overflow-y-auto">
+              {sidebarItems.map(item => (
+                <SidebarItem
+                  key={item}
+                  active={activeSidebarItem === item}
+                  onClick={() => setActiveSidebarItem(item)}
+                >
+                  {item}
+                </SidebarItem>
+              ))}
+            </LeftsidebarScroll>
           </Sidebar>
 
           <ContentArea>
@@ -288,11 +308,13 @@ const NiFiClusterAccessManagement = () => {
                   />
                 </SearchContainer>
 
-                <Table
-                  data={userGroupIdentities}
-                  columns={GROUPS_COLUMNS}
-                  className="groups-table"
-                />
+                <div>
+                  <TableHeight
+                    data={userGroupIdentities}
+                    columns={GROUPS_COLUMNS}
+                    className="groups-table"
+                  />
+                </div>
               </>
             )}
 
@@ -306,12 +328,13 @@ const NiFiClusterAccessManagement = () => {
                     onChange={e => setSearchTerm(e.target.value)}
                   />
                 </SearchContainer>
-
-                <Table
-                  data={userIdentities}
-                  columns={USERS_COLUMNS}
-                  className="users-table"
-                />
+                <div>
+                  <TableHeight
+                    data={userIdentities}
+                    columns={USERS_COLUMNS}
+                    className="users-table"
+                  />
+                </div>
               </>
             )}
           </ContentArea>

@@ -6,9 +6,8 @@ import { ModuleAccess } from '.';
 
 const OptionsContainer = styled.div`
   display: flex;
-  gap: 32px;
+  gap: 16px;
   margin-bottom: 24px;
-  flex-wrap: wrap;
 `;
 
 const OptionWrapper = styled.label`

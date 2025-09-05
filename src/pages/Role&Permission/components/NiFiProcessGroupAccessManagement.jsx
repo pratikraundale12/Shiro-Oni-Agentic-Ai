@@ -1,410 +1,357 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Button, CheckboxField, SwitchButton } from '../../../shared';
+import { Table } from '../../../components';
+import GroupUserIcon from '../../../assets/Icons/GroupUserIcon';
+import NewUserIcon from '../../../assets/Icons/NewUserIcon';
+import {
+  NamespacesSelectors,
+  RolesActions,
+  RolesSelectors,
+} from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
 
-const ComponentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+const Container = styled.div`
+  background-color: #fbfcff;
+  overflow: hidden;
+  border: 1px solid #dde4f0;
+  padding: 20px 15px;
+  border-radius: 20px;
 `;
 
-const SectionTitle = styled.h4`
+const MainContent = styled.div`
+  display: flex;
+`;
+
+const Sidebar = styled.div`
+  min-width: 280px;
+  background-color: #f8f9fa;
+  border: 1px solid #dde4f0;
+  border-radius: 20px;
+  padding: 14px 6px;
+  overflow: hidden;
+`;
+
+const SidebarItem = styled.div`
+  padding: 10px 12px;
   font-size: 16px;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 12px 0;
-`;
-
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const Label = styled.label`
-  font-size: 14px;
   font-weight: 500;
-  color: #374151;
-`;
-
-const Input = styled.input`
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
-  }
-`;
-
-const Select = styled.select`
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  background: white;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
-  }
-`;
-
-const TextArea = styled.textarea`
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  min-height: 80px;
-  resize: vertical;
-  transition: border-color 0.2s ease;
-
-  &:focus {
-    outline: none;
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
-  }
-`;
-
-const CheckboxContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const Checkbox = styled.input`
-  width: 16px;
-  height: 16px;
-  accent-color: #ff6b35;
-`;
-
-const CheckboxLabel = styled.label`
-  font-size: 14px;
-  color: #374151;
+  line-height: 20px;
+  color: #444445;
   cursor: pointer;
-`;
+  border-bottom: 1px solid #e9ecef;
 
-const Button = styled.button`
-  background: #ff6b35;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  align-self: flex-start;
+  ${props =>
+    props.active &&
+    `
+    background-color: #fff3e0;
+    color: #ff6b35;
+    font-weight: 500;
+  `}
 
   &:hover {
-    background: #e55a2b;
-  }
-
-  &:disabled {
-    background: #d1d5db;
-    cursor: not-allowed;
+    background-color: #f1f3f4;
   }
 `;
 
-const ProcessGroupTree = styled.div`
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 16px;
-  background: white;
-  max-height: 200px;
-  overflow-y: auto;
+const ContentArea = styled.div`
+  flex: 1;
+  padding: 0;
 `;
 
-const ProcessGroupItem = styled.div`
+const TabContainer = styled.div`
+  display: flex;
+  border-bottom: 1px solid #e9ecef;
+  background-color: white;
+`;
+
+const Tab = styled.button`
+  background: none;
+  border: none;
+  padding: 18px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #444445;
+  border-bottom: 2px solid transparent;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f3f4f6;
+  font-weight: 600;
+  line-height: 24px;
+  ${props =>
+    props.active &&
+    `
+    color: #ff6b35;
+    border-bottom-color: #ff6b35;
+  `}
+`;
 
-  &:last-child {
-    border-bottom: none;
+const TabIcon = styled.span`
+  font-size: 16px;
+`;
+
+const SearchContainer = styled.div`
+  padding: 16px 0;
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+
+  &::placeholder {
+    color: #6c757d;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #ff6b35;
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
   }
 `;
 
-const ProcessGroupName = styled.div`
-  font-size: 14px;
-  color: #374151;
-  flex: 1;
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 `;
 
-const ProcessGroupStatus = styled.div`
-  font-size: 12px;
-  color: ${props => (props.status === 'running' ? '#059669' : '#dc2626')};
-  margin-left: auto;
+const ButtonsContainer = styled(Flex)`
+  gap: 0.5rem;
 `;
 
-// const AccessLevelBadge = styled.span`
-//   padding: 2px 8px;
-//   border-radius: 12px;
-//   font-size: 12px;
-//   font-weight: 500;
-//   background: ${props => {
-//     switch (props.level) {
-//       case 'read':
-//         return '#dbeafe';
-//       case 'write':
-//         return '#fef3c7';
-//       case 'admin':
-//         return '#fecaca';
-//       default:
-//         return '#f3f4f6';
-//     }
-//   }};
-//   color: ${props => {
-//     switch (props.level) {
-//       case 'read':
-//         return '#1e40af';
-//       case 'write':
-//         return '#92400e';
-//       case 'admin':
-//         return '#dc2626';
-//       default:
-//         return '#6b7280';
-//     }
-//   }};
-// `;
+const Title = styled.h3`
+  font-family: ${props => props.theme.fontNato};
+  font-weight: 500;
+  font-size: 20px;
+  margin-left: 10px;
+`;
+
+const TableHeight = styled(Table)`
+  height: calc(100vh - 410px);
+
+  & thead th {
+    text-align: center;
+  }
+  & thead th:first-child {
+    text-align: left;
+  }
+`;
+const LeftsidebarScroll = styled.div`
+  max-height: calc(100vh - 370px);
+`;
 
 const NiFiProcessGroupAccessManagement = () => {
-  const [formData, setFormData] = useState({
-    selectedProcessGroups: [],
-    accessLevel: 'read',
-    permissions: {
-      canStartStop: false,
-      canModifyFlow: false,
-      canViewData: true,
-      canManageConnections: false,
-      canAccessDataProvenance: false,
-    },
-    dataRetention: '30',
-    customAttributes: '',
-    monitoringSettings: {
-      enableMetrics: true,
-      enableAlerts: false,
-      logLevel: 'INFO',
-    },
-  });
+  // const [accessMode, setAccessMode] = useState('nifi-cluster');
+  const [activeTab, setActiveTab] = useState('groups');
+  const [activeSidebarItem, setActiveSidebarItem] = useState();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [permissions, setPermissions] = useState({});
 
-  const availableProcessGroups = [
-    { id: 'pg1', name: 'Data Ingestion Flow', status: 'running' },
-    { id: 'pg2', name: 'Data Processing Pipeline', status: 'stopped' },
-    { id: 'pg3', name: 'Data Validation Flow', status: 'running' },
-    { id: 'pg4', name: 'Data Export Flow', status: 'running' },
-    { id: 'pg5', name: 'Error Handling Flow', status: 'stopped' },
+  // Access the NiFi policies in your component
+  const clusterNiFiPolicies = useSelector(
+    RolesSelectors.getClusterNiFiPolicies
+  );
+
+  console.log('clusterNiFiPolicies', clusterNiFiPolicies);
+
+  const sidebarItems = [
+    ...(clusterNiFiPolicies[0]?.accessPolicies?.map(policy => policy.name) ||
+      []),
   ];
 
-  const handleProcessGroupSelection = groupId => {
-    setFormData(prev => ({
-      ...prev,
-      selectedProcessGroups: prev.selectedProcessGroups.includes(groupId)
-        ? prev.selectedProcessGroups.filter(id => id !== groupId)
-        : [...prev.selectedProcessGroups, groupId],
-    }));
-  };
+  const nameData = ['naman', 'adarsh', 'view', 'edit', 'delete', 'manage'];
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handlePermissionChange = (permission, checked) => {
-    setFormData(prev => ({
-      ...prev,
-      permissions: {
-        ...prev.permissions,
-        [permission]: checked,
+  // Dynamic column definitions based on sidebar items
+  const getDynamicColumns = nameColumnLabel => {
+    const columns = [
+      {
+        label: nameColumnLabel,
+        renderCell: item => (
+          <div style={{ fontSize: '14px', color: '#212529' }}>{item.name}</div>
+        ),
+        width: '25%',
       },
-    }));
+    ];
+
+    // Add dynamic columns for each sidebar item
+    nameData.forEach(sidebarItem => {
+      columns.push({
+        label: sidebarItem,
+        renderCell: item => (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <CheckboxField
+              name={`${sidebarItem}-${item.name}`}
+              checked={permissions[`${sidebarItem}-${item.name}`] || false}
+              onChange={() => handlePermissionChange(sidebarItem, item.name)}
+            />
+          </div>
+        ),
+        width: '20%',
+      });
+    });
+
+    return columns;
   };
 
-  const handleMonitoringChange = (setting, value) => {
-    setFormData(prev => ({
+  const GROUPS_COLUMNS = getDynamicColumns('All Groups');
+  const USERS_COLUMNS = getDynamicColumns('All Users');
+
+  const handlePermissionChange = (sidebarItem, itemName) => {
+    const permissionKey = `${sidebarItem}-${itemName}`;
+    setPermissions(prev => ({
       ...prev,
-      monitoringSettings: {
-        ...prev.monitoringSettings,
-        [setting]: value,
-      },
+      [permissionKey]: !prev[permissionKey],
     }));
   };
+  const dispatch = useDispatch();
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  console.log('selectedCluster', selectedCluster);
 
-  const handleSave = () => {
-    console.log('NiFi Process Group Access Management Settings:', formData);
-    // Handle save logic here
-  };
+  useEffect(() => {
+    // Fetch users for a specific cluster
+    dispatch(
+      RolesActions.fetchClusterUsers({
+        clusterId: selectedCluster?.value,
+      })
+    );
+    // Fetch user groups for a specific cluster
+    dispatch(
+      RolesActions.fetchClusterUserGroups({
+        clusterId: selectedCluster?.value,
+      })
+    );
+
+    // Fetch NiFi policies for a specific cluster
+    dispatch(
+      RolesActions.fetchClusterNiFiPolicies({
+        clusterId: selectedCluster?.value,
+      })
+    );
+  }, [dispatch, selectedCluster]);
+
+  // Access the users in your component
+  const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
+  const userIdentities = clusterUsers?.map(name => {
+    return {
+      name: name?.component?.identity,
+    };
+  });
+
+  const clusterUserGroups = useSelector(RolesSelectors.getClusterUserGroups);
+  const userGroupIdentities = clusterUserGroups?.map(name => {
+    return {
+      name: name?.component?.identity,
+    };
+  });
 
   return (
-    <ComponentContainer>
-      <SectionTitle>NiFi Process Group Access Management</SectionTitle>
+    <>
+      <Flex className="mb-4">
+        <Flex>
+          <Title>Process Group Access Management</Title>
+        </Flex>
+        <div className="d-flex align-items-center justify-content-end gap-xl-3 gap-2">
+          <div>
+            <SwitchButton
+              id="openModalInput1"
+              name="NiFi Flow"
+              // checked={}
 
-      <FormGroup>
-        <Label>Select Process Groups</Label>
-        <ProcessGroupTree>
-          {availableProcessGroups.map(group => (
-            <ProcessGroupItem key={group.id}>
-              <Checkbox
-                type="checkbox"
-                checked={formData.selectedProcessGroups.includes(group.id)}
-                onChange={() => handleProcessGroupSelection(group.id)}
-              />
-              <ProcessGroupName>{group.name}</ProcessGroupName>
-              <ProcessGroupStatus status={group.status}>
-                {group.status === 'running' ? '● Running' : '● Stopped'}
-              </ProcessGroupStatus>
-            </ProcessGroupItem>
-          ))}
-        </ProcessGroupTree>
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Access Level</Label>
-        <Select
-          value={formData.accessLevel}
-          onChange={e => handleInputChange('accessLevel', e.target.value)}
-        >
-          <option value="read">Read Only</option>
-          <option value="write">Read & Write</option>
-          <option value="admin">Full Control</option>
-        </Select>
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Process Group Permissions</Label>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.permissions.canStartStop}
-              onChange={e =>
-                handlePermissionChange('canStartStop', e.target.checked)
-              }
+              isDisabled={false}
             />
-            <CheckboxLabel>Can Start/Stop Process Groups</CheckboxLabel>
-          </CheckboxContainer>
-
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.permissions.canModifyFlow}
-              onChange={e =>
-                handlePermissionChange('canModifyFlow', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Can Modify Flow Configuration</CheckboxLabel>
-          </CheckboxContainer>
-
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.permissions.canViewData}
-              onChange={e =>
-                handlePermissionChange('canViewData', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Can View Flow Data</CheckboxLabel>
-          </CheckboxContainer>
-
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.permissions.canManageConnections}
-              onChange={e =>
-                handlePermissionChange('canManageConnections', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Can Manage Connections</CheckboxLabel>
-          </CheckboxContainer>
-
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.permissions.canAccessDataProvenance}
-              onChange={e =>
-                handlePermissionChange(
-                  'canAccessDataProvenance',
-                  e.target.checked
-                )
-              }
-            />
-            <CheckboxLabel>Can Access Data Provenance</CheckboxLabel>
-          </CheckboxContainer>
-        </div>
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Data Retention (days)</Label>
-        <Input
-          type="number"
-          min="1"
-          max="365"
-          value={formData.dataRetention}
-          onChange={e => handleInputChange('dataRetention', e.target.value)}
-        />
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Custom Attributes (JSON)</Label>
-        <TextArea
-          placeholder='{"attribute1": "value1", "attribute2": "value2"}'
-          value={formData.customAttributes}
-          onChange={e => handleInputChange('customAttributes', e.target.value)}
-        />
-      </FormGroup>
-
-      <FormGroup>
-        <Label>Monitoring Settings</Label>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.monitoringSettings.enableMetrics}
-              onChange={e =>
-                handleMonitoringChange('enableMetrics', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Enable Metrics Collection</CheckboxLabel>
-          </CheckboxContainer>
-
-          <CheckboxContainer>
-            <Checkbox
-              type="checkbox"
-              checked={formData.monitoringSettings.enableAlerts}
-              onChange={e =>
-                handleMonitoringChange('enableAlerts', e.target.checked)
-              }
-            />
-            <CheckboxLabel>Enable Performance Alerts</CheckboxLabel>
-          </CheckboxContainer>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Label style={{ margin: 0, minWidth: '80px' }}>Log Level:</Label>
-            <Select
-              value={formData.monitoringSettings.logLevel}
-              onChange={e => handleMonitoringChange('logLevel', e.target.value)}
-              style={{ flex: 1 }}
-            >
-              <option value="DEBUG">DEBUG</option>
-              <option value="INFO">INFO</option>
-              <option value="WARN">WARN</option>
-              <option value="ERROR">ERROR</option>
-            </Select>
           </div>
+          <ButtonsContainer>
+            <Button size="sm">Save Changes</Button>
+          </ButtonsContainer>
         </div>
-      </FormGroup>
+      </Flex>
+      <Container>
+        <MainContent className="gap-3">
+          <Sidebar>
+            <LeftsidebarScroll className="overflow-y-auto">
+              {sidebarItems.map(item => (
+                <SidebarItem
+                  key={item}
+                  active={activeSidebarItem === item}
+                  onClick={() => setActiveSidebarItem(item)}
+                >
+                  {item}
+                </SidebarItem>
+              ))}
+            </LeftsidebarScroll>
+          </Sidebar>
 
-      <Button onClick={handleSave}>Save Process Group Access Settings</Button>
-    </ComponentContainer>
+          <ContentArea>
+            <TabContainer>
+              <Tab
+                active={activeTab === 'groups'}
+                onClick={() => setActiveTab('groups')}
+              >
+                <TabIcon>
+                  <GroupUserIcon />
+                </TabIcon>
+                Groups
+              </Tab>
+              <Tab
+                active={activeTab === 'users'}
+                onClick={() => setActiveTab('users')}
+              >
+                <TabIcon>
+                  <NewUserIcon />
+                </TabIcon>
+                Users
+              </Tab>
+            </TabContainer>
+
+            {activeTab === 'groups' && (
+              <>
+                <SearchContainer>
+                  <SearchInput
+                    type="text"
+                    placeholder="Search Group Names"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                  />
+                </SearchContainer>
+
+                <div>
+                  <TableHeight
+                    data={userGroupIdentities}
+                    columns={GROUPS_COLUMNS}
+                    className="groups-table"
+                  />
+                </div>
+              </>
+            )}
+
+            {activeTab === 'users' && (
+              <>
+                <SearchContainer>
+                  <SearchInput
+                    type="text"
+                    placeholder="Search User Names"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                  />
+                </SearchContainer>
+                <div>
+                  <TableHeight
+                    data={userIdentities}
+                    columns={USERS_COLUMNS}
+                    className="users-table"
+                  />
+                </div>
+              </>
+            )}
+          </ContentArea>
+        </MainContent>
+      </Container>
+    </>
   );
 };
 
