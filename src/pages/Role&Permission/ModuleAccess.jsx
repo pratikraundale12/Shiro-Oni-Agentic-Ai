@@ -359,7 +359,7 @@ export const ModuleAccess = () => {
     policies &&
     policies.length > 0 &&
     policies?.filter(element => ['view_namespace'].includes(element?.name));
-    
+
   const clusterSetupPolicy =
     policies &&
     policies.length > 0 &&
