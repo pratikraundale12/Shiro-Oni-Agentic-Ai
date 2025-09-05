@@ -13,10 +13,12 @@ import {
 } from '../../../assets';
 import { theme } from '../../../styles';
 import { history } from '../../../helpers/history';
+import { isEmpty } from 'lodash';
 
 const Container = styled.div`
-display: flex;
-gap: 25px`;
+  display: flex;
+  gap: 25px;
+`;
 
 const BulletContainer = styled.div`
   width: 100%;
@@ -27,7 +29,7 @@ const BulletContainer = styled.div`
       borderSelected ? theme.colors.primary : '#DDE4F0'};
   border-radius: 14px;
   background-color: ${({ borderSelected }) =>
-      borderSelected ? '#f5f7fa' : '#fff'};
+    borderSelected ? '#f5f7fa' : '#fff'};
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -55,7 +57,7 @@ const LeftHolder = styled.div`
   justify-content: space-between;
   padding-top: 16px;
   text-align: center;
-  `;
+`;
 const RightHolder = styled.div`
   display: flex;
   flex-direction: column;
@@ -79,7 +81,7 @@ const BottomText = styled.span`
   line-height: 21.17px;
   letter-spacing: 0%;
   color: #444445;
-  margin-top:10px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   padding: 0px 45px;
@@ -125,6 +127,7 @@ export const AddOrEditClusterModal = () => {
       onSubmit={handleSubmit(handleContinueSubmit)}
       title={KDFM.NEW_CLUSTER}
       primaryButtonText="Continue"
+      primaryButtonDisabled={isEmpty(selectedFlow)}
       secondaryButtonText="Back"
       contentStyles={{ minWidth: '32%' }}
       footerAlign="start"
@@ -137,7 +140,7 @@ export const AddOrEditClusterModal = () => {
           borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
         >
           <div>
-            <LeftHolder >
+            <LeftHolder>
               <IconContainer
                 borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
               >
