@@ -96,7 +96,6 @@ export function* refreshSetting(api) {
 }
 
 export function* verifyEmail(api, payload) {
-  console.log('verifyEmail payload', payload);
   const response = yield call(requestSaga, {
     errorSection: 'verifyEmail',
     loadingSection: 'verifyEmail',

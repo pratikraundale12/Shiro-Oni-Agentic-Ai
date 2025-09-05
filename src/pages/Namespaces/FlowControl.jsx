@@ -334,6 +334,21 @@ const FlowControl = () => {
     dispatch(NamespacesActions.singleNamespaceData(id));
   }, [dispatch, id]);
 
+  useEffect(() => {
+    if (sigleNamespaceData) {
+      if (sigleNamespaceData?.runningCount > 0) {
+        setActiveButton('RUNNING');
+      } else if (
+        sigleNamespaceData?.runningCount === 0 &&
+        sigleNamespaceData?.stoppedCount > 0
+      ) {
+        setActiveButton('STOPPED');
+      } else {
+        setActiveButton(null);
+      }
+    }
+  }, [sigleNamespaceData?.runningCount, sigleNamespaceData?.stoppedCount]);
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
   );

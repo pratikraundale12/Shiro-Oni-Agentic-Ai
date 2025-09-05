@@ -153,15 +153,19 @@ const ControllerServiceTab = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
+
   const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const csReduxData = useSelector(NamespacesSelectors.getCsLocalData);
+  
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
+  
   const [controllerServicesData, setControllerServicesData] =
     useState(csReduxData);
+
   useEffect(() => {
     if (
       !csReduxData ||
@@ -194,28 +198,28 @@ const ControllerServiceTab = ({
   const propertyUpdateResponse = useSelector(
     NamespacesSelectors.getPropertyUpdateResponse
   );
-
   const [externalControllerServices, setExternalControllerServices] = useState(
     controllerServicesData?.externalControllerServices
   );
-    const refreshedControllerService = useSelector(
-      NamespacesSelectors.getRefreshedControllerService
-    );
-
-     useEffect(() => {
-  if (!refreshedControllerService?.data?.id) return;
-
-  setExternalControllerServices(prevList =>
-    prevList?.map(item =>
-      item?.updatedValue === refreshedControllerService.data.id || item?.id === refreshedControllerService.data.id
-        ? {
-            ...item,
-            controllerService: [refreshedControllerService.data],
-          }
-        : item
-    )
+  const refreshedControllerService = useSelector(
+    NamespacesSelectors.getRefreshedControllerService
   );
-}, [refreshedControllerService]);
+
+  useEffect(() => {
+    if (!refreshedControllerService?.data?.id) return;
+
+    setExternalControllerServices(prevList =>
+      prevList?.map(item =>
+        item?.updatedValue === refreshedControllerService.data.id ||
+        item?.id === refreshedControllerService.data.id
+          ? {
+              ...item,
+              controllerService: [refreshedControllerService.data],
+            }
+          : item
+      )
+    );
+  }, [refreshedControllerService]);
 
   const [
     externalControllerServicesTableData,
@@ -251,9 +255,12 @@ const ControllerServiceTab = ({
 
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
     useState(false);
+  const serviceDefinition = useSelector(
+    NamespacesSelectors.getServiceDefinition
+  );
 
   const [listPropertyTableData, setListPropertTableData] = useState(
-    selectedItemFromList?.properties
+    serviceDefinition?.properties || selectedItemFromList?.properties || []
   );
   const [referenceListPropertyTableData, setReferenceListPropertyTableData] =
     useState([]);
@@ -567,13 +574,15 @@ const ControllerServiceTab = ({
 
   const [refreshingRowId, setRefreshingRowId] = useState(null);
   const handleRefreshClick = item => {
-    const serviceId = item?.controllerService?.length ? item?.controllerService[0]?.id : item?.configuredData?.id || item?.id || item?.updatedValue;
+    const serviceId = item?.controllerService?.length
+      ? item?.controllerService[0]?.id
+      : item?.configuredData?.id || item?.id || item?.updatedValue;
     setRefreshingRowId(serviceId);
     const result = dispatch(
       NamespacesActions.refreshControllerService({
         controllerId: serviceId,
       })
-    );    
+    );
     if (result && typeof result.finally === 'function') {
       result.finally(() => setRefreshingRowId(null));
     } else {
@@ -581,6 +590,7 @@ const ControllerServiceTab = ({
     }
   };
 
+  // deploy setting external service
   const COLUMNS = [
     {
       label: 'Name',
@@ -721,9 +731,11 @@ const ControllerServiceTab = ({
           state === 'INVALID' ||
           state === 'VALIDATING' ||
           state === 'DISABLING' ||
-          (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');  
-        const serviceId = item?.controllerService?.length ? item?.controllerService[0]?.id : item?.id || item?.updatedValue;
-  
+          (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
+        const serviceId = item?.controllerService?.length
+          ? item?.controllerService[0]?.id
+          : item?.id || item?.updatedValue;
+
         return (
           <div className="d-flex align-items-center justify-content-center">
             {/* Settings Button */}
@@ -731,7 +743,7 @@ const ControllerServiceTab = ({
               <>
                 <button
                   className="border-0 bg-white"
-                  onClick={() => handleSettingClick(stateItem)}
+                  onClick={() => handleSettingClickExternal(stateItem)}
                   data-tooltip-id={`Settings-${item?.id}`}
                   aria-label="Settings"
                   disabled={
@@ -1049,7 +1061,9 @@ const ControllerServiceTab = ({
           state === 'VALIDATING' ||
           state === 'DISABLING' ||
           (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
-        const serviceId = item?.configuredData ? item?.configuredData?.id : item?.controllerService[0]?.id || item?.id || item?.updatedValue;
+        const serviceId = item?.configuredData
+          ? item?.configuredData?.id
+          : item?.controllerService[0]?.id || item?.id || item?.updatedValue;
 
         return (
           <div className="d-flex align-items-center justify-content-center">
@@ -1058,7 +1072,7 @@ const ControllerServiceTab = ({
               <>
                 <button
                   className="border-0 bg-white"
-                  onClick={() => handleSettingClick(stateItem)}
+                  onClick={() => handleSettingClickExternal(stateItem)}
                   data-tooltip-id={`Settings-${item?.id}`}
                   aria-label="Settings"
                   disabled={
@@ -1622,7 +1636,44 @@ const ControllerServiceTab = ({
     });
   };
 
-  const handleSettingClick = item => {
+  useEffect(() => {
+    if (serviceDefinition) {
+      const updatedItem = {
+        ...selectedItemFromList,
+        properties: serviceDefinition?.properties || [],
+      };
+
+      const filteredData =
+        !isEmpty(updatedItem?.properties) &&
+        updatedItem?.properties
+          ?.filter(
+            prop =>
+              isEmpty(prop?.dependencies) ||
+              prop?.dependencies?.every(dep =>
+                updatedItem?.properties?.some(
+                  obj =>
+                    obj?.name === dep?.propertyName &&
+                    dep?.dependentValues?.includes(obj?.value)
+                )
+              )
+          )
+          .map(prop => ({
+            ...prop,
+            old_val: prop?.value,
+          }));
+
+      setListPropertTableData(filteredData);
+
+      const properties = updatedItem?.properties?.map(prop => ({
+        ...prop,
+        old_val: prop?.value,
+      }));
+
+      setReferenceListPropertyTableData(properties);
+    }
+  }, [serviceDefinition]);
+
+  const handleSettingClickExternal = item => {
     const filteredData =
       !isEmpty(item?.properties) &&
       item?.properties
@@ -1669,6 +1720,77 @@ const ControllerServiceTab = ({
     setisFromExternalService(match ? true : false);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
+
+const [lastClickedItemId, setLastClickedItemId] = useState(null);
+
+const handleSettingClick = (item) => {
+  setListPropertTableData(null);
+  setSelectedItemFromList(item);
+
+  if (isEmpty(serviceDefinition?.properties)) {
+    const filteredData =
+      !isEmpty(item?.properties) &&
+      item?.properties
+        ?.filter(
+          prop =>
+            isEmpty(prop?.dependencies) ||
+            prop?.dependencies?.every(dep =>
+              item?.properties?.some(
+                obj =>
+                  obj?.name === dep?.propertyName &&
+                  dep?.dependentValues?.includes(obj?.value)
+              )
+            )
+        )
+        .map(prop => ({
+          ...prop,
+          old_val: prop?.value,
+        }));
+    setListPropertTableData([]);
+  }
+
+  // 🔹 Check: API tabhi chale jab naya item ho
+  if (
+    !isEmpty(controllerServicesData?.localServices) &&
+    (lastClickedItemId !== item?.id && lastClickedItemId !== item?.identifier)
+  ) {
+    dispatch(
+      NamespacesActions.fetchServiceDefinition({
+        group: item?.bundle?.group,
+        artifact: item?.bundle?.artifact,
+        version: item?.bundle?.version,
+        type: item?.type,
+        instanceIdentifier: item?.instanceIdentifier,
+        properties: item?.properties,
+      })
+    );
+    setLastClickedItemId(item?.id || item?.identifier); // ✅ last clicked update
+  }
+
+  setIsPropertyResponse(true);
+  setIsNewlyAddedExternalServiceResponse(false);
+  setIsStateChangeResponse(false);
+
+  const match = externalControllerServices?.some(data => {
+    if (data.controllerService?.length) {
+      return data.controllerService.some(
+        service =>
+          service?.id === item?.id || service?.id === item?.identifier
+      );
+    }
+    if (data?.configured && data?.configuredData?.id === item?.id) {
+      return true;
+    }
+    return (
+      item?.updatedValue !== undefined &&
+      data?.updatedValue === item.updatedValue
+    );
+  });
+
+  setisFromExternalService(match ? true : false);
+  dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
+};
+
 
   const handleConfigure = item => {
     setIsNewlyAddedExternalServiceResponse(true);
@@ -1836,7 +1958,7 @@ const ControllerServiceTab = ({
     );
     setExternalControllerServices(updatedControllerServices);
   }, [externalControllerServicesTableData]);
-  
+
   useEffect(() => {
     const collapsibles = [];
     if (isUpgrade) {
@@ -1970,6 +2092,7 @@ const ControllerServiceTab = ({
     refreshingRowId,
     refreshedControllerService,
   ]);
+  
 
   const checkIfLocalCsConfigured = useSelector(
     NamespacesSelectors.getIsLocalCsConfigured

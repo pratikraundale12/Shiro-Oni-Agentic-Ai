@@ -127,7 +127,6 @@ const ParameterContext = ({
     singleNamespaceData?.parameterContextId,
     deployOrUpgradeDetails?.parameterContextId,
   ]);
-  console.log('schduleParameterData', schduleParameterData);
 
   useEffect(() => {
     if (schedularFromList) {
@@ -431,8 +430,6 @@ const ParameterContext = ({
       return a?.parentParameterId - b?.parentParameterId;
     });
   };
-
-  console.log(tableStateData, 'tableStateData');
 
   return (
     <>

@@ -546,24 +546,24 @@ export const ListControllerService = () => {
   }, [dispatch, selectedCluster]);
 
   const handleSettingClick = item => {
-    const filteredData =
-      !isEmpty(item?.properties) &&
-      item?.properties
-        ?.filter(
-          item =>
-            isEmpty(item?.dependencies) ||
-            item?.dependencies?.every(dep =>
-              item?.properties?.some(
-                obj =>
-                  obj?.name === dep?.propertyName &&
-                  dep?.dependentValues?.includes(obj?.value)
+    const filteredData = isEmpty(item?.properties)
+      ? []
+      : item?.properties
+          ?.filter(
+            item =>
+              isEmpty(item?.dependencies) ||
+              item?.dependencies?.every(dep =>
+                item?.properties?.some(
+                  obj =>
+                    obj?.name === dep?.propertyName &&
+                    dep?.dependentValues?.includes(obj?.value)
+                )
               )
-            )
-        )
-        .map(item => ({
-          ...item,
-          old_val: item?.value,
-        }));
+          )
+          .map(item => ({
+            ...item,
+            old_val: item?.value,
+          }));
     setListPropertTableData(filteredData);
     const properties = item?.properties?.map(item => ({
       ...item,
