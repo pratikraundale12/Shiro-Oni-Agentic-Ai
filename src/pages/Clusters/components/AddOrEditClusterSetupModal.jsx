@@ -17,6 +17,7 @@ import {
 } from '../../../assets';
 import { theme } from '../../../styles';
 import { history } from '../../../helpers/history';
+import { isEmpty } from 'lodash';
 
 const Container = styled.div`
   display: flex;
@@ -131,6 +132,7 @@ export const AddOrEditClusterModal = () => {
       onSubmit={handleSubmit(handleContinueSubmit)}
       title={KDFM.NEW_CLUSTER}
       primaryButtonText="Continue"
+      primaryButtonDisabled={isEmpty(selectedFlow)}
       secondaryButtonText="Back"
       contentStyles={{ minWidth: '32%' }}
       footerAlign="start"
