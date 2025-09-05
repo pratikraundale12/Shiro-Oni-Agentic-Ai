@@ -116,6 +116,10 @@ const MODULES = [
     value: 'cluster',
   },
   {
+    label: 'Cluster Setup',
+    value: 'cluster_setup',
+  },
+  {
     label: 'Process Group',
     value: 'namespace',
   },
@@ -171,6 +175,7 @@ const EXCLUDE_EDIT_PERMISSION = [
   'genai',
   'data_inventory',
   'flow_validation',
+  'cluster_setup',
 ];
 const EXCLUDE_DELETE_PERMISSION = [
   'cluster',
@@ -181,6 +186,8 @@ const EXCLUDE_DELETE_PERMISSION = [
   'genai',
   'data_inventory',
   'flow_validation',
+  'cluster_setup',
+  'registry',
 ];
 
 const CellRender = ({
@@ -264,7 +271,7 @@ export const ModuleAccess = () => {
         'view_registry',
         'add_registry',
         'edit_registry',
-        'delete_registry',
+        // 'delete_registry',
       ].includes(element?.name)
     );
 
@@ -352,6 +359,18 @@ export const ModuleAccess = () => {
     policies &&
     policies.length > 0 &&
     policies?.filter(element => ['view_namespace'].includes(element?.name));
+    
+  const clusterSetupPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['add_cluster_setup', 'view_cluster_setup'].includes(element?.name)
+    );
+
+  const viewClusterSetupPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element => ['view_cluster_setup'].includes(element?.name));
 
   useEffect(() => {
     dispatch(RolesActions.setIsRoleListModalOpen(false));
@@ -485,8 +504,9 @@ export const ModuleAccess = () => {
     const registryPolicies = [
       'add_registry',
       'edit_registry',
-      'delete_registry',
+      // 'delete_registry',
     ];
+    const clusterSetupPolicy = ['add_cluster_setup'];
 
     const namespacePolicy = ['delete_namespace'];
     handlePolicyCheck(controllerPolicies, 'view_controller_services');
@@ -498,6 +518,7 @@ export const ModuleAccess = () => {
     handlePolicyCheck(dataInventoryPolicy, 'view_data_inventory');
     handlePolicyCheck(registryPolicies, 'view_registry');
     handlePolicyCheck(namespacePolicy, 'view_namespace');
+    handlePolicyCheck(clusterSetupPolicy, 'view_cluster_setup');
   };
 
   const handleChange = (checked, value) => {
@@ -515,6 +536,7 @@ export const ModuleAccess = () => {
       [viewDataInventoryPolicy?.[0]?.id]: dataInventoryPolicy,
       [viewRegistryPolicy?.[0]?.id]: registryPolicy,
       [viewNamespacePolicy?.[0]?.id]: namespacePolicy,
+      [viewClusterSetupPolicy?.[0]?.id]: clusterSetupPolicy,
     };
 
     setUpdatedRolePolicies(prev => {
@@ -581,10 +603,30 @@ export const ModuleAccess = () => {
     };
   }, [dispatch]);
 
-  // Filter the modules based on the search query
-  const filteredModules = MODULES.filter(module =>
-    module.label.toLowerCase().includes(search.toLowerCase())
-  );
+  // Function to check if a module should be hidden based on disabled checkboxes
+  const isModuleHidden = module => {
+    if (!hasEditPermssion) {
+      return false; // Don't hide modules if user doesn't have edit permission
+    }
+
+    // Check if view checkbox is disabled (empty policy means disabled)
+    const viewPolicy = policies?.find(
+      policy => policy.name === `view_${module.value}`
+    );
+
+    // Hide module if view checkbox is disabled
+    // View is always available, so if view is disabled, hide the module
+    return isEmpty(viewPolicy);
+  };
+
+  // Filter the modules based on the search query and hidden modules
+  const filteredModules = MODULES.filter(module => {
+    const matchesSearch = module.label
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const isHidden = isModuleHidden(module);
+    return matchesSearch && !isHidden;
+  });
 
   const capitalizeFirstLetter = text => {
     if (!text) return '';
