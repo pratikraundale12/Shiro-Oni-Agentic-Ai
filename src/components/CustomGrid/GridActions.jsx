@@ -562,6 +562,25 @@ export const GridActions = ({
   };
 
   const handleChange = value => {
+     if (!value) {
+      dispatch(SchedularActions.setScheduleSelectRange([]));
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module,
+          clusterId,
+          params: {
+            page: 1,
+            id: scheduleToken,
+            ...(search && { search: search }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && {
+                [getModuleBasedStatusKey(module)]: watchStatus,
+              }),
+          },
+        })
+      );
+      return;
+    }
     setCurrentPage(1);
     let [start, end] = value;
     if (
@@ -580,24 +599,6 @@ export const GridActions = ({
     dispatch(
       SchedularActions.setScheduleSelectRange([dynamicStart, dynamicEnd])
     );
-    if (!value) {
-      dispatch(SchedularActions.setScheduleSelectRange([]));
-      dispatch(
-        GridSagsActions.fetchGrid({
-          module,
-          clusterId,
-          params: {
-            page: 1,
-            id: scheduleToken,
-            ...(search && { search: search }),
-            ...(watchStatus &&
-              watchStatus !== 'all' && {
-                [getModuleBasedStatusKey(module)]: watchStatus,
-              }),
-          },
-        })
-      );
-    }
   };
 
   const customRanges = [
@@ -902,7 +903,6 @@ export const GridActions = ({
                 size="sm"
                 name="roles"
                 control={control}
-                title="Select Roles"
                 placeholder="Select Roles"
                 value={selectedRole}
                 options={[
@@ -922,7 +922,6 @@ export const GridActions = ({
               <StyledSelectField
                 name="is_active"
                 size="sm"
-                title={KDFM.SELECT_STATUS}
                 control={control}
                 options={statusOptions}
                 placeholder={KDFM.STATUS}

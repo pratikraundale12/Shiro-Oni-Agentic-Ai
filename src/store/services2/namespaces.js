@@ -225,9 +225,15 @@ export const namespacesAPI = api => {
       `/controller-services/${clusterId}/service-type?type=${type}&group=${group}&artifact=${artifact}&version=${version}`
     );
 
-  const getNewPropertyControllerServiceUpdated = ({ clusterId, serviceName }) =>
+  const getNewPropertyControllerServiceUpdated = ({
+    clusterId,
+    serviceName,
+    namespaceId,
+  }) =>
     api.get(
-      `/${clusterId}/controller-service-types?serviceName=${serviceName}`
+      `/${clusterId}/controller-service-types?serviceName=${serviceName}${
+        namespaceId ? `&namespaceId=${namespaceId}` : ''
+      }`
     );
 
   const addControllerServicePropertyByDropdown = ({
@@ -358,6 +364,31 @@ export const namespacesAPI = api => {
   const refreshControllerService = ({ clusterId, controllerId }) =>
     api.get(`controller-services/${clusterId}/service/${controllerId}`);
 
+  const getServiceDefinition = ({
+    group,
+    artifact,
+    version,
+    type,
+    instanceIdentifier,
+    properties,
+  }) => {
+    const queryParams = new URLSearchParams();
+
+    if (group) queryParams.append('group', group);
+    if (artifact) queryParams.append('artifact', artifact);
+    if (version) queryParams.append('version', version);
+    if (type) queryParams.append('type', type);
+    if (instanceIdentifier)
+      queryParams.append('instanceIdentifier', instanceIdentifier);
+    const queryString = queryParams.toString();
+
+    const url = queryString
+      ? `/get-service-definition?${queryString}`
+      : '/get-service-definition';
+
+    return api.post(url, { properties });
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -402,5 +433,6 @@ export const namespacesAPI = api => {
     getDeleteNamespaceDetails,
     fetchLastSanityReport,
     refreshControllerService,
+    getServiceDefinition,
   };
 };

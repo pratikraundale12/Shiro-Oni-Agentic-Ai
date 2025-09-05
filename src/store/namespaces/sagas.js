@@ -939,6 +939,17 @@ export function* getNewPropertyControllerService(api, { payload }) {
 
 export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const singleNamespaceData1 = yield select(
+    NamespacesSelectors.getSingleNamespaceData
+  );
+
+  let serviceTypes = [];
+  if (
+    payload?.serviceImplementation &&
+    Array.isArray(payload.serviceImplementation)
+  ) {
+    serviceTypes = payload.serviceImplementation.map(service => service.type);
+  }
 
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -948,24 +959,32 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
   );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const apiParams = {
+    clusterId: selectedCluster?.value,
+    namespaceId: payload?.namespaceId || singleNamespaceData1?.parentGroupId,
+    serviceName: payload?.isFromExternalService
+      ? payload?.type
+      : serviceTypes && serviceTypes.length > 0
+        ? serviceTypes
+        : payload?.type,
+  };
+
   const response = yield call(requestSaga, {
     errorSection: 'getNewPropertyControllerServiceUpdated',
     loadingSection: 'getNewPropertyControllerServiceUpdated',
     apiMethod: api.getNewPropertyControllerServiceUpdated,
-    apiParams: [
-      {
-        clusterId: selectedCluster?.value,
-        serviceName: payload?.type,
-      },
-    ],
+    apiParams: [apiParams],
     successAction: NamespacesActions.fetchVariableListSuccess,
   });
-  if (response.ok)
+
+  if (response.ok) {
     yield put(
       NamespacesActions.setPropertyOptionOnDeploy(response?.data?.data)
     );
-  else if (!response.ok)
+  } else {
     toast.error(response?.message || response?.data?.message);
+  }
 }
 
 export function* addControllerServicePropertyByDropdown(api, { payload }) {
@@ -1761,6 +1780,31 @@ export function* refreshControllerService(api, { payload }) {
   }
 }
 
+export function* fetchServiceDefinition(api, { payload }) {
+  const { group, artifact, version, type, instanceIdentifier, properties } =
+    payload || {};
+
+  const response = yield call(api.getServiceDefinition, {
+    group,
+    artifact,
+    version,
+    type,
+    instanceIdentifier,
+    properties,
+  });
+
+  if (response.ok) {
+    yield put(NamespacesActions.fetchServiceDefinitionSuccess(response.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
+    yield put(
+      NamespacesActions.fetchServiceDefinitionFailure(
+        response.problem || 'Failed to fetch service definition'
+      )
+    );
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -1913,6 +1957,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.refreshControllerService,
       refreshControllerService,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchServiceDefinition,
+      fetchServiceDefinition,
       api
     ),
   ]);

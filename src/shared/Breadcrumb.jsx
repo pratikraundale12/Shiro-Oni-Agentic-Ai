@@ -16,24 +16,25 @@ const BreadcrumbContainer = styled.div`
 
 const BreadcrumbItem = styled.span`
   cursor: pointer;
+  display: flex;
+  align-items: center;
 
-  &::after {
-    content: '>';
-    padding: 0 8px;
-    text-decoration: none;
+  span {
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
-  &:last-child::after {
-    content: '';
-  }
-
-  &:last-child {
+  &:last-child span {
     color: #ff7a00;
   }
+`;
 
-  &:hover {
-    text-decoration: underline;
-  }
+const BreadcrumbSeparator = styled.span`
+  padding: 0 8px;
+  user-select: none;
+  pointer-events: none;
+  text-decoration: none;
 `;
 
 const MODULES = [
@@ -85,7 +86,10 @@ const Breadcrumb = ({
           id={module + breadcrumb?.label}
           onClick={() => handleClick(breadcrumb)}
         >
-          {breadcrumb.label}
+          <span>{breadcrumb.label}</span>
+          {index !== data.length - 1 && (
+            <BreadcrumbSeparator>&gt;</BreadcrumbSeparator>
+          )}
         </BreadcrumbItem>
       ))}
     </BreadcrumbContainer>

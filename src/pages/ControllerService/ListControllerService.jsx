@@ -204,13 +204,29 @@ export const ListControllerService = () => {
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
+  const fetchingClusters = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusters')
+  );
+  const [hasTriedFetchingClusters, setHasTriedFetchingClusters] =
+    useState(false);
   useEffect(() => {
-    if (isEmpty(selectedCluster?.value)) {
+    if (!fetchingClusters) {
+      setHasTriedFetchingClusters(true);
+    }
+  }, [fetchingClusters]);
+
+  useEffect(() => {
+    if (
+      hasTriedFetchingClusters &&
+      !fetchingClusters &&
+      isEmpty(selectedCluster?.value)
+    ) {
       toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
         toastId: 'please-login-cluster-toast',
       });
     }
-  }, [selectedCluster]);
+  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
+
   useEffect(() => {
     setIsUserCanWrite(csPermission?.canWrite);
   }, [csPermission]);
@@ -552,24 +568,24 @@ export const ListControllerService = () => {
   }, [dispatch, modalOpenState, selectedCluster]);
 
   const handleSettingClick = item => {
-    const filteredData =
-      !isEmpty(item?.properties) &&
-      item?.properties
-        ?.filter(
-          item =>
-            isEmpty(item?.dependencies) ||
-            item?.dependencies?.every(dep =>
-              item?.properties?.some(
-                obj =>
-                  obj?.name === dep?.propertyName &&
-                  dep?.dependentValues?.includes(obj?.value)
+    const filteredData = isEmpty(item?.properties)
+      ? []
+      : item?.properties
+          ?.filter(
+            item =>
+              isEmpty(item?.dependencies) ||
+              item?.dependencies?.every(dep =>
+                item?.properties?.some(
+                  obj =>
+                    obj?.name === dep?.propertyName &&
+                    dep?.dependentValues?.includes(obj?.value)
+                )
               )
-            )
-        )
-        .map(item => ({
-          ...item,
-          old_val: item?.value,
-        }));
+          )
+          .map(item => ({
+            ...item,
+            old_val: item?.value,
+          }));
     setSelectedItemFromList(item);
     setListPropertTableData(filteredData);
     const properties = item?.properties?.map(item => ({

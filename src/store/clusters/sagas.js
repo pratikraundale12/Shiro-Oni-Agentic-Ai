@@ -90,9 +90,6 @@ export function* addServiceAccountHost(api, { payload }) {
   try {
     const { clusterId, formData } = payload;
 
-    console.log('addServiceAccountHost: clusterId:', clusterId);
-    console.log('addServiceAccountHost: formData:', formData);
-
     if (!clusterId || !formData) {
       console.error('Invalid clusterId or formData');
       toast.error('Invalid cluster ID or form data');
