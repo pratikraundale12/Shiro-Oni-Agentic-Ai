@@ -847,7 +847,6 @@ export const GridActions = ({
                 size="sm"
                 name="roles"
                 control={control}
-                title="Select Roles"
                 placeholder="Select Roles"
                 value={selectedRole}
                 options={[
@@ -867,7 +866,6 @@ export const GridActions = ({
               <StyledSelectField
                 name="is_active"
                 size="sm"
-                title={KDFM.SELECT_STATUS}
                 control={control}
                 options={statusOptions}
                 placeholder={KDFM.STATUS}
