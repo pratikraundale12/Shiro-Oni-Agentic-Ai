@@ -223,7 +223,7 @@ const ParameterContext = ({
     {
       label: 'Referencing Component',
       renderCell: item => (
-        <div className="text-center">
+        <div className="text-center d-flex align-items-center justify-content-center">
           {!isEmpty(item?.referencingComponents) && (
             <>
               <IconButton
