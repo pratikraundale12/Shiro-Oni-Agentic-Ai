@@ -31,11 +31,6 @@ import AddParameterContext from './AddParameterContext';
 import Collapsible from './Collapsible';
 import RefreshModal from './RefreshModal';
 
-const ArrowButton = styled.button`
-  border-radius: 50%;
-  background-color: ${props => props.theme.colors.white};
-  border: 1px solid ${props => props.theme.colors.border};
-`;
 const DataWrapper = styled.div`
   width: 100%;
   height: 596px;

@@ -47,5 +47,5 @@ export const CollapseSidebarIconLeft = ({
 CollapseSidebarIconLeft.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
-  stroke: PropTypes.string,
+  color: PropTypes.string,
 };
