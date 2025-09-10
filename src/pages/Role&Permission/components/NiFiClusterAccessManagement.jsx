@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
 import { Button, CheckboxField } from '../../../shared';
 import { Table } from '../../../components';
@@ -151,87 +151,102 @@ const NiFiClusterAccessManagement = () => {
   const [activeSidebarItem, setActiveSidebarItem] = useState();
   const [searchTerm, setSearchTerm] = useState('');
   const [permissions, setPermissions] = useState({});
-
+  const [groupsColumns, setGroupsColumns] = useState([]);
+  const [usersColumns, setUsersColumns] = useState([]);
   // Access the NiFi policies in your component
   const clusterNiFiPolicies = useSelector(
     RolesSelectors.getClusterNiFiPolicies
   );
-
-  console.log('clusterNiFiPolicies', clusterNiFiPolicies);
-
   const sidebarItems = [
-    ...(clusterNiFiPolicies[0]?.accessPolicies?.map(policy => policy.name) ||
-      []),
+    ...(clusterNiFiPolicies?.accessPolicies?.map(policy => policy) || []),
   ];
-
-  const nameData = ['naman', 'adarsh', 'view', 'edit', 'delete', 'manage'];
-
-  // Dynamic column definitions based on sidebar items
-  const getDynamicColumns = nameColumnLabel => {
-    const columns = [
-      {
-        label: nameColumnLabel,
-        renderCell: item => (
-          <div style={{ fontSize: '14px', color: '#212529' }}>{item.name}</div>
-        ),
-        width: '25%',
-      },
-    ];
-
-    // Add dynamic columns for each sidebar item
-    nameData.forEach(sidebarItem => {
-      columns.push({
-        label: sidebarItem,
-        renderCell: item => (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <CheckboxField
-              name={`${sidebarItem}-${item.name}`}
-              checked={permissions[`${sidebarItem}-${item.name}`] || false}
-              onChange={() => handlePermissionChange(sidebarItem, item.name)}
-            />
-          </div>
-        ),
-        width: '20%',
-      });
-    });
-
-    return columns;
-  };
-
-  const GROUPS_COLUMNS = getDynamicColumns('All Groups');
-  const USERS_COLUMNS = getDynamicColumns('All Users');
-
-  const handlePermissionChange = (sidebarItem, itemName) => {
+  const handlePermissionChange = useCallback((sidebarItem, itemName) => {
     const permissionKey = `${sidebarItem}-${itemName}`;
     setPermissions(prev => ({
       ...prev,
       [permissionKey]: !prev[permissionKey],
     }));
-  };
+  }, []);
+
+  const dynamicColumns = useMemo(() => {
+    function getEqualParts(num) {
+      if (!num || num <= 0) return 0;
+      return +(100 / num).toFixed(2);
+    }
+
+    const createDynamicColumns = nameColumnLabel => {
+      const columns = [
+        {
+          label: nameColumnLabel,
+          renderCell: item => (
+            <div style={{ fontSize: '14px', color: '#212529' }}>
+              {item.name}
+            </div>
+          ),
+          width: `${getEqualParts(activeSidebarItem?.policies?.length + 1)}%`,
+        },
+      ];
+
+      activeSidebarItem?.policies?.forEach(sidebarItem => {
+        columns.push({
+          label: activeSidebarItem?.hasSubNames
+            ? activeSidebarItem?.policies?.[0]?.subName
+            : sidebarItem?.actionName,
+          renderCell: item => (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <CheckboxField
+                name={`${sidebarItem?.actionName}-${item.name}`}
+                checked={
+                  permissions[`${sidebarItem?.actionName}-${item.name}`] ||
+                  false
+                }
+                onChange={() =>
+                  handlePermissionChange(sidebarItem?.actionName, item.name)
+                }
+              />
+            </div>
+          ),
+          width: `${getEqualParts(activeSidebarItem?.policies?.length + 1)}%`,
+        });
+      });
+
+      return columns;
+    };
+
+    return createDynamicColumns('All Groups');
+  }, [activeSidebarItem]);
+
+  // 3. Update state only when columns change
+  useEffect(() => {
+    setGroupsColumns(dynamicColumns);
+    setUsersColumns(dynamicColumns);
+  }, [dynamicColumns]);
+
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  console.log('selectedCluster', selectedCluster);
 
   useEffect(() => {
-    // Fetch users for a specific cluster
-    dispatch(
-      RolesActions.fetchClusterUsers({
-        clusterId: selectedCluster?.value,
-      })
-    );
-    // Fetch user groups for a specific cluster
-    dispatch(
-      RolesActions.fetchClusterUserGroups({
-        clusterId: selectedCluster?.value,
-      })
-    );
+    if (selectedCluster?.value) {
+      // Fetch users for a specific cluster
+      dispatch(
+        RolesActions.fetchClusterUsers({
+          clusterId: selectedCluster?.value,
+        })
+      );
+      // Fetch user groups for a specific cluster
+      dispatch(
+        RolesActions.fetchClusterUserGroups({
+          clusterId: selectedCluster?.value,
+        })
+      );
 
-    // Fetch NiFi policies for a specific cluster
-    dispatch(
-      RolesActions.fetchClusterNiFiPolicies({
-        clusterId: selectedCluster?.value,
-      })
-    );
+      // Fetch NiFi policies for a specific cluster
+      dispatch(
+        RolesActions.fetchClusterNiFiPolicies({
+          clusterId: selectedCluster?.value,
+        })
+      );
+    }
   }, [dispatch, selectedCluster]);
 
   // Access the users in your component
@@ -265,11 +280,11 @@ const NiFiClusterAccessManagement = () => {
             <LeftsidebarScroll className="overflow-y-auto">
               {sidebarItems.map(item => (
                 <SidebarItem
-                  key={item}
-                  active={activeSidebarItem === item}
+                  key={item?.name}
+                  active={activeSidebarItem?.name === item?.name}
                   onClick={() => setActiveSidebarItem(item)}
                 >
-                  {item}
+                  {item?.name}
                 </SidebarItem>
               ))}
             </LeftsidebarScroll>
@@ -296,8 +311,7 @@ const NiFiClusterAccessManagement = () => {
                 Users
               </Tab>
             </TabContainer>
-
-            {activeTab === 'groups' && (
+            {
               <>
                 <SearchContainer>
                   <SearchInput
@@ -310,33 +324,21 @@ const NiFiClusterAccessManagement = () => {
 
                 <div>
                   <TableHeight
-                    data={userGroupIdentities}
-                    columns={GROUPS_COLUMNS}
-                    className="groups-table"
+                    data={
+                      activeTab === 'groups'
+                        ? userGroupIdentities
+                        : userIdentities
+                    }
+                    columns={
+                      activeTab === 'groups' ? groupsColumns : usersColumns
+                    }
+                    className={
+                      activeTab === 'groups' ? 'groups-table' : 'users-table'
+                    }
                   />
                 </div>
               </>
-            )}
-
-            {activeTab === 'users' && (
-              <>
-                <SearchContainer>
-                  <SearchInput
-                    type="text"
-                    placeholder="Search User Names"
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                  />
-                </SearchContainer>
-                <div>
-                  <TableHeight
-                    data={userIdentities}
-                    columns={USERS_COLUMNS}
-                    className="users-table"
-                  />
-                </div>
-              </>
-            )}
+            }
           </ContentArea>
         </MainContent>
       </Container>
