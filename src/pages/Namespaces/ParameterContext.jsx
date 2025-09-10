@@ -5,7 +5,12 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { ArrowIcon, NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
+import {
+  NoDataIcon,
+  PencilIcon,
+  RefrenceIcon,
+  RightDirectionIcon,
+} from '../../assets';
 import {
   EnhancedTextRender,
   FullPageLoader,
@@ -27,9 +32,9 @@ import Collapsible from './Collapsible';
 import RefreshModal from './RefreshModal';
 
 const ArrowButton = styled.button`
-  background-color: white;
   border-radius: 50%;
-  border: 1px solid grey;
+  background-color: ${props => props.theme.colors.white};
+  border: 1px solid ${props => props.theme.colors.border};
 `;
 const DataWrapper = styled.div`
   width: 100%;
@@ -218,11 +223,11 @@ const ParameterContext = ({
     {
       label: 'Referencing Component',
       renderCell: item => (
-        <div className="text-center">
+        <div className="text-center d-flex align-items-center justify-content-center">
           {!isEmpty(item?.referencingComponents) && (
             <>
-              <button
-                className="border-0 bg-white"
+              <IconButton
+                type="button"
                 onClick={event => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
@@ -231,8 +236,8 @@ const ParameterContext = ({
                 data-tooltip-id={`Reference-${item?.id}`}
                 aria-label="Reference"
               >
-                <RefrenceIcon />
-              </button>
+                <RefrenceIcon color="black" />
+              </IconButton>
               <ReactTooltip
                 id={`Reference-${item?.id}`}
                 place="left"
@@ -303,10 +308,10 @@ const ParameterContext = ({
                 }
               }}
             >
-              {<PencilIcon color="black" />}
+              {<PencilIcon color="black" height={18} width={18} />}
             </IconButton>
           ) : (
-            <ArrowButton
+            <IconButton
               type="button"
               onClick={() => {
                 if (canWrite) {
@@ -322,8 +327,8 @@ const ParameterContext = ({
                 }
               }}
             >
-              <ArrowIcon />
-            </ArrowButton>
+              <RightDirectionIcon color="black" height={18} width={18} />
+            </IconButton>
           )}
         </div>
       ),

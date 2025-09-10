@@ -4,7 +4,11 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { LogDocumentIcon, FileDownloadIcon } from '../../assets';
+import {
+  LogDocumentIcon,
+  FileDownloadIcon,
+  SingleMonthDateRangeIcon,
+} from '../../assets';
 
 import { Button, SelectField, ModalWithIcon } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
@@ -151,6 +155,7 @@ export const ExportLogSettings = () => {
               <StyledDateRangePickerInput
                 value={selectedDate}
                 handleChange={handleChange}
+                DateRangeIcon={SingleMonthDateRangeIcon}
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">

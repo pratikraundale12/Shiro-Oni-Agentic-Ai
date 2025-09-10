@@ -509,7 +509,7 @@ export const ListNamespaces = () => {
             data-tooltip-id={`tooltip-group-details`}
           >
             <IconButton>
-              <OpenEyeIcon width={14} height={14} />
+              <OpenEyeIcon width={18} height={18} />
             </IconButton>
           </button>
           <ReactTooltip
@@ -536,7 +536,7 @@ export const ListNamespaces = () => {
                 disabled={!item?.version}
               >
                 <IconButton>
-                  <CalenderIcon2 width={14} height={14} color="grey" />
+                  <CalenderIcon2 width={18} height={18} />
                 </IconButton>
               </button>
               <ReactTooltip
@@ -564,7 +564,7 @@ export const ListNamespaces = () => {
                 data-tooltip-id={`tooltip-delete-${item.id}`}
               >
                 <IconButton>
-                  <DeleteSmallIcon width={14} height={14} />
+                  <DeleteSmallIcon width={18} height={18} />
                 </IconButton>
               </button>
             )}

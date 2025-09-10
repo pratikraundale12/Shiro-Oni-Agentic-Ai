@@ -254,7 +254,7 @@ export const ListClusters = () => {
                       )}
                       {item.deactivate_cluster && (
                         <Item onClick={() => handleClick('delete', item.id)}>
-                          <LogoutIcon color="black" />
+                          <LogoutIcon />
                           <span>{KDFM.DEACTIVATE}</span>
                         </Item>
                       )}
