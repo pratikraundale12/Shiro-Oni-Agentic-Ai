@@ -1145,12 +1145,9 @@ export function* fetchNamespacesForDestiationCluster(api, { payload }) {
   }
 }
 
-export function* fetchRegistryData(api) {
+export function* fetchRegistryData(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const gridData = yield select(
-    GridSelectors.getNamespaceGridRegistry,
-    'namespaces'
-  );
+
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1166,7 +1163,7 @@ export function* fetchRegistryData(api) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        registriesId: gridData?.id,
+        registriesId: payload,
       },
     ],
   });
@@ -1179,10 +1176,23 @@ export function* fetchRegistryData(api) {
 
 export function* fetchFlowNameList(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const gridData = yield select(
-    GridSelectors.getNamespaceGridRegistry,
-    'namespaces'
+  const selectedRegistryId = yield select(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
   );
+
+  const registryData = yield select(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
+  const registryDropdownOptions = registryData.map(item => ({
+    label: item?.name,
+    value: item?.nifiRegistryId,
+    default_registry_id: item?.is_default,
+  }));
+  const defaultRegistry = registryDropdownOptions.find(
+    item => item.default_registry_id === true
+  );
+  const defaultRegistryValue = defaultRegistry?.value || '';
+
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1199,7 +1209,10 @@ export function* fetchFlowNameList(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        registriesId: gridData?.id,
+        registriesId:
+          selectedRegistryId ||
+          defaultRegistryValue ||
+          registryDropdownOptions?.[0]?.value,
         bucketId: payload,
       },
     ],
@@ -1215,10 +1228,23 @@ export function* fetchVersionData(api, { payload }) {
   const { isFromSchedule } = payload;
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const selectedSchedule = yield select(SchedularSelectors.getSelectedSchedule);
-  const gridData = yield select(
-    GridSelectors.getNamespaceGridRegistry,
-    'namespaces'
+  const selectedRegistryId = yield select(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
   );
+
+  const registryData = yield select(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
+  const registryDropdownOptions = registryData.map(item => ({
+    label: item?.name,
+    value: item?.nifiRegistryId,
+    default_registry_id: item?.is_default,
+  }));
+  const defaultRegistry = registryDropdownOptions.find(
+    item => item.default_registry_id === true
+  );
+  const defaultRegistryValue = defaultRegistry?.value || '';
+
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1243,7 +1269,12 @@ export function* fetchVersionData(api, { payload }) {
         clusterId: isFromSchedule
           ? selectedSchedule?.cluster_id
           : selectedClusterToken?.id,
-        registriesId: gridData?.id || selectedSchedule?.registry_id,
+        registriesId:
+          selectedRegistryId ||
+          payload?.registryId ||
+          selectedSchedule?.registry_id ||
+          defaultRegistryValue ||
+          registryDropdownOptions?.[0]?.value,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,
         namespaceId:
@@ -1263,6 +1294,25 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+  const selectedRegistryId = yield select(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
+  );
+  const registryData = yield select(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
+  const registryDropdownOptions = registryData.map(item => ({
+    label: item?.name,
+    value: item?.nifiRegistryId,
+    default_registry_id: item?.is_default,
+    local_registry_id: item?.localRegistryId,
+  }));
+  console.log(registryDropdownOptions, 'registryDropdownOptions');
+
+  const defaultRegistry = registryDropdownOptions.find(
+    item => item.default_registry_id === true
+  );
+  const defaultRegistryValue = defaultRegistry?.local_registry_id || '';
+
   const scheduleStartFlow = yield select(
     NamespacesSelectors.getScheduleStartFlow
   );
@@ -1277,6 +1327,13 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   const isUpgrade = yield select(NamespacesSelectors.getDeployRegistryFlow);
+  const gridData = yield select(
+    GridSelectors.getNamespaceGridRegistry,
+    'namespaces'
+  );
+  const localRegistryIdArr = gridData?.filter(
+    item => item?.nifiRegistryId === selectedRegistryId
+  );
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -1287,6 +1344,10 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
+        registriesId:
+          localRegistryIdArr?.[0]?.localRegistryId ||
+          defaultRegistryValue ||
+          registryDropdownOptions?.[0]?.local_registry_id,
         namespaceId: scheduleStartFlow
           ? urlId
           : !isUpgrade

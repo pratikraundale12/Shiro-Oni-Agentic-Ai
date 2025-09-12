@@ -42,6 +42,7 @@ import RegistryFormSection from './components/RegistryFormSection';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
+import RegistryMultiSelect from '../../shared/FormInputs/components/RegistryMultiSelectField';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -122,6 +123,14 @@ const NoDataText = styled.div`
   font-size: 28px;
   font-weight: 600;
   text-align: center;
+`;
+
+const LabelSelect = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+  margin-bottom: 18px;
 `;
 
 export const Add = () => {
@@ -308,6 +317,9 @@ export const Add = () => {
     resolver: yupResolver(handleSchemaCheck(activeTab)),
     mode: 'all',
     reValidateMode: 'onChange',
+    defaultValues: {
+      default_registry: data?.default_registry?.name,
+    },
   });
   const formStateData = watch();
   const newRegistryDataFromWatch = {
@@ -316,8 +328,12 @@ export const Add = () => {
   };
 
   const selectedRegistryId = watch('registry');
+  const selectedDefalutRegistryId = watch('default_registry');
 
   const editClusterData = async () => {
+    const selectedRegistriesId = formStateData?.registry?.map(
+      item => item?.value
+    );
     try {
       const payload = {
         name: clusterData?.clusterName,
@@ -331,7 +347,7 @@ export const Add = () => {
         approver_enable: approverEnable,
         start_stop_requires_approval: approverEnableForStartAndStop,
         change_request_enable: changeRequestEnable,
-        registry_id: selectedRegistryId,
+        registry_ids: selectedRegistriesId,
         has_custom_service_account: false,
       };
 
@@ -524,15 +540,25 @@ export const Add = () => {
     setTest,
     activeTab,
   ]);
+
+  const selectedOptions =
+    !isEmpty(registries) &&
+    !isEmpty(data) &&
+    registries
+      ?.filter(item => data?.registry_ids.includes(item.value))
+      .map(item => ({
+        label: item.label,
+        value: item.value,
+      }));
   // Update the useEffect where you check for data
   useEffect(() => {
-    if (data?.registry_id) {
+    if (data?.registry_id && registries && selectedOptions) {
       reset({
-        registry: data?.registry_id || '',
-        clusterName: clusterData?.clusterName,
-        metrics_url: clusterData?.metrics_url || '',
-        logs_url: clusterData?.logs_url || '',
-        nifiUrl: clusterData?.nifiUrl,
+        registry: selectedOptions || data?.registry_id || '',
+        clusterName: clusterData?.clusterName || data?.name,
+        metrics_url: clusterData?.metrics_url || data?.metrics_url || '',
+        logs_url: clusterData?.logs_url || data?.logs_url || '',
+        nifiUrl: clusterData?.nifiUrl || data?.nifi_url,
         registryName: registryData?.name,
         registryUrl: registryData?.registry_url || '',
       });
@@ -543,7 +569,7 @@ export const Add = () => {
         setIsCopyOperation(true);
       }
     }
-  }, [reset, activeTab, newRegistry]);
+  }, [reset, activeTab, newRegistry, registries, data]);
   const fetchRegistry = async () => {
     try {
       const response = await getRegistryList();
@@ -558,23 +584,10 @@ export const Add = () => {
       console.error('Failed to fetch registries:', error);
     }
   };
-  const fetchRegistryDetails = async () => {
-    try {
-      const response = await getOneRegistry(selectedRegistryId);
-      setRegistryData(response);
-    } catch (error) {
-      console.error('Failed to fetch registry details:', error);
-    }
-  };
+
   useEffect(() => {
     fetchRegistry();
   }, [activeTab]);
-
-  useEffect(() => {
-    if (selectedRegistryId) {
-      fetchRegistryDetails();
-    }
-  }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const handleRegistry = () => {
     setIsCertificateOpen(false);
@@ -853,16 +866,31 @@ export const Add = () => {
 
         {activeTab === CLUSTER_MODULE_TABS.REGISTRY && !newRegistry && (
           <FormContainer>
-            <SelectField
-              control={control}
-              name="registry"
-              label={KDFM.REGISTRY_NAME}
-              options={registries}
-              icon={<QRIcons />}
-            />
-            <ORText style={{ textAlign: 'center' }} className="mt-3">
-              OR
-            </ORText>
+            <div className="w-100 mb-4 row">
+              <div className="col-lg-8">
+                <LabelSelect>Select Registry</LabelSelect>
+                <RegistryMultiSelect
+                  enableCheckboxes
+                  control={control}
+                  name="registry"
+                  placeholder={'Select Registry'}
+                  options={registries}
+                />
+              </div>
+              <div className="col-lg-4">
+                <SelectField
+                  label="Default Registry"
+                  name="default_registry"
+                  control={control}
+                  // icon={<LogDocumentIcon color="#444445" />}
+                  errors={errors}
+                  options={selectedRegistryId}
+                  placeholder="Select Default Registry"
+                  defaultValue={data?.default_registry?.name}
+                />
+              </div>
+            </div>
+            <ORText style={{ textAlign: 'center' }}>OR</ORText>
             <div>
               <StyledButton
                 variant="secondary"
@@ -998,6 +1026,9 @@ export const Add = () => {
         changeRequestEnable={changeRequestEnable}
         approverEnableForStartAndStop={approverEnableForStartAndStop}
         tags={tags}
+        selectedRegistriesArray={formStateData?.registry}
+        default_registry_data={selectedDefalutRegistryId}
+        registries={registries}
       />
       {successModal && (
         <SuccessTestModal

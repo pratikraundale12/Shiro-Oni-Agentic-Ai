@@ -515,13 +515,21 @@ export const Grid = ({
       {module === 'nodes' && !loading && (
         <>
           <ClusterRegistryContainer className="row">
-            <ClusterDetail
-              data={{
-                name: clusterSummary?.name,
-                nifi_url: clusterSummary?.nifi_url,
-              }}
-            />
-            <RegistryDetail data={clusterSummary?.registry} />
+            {!isEmpty(clusterSummary?.name) && (
+              <ClusterDetail
+                data={{
+                  name: clusterSummary?.name,
+                  nifi_url: clusterSummary?.nifi_url,
+                }}
+                displayFullWidth={clusterSummary?.registries?.length > 1}
+              />
+            )}
+            {!isEmpty(clusterSummary?.registries) && (
+              <RegistryDetail
+                data={clusterSummary?.registries}
+                displayFullWidth={clusterSummary?.registries?.length > 1}
+              />
+            )}
           </ClusterRegistryContainer>
           <ClusterRegistryContainer className="row">
             <ClusterDetail
