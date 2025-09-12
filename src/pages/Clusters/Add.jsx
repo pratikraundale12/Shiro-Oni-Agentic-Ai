@@ -124,7 +124,6 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-
 const LabelSelect = styled.div`
   font-size: 14px;
   font-weight: 600;
@@ -132,7 +131,6 @@ const LabelSelect = styled.div`
   color: ${props => props.theme.colors.darker};
   margin-bottom: 18px;
 `;
-
 export const Add = () => {
   const [activeTab, setActiveTab] = useState(CLUSTER_MODULE_TABS.CLUSTER);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
@@ -146,9 +144,11 @@ export const Add = () => {
   const [openSummary, setOpenSummary] = useState(false);
   const [failedTestMessage, setFailedTestMessage] = useState('');
   const [registries, setRegistries] = useState([]);
+
   const location = useLocation();
   const dispatch = useDispatch();
   const { state: data } = location.state || {};
+
   const [tags, setTags] = useState(data?.tag || '');
   const [clusterData, setClusterData] = useState({
     clusterName: data?.name || '',
@@ -160,6 +160,7 @@ export const Add = () => {
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'clusters')
   );
+
   const [saveButtonEnable, setSaveButtonEnable] = useState(true);
   const [error, setError] = useState('');
   const filteredGridData = gridData.filter(item => {
@@ -334,6 +335,7 @@ export const Add = () => {
     const selectedRegistriesId = formStateData?.registry?.map(
       item => item?.value
     );
+
     try {
       const payload = {
         name: clusterData?.clusterName,
@@ -550,9 +552,10 @@ export const Add = () => {
         label: item.label,
         value: item.value,
       }));
+
   // Update the useEffect where you check for data
   useEffect(() => {
-    if (data?.registry_id && registries && selectedOptions) {
+    if (data?.registry_ids && registries && selectedOptions) {
       reset({
         registry: selectedOptions || data?.registry_id || '',
         clusterName: clusterData?.clusterName || data?.name,
@@ -569,7 +572,8 @@ export const Add = () => {
         setIsCopyOperation(true);
       }
     }
-  }, [reset, activeTab, newRegistry, registries, data]);
+  }, [activeTab, newRegistry, registries, data]);
+
   const fetchRegistry = async () => {
     try {
       const response = await getRegistryList();
@@ -596,6 +600,7 @@ export const Add = () => {
     setTest(true);
     setOpenSummary(true);
   };
+
   function handleKeyDown(e) {
     const value = inputValue;
     if (e.key === 'Backspace') {
