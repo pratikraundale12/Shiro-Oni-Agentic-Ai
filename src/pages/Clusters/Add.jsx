@@ -331,6 +331,18 @@ export const Add = () => {
   const selectedRegistryId = watch('registry');
   const selectedDefalutRegistryId = watch('default_registry');
 
+  // Auto-select first registry as default when multi-select changes
+  useEffect(() => {
+    if (selectedRegistryId && selectedRegistryId.length > 0 && !selectedDefalutRegistryId) {
+      // If no default registry is selected and we have selected registries, set the first one as default
+      const firstSelectedRegistry = selectedRegistryId[0];
+      reset({
+        ...formStateData,
+        default_registry: firstSelectedRegistry
+      });
+    }
+  }, [selectedRegistryId, selectedDefalutRegistryId, formStateData, reset]);
+
   const editClusterData = async () => {
     const selectedRegistriesId = formStateData?.registry?.map(
       item => item?.value
