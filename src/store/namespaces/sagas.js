@@ -183,6 +183,7 @@ export function* updateNamespaceStatus(api, { payload }) {
     yield put(NamespacesActions.setFlowControlData(responseData));
     yield put(NamespacesActions.setRegistryDeployResponseData(responseData));
     yield put(NamespacesActions.deployClusterSuccess(responseData));
+    response?.data?.message && toast.success(response?.data?.message);
   }
   if (!response.ok) {
     toast.error(response?.message || response?.data?.message);
