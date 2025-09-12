@@ -122,7 +122,7 @@ const ListRegistryManagementPage = () => {
               wordWrap: 'break-word',
             }}
           />
-          {!item?.associated_with_clusters &&
+          {
             userPermissions.includes('delete_registry') && (
               <button
                 onClick={() => {
