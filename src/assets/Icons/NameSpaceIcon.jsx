@@ -7,14 +7,67 @@ export const NameSpaceIcon = ({
   color = '#444445',
 }) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      fill={color}
-      d="M2 8h14V2H2v6Zm16-7v16a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1Zm-2 9H2v6h14v-6ZM4 12h3v2H4v-2Zm0-8h3v2H4V4Z"
+      d="M19.3198 9.99977H4.68977C3.20977 9.99977 2.00977 8.78978 2.00977 7.31978V4.68977C2.00977 3.20977 3.21977 2.00977 4.68977 2.00977H19.3198C20.7998 2.00977 21.9998 3.21977 21.9998 4.68977V7.31978C21.9998 8.78978 20.7898 9.99977 19.3198 9.99977Z"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M19.3198 21.9998H4.68977C3.20977 21.9998 2.00977 20.7898 2.00977 19.3198V16.6898C2.00977 15.2098 3.21977 14.0098 4.68977 14.0098H19.3198C20.7998 14.0098 21.9998 15.2198 21.9998 16.6898V19.3198C21.9998 20.7898 20.7898 21.9998 19.3198 21.9998Z"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M6 5V7"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10 5V7"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M6 17V19"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10 17V19"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14 6H18"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14 18H18"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

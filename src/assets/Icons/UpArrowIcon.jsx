@@ -1,22 +1,21 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export const UpArrowIcon = ({
-  width = 14,
-  height = 8,
-  color = '#444445',
-  ...prop
-}) => (
+export const UpArrowIcon = ({ width = 16, height = 16, color = '#444445' }) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
+    viewBox="0 0 20 20"
     fill="none"
-    {...prop}
+    xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      fill={color}
-      d="m7 2.828 4.95 4.95 1.413-1.414L7 0 .635 6.364 2.05 7.778 7 2.828Z"
+      d="M16.5984 12.5415L11.1651 7.10817C10.5234 6.4665 9.47344 6.4665 8.83177 7.10817L3.39844 12.5415"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

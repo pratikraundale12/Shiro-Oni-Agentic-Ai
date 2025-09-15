@@ -1,0 +1,69 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const AuditLogIcon = ({
+  width = 20,
+  height = 20,
+  color = '#444445',
+}) => (
+  <svg
+    width={width}
+    height={height}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M18.2743 5.63342L15.466 16.9084C15.266 17.7501 14.516 18.3334 13.6493 18.3334H2.69929C1.44096 18.3334 0.540974 17.1 0.915974 15.8917L4.4243 4.62512C4.66597 3.84179 5.39098 3.30005 6.20765 3.30005H16.4576C17.2493 3.30005 17.9076 3.78339 18.1826 4.45005C18.341 4.80839 18.3743 5.21676 18.2743 5.63342Z"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeMiterlimit="10"
+    />
+    <path
+      d="M13.334 18.3333H17.3173C18.3923 18.3333 19.234 17.425 19.159 16.35L18.334 5"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.06641 5.317L8.93308 1.71704"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13.6484 5.32489L14.4318 1.70825"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M6.41602 10H13.0827"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.58203 13.3333H12.2487"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+AuditLogIcon.propTypes = {
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  color: PropTypes.string,
+};
