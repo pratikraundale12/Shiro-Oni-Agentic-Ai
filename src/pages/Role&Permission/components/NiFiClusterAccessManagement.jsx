@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from 'react';
+/*eslint-disable*/
+import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { Button, CheckboxField } from '../../../shared';
-import { Table } from '../../../components';
+import { FullPageLoader, Table } from '../../../components';
 import GroupUserIcon from '../../../assets/Icons/GroupUserIcon';
 import NewUserIcon from '../../../assets/Icons/NewUserIcon';
 import {
+  LoadingSelectors,
   NamespacesSelectors,
   RolesActions,
   RolesSelectors,
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
+import { toast } from 'react-toastify';
+import { theme } from '../../../styles';
 
 const Container = styled.div`
   background-color: #fbfcff;
@@ -57,6 +62,7 @@ const SidebarItem = styled.div`
 const ContentArea = styled.div`
   flex: 1;
   padding: 0;
+  overflow: auto;
 `;
 
 const TabContainer = styled.div`
@@ -146,117 +152,291 @@ const LeftsidebarScroll = styled.div`
 `;
 
 const NiFiClusterAccessManagement = () => {
-  // const [accessMode, setAccessMode] = useState('nifi-cluster');
   const [activeTab, setActiveTab] = useState('groups');
   const [activeSidebarItem, setActiveSidebarItem] = useState();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [permissions, setPermissions] = useState({});
-
-  // Access the NiFi policies in your component
+  // const [searchTerm, setSearchTerm] = useState('');
+  const [groupsColumns, setGroupsColumns] = useState([]);
+  const [usersColumns, setUsersColumns] = useState([]);
+  const [usersActions, setUsersActions] = useState([]);
   const clusterNiFiPolicies = useSelector(
     RolesSelectors.getClusterNiFiPolicies
   );
-
-  console.log('clusterNiFiPolicies', clusterNiFiPolicies);
+  const policiesAndActions = useSelector(
+    RolesSelectors.getPoliciesAndActionsData
+  );
+  useEffect(() => {
+    if (!isEmpty(policiesAndActions)) {
+      setUsersActions(policiesAndActions);
+    }
+  }, [policiesAndActions]);
 
   const sidebarItems = [
-    ...(clusterNiFiPolicies[0]?.accessPolicies?.map(policy => policy.name) ||
-      []),
+    ...(clusterNiFiPolicies?.accessPolicies?.map(policy => policy) || []),
   ];
 
-  const nameData = ['naman', 'adarsh', 'view', 'edit', 'delete', 'manage'];
+  const dynamicColumns = useMemo(() => {
+    function getEqualParts(num) {
+      if (!num || num <= 0) return 0;
+      return +(100 / num).toFixed(2);
+    }
 
-  // Dynamic column definitions based on sidebar items
-  const getDynamicColumns = nameColumnLabel => {
-    const columns = [
-      {
-        label: nameColumnLabel,
-        renderCell: item => (
-          <div style={{ fontSize: '14px', color: '#212529' }}>{item.name}</div>
-        ),
-        width: '25%',
-      },
-    ];
+    const createDynamicColumns = nameColumnLabel => {
+      const columns = [
+        {
+          label: nameColumnLabel,
+          renderCell: item => (
+            <div style={{ fontSize: '14px', color: '#212529' }}>
+              {item.name}
+            </div>
+          ),
+          // width: `${getEqualParts(activeSidebarItem?.policies?.length + 1)}%`,
+          width: `12%`,
+        },
+      ];
+      activeSidebarItem?.policies?.forEach((sidebarItem, index) => {
+        columns.push({
+          label: activeSidebarItem?.hasSubNames
+            ? activeSidebarItem?.policies?.[index]?.subName
+            : sidebarItem?.actionName,
+          renderCell: item => {
+            const targetPolicies = usersActions?.policies?.filter(
+              ele => ele?.policyId === sidebarItem?.id
+            );
+            const targetUserArrBasedOnAction =
+              activeTab === 'groups'
+                ? targetPolicies?.[0]?.userGroups
+                : targetPolicies?.[0]?.users;
 
-    // Add dynamic columns for each sidebar item
-    nameData.forEach(sidebarItem => {
-      columns.push({
-        label: sidebarItem,
-        renderCell: item => (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <CheckboxField
-              name={`${sidebarItem}-${item.name}`}
-              checked={permissions[`${sidebarItem}-${item.name}`] || false}
-              onChange={() => handlePermissionChange(sidebarItem, item.name)}
-            />
-          </div>
-        ),
-        width: '20%',
+            // console.log(
+            //   targetUserArrBasedOnAction,
+            //   'targetUserArrBasedOnAction'
+            // );
+            // console.log(targetPolicies, 'targetPolicies');
+
+            // console.log(targetObj?.data?.component, '<<<>>>');
+            // console.log(activeTab === 'groups', 'grppp');
+            // console.log(targetArr, 'targetArr');
+            const permissionExists = targetUserArrBasedOnAction?.some(
+              obj => obj.id === item?.id
+            );
+            const handleChangeCheck = (check, item, sidebarItem) => {
+              if (activeTab === 'groups') {
+                if (check) {
+                  setUsersActions(prev => ({
+                    ...prev,
+                    policies: prev.policies.map(policy =>
+                      policy.policyId === sidebarItem?.id
+                        ? {
+                            ...policy,
+                            userGroups: policy.userGroups.some(
+                              group => group.id === item?.id
+                            )
+                              ? policy.userGroups
+                              : [
+                                  ...policy.userGroups,
+                                  { id: item.id, identity: item.name },
+                                ],
+                          }
+                        : policy
+                    ),
+                  }));
+                } else {
+                  setUsersActions(prev => ({
+                    ...prev,
+                    policies: prev.policies.map(policy =>
+                      policy.policyId === sidebarItem?.id
+                        ? {
+                            ...policy,
+                            userGroups: policy.userGroups.filter(
+                              group => group.id !== item?.id
+                            ),
+                          }
+                        : policy
+                    ),
+                  }));
+                }
+              } else {
+                if (check) {
+                  setUsersActions(prevData => ({
+                    ...prevData,
+                    policies: prevData.policies.map(policy =>
+                      policy.policyId === sidebarItem.id
+                        ? {
+                            ...policy,
+                            users: [
+                              ...policy.users,
+                              { id: item.id, identity: item.name },
+                            ],
+                            userCount: policy.userCount + 1,
+                          }
+                        : policy
+                    ),
+                  }));
+                } else {
+                  setUsersActions(prevData => ({
+                    ...prevData,
+                    policies: prevData.policies.map(policy =>
+                      policy.policyId === sidebarItem.id
+                        ? {
+                            ...policy,
+                            users: policy.users.filter(
+                              group => group.id !== item?.id
+                            ),
+                            userCount: policy.userCount - 1,
+                          }
+                        : policy
+                    ),
+                  }));
+                }
+              }
+            };
+
+            return (
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <CheckboxField
+                  name={`${sidebarItem?.actionName}-${item.name}`}
+                  checked={permissionExists}
+                  onChange={e => {
+                    handleChangeCheck(e.target.checked, item, sidebarItem);
+                  }}
+                />
+              </div>
+            );
+          },
+
+          // width: `${getEqualParts(activeSidebarItem?.policies?.length + 1)}%`,
+          width: `20%`,
+        });
       });
-    });
 
-    return columns;
-  };
+      return columns;
+    };
 
-  const GROUPS_COLUMNS = getDynamicColumns('All Groups');
-  const USERS_COLUMNS = getDynamicColumns('All Users');
-
-  const handlePermissionChange = (sidebarItem, itemName) => {
-    const permissionKey = `${sidebarItem}-${itemName}`;
-    setPermissions(prev => ({
-      ...prev,
-      [permissionKey]: !prev[permissionKey],
-    }));
-  };
-  const dispatch = useDispatch();
-  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  console.log('selectedCluster', selectedCluster);
+    return createDynamicColumns(
+      activeTab === 'groups' ? 'All Groups' : 'All Users'
+    );
+  }, [activeSidebarItem, policiesAndActions, activeTab, usersActions]);
 
   useEffect(() => {
-    // Fetch users for a specific cluster
-    dispatch(
-      RolesActions.fetchClusterUsers({
-        clusterId: selectedCluster?.value,
-      })
-    );
-    // Fetch user groups for a specific cluster
-    dispatch(
-      RolesActions.fetchClusterUserGroups({
-        clusterId: selectedCluster?.value,
-      })
-    );
+    setGroupsColumns(dynamicColumns);
+    setUsersColumns(dynamicColumns);
+  }, [dynamicColumns]);
 
-    // Fetch NiFi policies for a specific cluster
-    dispatch(
-      RolesActions.fetchClusterNiFiPolicies({
-        clusterId: selectedCluster?.value,
-      })
-    );
+  const dispatch = useDispatch();
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
+  useEffect(() => {
+    if (selectedCluster?.value) {
+      dispatch(
+        RolesActions.fetchClusterUsers({
+          clusterId: selectedCluster?.value,
+        })
+      );
+
+      dispatch(
+        RolesActions.fetchClusterNiFiPolicies({
+          clusterId: selectedCluster?.value,
+        })
+      );
+    } else {
+      toast.info('Please login to cluster');
+    }
   }, [dispatch, selectedCluster]);
 
-  // Access the users in your component
+  useEffect(() => {
+    if (!isEmpty(activeSidebarItem)) {
+      const actionPayload = activeSidebarItem?.policies?.map(
+        ele => ele?.action
+      );
+      const subPayload = activeSidebarItem?.policies?.map(
+        ele => ele?.subResource
+      );
+      const payload = {
+        id: selectedCluster?.value,
+        descriptionPayload: {
+          action: activeSidebarItem?.hasSubNames ? ['write'] : actionPayload,
+          resource: activeSidebarItem?.type,
+          ...(activeSidebarItem?.hasSubNames && {
+            subResource: subPayload,
+          }),
+        },
+      };
+      if (selectedCluster?.value) {
+        dispatch(
+          RolesActions.fetchPoliciesandActions({
+            payload,
+          })
+        );
+      }
+    }
+  }, [selectedCluster?.value, activeSidebarItem]);
+
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
   const userIdentities = clusterUsers?.nifiUsers?.map(name => {
     return {
-      name: name?.component?.identity,
+      name: name?.identity,
+      id: name?.id,
     };
   });
+  // const filteredDataUsers = userIdentities?.filter(item =>
+  //   item?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
-  const clusterUserGroups = useSelector(RolesSelectors.getClusterUserGroups);
-  const userGroupIdentities = clusterUserGroups?.map(name => {
+  const userGroupIdentities = clusterUsers?.userGroups?.map(name => {
     return {
-      name: name?.component?.identity,
+      name: name?.identity,
+      id: name?.id,
     };
   });
+  const handleSavePermission = () => {
+    const actionPayload = activeSidebarItem?.policies?.map(ele => ele?.action);
+    const subPayload = activeSidebarItem?.policies?.map(
+      ele => ele?.subResource
+    );
+    const updatedAPIpayload = {
+      action: activeSidebarItem?.hasSubNames ? ['write'] : actionPayload,
+      resource: activeSidebarItem?.type,
+      ...(activeSidebarItem?.hasSubNames && {
+        subResource: subPayload,
+      }),
+    };
+    const payload = {
+      id: selectedCluster?.value,
+      descriptionPayload: usersActions,
+      updatedAPIpayload,
+    };
 
+    dispatch(RolesActions.updateClusterPermissionsAndActions(payload));
+  };
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusterUsers')
+  );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusterNiFiPolicies')
+  );
+  const loading3 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchPoliciesandActions')
+  );
+  const loading4 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'updateClusterPermissionsAndActions')
+  );
   return (
     <>
+      <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
       <Flex className="mb-4">
         <Flex>
           <Title>Cluster Access Management</Title>
         </Flex>
         <ButtonsContainer>
-          <Button size="sm">Save Changes</Button>
+          <Button
+            size="sm"
+            disabled={isEmpty(activeSidebarItem)}
+            onClick={() => {
+              handleSavePermission();
+            }}
+          >
+            Save Changes
+          </Button>
         </ButtonsContainer>
       </Flex>
       <Container>
@@ -265,78 +445,79 @@ const NiFiClusterAccessManagement = () => {
             <LeftsidebarScroll className="overflow-y-auto">
               {sidebarItems.map(item => (
                 <SidebarItem
-                  key={item}
-                  active={activeSidebarItem === item}
+                  key={item?.name}
+                  active={activeSidebarItem?.name === item?.name}
                   onClick={() => setActiveSidebarItem(item)}
                 >
-                  {item}
+                  {item?.name}
                 </SidebarItem>
               ))}
             </LeftsidebarScroll>
           </Sidebar>
 
           <ContentArea>
-            <TabContainer>
-              <Tab
-                active={activeTab === 'groups'}
-                onClick={() => setActiveTab('groups')}
-              >
-                <TabIcon>
-                  <GroupUserIcon />
-                </TabIcon>
-                Groups
-              </Tab>
-              <Tab
-                active={activeTab === 'users'}
-                onClick={() => setActiveTab('users')}
-              >
-                <TabIcon>
-                  <NewUserIcon />
-                </TabIcon>
-                Users
-              </Tab>
-            </TabContainer>
-
-            {activeTab === 'groups' && (
+            {
               <>
-                <SearchContainer>
-                  <SearchInput
-                    type="text"
-                    placeholder="Search Group Names"
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                  />
-                </SearchContainer>
+                <TabContainer>
+                  <Tab
+                    active={activeTab === 'groups'}
+                    onClick={() => setActiveTab('groups')}
+                  >
+                    <TabIcon>
+                      <GroupUserIcon />
+                    </TabIcon>
+                    Groups
+                  </Tab>
+                  <Tab
+                    active={activeTab === 'users'}
+                    onClick={() => setActiveTab('users')}
+                  >
+                    <TabIcon>
+                      <NewUserIcon />
+                    </TabIcon>
+                    Users
+                  </Tab>
+                </TabContainer>
+                {
+                  <>
+                    <SearchContainer>
+                      {/* <SearchInput
+                        type="text"
+                        placeholder="Search Names"
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                      /> */}
+                    </SearchContainer>
 
-                <div>
-                  <TableHeight
-                    data={userGroupIdentities}
-                    columns={GROUPS_COLUMNS}
-                    className="groups-table"
-                  />
-                </div>
+                    <div style={{ backgroundColor: theme.colors.darkGrey3 }}>
+                      <TableHeight
+                        data={
+                          isEmpty(activeSidebarItem)
+                            ? []
+                            : activeTab === 'groups'
+                              ? userGroupIdentities
+                              : userIdentities
+                          //filteredDataUsers
+                        }
+                        columns={
+                          isEmpty(activeSidebarItem)
+                            ? []
+                            : activeTab === 'groups'
+                              ? groupsColumns
+                              : usersColumns
+                        }
+                        className={
+                          activeTab === 'groups'
+                            ? 'groups-table'
+                            : 'users-table'
+                        }
+                        emptyMessage={'Select any policy'}
+                      />
+                    </div>
+                  </>
+                }
               </>
-            )}
-
-            {activeTab === 'users' && (
-              <>
-                <SearchContainer>
-                  <SearchInput
-                    type="text"
-                    placeholder="Search User Names"
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                  />
-                </SearchContainer>
-                <div>
-                  <TableHeight
-                    data={userIdentities}
-                    columns={USERS_COLUMNS}
-                    className="users-table"
-                  />
-                </div>
-              </>
-            )}
+            }
           </ContentArea>
         </MainContent>
       </Container>

@@ -224,6 +224,52 @@ export function* fetchFlowPolicyDetails(
     toast.error(response?.data?.message);
   }
 }
+export function* fetchPoliciesandActions(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchPoliciesandActions',
+    loadingSection: 'fetchPoliciesandActions',
+    apiMethod: api.fetchPoliciesandActions,
+    apiParams: [
+      {
+        id: payload?.payload?.id,
+        payload: payload?.payload?.descriptionPayload,
+      },
+    ],
+  });
+  if (response.ok) {
+    yield put(RolesActions.setPoliciesAndActionsData(response.data));
+  } else if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+export function* updateClusterPermissionsAndActions(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'updateClusterPermissionsAndActions',
+    loadingSection: 'updateClusterPermissionsAndActions',
+    apiMethod: api.updateClusterPermissionsAndActions,
+    apiParams: [
+      {
+        id: payload?.id,
+        payload: payload?.descriptionPayload,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message || 'Updated successfully');
+
+    yield put(
+      RolesActions.fetchPoliciesandActions({
+        payload: {
+          id: payload?.id,
+          descriptionPayload: payload?.updatedAPIpayload,
+        },
+      })
+    );
+  } else if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* rolesSagas(api) {
   yield all([
     takeLatest(RolesActions.fetchRoles, fetchRoles, api),
@@ -247,6 +293,16 @@ export function* rolesSagas(api) {
     takeLatest(
       RolesActions.fetchFlowPolicyDetails,
       fetchFlowPolicyDetails,
+      api
+    ),
+    takeLatest(
+      RolesActions.fetchPoliciesandActions,
+      fetchPoliciesandActions,
+      api
+    ),
+    takeLatest(
+      RolesActions.updateClusterPermissionsAndActions,
+      updateClusterPermissionsAndActions,
       api
     ),
   ]);

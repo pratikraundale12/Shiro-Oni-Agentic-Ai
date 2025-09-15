@@ -48,6 +48,11 @@ export const RolesActions = {
   fetchFlowPolicyDetailsSuccess: createAction(
     `${prefix}fetchFlowPolicyDetailsSuccess`
   ),
+  fetchPoliciesandActions: createAction(`${prefix}fetchPoliciesandActions`),
+  setPoliciesAndActionsData: createAction(`${prefix}setPoliciesAndActionsData`),
+  updateClusterPermissionsAndActions: createAction(
+    `${prefix}updateClusterPermissionsAndActions`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -70,6 +75,7 @@ export const ROLES_INITIAL_STATE = {
   clusterUserGroups: [],
   clusterNiFiPolicies: [],
   flowPolicyDetails: [],
+  policiesAndActionsData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -94,6 +100,7 @@ export const RolesSelectors = {
   getClusterUserGroups: state => state.roles.clusterUserGroups,
   getClusterNiFiPolicies: state => state.roles.clusterNiFiPolicies,
   getFlowPolicyDetails: state => state.roles.flowPolicyDetails,
+  getPoliciesAndActionsData: state => state.roles.policiesAndActionsData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -227,6 +234,12 @@ const fetchClusterNiFiPoliciesSuccess = (state, { payload }) => {
     clusterNiFiPolicies: payload.data || payload,
   };
 };
+const setPoliciesAndActionsData = (state, { payload }) => {
+  return {
+    ...state,
+    policiesAndActionsData: payload.data || payload,
+  };
+};
 
 const fetchFlowPolicyDetailsSuccess = (state, { payload }) => {
   return {
@@ -270,5 +283,6 @@ export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
     .addCase(
       RolesActions.fetchFlowPolicyDetailsSuccess,
       fetchFlowPolicyDetailsSuccess
-    );
+    )
+    .addCase(RolesActions.setPoliciesAndActionsData, setPoliciesAndActionsData);
 });
