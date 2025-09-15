@@ -173,7 +173,7 @@ export function* fetchClusterUsers(
 
 export function* fetchClusterUserGroups(
   api,
-  { payload: { clusterId, params = {} } }
+  { payload: { clusterId, namespaceId, params = {} } }
 ) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   api.headers['x-cluster-id'] = selectedCluster?.value;
@@ -181,11 +181,11 @@ export function* fetchClusterUserGroups(
     errorSection: 'fetchClusterUserGroups',
     loadingSection: 'fetchClusterUserGroups',
     apiMethod: api.fetchClusterUserGroups,
-    apiParams: [{ clusterId, params }],
+    apiParams: [{ clusterId, namespaceId, params }],
     successAction: RolesActions.fetchClusterUserGroupsSuccess,
   });
   if (response?.data?.message) {
-    toast.error(response?.data?.message);
+    toast.error(response?.data?.message || 'Failed to fetch flow policy data');
   }
 }
 
@@ -202,11 +202,28 @@ export function* fetchClusterNiFiPolicies(
     apiParams: [{ clusterId, params }],
     successAction: RolesActions.fetchClusterNiFiPoliciesSuccess,
   });
-  if (response?.data?.message) {
+  if (!response.ok) {
     toast.error(response?.data?.message);
   }
 }
 
+export function* fetchFlowPolicyDetails(
+  api,
+  { payload: { clusterId, namespaceId, params = {} } }
+) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchFlowPolicyDetails',
+    loadingSection: 'fetchFlowPolicyDetails',
+    apiMethod: api.fetchFlowPolicyDetails,
+    apiParams: [{ clusterId, namespaceId, params }],
+    successAction: RolesActions.fetchFlowPolicyDetailsSuccess,
+  });
+  if (response?.data?.message) {
+    toast.error(response?.data?.message);
+  }
+}
 export function* rolesSagas(api) {
   yield all([
     takeLatest(RolesActions.fetchRoles, fetchRoles, api),
@@ -225,6 +242,11 @@ export function* rolesSagas(api) {
     takeLatest(
       RolesActions.fetchClusterNiFiPolicies,
       fetchClusterNiFiPolicies,
+      api
+    ),
+    takeLatest(
+      RolesActions.fetchFlowPolicyDetails,
+      fetchFlowPolicyDetails,
       api
     ),
   ]);

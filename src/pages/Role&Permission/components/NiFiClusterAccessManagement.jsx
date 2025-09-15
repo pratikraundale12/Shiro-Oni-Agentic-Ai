@@ -236,7 +236,7 @@ const NiFiClusterAccessManagement = () => {
 
   // Access the users in your component
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
-  const userIdentities = clusterUsers?.map(name => {
+  const userIdentities = clusterUsers?.nifiUsers?.map(name => {
     return {
       name: name?.component?.identity,
     };

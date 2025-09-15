@@ -24,6 +24,9 @@ export const rolesAPI = api => {
   const fetchClusterNiFiPolicies = ({ clusterId, params = {} }) =>
     api.get(`/clusters/${clusterId}/nifi_policies`, params);
 
+  const fetchFlowPolicyDetails = ({ clusterId, namespaceId, params = {} }) =>
+    api.get(`/clusters/${clusterId}/nifi-flow-policies/${namespaceId}`, params);
+
   return {
     fetchClustersRolesAccess,
     fetchRoleClusters,
@@ -36,5 +39,6 @@ export const rolesAPI = api => {
     fetchClusterUsers,
     fetchClusterUserGroups,
     fetchClusterNiFiPolicies,
+    fetchFlowPolicyDetails,
   };
 };

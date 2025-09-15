@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { Button, CheckboxField, SwitchButton } from '../../../shared';
+import { Button, CheckboxField, SelectField } from '../../../shared';
 import { Table } from '../../../components';
 import GroupUserIcon from '../../../assets/Icons/GroupUserIcon';
 import NewUserIcon from '../../../assets/Icons/NewUserIcon';
 import {
+  GridActions,
+  GridSelectors,
   NamespacesSelectors,
   RolesActions,
   RolesSelectors,
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
+import { DocumentTextIcon } from '../../../assets';
+import { isEmpty } from 'lodash';
 
 const Container = styled.div`
   background-color: #fbfcff;
@@ -61,6 +65,7 @@ const ContentArea = styled.div`
 
 const TabContainer = styled.div`
   display: flex;
+  justify-content: space-between;
   border-bottom: 1px solid #e9ecef;
   background-color: white;
 `;
@@ -148,139 +153,159 @@ const LeftsidebarScroll = styled.div`
 const NiFiProcessGroupAccessManagement = () => {
   // const [accessMode, setAccessMode] = useState('nifi-cluster');
   const [activeTab, setActiveTab] = useState('groups');
-  const [activeSidebarItem, setActiveSidebarItem] = useState();
   const [searchTerm, setSearchTerm] = useState('');
   const [permissions, setPermissions] = useState({});
-
   // Access the NiFi policies in your component
   const clusterNiFiPolicies = useSelector(
     RolesSelectors.getClusterNiFiPolicies
   );
-
-  console.log('clusterNiFiPolicies', clusterNiFiPolicies);
-
-  const sidebarItems = [
-    ...(clusterNiFiPolicies[0]?.accessPolicies?.map(policy => policy.name) ||
-      []),
+  const policyList = [
+    ...(clusterNiFiPolicies?.flowPolicies?.map(policy => ({
+      value: policy.id,
+      label: policy.descriptor,
+      ...policy,
+    })) || []),
   ];
 
-  const nameData = ['naman', 'adarsh', 'view', 'edit', 'delete', 'manage'];
-
-  // Dynamic column definitions based on sidebar items
-  const getDynamicColumns = nameColumnLabel => {
-    const columns = [
-      {
-        label: nameColumnLabel,
-        renderCell: item => (
-          <div style={{ fontSize: '14px', color: '#212529' }}>{item.name}</div>
-        ),
-        width: '25%',
-      },
-    ];
-
-    // Add dynamic columns for each sidebar item
-    nameData.forEach(sidebarItem => {
-      columns.push({
-        label: sidebarItem,
-        renderCell: item => (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <CheckboxField
-              name={`${sidebarItem}-${item.name}`}
-              checked={permissions[`${sidebarItem}-${item.name}`] || false}
-              onChange={() => handlePermissionChange(sidebarItem, item.name)}
-            />
-          </div>
-        ),
-        width: '20%',
-      });
-    });
-
-    return columns;
-  };
-
-  const GROUPS_COLUMNS = getDynamicColumns('All Groups');
-  const USERS_COLUMNS = getDynamicColumns('All Users');
-
-  const handlePermissionChange = (sidebarItem, itemName) => {
+  const handlePermissionChange = useCallback((sidebarItem, itemName) => {
     const permissionKey = `${sidebarItem}-${itemName}`;
     setPermissions(prev => ({
       ...prev,
       [permissionKey]: !prev[permissionKey],
     }));
-  };
+  }, []);
+  const processGroupList = useSelector(state =>
+    GridSelectors.getGridData(state, 'namespaces')
+  );
+  const [activeSidebarItem, setActiveSidebarItem] = useState(
+    processGroupList[0]
+  );
+  useEffect(() => {
+    setActiveSidebarItem(processGroupList[0]);
+  }, [processGroupList]);
+
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  console.log('selectedCluster', selectedCluster);
+  const [selectedPolicy, setSelectedPolicy] = useState(policyList[0]?.value);
+  useEffect(() => {
+    if (selectedCluster?.value) {
+      // Fetch users for a specific cluster
+      dispatch(
+        RolesActions.fetchClusterUsers({
+          clusterId: selectedCluster?.value,
+        })
+      );
+      // Fetch process groups for a specific cluster
+      dispatch(
+        GridActions.fetchGrid({
+          module: 'namespaces',
+          clusterId: selectedCluster?.value,
+        })
+      );
+      // Fetch NiFi policies for a specific cluster
+      dispatch(
+        RolesActions.fetchClusterNiFiPolicies({
+          clusterId: selectedCluster?.value,
+        })
+      );
+    }
+  }, [dispatch, selectedCluster]);
 
   useEffect(() => {
-    // Fetch users for a specific cluster
-    dispatch(
-      RolesActions.fetchClusterUsers({
-        clusterId: selectedCluster?.value,
-      })
-    );
-    // Fetch user groups for a specific cluster
-    dispatch(
-      RolesActions.fetchClusterUserGroups({
-        clusterId: selectedCluster?.value,
-      })
-    );
-
-    // Fetch NiFi policies for a specific cluster
-    dispatch(
-      RolesActions.fetchClusterNiFiPolicies({
-        clusterId: selectedCluster?.value,
-      })
-    );
-  }, [dispatch, selectedCluster]);
+    if (
+      selectedCluster?.value &&
+      !isEmpty(activeSidebarItem) &&
+      !isEmpty(selectedPolicy)
+    ) {
+      dispatch(
+        RolesActions.fetchFlowPolicyDetails({
+          clusterId: selectedCluster?.value,
+          namespaceId: activeSidebarItem?.id,
+          params: {
+            action: selectedPolicy?.action,
+            resource: selectedPolicy?.preProcessGroupSegment,
+          },
+        })
+      );
+    }
+  }, [activeSidebarItem, selectedPolicy, selectedCluster, dispatch]);
 
   // Access the users in your component
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
-  const userIdentities = clusterUsers?.map(name => {
+  const userIdentities = clusterUsers?.nifiUsers?.map(name => {
     return {
       name: name?.component?.identity,
+      accessPolicies: name?.component?.accessPolicies,
+      id: name?.component?.id,
     };
   });
 
-  const clusterUserGroups = useSelector(RolesSelectors.getClusterUserGroups);
-  const userGroupIdentities = clusterUserGroups?.map(name => {
+  // const clusterUserGroups = useSelector(RolesSelectors.getClusterUserGroups);
+  const userGroupIdentities = clusterUsers?.userGroups?.map(name => {
     return {
       name: name?.component?.identity,
+      accessPolicies: name?.component?.accessPolicies,
+      id: name?.component?.id,
     };
   });
+
+  // const getFilteredData = (activeTab) => {
+  //   activeTab === 'groups' ?
+  // }
+  //  const filteredData = fetchLocalChanges?.data?.changes?.filter(
+  //     item =>
+  //       item.componentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       item.componentType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       item.difference?.toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
+
+  const COLUMN = [
+    {
+      label: activeTab === 'groups' ? 'All Groups' : 'All Users',
+      renderCell: item => (
+        <div style={{ fontSize: '14px', color: '#212529' }}>{item.name}</div>
+      ),
+      width: '50%',
+    },
+    {
+      label: 'Permission',
+      renderCell: item => (
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <CheckboxField
+            name={`${item?.id}`}
+            checked={permissions[`${item?.id}`] || false}
+            onChange={() => handlePermissionChange(item?.id)}
+          />
+        </div>
+      ),
+      width: '50%',
+    },
+  ];
+
+  console.log('active--', activeSidebarItem);
+  console.log('selectedpolicy', selectedPolicy);
 
   return (
     <>
       <Flex className="mb-4">
         <Flex>
-          <Title>Process Group Access Management</Title>
+          <Title>Cluster Access Management</Title>
         </Flex>
-        <div className="d-flex align-items-center justify-content-end gap-xl-3 gap-2">
-          <div>
-            <SwitchButton
-              id="openModalInput1"
-              name="NiFi Flow"
-              // checked={}
-
-              isDisabled={false}
-            />
-          </div>
-          <ButtonsContainer>
-            <Button size="sm">Save Changes</Button>
-          </ButtonsContainer>
-        </div>
+        <ButtonsContainer>
+          <Button size="sm">Save Changes</Button>
+        </ButtonsContainer>
       </Flex>
       <Container>
         <MainContent className="gap-3">
           <Sidebar>
             <LeftsidebarScroll className="overflow-y-auto">
-              {sidebarItems.map(item => (
+              {processGroupList.map(item => (
                 <SidebarItem
-                  key={item}
-                  active={activeSidebarItem === item}
+                  key={item?.id}
+                  active={activeSidebarItem?.id === item?.id}
                   onClick={() => setActiveSidebarItem(item)}
                 >
-                  {item}
+                  {item?.name}
                 </SidebarItem>
               ))}
             </LeftsidebarScroll>
@@ -288,32 +313,46 @@ const NiFiProcessGroupAccessManagement = () => {
 
           <ContentArea>
             <TabContainer>
-              <Tab
-                active={activeTab === 'groups'}
-                onClick={() => setActiveTab('groups')}
-              >
-                <TabIcon>
-                  <GroupUserIcon />
-                </TabIcon>
-                Groups
-              </Tab>
-              <Tab
-                active={activeTab === 'users'}
-                onClick={() => setActiveTab('users')}
-              >
-                <TabIcon>
-                  <NewUserIcon />
-                </TabIcon>
-                Users
-              </Tab>
+              <div className="d-flex">
+                <Tab
+                  active={activeTab === 'groups'}
+                  onClick={() => setActiveTab('groups')}
+                >
+                  <TabIcon>
+                    <GroupUserIcon />
+                  </TabIcon>
+                  Groups
+                </Tab>
+                <Tab
+                  active={activeTab === 'users'}
+                  onClick={() => setActiveTab('users')}
+                >
+                  <TabIcon>
+                    <NewUserIcon />
+                  </TabIcon>
+                  Users
+                </Tab>
+              </div>
+              <SelectField
+                id="policy"
+                className="w-25"
+                name="policy"
+                icon={<DocumentTextIcon />}
+                options={policyList}
+                value={selectedPolicy}
+                placeholder="Select Policy"
+                // disabled={isObject(clusterLogin)}
+                showCircleIcon={true}
+                sortAlphabetically={false}
+                onChange={value => setSelectedPolicy(value)}
+              />
             </TabContainer>
-
-            {activeTab === 'groups' && (
+            {
               <>
                 <SearchContainer>
                   <SearchInput
                     type="text"
-                    placeholder="Search Group Names"
+                    placeholder={`search ${activeTab}`}
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                   />
@@ -321,33 +360,19 @@ const NiFiProcessGroupAccessManagement = () => {
 
                 <div>
                   <TableHeight
-                    data={userGroupIdentities}
-                    columns={GROUPS_COLUMNS}
-                    className="groups-table"
+                    data={
+                      activeTab === 'groups'
+                        ? userGroupIdentities
+                        : userIdentities
+                    }
+                    columns={COLUMN}
+                    className={
+                      activeTab === 'groups' ? 'groups-table' : 'users-table'
+                    }
                   />
                 </div>
               </>
-            )}
-
-            {activeTab === 'users' && (
-              <>
-                <SearchContainer>
-                  <SearchInput
-                    type="text"
-                    placeholder="Search User Names"
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                  />
-                </SearchContainer>
-                <div>
-                  <TableHeight
-                    data={userIdentities}
-                    columns={USERS_COLUMNS}
-                    className="users-table"
-                  />
-                </div>
-              </>
-            )}
+            }
           </ContentArea>
         </MainContent>
       </Container>
