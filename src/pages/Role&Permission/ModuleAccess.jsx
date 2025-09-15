@@ -188,7 +188,6 @@ const EXCLUDE_DELETE_PERMISSION = [
   'data_inventory',
   'flow_validation',
   'cluster_setup',
-  'registry',
 ];
 
 const CellRender = ({
