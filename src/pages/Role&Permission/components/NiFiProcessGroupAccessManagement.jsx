@@ -59,8 +59,16 @@ const SidebarItem = styled.div`
     font-weight: 500;
   `}
 
+  ${props =>
+    props.disabled &&
+    `
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  `}
+
   &:hover {
-    background-color: #f1f3f4;
+    background-color: ${props => (props.disabled ? 'transparent' : '#f1f3f4')};
   }
 `;
 
@@ -165,6 +173,7 @@ const NiFiProcessGroupAccessManagement = () => {
   const [activeSidebarItem, setActiveSidebarItem] = useState();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [isSwitchEnabled, setIsSwitchEnabled] = useState(false);
   const clusterNiFiPolicies = useSelector(
     RolesSelectors.getClusterNiFiPolicies
   );
@@ -192,6 +201,8 @@ const NiFiProcessGroupAccessManagement = () => {
 
   // Filter policies based on selected process group
   const getFilteredPolicies = useCallback(() => {
+    console.log('hello child');
+
     if (!activeSidebarItem?.id || !clusterNiFiPolicies?.flowPolicies) {
       return [];
     }
@@ -209,11 +220,34 @@ const NiFiProcessGroupAccessManagement = () => {
     );
   }, [activeSidebarItem?.id, clusterNiFiPolicies?.flowPolicies]);
 
-  const policyList = getFilteredPolicies();
+  const getRootFilteredPolicies = useCallback(() => {
+    if (
+      !processGroupList?.[0]?.parentGroupId ||
+      !clusterNiFiPolicies?.flowPolicies
+    ) {
+      return [];
+    }
+
+    const processGroupPolicies = clusterNiFiPolicies.flowPolicies.find(
+      policyGroup =>
+        policyGroup['process-group-id'] === processGroupList?.[0]?.parentGroupId
+    );
+    console.log(processGroupPolicies, 'line no 234');
+
+    return (
+      processGroupPolicies?.policies?.map(policy => ({
+        value: policy.id,
+        label: policy.descriptor,
+        ...policy,
+      })) || []
+    );
+  }, [processGroupList?.[0]?.parentGroupId, clusterNiFiPolicies?.flowPolicies]);
+
+  const policyList = isSwitchEnabled
+    ? getRootFilteredPolicies()
+    : getFilteredPolicies();
 
   const handleSidebarClick = item => {
-    console.log(item, 'item?????????????????????');
-
     setActiveSidebarItem(item);
     setSelectedPolicy(null);
     dispatch(
@@ -243,10 +277,12 @@ const NiFiProcessGroupAccessManagement = () => {
 
   const handlePolicyChange = value => {
     setSelectedPolicy(value);
+    //response ke baad
     dispatch(
       RolesActions.fetchFlowPolicyDetails({
         clusterId: selectedCluster?.value,
-        namespaceId: activeSidebarItem?.id,
+        namespaceId:
+          activeSidebarItem?.id || processGroupList?.[0]?.parentGroupId,
         params: {
           action: value?.action,
           resource: value?.preProcessGroupSegment,
@@ -344,6 +380,17 @@ const NiFiProcessGroupAccessManagement = () => {
     LoadingSelectors.getLoading(state, 'updateClusterPermissionsAndActions')
   );
 
+  const handleSwitchChange = e => {
+    setIsSwitchEnabled(e.target.checked);
+    if (!isSwitchEnabled) {
+      dispatch(
+        RolesActions.fetchClusterNiFiPolicies({
+          clusterId: selectedCluster?.value,
+        })
+      );
+    }
+  };
+
   return (
     <>
       <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
@@ -356,8 +403,8 @@ const NiFiProcessGroupAccessManagement = () => {
             <SwitchButton
               id="openModalInput1"
               name="NiFi Flow"
-              // checked={}
-
+              checked={isSwitchEnabled}
+              onChange={handleSwitchChange}
               isDisabled={false}
             />
           </div>
@@ -382,7 +429,8 @@ const NiFiProcessGroupAccessManagement = () => {
                 <SidebarItem
                   key={item?.id}
                   active={activeSidebarItem?.id === item?.id}
-                  onClick={() => handleSidebarClick(item)}
+                  disabled={isSwitchEnabled}
+                  onClick={() => !isSwitchEnabled && handleSidebarClick(item)}
                 >
                   {item?.name}
                 </SidebarItem>
