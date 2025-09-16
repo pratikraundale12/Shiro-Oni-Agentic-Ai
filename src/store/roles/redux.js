@@ -244,7 +244,7 @@ const setPoliciesAndActionsData = (state, { payload }) => {
 const fetchFlowPolicyDetailsSuccess = (state, { payload }) => {
   return {
     ...state,
-    clusterNiFiPolicies: payload.data || payload,
+    flowPolicyDetails: payload.data || payload,
   };
 };
 /* ------------- Hookup Reducers To Types ------------- */

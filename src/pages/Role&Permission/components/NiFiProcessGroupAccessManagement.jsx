@@ -13,7 +13,6 @@ import {
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { DocumentTextIcon } from '../../../assets';
-import { isEmpty } from 'lodash';
 
 const Container = styled.div`
   background-color: #fbfcff;
@@ -151,42 +150,52 @@ const LeftsidebarScroll = styled.div`
 `;
 
 const NiFiProcessGroupAccessManagement = () => {
-  // const [accessMode, setAccessMode] = useState('nifi-cluster');
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('groups');
   const [searchTerm, setSearchTerm] = useState('');
-  const [permissions, setPermissions] = useState({});
-  // Access the NiFi policies in your component
+  const [activeSidebarItem, setActiveSidebarItem] = useState();
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
   const clusterNiFiPolicies = useSelector(
     RolesSelectors.getClusterNiFiPolicies
   );
-  const policyList = [
-    ...(clusterNiFiPolicies?.flowPolicies?.map(policy => ({
-      value: policy.id,
-      label: policy.descriptor,
-      ...policy,
-    })) || []),
-  ];
-
-  const handlePermissionChange = useCallback((sidebarItem, itemName) => {
-    const permissionKey = `${sidebarItem}-${itemName}`;
-    setPermissions(prev => ({
-      ...prev,
-      [permissionKey]: !prev[permissionKey],
-    }));
-  }, []);
   const processGroupList = useSelector(state =>
     GridSelectors.getGridData(state, 'namespaces')
   );
-  const [activeSidebarItem, setActiveSidebarItem] = useState(
-    processGroupList[0]
-  );
-  useEffect(() => {
-    setActiveSidebarItem(processGroupList[0]);
-  }, [processGroupList]);
+  const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
 
-  const dispatch = useDispatch();
-  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  const [selectedPolicy, setSelectedPolicy] = useState(policyList[0]?.value);
+  // Filter policies based on selected process group
+  const getFilteredPolicies = useCallback(() => {
+    if (!activeSidebarItem?.id || !clusterNiFiPolicies?.flowPolicies) {
+      return [];
+    }
+
+    const processGroupPolicies = clusterNiFiPolicies.flowPolicies.find(
+      policyGroup => policyGroup['process-group-id'] === activeSidebarItem.id
+    );
+
+    return (
+      processGroupPolicies?.policies?.map(policy => ({
+        value: policy.id,
+        label: policy.descriptor,
+        ...policy,
+      })) || []
+    );
+  }, [activeSidebarItem?.id, clusterNiFiPolicies?.flowPolicies]);
+
+  const policyList = getFilteredPolicies();
+
+  const handleSidebarClick = item => {
+    setActiveSidebarItem(item);
+    dispatch(
+      RolesActions.fetchClusterNiFiPolicies({
+        clusterId: selectedCluster?.value,
+      })
+    );
+  };
+
+  const handlePermissionChange = useCallback(() => {}, []);
+
   useEffect(() => {
     if (selectedCluster?.value) {
       // Fetch users for a specific cluster
@@ -202,62 +211,37 @@ const NiFiProcessGroupAccessManagement = () => {
           clusterId: selectedCluster?.value,
         })
       );
-      // Fetch NiFi policies for a specific cluster
-      dispatch(
-        RolesActions.fetchClusterNiFiPolicies({
-          clusterId: selectedCluster?.value,
-        })
-      );
     }
   }, [dispatch, selectedCluster]);
 
-  useEffect(() => {
-    if (
-      selectedCluster?.value &&
-      !isEmpty(activeSidebarItem) &&
-      !isEmpty(selectedPolicy)
-    ) {
-      dispatch(
-        RolesActions.fetchFlowPolicyDetails({
-          clusterId: selectedCluster?.value,
-          namespaceId: activeSidebarItem?.id,
-          params: {
-            action: selectedPolicy?.action,
-            resource: selectedPolicy?.preProcessGroupSegment,
-          },
-        })
-      );
-    }
-  }, [activeSidebarItem, selectedPolicy, selectedCluster, dispatch]);
+  const handlePolicyChange = value => {
+    setSelectedPolicy(value);
+    dispatch(
+      RolesActions.fetchFlowPolicyDetails({
+        clusterId: selectedCluster?.value,
+        namespaceId: activeSidebarItem?.id,
+        params: {
+          action: value?.action,
+          resource: value?.preProcessGroupSegment,
+        },
+      })
+    );
+  };
 
   // Access the users in your component
-  const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
   const userIdentities = clusterUsers?.nifiUsers?.map(name => {
     return {
-      name: name?.component?.identity,
-      accessPolicies: name?.component?.accessPolicies,
-      id: name?.component?.id,
+      name: name?.identity,
+      id: name?.id,
     };
   });
 
-  // const clusterUserGroups = useSelector(RolesSelectors.getClusterUserGroups);
   const userGroupIdentities = clusterUsers?.userGroups?.map(name => {
     return {
-      name: name?.component?.identity,
-      accessPolicies: name?.component?.accessPolicies,
-      id: name?.component?.id,
+      name: name?.identity,
+      id: name?.id,
     };
   });
-
-  // const getFilteredData = (activeTab) => {
-  //   activeTab === 'groups' ?
-  // }
-  //  const filteredData = fetchLocalChanges?.data?.changes?.filter(
-  //     item =>
-  //       item.componentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //       item.componentType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //       item.difference?.toLowerCase().includes(searchTerm.toLowerCase())
-  //   );
 
   const COLUMN = [
     {
@@ -273,7 +257,7 @@ const NiFiProcessGroupAccessManagement = () => {
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <CheckboxField
             name={`${item?.id}`}
-            checked={permissions[`${item?.id}`] || false}
+            // checked={permissions[`${item?.id}`] || false}
             onChange={() => handlePermissionChange(item?.id)}
           />
         </div>
@@ -282,14 +266,11 @@ const NiFiProcessGroupAccessManagement = () => {
     },
   ];
 
-  console.log('active--', activeSidebarItem);
-  console.log('selectedpolicy', selectedPolicy);
-
   return (
     <>
       <Flex className="mb-4">
         <Flex>
-          <Title>Cluster Access Management</Title>
+          <Title>Process Group Access Management</Title>
         </Flex>
         <ButtonsContainer>
           <Button size="sm">Save Changes</Button>
@@ -303,7 +284,7 @@ const NiFiProcessGroupAccessManagement = () => {
                 <SidebarItem
                   key={item?.id}
                   active={activeSidebarItem?.id === item?.id}
-                  onClick={() => setActiveSidebarItem(item)}
+                  onClick={() => handleSidebarClick(item)}
                 >
                   {item?.name}
                 </SidebarItem>
@@ -340,11 +321,15 @@ const NiFiProcessGroupAccessManagement = () => {
                 icon={<DocumentTextIcon />}
                 options={policyList}
                 value={selectedPolicy}
-                placeholder="Select Policy"
-                // disabled={isObject(clusterLogin)}
+                placeholder={
+                  policyList.length === 0
+                    ? 'No policies available'
+                    : 'Select Policy'
+                }
+                disabled={policyList.length === 0}
                 showCircleIcon={true}
                 sortAlphabetically={false}
-                onChange={value => setSelectedPolicy(value)}
+                onChange={handlePolicyChange}
               />
             </TabContainer>
             {
