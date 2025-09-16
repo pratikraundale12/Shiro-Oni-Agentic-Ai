@@ -193,7 +193,7 @@ const NiFiProcessGroupAccessManagement = () => {
   const processGroupList = useSelector(state =>
     GridSelectors.getGridData(state, 'namespaces')
   );
-  const namespaces = useSelector(NamespacesSelectors.getNamespaces);
+  const namespaces = useSelector(NamespacesSelectors.getNamespacesAllData);
   console.log(processGroupList, 'line no 87');
   console.log(namespaces, 'namespacesnamespacesnamespaces');
 
@@ -458,7 +458,7 @@ const NiFiProcessGroupAccessManagement = () => {
         <MainContent className="gap-3">
           <Sidebar>
             <LeftsidebarScroll className="overflow-y-auto">
-              {isEmpty(namespaces) &&
+              {isEmpty(namespaces?.data) &&
                 processGroupList.map(item => (
                   <SidebarItem
                     key={item?.id}
@@ -476,8 +476,8 @@ const NiFiProcessGroupAccessManagement = () => {
                     </button>
                   </SidebarItem>
                 ))}
-              {!isEmpty(namespaces) &&
-                namespaces?.map(item => (
+              {!isEmpty(namespaces?.data) &&
+                namespaces?.data?.map(item => (
                   <span key={item?.id}>
                     {!item?.isProcessor && (
                       <SidebarItem
@@ -504,7 +504,7 @@ const NiFiProcessGroupAccessManagement = () => {
 
           <ContentArea>
             <BreadcrumbContainer className="d-flex  mb-3 mt-3">
-              <Breadcrumb module="path" />
+              <Breadcrumb />
             </BreadcrumbContainer>
             <TabContainer>
               <div className="d-flex">
