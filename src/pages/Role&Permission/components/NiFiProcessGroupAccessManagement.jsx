@@ -363,7 +363,12 @@ const NiFiProcessGroupAccessManagement = () => {
       policies: [subPayload],
       resource: selectedPolicy?.resource,
     };
-    const payload = { id: selectedCluster?.value, descriptionPayload };
+    const payload = {
+      id: selectedCluster?.value,
+      descriptionPayload,
+      selectedPolicy,
+      activeSidebarItem,
+    };
     dispatch(RolesActions.updateClusterPermissionsAndActions(payload));
   };
 

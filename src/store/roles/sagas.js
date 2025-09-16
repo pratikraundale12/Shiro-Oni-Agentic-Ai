@@ -3,6 +3,7 @@ import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { requestSaga } from '../helpers/request_sagas';
 import { RolesActions, RolesSelectors } from './redux';
 import { NamespacesSelectors } from '../namespaces';
+import { GridSelectors } from '../grid';
 
 export function* fetchRoles(api) {
   const response = yield call(requestSaga, {
@@ -243,6 +244,8 @@ export function* fetchPoliciesandActions(api, { payload }) {
   }
 }
 export function* updateClusterPermissionsAndActions(api, { payload }) {
+  const gridData = yield select(GridSelectors.getModuleAllData, 'namespaces');
+
   const response = yield call(requestSaga, {
     errorSection: 'updateClusterPermissionsAndActions',
     loadingSection: 'updateClusterPermissionsAndActions',
@@ -269,6 +272,18 @@ export function* updateClusterPermissionsAndActions(api, { payload }) {
       yield put(
         RolesActions.fetchClusterNiFiPolicies({
           clusterId: payload?.id,
+        })
+      );
+      yield put(
+        RolesActions.fetchFlowPolicyDetails({
+          clusterId: payload?.id,
+          namespaceId:
+            payload?.activeSidebarItem?.id ||
+            gridData?.data?.[0]?.parentGroupId,
+          params: {
+            action: payload?.selectedPolicy?.action,
+            resource: payload?.selectedPolicy?.preProcessGroupSegment,
+          },
         })
       );
     }
