@@ -153,8 +153,8 @@ const LeftsidebarScroll = styled.div`
 
 const NiFiClusterAccessManagement = () => {
   const [activeTab, setActiveTab] = useState('groups');
-  const [activeSidebarItem, setActiveSidebarItem] = useState();
-  // const [searchTerm, setSearchTerm] = useState('');
+  const [activeSidebarItem, setActiveSidebarItem] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [groupsColumns, setGroupsColumns] = useState([]);
   const [usersColumns, setUsersColumns] = useState([]);
   const [usersActions, setUsersActions] = useState([]);
@@ -189,7 +189,6 @@ const NiFiClusterAccessManagement = () => {
               {item.name}
             </div>
           ),
-          // width: `${getEqualParts(activeSidebarItem?.policies?.length + 1)}%`,
           width: `12%`,
         },
       ];
@@ -207,15 +206,6 @@ const NiFiClusterAccessManagement = () => {
                 ? targetPolicies?.[0]?.userGroups
                 : targetPolicies?.[0]?.users;
 
-            // console.log(
-            //   targetUserArrBasedOnAction,
-            //   'targetUserArrBasedOnAction'
-            // );
-            // console.log(targetPolicies, 'targetPolicies');
-
-            // console.log(targetObj?.data?.component, '<<<>>>');
-            // console.log(activeTab === 'groups', 'grppp');
-            // console.log(targetArr, 'targetArr');
             const permissionExists = targetUserArrBasedOnAction?.some(
               obj => obj.id === item?.id
             );
@@ -304,7 +294,6 @@ const NiFiClusterAccessManagement = () => {
             );
           },
 
-          // width: `${getEqualParts(activeSidebarItem?.policies?.length + 1)}%`,
           width: `20%`,
         });
       });
@@ -371,6 +360,10 @@ const NiFiClusterAccessManagement = () => {
     }
   }, [selectedCluster?.value, activeSidebarItem]);
 
+  useEffect(() => {
+    setSearchTerm('');
+  }, [activeTab, activeSidebarItem]);
+
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
   const userIdentities = clusterUsers?.nifiUsers?.map(name => {
     return {
@@ -378,9 +371,9 @@ const NiFiClusterAccessManagement = () => {
       id: name?.id,
     };
   });
-  // const filteredDataUsers = userIdentities?.filter(item =>
-  //   item?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
+  const filteredDataUsers = userIdentities?.filter(item =>
+    item?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const userGroupIdentities = clusterUsers?.userGroups?.map(name => {
     return {
@@ -388,6 +381,9 @@ const NiFiClusterAccessManagement = () => {
       id: name?.id,
     };
   });
+  const filteredDataUsersGrp = userGroupIdentities?.filter(item =>
+    item?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const handleSavePermission = () => {
     const actionPayload = activeSidebarItem?.policies?.map(ele => ele?.action);
     const subPayload = activeSidebarItem?.policies?.map(
@@ -481,23 +477,27 @@ const NiFiClusterAccessManagement = () => {
                 {
                   <>
                     <SearchContainer>
-                      {/* <SearchInput
+                      <SearchInput
                         type="text"
                         placeholder="Search Names"
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                      /> */}
+                      />
                     </SearchContainer>
 
-                    <div style={{ backgroundColor: theme.colors.darkGrey3 }}>
+                    <div
+                      style={{
+                        backgroundColor: theme.colors.darkGrey3,
+                        borderRadius: '14px',
+                      }}
+                    >
                       <TableHeight
                         data={
                           isEmpty(activeSidebarItem)
                             ? []
                             : activeTab === 'groups'
-                              ? userGroupIdentities
-                              : userIdentities
-                          //filteredDataUsers
+                              ? filteredDataUsersGrp
+                              : filteredDataUsers
                         }
                         columns={
                           isEmpty(activeSidebarItem)
@@ -511,7 +511,12 @@ const NiFiClusterAccessManagement = () => {
                             ? 'groups-table'
                             : 'users-table'
                         }
-                        emptyMessage={'Select any policy'}
+                        emptyMessage={
+                          !isEmpty(activeSidebarItem) &&
+                          isEmpty(filteredDataUsersGrp)
+                            ? 'No Data Found'
+                            : 'Select Any Policy'
+                        }
                       />
                     </div>
                   </>
