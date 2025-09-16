@@ -362,6 +362,9 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     ) {
       dispatch(RolesActions.setSelectedRole({}));
       dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
+      dispatch(RolesActions.fetchClusterUsersSuccess([]));
+      dispatch(RolesActions.setPoliciesAndActionsData({}));
+      dispatch(RolesActions.fetchClusterNiFiPoliciesSuccess([]));
     }
   }, [dispatch, GridActions, window?.location?.pathname]);
 
