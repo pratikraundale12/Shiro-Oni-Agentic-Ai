@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { Button, CheckboxField, SelectField } from '../../../shared';
-import { Table } from '../../../components';
+import {
+  Button,
+  CheckboxField,
+  SelectField,
+  SwitchButton,
+} from '../../../shared';
+import { FullPageLoader, Table } from '../../../components';
 import GroupUserIcon from '../../../assets/Icons/GroupUserIcon';
 import NewUserIcon from '../../../assets/Icons/NewUserIcon';
 import {
   GridActions,
   GridSelectors,
+  LoadingSelectors,
   NamespacesSelectors,
   RolesActions,
   RolesSelectors,
@@ -155,6 +161,7 @@ const NiFiProcessGroupAccessManagement = () => {
   const [activeTab, setActiveTab] = useState('groups');
   const [searchTerm, setSearchTerm] = useState('');
   const [grpsData, setGrpsData] = useState([]);
+  const [usersData, setUsersData] = useState([]);
   const [activeSidebarItem, setActiveSidebarItem] = useState();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
@@ -174,6 +181,14 @@ const NiFiProcessGroupAccessManagement = () => {
       setGrpsData([]);
     }
   }, [groupsPerPolicies?.userGroups]);
+
+  useEffect(() => {
+    if (!isEmpty(groupsPerPolicies?.users)) {
+      setUsersData(groupsPerPolicies?.users);
+    } else {
+      setUsersData([]);
+    }
+  }, [groupsPerPolicies?.users]);
 
   // Filter policies based on selected process group
   const getFilteredPolicies = useCallback(() => {
@@ -197,6 +212,8 @@ const NiFiProcessGroupAccessManagement = () => {
   const policyList = getFilteredPolicies();
 
   const handleSidebarClick = item => {
+    console.log(item, 'item?????????????????????');
+
     setActiveSidebarItem(item);
     setSelectedPolicy(null);
     dispatch(
@@ -267,11 +284,16 @@ const NiFiProcessGroupAccessManagement = () => {
       label: 'Permission',
       renderCell: item => {
         let hasPermission = grpsData.some(ele => ele?.id === item?.id);
+        let hasUserPermission = usersData.some(ele => ele?.id === item?.id);
         const handleChangeCheck = (check, item) => {
           if (check) {
             setGrpsData(prev => [...prev, item]);
+            setUsersData(prev => [...prev, item]);
           } else {
             setGrpsData(prevItems =>
+              prevItems.filter(ele => ele.id !== item?.id)
+            );
+            setUsersData(prevItems =>
               prevItems.filter(ele => ele.id !== item?.id)
             );
           }
@@ -281,7 +303,7 @@ const NiFiProcessGroupAccessManagement = () => {
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <CheckboxField
               name={`${item?.id}`}
-              checked={hasPermission}
+              checked={hasPermission || hasUserPermission}
               onChange={e => {
                 handleChangeCheck(e.target.checked, item);
               }}
@@ -293,8 +315,13 @@ const NiFiProcessGroupAccessManagement = () => {
     },
   ];
   const handleSavePermission = () => {
-    const { policyId, revision, users } = groupsPerPolicies;
-    const subPayload = { policyId, revision, users, userGroups: grpsData };
+    const { policyId, revision } = groupsPerPolicies;
+    const subPayload = {
+      policyId,
+      revision,
+      users: usersData,
+      userGroups: grpsData,
+    };
 
     const descriptionPayload = {
       policies: [subPayload],
@@ -303,23 +330,49 @@ const NiFiProcessGroupAccessManagement = () => {
     const payload = { id: selectedCluster?.value, descriptionPayload };
     dispatch(RolesActions.updateClusterPermissionsAndActions(payload));
   };
+
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusterUsers')
+  );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusterNiFiPolicies')
+  );
+  const loading3 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchFlowPolicyDetails')
+  );
+  const loading4 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'updateClusterPermissionsAndActions')
+  );
+
   return (
     <>
+      <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
       <Flex className="mb-4">
         <Flex>
           <Title>Process Group Access Management</Title>
         </Flex>
-        <ButtonsContainer>
-          <Button
-            size="sm"
-            onClick={() => {
-              handleSavePermission();
-            }}
-            disabled={isEmpty(selectedPolicy)}
-          >
-            Save Changes
-          </Button>
-        </ButtonsContainer>
+        <div className="d-flex align-items-center justify-content-end gap-xl-3 gap-2">
+          <div>
+            <SwitchButton
+              id="openModalInput1"
+              name="NiFi Flow"
+              // checked={}
+
+              isDisabled={false}
+            />
+          </div>
+          <ButtonsContainer>
+            <Button
+              size="sm"
+              onClick={() => {
+                handleSavePermission();
+              }}
+              disabled={isEmpty(selectedPolicy)}
+            >
+              Save Changes
+            </Button>
+          </ButtonsContainer>
+        </div>
       </Flex>
       <Container>
         <MainContent className="gap-3">
