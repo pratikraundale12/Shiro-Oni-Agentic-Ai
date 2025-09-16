@@ -3,6 +3,8 @@ export const namespacesAPI = api => {
     params = {},
     queryParams: { clusterId, namespaceId, is_scheduled },
   }) => {
+    console.log('dddddddddddssssssssssssssssssssss');
+
     return api.get(
       `/clusters/${clusterId}/namespaces${namespaceId && `/${namespaceId}`}?is_scheduled=${is_scheduled || false}`,
       params

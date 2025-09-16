@@ -13,13 +13,15 @@ import {
   GridActions,
   GridSelectors,
   LoadingSelectors,
+  NamespacesActions,
   NamespacesSelectors,
   RolesActions,
   RolesSelectors,
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { DocumentTextIcon } from '../../../assets';
+import { DocumentTextIcon, LessArrowIcon } from '../../../assets';
 import { isEmpty } from 'lodash';
+import Breadcrumb from '../../../shared/Breadcrumb';
 
 const Container = styled.div`
   background-color: #fbfcff;
@@ -43,6 +45,8 @@ const Sidebar = styled.div`
 `;
 
 const SidebarItem = styled.div`
+  display: flex;
+  justify-content: space-between;
   padding: 10px 12px;
   font-size: 16px;
   font-weight: 500;
@@ -164,6 +168,15 @@ const LeftsidebarScroll = styled.div`
   max-height: calc(100vh - 370px);
 `;
 
+const BreadcrumbContainer = styled.div`
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: -0.01em;
+  color: #444445;
+  align-items: center;
+`;
+
 const NiFiProcessGroupAccessManagement = () => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('groups');
@@ -180,6 +193,10 @@ const NiFiProcessGroupAccessManagement = () => {
   const processGroupList = useSelector(state =>
     GridSelectors.getGridData(state, 'namespaces')
   );
+  const namespaces = useSelector(NamespacesSelectors.getNamespaces);
+  console.log(processGroupList, 'line no 87');
+  console.log(namespaces, 'namespacesnamespacesnamespaces');
+
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
   const groupsPerPolicies = useSelector(RolesSelectors.getFlowPolicyDetails);
 
@@ -396,6 +413,17 @@ const NiFiProcessGroupAccessManagement = () => {
     }
   };
 
+  const handleChildProcessGroupClick = (e, item) => {
+    e.stopPropagation();
+    dispatch(
+      NamespacesActions.setSelectedNamespace({
+        label: item.name,
+        value: item.id,
+      })
+    );
+    dispatch(NamespacesActions.fetchNamespaces());
+  };
+
   return (
     <>
       <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
@@ -430,20 +458,54 @@ const NiFiProcessGroupAccessManagement = () => {
         <MainContent className="gap-3">
           <Sidebar>
             <LeftsidebarScroll className="overflow-y-auto">
-              {processGroupList.map(item => (
-                <SidebarItem
-                  key={item?.id}
-                  active={activeSidebarItem?.id === item?.id}
-                  disabled={isSwitchEnabled}
-                  onClick={() => !isSwitchEnabled && handleSidebarClick(item)}
-                >
-                  {item?.name}
-                </SidebarItem>
-              ))}
+              {isEmpty(namespaces) &&
+                processGroupList.map(item => (
+                  <SidebarItem
+                    key={item?.id}
+                    active={activeSidebarItem?.id === item?.id}
+                    disabled={isSwitchEnabled}
+                    onClick={() => !isSwitchEnabled && handleSidebarClick(item)}
+                  >
+                    {item?.name}
+                    <button
+                      type="button"
+                      onClick={e => handleChildProcessGroupClick(e, item)}
+                      className="ml-2"
+                    >
+                      <LessArrowIcon />
+                    </button>
+                  </SidebarItem>
+                ))}
+              {!isEmpty(namespaces) &&
+                namespaces?.map(item => (
+                  <span key={item?.id}>
+                    {!item?.isProcessor && (
+                      <SidebarItem
+                        active={activeSidebarItem?.id === item?.id}
+                        disabled={isSwitchEnabled}
+                        onClick={() =>
+                          !isSwitchEnabled && handleSidebarClick(item)
+                        }
+                      >
+                        {item?.name}
+                        <button
+                          type="button"
+                          onClick={e => handleChildProcessGroupClick(e, item)}
+                          className="ml-2"
+                        >
+                          <LessArrowIcon />
+                        </button>
+                      </SidebarItem>
+                    )}
+                  </span>
+                ))}
             </LeftsidebarScroll>
           </Sidebar>
 
           <ContentArea>
+            <BreadcrumbContainer className="d-flex  mb-3 mt-3">
+              <Breadcrumb module="path" />
+            </BreadcrumbContainer>
             <TabContainer>
               <div className="d-flex">
                 <Tab
