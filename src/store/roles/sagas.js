@@ -256,15 +256,22 @@ export function* updateClusterPermissionsAndActions(api, { payload }) {
   });
   if (response.ok) {
     toast.success(response?.data?.message || 'Updated successfully');
-
-    yield put(
-      RolesActions.fetchPoliciesandActions({
-        payload: {
-          id: payload?.id,
-          descriptionPayload: payload?.updatedAPIpayload,
-        },
-      })
-    );
+    if (payload?.updatedAPIpayload) {
+      yield put(
+        RolesActions.fetchPoliciesandActions({
+          payload: {
+            id: payload?.id,
+            descriptionPayload: payload?.updatedAPIpayload,
+          },
+        })
+      );
+    } else {
+      yield put(
+        RolesActions.fetchClusterNiFiPolicies({
+          clusterId: payload?.id,
+        })
+      );
+    }
   } else if (!response.ok) {
     toast.error(response?.message || response?.data?.message);
   }
