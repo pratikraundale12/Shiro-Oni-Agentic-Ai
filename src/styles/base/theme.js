@@ -46,6 +46,8 @@ const theme = {
     caution: '#CF9F5D',
     border: '#CCC',
     shadow: '#00000033',
+    primaryScrollbar: '#DEE2E9',
+    primaryScrollbarHover: '#DEE2E9',
   },
   spacing: {
     xs: '8px',

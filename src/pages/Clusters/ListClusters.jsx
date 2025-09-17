@@ -254,7 +254,7 @@ export const ListClusters = () => {
                       )}
                       {item.deactivate_cluster && (
                         <Item onClick={() => handleClick('delete', item.id)}>
-                          <LogoutIcon color="black" />
+                          <LogoutIcon />
                           <span>{KDFM.DEACTIVATE}</span>
                         </Item>
                       )}
@@ -504,6 +504,10 @@ export const ListClusters = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    dispatch(GridActions.fetchGridSuccess({ module: 'nodes', data: {} }));
+  }, [dispatch]);
 
   return (
     <>

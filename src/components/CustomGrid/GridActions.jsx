@@ -29,7 +29,6 @@ import {
   RefreshIcon,
   ScheduleDeploymentIcon,
   SmallSearchIcon,
-  TodoIcon,
 } from '../../assets';
 import {
   ACCESS_OPTIONS,
@@ -533,7 +532,7 @@ export const GridActions = ({
   };
 
   const handleChange = value => {
-     if (!value) {
+    if (!value) {
       dispatch(SchedularActions.setScheduleSelectRange([]));
       dispatch(
         GridSagsActions.fetchGrid({
@@ -760,9 +759,6 @@ export const GridActions = ({
         <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
         <FullPageLoader loading={loading} />
         <Flex>
-          <ImageContainer>
-            <TodoIcon width={22} height={24} />
-          </ImageContainer>
           <Title>
             <span>{title}</span>
             {module === 'namespaces' && Boolean(gridCount) && (
@@ -851,7 +847,6 @@ export const GridActions = ({
                 size="sm"
                 name="roles"
                 control={control}
-                title="Select Roles"
                 placeholder="Select Roles"
                 value={selectedRole}
                 options={[
@@ -871,7 +866,6 @@ export const GridActions = ({
               <StyledSelectField
                 name="is_active"
                 size="sm"
-                title={KDFM.SELECT_STATUS}
                 control={control}
                 options={statusOptions}
                 placeholder={KDFM.STATUS}

@@ -51,7 +51,12 @@ const ContainerRangePicker = styled.div`
     font-family: 'Red Hat Display', sans-serif;
   }
 `;
-const StyledDateRangePickerInput = ({ value, handleChange, customRanges }) => {
+const StyledDateRangePickerInput = ({
+  value,
+  handleChange,
+  customRanges,
+  DateRangeIcon,
+}) => {
   return (
     <>
       <ContainerRangePicker>
@@ -68,6 +73,7 @@ const StyledDateRangePickerInput = ({ value, handleChange, customRanges }) => {
           showTime={false}
           format="MM/dd/yyyy"
           disabledDate={date => date.getTime() > new Date().getTime()}
+          {...(DateRangeIcon && { caretAs: DateRangeIcon })}
         />
       </ContainerRangePicker>
     </>
@@ -77,6 +83,7 @@ StyledDateRangePickerInput.propTypes = {
   value: PropTypes.array,
   handleChange: PropTypes.func,
   customRanges: PropTypes.array,
+  DateRangeIcon: PropTypes.elementType,
 };
 
 export default StyledDateRangePickerInput;

@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-export const CalenderIcon2 = ({
-  width = 20,
+export const ScheduleDetailsIcon = ({
   height = 20,
-  color = '#FF7A00',
+  width = 20,
+  color = '#444445',
 }) => (
   <svg
     width={width}
@@ -13,7 +13,7 @@ export const CalenderIcon2 = ({
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M6.66602 1.6665V4.1665"
+      d="M6.66699 1.6665V4.1665"
       stroke={color}
       strokeWidth="1.25"
       strokeMiterlimit="10"
@@ -21,7 +21,7 @@ export const CalenderIcon2 = ({
       strokeLinejoin="round"
     />
     <path
-      d="M13.334 1.6665V4.1665"
+      d="M13.333 1.6665V4.1665"
       stroke={color}
       strokeWidth="1.25"
       strokeMiterlimit="10"
@@ -29,7 +29,21 @@ export const CalenderIcon2 = ({
       strokeLinejoin="round"
     />
     <path
-      d="M2.91602 7.57471H17.0827"
+      d="M15.1667 17.8333C16.6394 17.8333 17.8333 16.6394 17.8333 15.1667C17.8333 13.6939 16.6394 12.5 15.1667 12.5C13.6939 12.5 12.5 13.6939 12.5 15.1667C12.5 16.6394 13.6939 17.8333 15.1667 17.8333Z"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M18.3333 18.3333L17.5 17.5"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2.91699 7.5752H17.0837"
       stroke={color}
       strokeWidth="1.25"
       strokeMiterlimit="10"
@@ -37,7 +51,7 @@ export const CalenderIcon2 = ({
       strokeLinejoin="round"
     />
     <path
-      d="M17.5 7.08317V14.1665C17.5 16.6665 16.25 18.3332 13.3333 18.3332H6.66667C3.75 18.3332 2.5 16.6665 2.5 14.1665V7.08317C2.5 4.58317 3.75 2.9165 6.66667 2.9165H13.3333C16.25 2.9165 17.5 4.58317 17.5 7.08317Z"
+      d="M11.1417 18.3332H6.66667C3.75 18.3332 2.5 16.6665 2.5 14.1665V7.08317C2.5 4.58317 3.75 2.9165 6.66667 2.9165H13.3333C16.25 2.9165 17.5 4.58317 17.5 7.08317V10.8332"
       stroke={color}
       strokeWidth="1.25"
       strokeMiterlimit="10"
@@ -45,42 +59,21 @@ export const CalenderIcon2 = ({
       strokeLinejoin="round"
     />
     <path
-      d="M13.0781 11.4167H13.0856"
+      d="M9.9951 11.4167H10.0026"
       stroke={color}
       strokeWidth="1.66667"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M13.0781 13.9167H13.0856"
+      d="M6.91307 11.4167H6.92055"
       stroke={color}
       strokeWidth="1.66667"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M9.99607 11.4167H10.0036"
-      stroke={color}
-      strokeWidth="1.66667"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M9.99607 13.9167H10.0036"
-      stroke={color}
-      strokeWidth="1.66667"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M6.91209 11.4167H6.91957"
-      stroke={color}
-      strokeWidth="1.66667"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M6.91209 13.9167H6.91957"
+      d="M6.91307 13.9167H6.92055"
       stroke={color}
       strokeWidth="1.66667"
       strokeLinecap="round"
@@ -88,8 +81,9 @@ export const CalenderIcon2 = ({
     />
   </svg>
 );
-CalenderIcon2.propTypes = {
-  width: PropTypes.number,
+
+ScheduleDetailsIcon.propTypes = {
   height: PropTypes.number,
+  width: PropTypes.number,
   color: PropTypes.string,
 };

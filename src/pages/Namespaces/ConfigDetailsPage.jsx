@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { InvalidProcessorIcon, TodoIcon } from '../../assets';
+import {
+  ControllerServicesIcon,
+  InvalidProcessorIcon,
+  ParameterContextIcon,
+  ScheduleDetailsIcon,
+  TodoIcon,
+  VariablesIcon,
+} from '../../assets';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -99,6 +106,19 @@ const TabContent = styled.div`
   width: 100%;
   padding: 0px 0.5rem;
   border-radius: 0.25rem;
+`;
+
+const IconContentV2 = styled.div`
+  display: inline;
+  margin-right: 6px;
+
+  svg path {
+    transition: stroke 0.3s;
+  }
+
+  ${Tab}:hover & svg path {
+    stroke: rgba(255, 122, 0, 1);
+  }
 `;
 const ConfigDetailsPage = () => {
   const dispatch = useDispatch();
@@ -371,6 +391,15 @@ const ConfigDetailsPage = () => {
               onClick={() => handleSetTab(KDFM.SCHEDULE_DETAILS)}
               className="nav-item"
             >
+              <IconContentV2 className="nav-item">
+                <ScheduleDetailsIcon
+                  color={
+                    activeTab === `${KDFM.SCHEDULE_DETAILS}`
+                      ? '#FF7A00'
+                      : '#444445'
+                  }
+                />
+              </IconContentV2>
               {KDFM.SCHEDULE_DETAILS}{' '}
             </Tab>
           )}
@@ -379,6 +408,15 @@ const ConfigDetailsPage = () => {
             onClick={() => handleSetTab(KDFM.PARAMETER_CONTEXT)}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <ParameterContextIcon
+                color={
+                  activeTab === `${KDFM.PARAMETER_CONTEXT}`
+                    ? '#FF7A00'
+                    : '#444445'
+                }
+              />
+            </IconContentV2>
             {KDFM.PARAMETER_CONTEXT}
           </Tab>
           <Tab
@@ -386,6 +424,13 @@ const ConfigDetailsPage = () => {
             onClick={() => handleSetTab(KDFM.VARIABLES)}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <VariablesIcon
+                color={
+                  activeTab === `${KDFM.VARIABLES}` ? '#FF7A00' : '#444445'
+                }
+              />
+            </IconContentV2>
             {KDFM.VARIABLES}{' '}
           </Tab>
           <Tab
@@ -393,6 +438,15 @@ const ConfigDetailsPage = () => {
             onClick={() => handleSetTab(KDFM.CONTROLLER_SERVICE)}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <ControllerServicesIcon
+                color={
+                  activeTab === `${KDFM.CONTROLLER_SERVICE}`
+                    ? '#FF7A00'
+                    : '#444445'
+                }
+              />
+            </IconContentV2>
             {KDFM.CONTROLLER_SERVICE}{' '}
           </Tab>
         </TabWrapper>

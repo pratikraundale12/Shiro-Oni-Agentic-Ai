@@ -510,6 +510,7 @@ export const Dashboard = () => {
                         ? 'pointer'
                         : 'not-allowed',
                   }}
+                  data-tooltip-id={`tooltip-group-dashboard-value`}
                 >
                   <SelectField
                     options={
@@ -527,16 +528,25 @@ export const Dashboard = () => {
                     }
                     onChange={onNamespaceSelect}
                     placeholder="Select Process Group"
-                    title={
-                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
-                        ? KDFM.SELECT_PROCESS_GROUP
-                        : KDFM.PLEASE_LOGIN_TO_CLUSTER
-                    }
                     backgroundColor={theme.colors.lightGrey}
                     size="sm"
                     disabled={!selectedCluster?.value}
                     control={control}
                     name="namespaceDropdown"
+                  />
+                  <ReactTooltip
+                    id={`tooltip-group-dashboard-value`}
+                    place="left"
+                    content={
+                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                        ? KDFM.SELECT_PROCESS_GROUP
+                        : KDFM.PLEASE_LOGIN_TO_CLUSTER
+                    }
+                    style={{
+                      width: 'auto',
+                      whiteSpace: 'normal',
+                      wordWrap: 'break-word',
+                    }}
                   />
                 </DropdownContainer>
               )}
