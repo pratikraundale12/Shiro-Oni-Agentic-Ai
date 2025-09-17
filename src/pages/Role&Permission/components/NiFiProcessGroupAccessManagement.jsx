@@ -615,6 +615,12 @@ const NiFiProcessGroupAccessManagement = () => {
                     className={
                       activeTab === 'groups' ? 'groups-table' : 'users-table'
                     }
+                    emptyMessage={
+                      !isEmpty(activeSidebarItem) &&
+                      isEmpty(filteredDataUsersGrp)
+                        ? 'No Data Found'
+                        : 'Select Any Policy'
+                    }
                   />
                 </div>
               </>
