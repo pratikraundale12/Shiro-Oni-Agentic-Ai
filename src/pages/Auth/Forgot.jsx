@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import * as yup from 'yup';
 
 import {
-  CrossIcons,
+  CircleCrossIcon,
   GreaterArrowIcon,
   LessArrowIcon,
   MailIcon,
@@ -103,12 +103,9 @@ export const getRightIcon = (watch, errors, setValue) => {
 
   if (emailValue) {
     return isEmailValid ? (
-      <RightArrowIcon color={theme.colors.primary} />
+      <RightArrowIcon />
     ) : (
-      <CrossIcons
-        color={theme.colors.primary}
-        width={16}
-        height={16}
+      <CircleCrossIcon
         style={{ cursor: 'pointer' }}
         onClick={e => {
           e.stopPropagation();

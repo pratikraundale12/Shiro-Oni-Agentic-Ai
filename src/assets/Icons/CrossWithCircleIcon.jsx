@@ -1,31 +1,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { theme } from '../../styles';
 
 export const CrossWithCircleIcon = ({
-  width = 33,
-  height = 33,
-  color = theme.colors.darker,
-}) => {
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 33 33"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle cx="16.5" cy="16.5" r={16} fill="white" stroke={'#DDE4F0'} />
-      <path
-        d="M15.1953 16.1381L10 10.9428L10.9428 10L16.1381 15.1952L21.3334 10L22.2762 10.9428L17.0809 16.1381L22.2762 21.3333L21.3334 22.2762L16.1381 17.0809L10.9428 22.2762L10 21.3333L15.1953 16.1381Z"
-        fill={color}
-      />
-    </svg>
-  );
-};
+  height = 18,
+  width = 18,
+  stroke = '#FF0000',
+  ...rest
+}) => (
+  <svg
+    width={width}
+    height={height}
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...rest}
+  >
+    <path
+      d="M6.11426 9.88661L9.88759 6.11328"
+      stroke={stroke}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M9.88759 9.88661L6.11426 6.11328"
+      stroke={stroke}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.99967 14.6666H9.99967C13.333 14.6666 14.6663 13.3333 14.6663 9.99992V5.99992C14.6663 2.66659 13.333 1.33325 9.99967 1.33325H5.99967C2.66634 1.33325 1.33301 2.66659 1.33301 5.99992V9.99992C1.33301 13.3333 2.66634 14.6666 5.99967 14.6666Z"
+      stroke={stroke}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 CrossWithCircleIcon.propTypes = {
-  width: PropTypes.number,
-  height: PropTypes.number,
-  color: PropTypes.string,
+  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  stroke: PropTypes.string,
 };
