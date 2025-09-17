@@ -461,15 +461,17 @@ const NiFiProcessGroupAccessManagement = () => {
           <Title>Process Group Access Management</Title>
         </Flex>
         <div className="d-flex align-items-center justify-content-end gap-xl-3 gap-2">
-          <div>
-            <SwitchButton
-              id="openModalInput1"
-              name="NiFi Root Policy"
-              checked={isSwitchEnabled}
-              onChange={handleSwitchChange}
-              isDisabled={false}
-            />
-          </div>
+          {selectedCluster?.value && (
+            <div>
+              <SwitchButton
+                id="openModalInput1"
+                name="NiFi Root Policy"
+                checked={isSwitchEnabled}
+                onChange={handleSwitchChange}
+                isDisabled={false}
+              />
+            </div>
+          )}
           <ButtonsContainer>
             <Button
               size="sm"
