@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
 import {
   Button,
   CheckboxField,
@@ -194,9 +195,6 @@ const NiFiProcessGroupAccessManagement = () => {
     GridSelectors.getGridData(state, 'namespaces')
   );
   const namespaces = useSelector(NamespacesSelectors.getNamespacesAllData);
-  console.log(processGroupList, 'line no 87');
-  console.log(namespaces, 'namespacesnamespacesnamespaces');
-
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
   const groupsPerPolicies = useSelector(RolesSelectors.getFlowPolicyDetails);
 
@@ -218,8 +216,6 @@ const NiFiProcessGroupAccessManagement = () => {
 
   // Filter policies based on selected process group
   const getFilteredPolicies = useCallback(() => {
-    console.log('hello child');
-
     if (!activeSidebarItem?.id || !clusterNiFiPolicies?.flowPolicies) {
       return [];
     }
@@ -249,7 +245,6 @@ const NiFiProcessGroupAccessManagement = () => {
       policyGroup =>
         policyGroup['process-group-id'] === processGroupList?.[0]?.parentGroupId
     );
-    console.log(processGroupPolicies, 'line no 234');
 
     return (
       processGroupPolicies?.policies?.map(policy => ({
@@ -315,6 +310,9 @@ const NiFiProcessGroupAccessManagement = () => {
       id: name?.id,
     };
   });
+  const filteredDataUsers = userIdentities?.filter(item =>
+    item?.identity.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const userGroupIdentities = clusterUsers?.userGroups?.map(name => {
     return {
@@ -322,6 +320,10 @@ const NiFiProcessGroupAccessManagement = () => {
       id: name?.id,
     };
   });
+
+  const filteredDataUsersGrp = userGroupIdentities?.filter(item =>
+    item?.identity.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const COLUMN = [
     {
@@ -401,6 +403,9 @@ const NiFiProcessGroupAccessManagement = () => {
   const loading4 = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateClusterPermissionsAndActions')
   );
+  const loading5 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchNamespaces')
+  );
 
   const handleSwitchChange = e => {
     setIsSwitchEnabled(e.target.checked);
@@ -412,6 +417,17 @@ const NiFiProcessGroupAccessManagement = () => {
       );
     }
   };
+
+  useEffect(() => {
+    setSearchTerm('');
+  }, [activeTab, activeSidebarItem]);
+
+  // Show toast message when no cluster is selected
+  useEffect(() => {
+    if (!selectedCluster?.value) {
+      toast.info('Please login to cluster');
+    }
+  }, [selectedCluster]);
 
   const handleChildProcessGroupClick = (e, item) => {
     e.stopPropagation();
@@ -426,7 +442,9 @@ const NiFiProcessGroupAccessManagement = () => {
 
   return (
     <>
-      <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
+      <FullPageLoader
+        loading={loading || loading2 || loading3 || loading4 || loading5}
+      />
       <Flex className="mb-4">
         <Flex>
           <Title>Process Group Access Management</Title>
@@ -504,7 +522,17 @@ const NiFiProcessGroupAccessManagement = () => {
 
           <ContentArea>
             <BreadcrumbContainer className="d-flex  mb-3 mt-3">
-              <Breadcrumb />
+              <Breadcrumb
+                module="role_permission"
+                path={
+                  namespaces?.breadcrumb?.map(item => ({
+                    label: item.name,
+                    value: item.id,
+                    id: item.id,
+                  })) || []
+                }
+                activeSidebarItem={activeSidebarItem}
+              />
             </BreadcrumbContainer>
             <TabContainer>
               <div className="d-flex">
@@ -562,8 +590,8 @@ const NiFiProcessGroupAccessManagement = () => {
                       isEmpty(selectedPolicy)
                         ? []
                         : activeTab === 'groups'
-                          ? userGroupIdentities
-                          : userIdentities
+                          ? filteredDataUsersGrp
+                          : filteredDataUsers
                     }
                     columns={COLUMN}
                     className={

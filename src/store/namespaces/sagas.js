@@ -14,7 +14,6 @@ export function* fetchNamespaces(api) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
-  console.log(selectedNamespace, 'selectedNamespaceselectedNamespace');
 
   const queryParams = {
     clusterId: selectedCluster?.value || '',

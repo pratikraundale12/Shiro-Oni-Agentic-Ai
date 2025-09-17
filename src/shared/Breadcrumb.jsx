@@ -44,6 +44,7 @@ const MODULES = [
   'upgrade',
   'ldap',
   'path',
+  'role_permission',
 ];
 const Breadcrumb = ({
   module,
@@ -51,6 +52,7 @@ const Breadcrumb = ({
   onClick,
   fromDetailPage = false,
   setRemoveSearch = () => {},
+  activeSidebarItem = {},
 }) => {
   const dispatch = useDispatch();
   const breadcrumbs = useSelector(state =>
@@ -72,7 +74,15 @@ const Breadcrumb = ({
     } else if (module === 'destNamespaces') {
       dispatch(NamespacesActions.setSelectedDestNamespace(value));
     } else if (onClick && module === 'ldap') onClick(value.label);
-    else history.push(value.path);
+    else if (module === 'role_permission') {
+      dispatch(
+        NamespacesActions.setSelectedNamespace({
+          label: activeSidebarItem?.name || value?.label,
+          value: activeSidebarItem?.id || value?.value,
+        })
+      );
+      dispatch(NamespacesActions.fetchNamespaces());
+    } else history.push(value.path);
   };
 
   if (!MODULES.includes(module)) return null;
@@ -102,6 +112,7 @@ Breadcrumb.propTypes = {
   onClick: PropTypes.func,
   fromDetailPage: PropTypes.bool,
   setRemoveSearch: PropTypes.func,
+  activeSidebarItem: PropTypes.object,
 };
 
 export default Breadcrumb;
