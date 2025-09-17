@@ -205,7 +205,6 @@ export const ListScheduleDeployment = () => {
             event.currentTarget.blur();
           }}
           data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
-          style={{ border: 'transparent' }}
         >
           <CrossWithCircleIcon color="red" />
         </IconButton>
@@ -234,7 +233,6 @@ export const ListScheduleDeployment = () => {
             event.currentTarget.blur();
           }}
           data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
-          style={{ border: 'transparent' }}
         >
           <TickIconWithCircle />
         </IconButton>
@@ -290,7 +288,6 @@ export const ListScheduleDeployment = () => {
             event.currentTarget.blur();
           }}
           data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
-          style={{ border: 'transparent' }}
         >
           <RejectIcon />
         </IconButton>
