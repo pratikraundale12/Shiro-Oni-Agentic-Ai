@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
 import { theme } from '../../../styles';
+import { SmallSearchIcon } from '../../../assets';
 
 const Container = styled.div`
   background-color: #fbfcff;
@@ -97,25 +98,31 @@ const TabIcon = styled.span`
 `;
 
 const SearchContainer = styled.div`
-  padding: 16px 0;
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
 `;
 
-const SearchInput = styled.input`
+const Search = styled.input`
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: white;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
 
-  &::placeholder {
-    color: #6c757d;
-  }
-
-  &:focus {
+  &:focus-visible {
     outline: none;
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+  }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
   }
 `;
 
@@ -477,9 +484,14 @@ const NiFiClusterAccessManagement = () => {
                 {
                   <>
                     <SearchContainer>
-                      <SearchInput
-                        type="text"
-                        placeholder="Search Names"
+                      <SmallSearchIcon
+                        width={18}
+                        height={18}
+                        color={theme.colors.darkGrey1}
+                      />
+                      <Search
+                        type="search"
+                        placeholder={`search ${activeTab}`}
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                       />
