@@ -77,8 +77,8 @@ const Breadcrumb = ({
     else if (module === 'role_permission') {
       dispatch(
         NamespacesActions.setSelectedNamespace({
-          label: activeSidebarItem?.name || value?.label,
-          value: activeSidebarItem?.id || value?.value,
+          label: value ? value?.label : activeSidebarItem?.name,
+          value: value ? value?.value : activeSidebarItem?.id,
         })
       );
       dispatch(NamespacesActions.fetchNamespaces());
