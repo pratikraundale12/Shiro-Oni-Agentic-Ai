@@ -72,6 +72,7 @@ export const CLUSTER_MODULE_TABS = {
   CLUSTER: 'cluster',
   REGISTRY: 'registry',
   SERVICE_ACCOUNT: 'service account',
+  CUSTOM_PROCESSOR: 'Custom Processor',
 };
 
 export const CLUSTER_STATUS = {

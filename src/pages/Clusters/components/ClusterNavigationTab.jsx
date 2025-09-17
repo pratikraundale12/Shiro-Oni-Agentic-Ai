@@ -96,6 +96,20 @@ const ClusterNavigationTab = ({
           {KDFM.SERVICE_ACCOUNT}
         </NavButton>
       )}
+      {data && (
+        <NavButton
+          active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
+          onClick={() =>
+            Object.keys(data || {})?.length
+              ? setActiveTab(CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR)
+              : {}
+          }
+          disabled={isRegistryDetailDisable}
+          data-tooltip-id="navButtonTooltip"
+        >
+          {CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
+        </NavButton>
+      )}
     </NavTabs>
   );
 };

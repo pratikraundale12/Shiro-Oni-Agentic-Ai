@@ -41,6 +41,7 @@ import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
 import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
 import { AuthenticationSelectors } from '../../store/authentication';
+import { ClusterCustomProcessor } from './components/ClusterCustomProcessor';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -796,6 +797,17 @@ export const Add = () => {
         {isSuperAdmin && activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT && (
           <FormContainer>
             <ClusterServiceAccountModal
+              tags={tags}
+              hostToEdit={hostToEdit}
+              clusterData={clusterData}
+              clusterId={clusterId}
+              data={data}
+            />
+          </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR && (
+          <FormContainer>
+            <ClusterCustomProcessor
               tags={tags}
               hostToEdit={hostToEdit}
               clusterData={clusterData}
