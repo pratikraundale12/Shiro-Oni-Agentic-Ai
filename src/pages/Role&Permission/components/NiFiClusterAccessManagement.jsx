@@ -499,7 +499,7 @@ const NiFiClusterAccessManagement = () => {
 
                     <div
                       style={{
-                        backgroundColor: theme.colors.darkGrey3,
+                        backgroundColor: '#F5F7FA',
                         borderRadius: '14px',
                       }}
                     >
