@@ -20,14 +20,11 @@ import {
   RolesSelectors,
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  DocumentTextIcon,
-  LessArrowIcon,
-  SmallSearchIcon,
-} from '../../../assets';
+import { DocumentTextIcon, SmallSearchIcon } from '../../../assets';
 import { isEmpty } from 'lodash';
 import Breadcrumb from '../../../shared/Breadcrumb';
 import { theme } from '../../../styles';
+import Hierarchy from '../../../assets/Icons/Hierarchy';
 
 const Container = styled.div`
   background-color: #fbfcff;
@@ -64,8 +61,8 @@ const SidebarItem = styled.div`
   ${props =>
     props.active &&
     `
-    background-color: #fff3e0;
-    color: #ff6b35;
+    background-color: #E4842B;
+    color: #fff;
     font-weight: 500;
   `}
 
@@ -78,7 +75,8 @@ const SidebarItem = styled.div`
   `}
 
   &:hover {
-    background-color: ${props => (props.disabled ? 'transparent' : '#f1f3f4')};
+    background-color: ${props => (props.disabled ? 'transparent' : '#E4842B')};
+    color: #fff;
   }
 `;
 
@@ -189,13 +187,17 @@ const BreadcrumbContainer = styled.div`
   align-items: center;
 `;
 
+const SidebarButton = styled.button`
+  padding: 3px;
+  border-radius: 100%;
+`;
+
 const NiFiProcessGroupAccessManagement = () => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('groups');
   const [searchTerm, setSearchTerm] = useState('');
   const [grpsData, setGrpsData] = useState([]);
   const [usersData, setUsersData] = useState([]);
-  const [activeSidebarItem, setActiveSidebarItem] = useState();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [isSwitchEnabled, setIsSwitchEnabled] = useState(false);
@@ -205,25 +207,62 @@ const NiFiProcessGroupAccessManagement = () => {
   const processGroupList = useSelector(state =>
     GridSelectors.getGridData(state, 'namespaces')
   );
+  const [activeSidebarItem, setActiveSidebarItem] = useState(
+    processGroupList[0]
+  );
   const namespaces = useSelector(NamespacesSelectors.getNamespacesAllData);
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
   const groupsPerPolicies = useSelector(RolesSelectors.getFlowPolicyDetails);
+  const [selectedGroupDropdown, setSelectedGroupDropdown] = useState({
+    label: 'All',
+    value: 'all',
+  });
+  const [initialGrpsData, setInitialGrpsData] = useState([]);
+  const [initialUsersData, setInitialUsersData] = useState([]);
 
   useEffect(() => {
-    if (!isEmpty(groupsPerPolicies?.userGroups)) {
+    if (processGroupList && processGroupList.length > 0 && !activeSidebarItem) {
+      setActiveSidebarItem(processGroupList[0]);
+      // Clear any existing checkbox data when component first loads
+      setGrpsData([]);
+      setUsersData([]);
+      setInitialGrpsData([]);
+      setInitialUsersData([]);
+      setSelectedPolicy(null);
+    }
+  }, [processGroupList, activeSidebarItem]);
+
+  useEffect(() => {
+    if (selectedCluster?.value) {
+      dispatch(
+        RolesActions.fetchClusterNiFiPolicies({
+          clusterId: selectedCluster?.value,
+        })
+      );
+    }
+  }, [dispatch, selectedCluster?.value]);
+
+  useEffect(() => {
+    // Only set data if a policy is selected
+    if (selectedPolicy && !isEmpty(groupsPerPolicies?.userGroups)) {
       setGrpsData(groupsPerPolicies?.userGroups);
+      setInitialGrpsData(groupsPerPolicies?.userGroups);
     } else {
       setGrpsData([]);
+      setInitialGrpsData([]);
     }
-  }, [groupsPerPolicies?.userGroups]);
+  }, [groupsPerPolicies?.userGroups, selectedPolicy]);
 
   useEffect(() => {
-    if (!isEmpty(groupsPerPolicies?.users)) {
+    // Only set data if a policy is selected
+    if (selectedPolicy && !isEmpty(groupsPerPolicies?.users)) {
       setUsersData(groupsPerPolicies?.users);
+      setInitialUsersData(groupsPerPolicies?.users);
     } else {
       setUsersData([]);
+      setInitialUsersData([]);
     }
-  }, [groupsPerPolicies?.users]);
+  }, [groupsPerPolicies?.users, selectedPolicy]);
 
   // Filter policies based on selected process group
   const getFilteredPolicies = useCallback(() => {
@@ -245,16 +284,13 @@ const NiFiProcessGroupAccessManagement = () => {
   }, [activeSidebarItem?.id, clusterNiFiPolicies?.flowPolicies]);
 
   const getRootFilteredPolicies = useCallback(() => {
-    if (
-      !processGroupList?.[0]?.parentGroupId ||
-      !clusterNiFiPolicies?.flowPolicies
-    ) {
+    const parentGroupId = processGroupList?.[0]?.parentGroupId;
+    if (!parentGroupId || !clusterNiFiPolicies?.flowPolicies) {
       return [];
     }
 
     const processGroupPolicies = clusterNiFiPolicies.flowPolicies.find(
-      policyGroup =>
-        policyGroup['process-group-id'] === processGroupList?.[0]?.parentGroupId
+      policyGroup => policyGroup['process-group-id'] === parentGroupId
     );
 
     return (
@@ -264,7 +300,7 @@ const NiFiProcessGroupAccessManagement = () => {
         ...policy,
       })) || []
     );
-  }, [processGroupList?.[0]?.parentGroupId, clusterNiFiPolicies?.flowPolicies]);
+  }, [processGroupList, clusterNiFiPolicies?.flowPolicies]);
 
   const policyList = isSwitchEnabled
     ? getRootFilteredPolicies()
@@ -273,6 +309,12 @@ const NiFiProcessGroupAccessManagement = () => {
   const handleSidebarClick = item => {
     setActiveSidebarItem(item);
     setSelectedPolicy(null);
+    setSelectedGroupDropdown({ label: 'All', value: 'all' });
+    // Clear checkbox data when switching process groups
+    setGrpsData([]);
+    setUsersData([]);
+    setInitialGrpsData([]);
+    setInitialUsersData([]);
     dispatch(
       RolesActions.fetchClusterNiFiPolicies({
         clusterId: selectedCluster?.value,
@@ -305,7 +347,10 @@ const NiFiProcessGroupAccessManagement = () => {
       RolesActions.fetchFlowPolicyDetails({
         clusterId: selectedCluster?.value,
         namespaceId:
-          activeSidebarItem?.id || processGroupList?.[0]?.parentGroupId,
+          isSwitchEnabled === true
+            ? processGroupList?.[0]?.parentGroupId
+            : activeSidebarItem?.id,
+
         params: {
           action: value?.action,
           resource: value?.preProcessGroupSegment,
@@ -321,9 +366,28 @@ const NiFiProcessGroupAccessManagement = () => {
       id: name?.id,
     };
   });
-  const filteredDataUsers = userIdentities?.filter(item =>
-    item?.identity.toLowerCase().includes(searchTerm.toLowerCase())
+  // const filteredDataUsers = userIdentities?.filter(item =>
+  //   item?.identity.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  const groupOptions = [
+    { label: 'All', value: 'all' },
+    ...(clusterUsers?.userGroups?.map(ele => ({
+      label: ele?.identity,
+      value: ele?.id,
+    })) || []),
+  ];
+
+  const specificGroupByDropdown = clusterUsers?.userGroups?.filter(
+    ele => ele?.id === selectedGroupDropdown?.value
   );
+  const usersOfSelectedGroup =
+    Array.isArray(specificGroupByDropdown?.[0]?.users) &&
+    specificGroupByDropdown?.[0]?.users?.map(name => {
+      return {
+        identity: name?.identity,
+        id: name?.id,
+      };
+    });
 
   const userGroupIdentities = clusterUsers?.userGroups?.map(name => {
     return {
@@ -331,10 +395,77 @@ const NiFiProcessGroupAccessManagement = () => {
       id: name?.id,
     };
   });
+  const userList =
+    selectedGroupDropdown?.value === 'all'
+      ? userIdentities
+      : usersOfSelectedGroup;
+
+  const filteredDataUsers = userList?.filter(item =>
+    item?.identity?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+  );
 
   const filteredDataUsersGrp = userGroupIdentities?.filter(item =>
     item?.identity.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Check if all items are selected
+  const isAllSelected = () => {
+    if (!selectedPolicy) return false;
+    const currentData =
+      activeTab === 'groups' ? filteredDataUsersGrp : filteredDataUsers;
+    const currentSelectedData = activeTab === 'groups' ? grpsData : usersData;
+    return (
+      currentData.length > 0 &&
+      currentData.every(item =>
+        currentSelectedData.some(selected => selected.id === item.id)
+      )
+    );
+  };
+
+  // Handle select all functionality
+  const handleSelectAll = checked => {
+    if (!selectedPolicy) {
+      toast.info('Please select policy');
+      return;
+    }
+
+    const currentData =
+      activeTab === 'groups' ? filteredDataUsersGrp : filteredDataUsers;
+
+    if (checked) {
+      // Add all filtered items to selected data
+      if (activeTab === 'groups') {
+        setGrpsData(prev => {
+          const newItems = currentData.filter(
+            item => !prev.some(existing => existing.id === item.id)
+          );
+          return [...prev, ...newItems];
+        });
+      } else {
+        setUsersData(prev => {
+          const newItems = currentData.filter(
+            item => !prev.some(existing => existing.id === item.id)
+          );
+          return [...prev, ...newItems];
+        });
+      }
+    } else {
+      // Remove all filtered items from selected data
+      if (activeTab === 'groups') {
+        setGrpsData(prev =>
+          prev.filter(
+            item => !currentData.some(filtered => filtered.id === item.id)
+          )
+        );
+      } else {
+        setUsersData(prev =>
+          prev.filter(
+            item => !currentData.some(filtered => filtered.id === item.id)
+          )
+        );
+      }
+    }
+  };
 
   const COLUMN = [
     {
@@ -347,11 +478,38 @@ const NiFiProcessGroupAccessManagement = () => {
       width: '50%',
     },
     {
-      label: 'Permission',
+      label: (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+          }}
+        >
+          <CheckboxField
+            name="selectAll"
+            checked={isAllSelected()}
+            onChange={e => handleSelectAll(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          <span>Permission</span>
+        </div>
+      ),
       renderCell: item => {
-        let hasPermission = grpsData.some(ele => ele?.id === item?.id);
-        let hasUserPermission = usersData.some(ele => ele?.id === item?.id);
+        // Only show checked state if a policy is selected
+        let hasPermission =
+          selectedPolicy && grpsData.some(ele => ele?.id === item?.id);
+        let hasUserPermission =
+          selectedPolicy && usersData.some(ele => ele?.id === item?.id);
+
         const handleChangeCheck = (check, item) => {
+          // Check if no policy is selected and user is trying to check the checkbox
+          if (check && !selectedPolicy) {
+            toast.info('Please select policy');
+            return;
+          }
+
           if (check) {
             setGrpsData(prev => [...prev, item]);
             setUsersData(prev => [...prev, item]);
@@ -369,7 +527,9 @@ const NiFiProcessGroupAccessManagement = () => {
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <CheckboxField
               name={`${item?.id}`}
-              checked={hasPermission || hasUserPermission}
+              checked={
+                selectedPolicy ? hasPermission || hasUserPermission : false
+              }
               onChange={e => {
                 handleChangeCheck(e.target.checked, item);
               }}
@@ -398,6 +558,7 @@ const NiFiProcessGroupAccessManagement = () => {
       descriptionPayload,
       selectedPolicy,
       activeSidebarItem,
+      isSwitchEnabled,
     };
     dispatch(RolesActions.updateClusterPermissionsAndActions(payload));
   };
@@ -419,6 +580,7 @@ const NiFiProcessGroupAccessManagement = () => {
   );
 
   const handleSwitchChange = e => {
+    setActiveSidebarItem(null);
     setIsSwitchEnabled(e.target.checked);
     if (!isSwitchEnabled) {
       dispatch(
@@ -433,6 +595,16 @@ const NiFiProcessGroupAccessManagement = () => {
     setSearchTerm('');
   }, [activeTab, activeSidebarItem]);
 
+  // Clear checkbox data when no policy is selected
+  useEffect(() => {
+    if (!selectedPolicy) {
+      setGrpsData([]);
+      setUsersData([]);
+      setInitialGrpsData([]);
+      setInitialUsersData([]);
+    }
+  }, [selectedPolicy]);
+
   // Show toast message when no cluster is selected
   useEffect(() => {
     if (!selectedCluster?.value) {
@@ -442,6 +614,7 @@ const NiFiProcessGroupAccessManagement = () => {
 
   const handleChildProcessGroupClick = (e, item) => {
     e.stopPropagation();
+    setSelectedGroupDropdown({ label: 'All', value: 'all' });
     dispatch(
       NamespacesActions.setSelectedNamespace({
         label: item.name,
@@ -449,6 +622,33 @@ const NiFiProcessGroupAccessManagement = () => {
       })
     );
     dispatch(NamespacesActions.fetchNamespaces());
+  };
+
+  // Check if any changes have been made to the checkbox data
+  const hasChanges = () => {
+    if (!selectedPolicy) return false;
+
+    // Compare current groups data with initial groups data
+    const groupsChanged =
+      grpsData.length !== initialGrpsData.length ||
+      !grpsData.every(item =>
+        initialGrpsData.some(initial => initial.id === item.id)
+      ) ||
+      !initialGrpsData.every(item =>
+        grpsData.some(current => current.id === item.id)
+      );
+
+    // Compare current users data with initial users data
+    const usersChanged =
+      usersData.length !== initialUsersData.length ||
+      !usersData.every(item =>
+        initialUsersData.some(initial => initial.id === item.id)
+      ) ||
+      !initialUsersData.every(item =>
+        usersData.some(current => current.id === item.id)
+      );
+
+    return groupsChanged || usersChanged;
   };
 
   return (
@@ -478,7 +678,7 @@ const NiFiProcessGroupAccessManagement = () => {
               onClick={() => {
                 handleSavePermission();
               }}
-              disabled={isEmpty(selectedPolicy)}
+              disabled={!hasChanges()}
             >
               Save Changes
             </Button>
@@ -498,13 +698,13 @@ const NiFiProcessGroupAccessManagement = () => {
                     onClick={() => !isSwitchEnabled && handleSidebarClick(item)}
                   >
                     {item?.name}
-                    <button
+                    <SidebarButton
                       type="button"
                       onClick={e => handleChildProcessGroupClick(e, item)}
                       className="ml-2"
                     >
-                      <LessArrowIcon />
-                    </button>
+                      <Hierarchy />
+                    </SidebarButton>
                   </SidebarItem>
                 ))}
               {!isEmpty(namespaces?.data) &&
@@ -519,13 +719,13 @@ const NiFiProcessGroupAccessManagement = () => {
                         }
                       >
                         {item?.name}
-                        <button
+                        <SidebarButton
                           type="button"
                           onClick={e => handleChildProcessGroupClick(e, item)}
                           className="ml-2"
                         >
-                          <LessArrowIcon />
-                        </button>
+                          <Hierarchy />
+                        </SidebarButton>
                       </SidebarItem>
                     )}
                   </span>
@@ -568,23 +768,41 @@ const NiFiProcessGroupAccessManagement = () => {
                   Users
                 </Tab>
               </div>
-              <SelectField
-                id="policy"
-                className="w-25"
-                name="policy"
-                icon={<DocumentTextIcon />}
-                options={policyList}
-                value={selectedPolicy}
-                placeholder={
-                  policyList.length === 0
-                    ? 'No policies available'
-                    : 'Select Policy'
-                }
-                disabled={policyList.length === 0}
-                showCircleIcon={true}
-                sortAlphabetically={false}
-                onChange={handlePolicyChange}
-              />
+              <div className="d-flex align-items-center gap-3 w-100 justify-content-end">
+                {activeTab !== 'groups' && (
+                  <SelectField
+                    id="policy"
+                    className="w-25"
+                    name="policy"
+                    icon={<DocumentTextIcon />}
+                    options={groupOptions || []}
+                    value={selectedGroupDropdown}
+                    placeholder={'Select Group'}
+                    showCircleIcon={true}
+                    sortAlphabetically={false}
+                    onChange={e => {
+                      setSelectedGroupDropdown(e);
+                    }}
+                  />
+                )}
+                <SelectField
+                  id="policy"
+                  className="w-25"
+                  name="policy"
+                  icon={<DocumentTextIcon />}
+                  options={policyList}
+                  value={selectedPolicy}
+                  placeholder={
+                    policyList.length === 0
+                      ? 'No policies available'
+                      : 'Select Policy'
+                  }
+                  disabled={policyList.length === 0}
+                  showCircleIcon={true}
+                  sortAlphabetically={false}
+                  onChange={handlePolicyChange}
+                />
+              </div>
             </TabContainer>
             {
               <>
@@ -605,21 +823,13 @@ const NiFiProcessGroupAccessManagement = () => {
                 <div>
                   <TableHeight
                     data={
-                      isEmpty(selectedPolicy)
-                        ? []
-                        : activeTab === 'groups'
-                          ? filteredDataUsersGrp
-                          : filteredDataUsers
+                      activeTab === 'groups'
+                        ? filteredDataUsersGrp
+                        : filteredDataUsers
                     }
                     columns={COLUMN}
                     className={
                       activeTab === 'groups' ? 'groups-table' : 'users-table'
-                    }
-                    emptyMessage={
-                      !isEmpty(activeSidebarItem) &&
-                      isEmpty(filteredDataUsersGrp)
-                        ? 'No Data Found'
-                        : 'Select Any Policy'
                     }
                   />
                 </div>

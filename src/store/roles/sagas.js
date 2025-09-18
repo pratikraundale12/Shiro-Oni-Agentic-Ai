@@ -278,8 +278,10 @@ export function* updateClusterPermissionsAndActions(api, { payload }) {
         RolesActions.fetchFlowPolicyDetails({
           clusterId: payload?.id,
           namespaceId:
-            payload?.activeSidebarItem?.id ||
-            gridData?.data?.[0]?.parentGroupId,
+            payload?.isSwitchEnabled === true
+              ? gridData?.data?.[0]?.parentGroupId
+              : payload?.activeSidebarItem?.id,
+
           params: {
             action: payload?.selectedPolicy?.action,
             resource: payload?.selectedPolicy?.preProcessGroupSegment,
