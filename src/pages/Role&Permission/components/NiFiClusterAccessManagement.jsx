@@ -166,7 +166,40 @@ const NiFiClusterAccessManagement = () => {
     label: 'All',
     value: 'all',
   });
-  console.log(usersActions, 'usersActions');
+
+  const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
+  const rawGroup = clusterUsers?.userGroups?.map(ele => ({
+    identity: ele?.identity,
+    id: ele?.id,
+  }));
+  const userIdentities = clusterUsers?.nifiUsers?.map(name => {
+    return {
+      name: name?.identity,
+      id: name?.id,
+    };
+  });
+  const specificGroupByDropdown = clusterUsers?.userGroups?.filter(
+    ele => ele?.id === selectedGroupDropdown?.value
+  );
+  const usersOfSelectedGroup =
+    Array.isArray(specificGroupByDropdown?.[0]?.users) &&
+    specificGroupByDropdown?.[0]?.users?.map(name => {
+      return {
+        name: name?.identity,
+        id: name?.id,
+      };
+    });
+  const userList =
+    selectedGroupDropdown?.value === 'all'
+      ? userIdentities
+      : usersOfSelectedGroup;
+  const filteredDataUsers = userList?.filter(item =>
+    item?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const rawUsers = filteredDataUsers?.map(ele => ({
+    identity: ele?.name,
+    id: ele?.id,
+  }));
 
   const clusterNiFiPolicies = useSelector(
     RolesSelectors.getClusterNiFiPolicies
@@ -183,6 +216,16 @@ const NiFiClusterAccessManagement = () => {
   const sidebarItems = [
     ...(clusterNiFiPolicies?.accessPolicies?.map(policy => policy) || []),
   ];
+  const [checkboxStates, setCheckboxStates] = useState({});
+  useEffect(() => {
+    if (activeSidebarItem?.policies?.length) {
+      const initialStates = activeSidebarItem?.policies.reduce((acc, item) => {
+        acc[item.id] = false; // initially unchecked
+        return acc;
+      }, {});
+      setCheckboxStates(initialStates);
+    }
+  }, [activeSidebarItem?.policies]);
 
   const dynamicColumns = useMemo(() => {
     function getEqualParts(num) {
@@ -202,11 +245,60 @@ const NiFiClusterAccessManagement = () => {
           width: `12%`,
         },
       ];
+      const handlePropertyHeaderClick = (item, click) => {
+        if (activeTab === 'groups') {
+          setUsersActions(prevState => ({
+            ...prevState,
+            policies: prevState.policies.map(policy =>
+              policy.policyId === item?.id
+                ? { ...policy, userGroups: click ? rawGroup : [] }
+                : policy
+            ),
+          }));
+        } else {
+          setUsersActions(prevState => ({
+            ...prevState,
+            policies: prevState.policies.map(policy =>
+              policy.policyId === item?.id
+                ? { ...policy, users: click ? rawUsers : [] }
+                : policy
+            ),
+          }));
+        }
+      };
+      const handleCheckboxChange = (item, checked) => {
+        setCheckboxStates(prev => ({
+          ...prev,
+          [item.id]: checked,
+        }));
+        handlePropertyHeaderClick(item, checked);
+      };
       activeSidebarItem?.policies?.forEach((sidebarItem, index) => {
         columns.push({
-          label: activeSidebarItem?.hasSubNames
-            ? activeSidebarItem?.policies?.[index]?.subName
-            : sidebarItem?.actionName,
+          label: (
+            <>
+              {' '}
+              <div className="d-flex justify-content-center gap-1 ms-1">
+                {/* <CheckboxField
+                  // name={`${sidebarItem?.id}`}
+                  // checked={hasPermission || hasUserPermission}
+                  onChange={e => {
+                    handlePropertyHeaderClick(sidebarItem, e.target.checked);
+                  }}
+                /> */}
+                <CheckboxField
+                  name={`name-${sidebarItem.id}`}
+                  checked={checkboxStates[sidebarItem.id] || false}
+                  onCheckBoxChange={e =>
+                    handleCheckboxChange(sidebarItem, e.target.checked)
+                  }
+                />
+                {activeSidebarItem?.hasSubNames
+                  ? activeSidebarItem?.policies?.[index]?.subName
+                  : sidebarItem?.actionName}
+              </div>
+            </>
+          ),
           renderCell: item => {
             const targetPolicies = usersActions?.policies?.filter(
               ele => ele?.policyId === sidebarItem?.id
@@ -304,7 +396,7 @@ const NiFiClusterAccessManagement = () => {
             );
           },
 
-          width: `20%`,
+          width: `30%`,
         });
       });
 
@@ -374,13 +466,6 @@ const NiFiClusterAccessManagement = () => {
     setSearchTerm('');
   }, [activeTab, activeSidebarItem]);
 
-  const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
-  const userIdentities = clusterUsers?.nifiUsers?.map(name => {
-    return {
-      name: name?.identity,
-      id: name?.id,
-    };
-  });
   const groupOptions = [
     { label: 'All', value: 'all' },
     ...(clusterUsers?.userGroups?.map(ele => ({
@@ -389,32 +474,13 @@ const NiFiClusterAccessManagement = () => {
     })) || []),
   ];
 
-  const specificGroupByDropdown = clusterUsers?.userGroups?.filter(
-    ele => ele?.id === selectedGroupDropdown?.value
-  );
-  const usersOfSelectedGroup =
-    Array.isArray(specificGroupByDropdown?.[0]?.users) &&
-    specificGroupByDropdown?.[0]?.users?.map(name => {
-      return {
-        name: name?.identity,
-        id: name?.id,
-      };
-    });
-
   const userGroupIdentities = clusterUsers?.userGroups?.map(name => {
     return {
       name: name?.identity,
       id: name?.id,
     };
   });
-  const userList =
-    selectedGroupDropdown?.value === 'all'
-      ? userIdentities
-      : usersOfSelectedGroup;
 
-  const filteredDataUsers = userList?.filter(item =>
-    item?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
   const filteredDataUsersGrp = userGroupIdentities?.filter(item =>
     item?.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -450,6 +516,21 @@ const NiFiClusterAccessManagement = () => {
   const loading4 = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateClusterPermissionsAndActions')
   );
+
+  const handleSidebarClick = () => {
+    setCheckboxStates(prev => {
+      const resetStates = Object.keys(prev).reduce((acc, id) => {
+        acc[id] = false;
+        return acc;
+      }, {});
+      return resetStates;
+    });
+    setSelectedGroupDropdown({
+      label: 'All',
+      value: 'all',
+    });
+  };
+
   return (
     <>
       <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
@@ -477,7 +558,10 @@ const NiFiClusterAccessManagement = () => {
                 <SidebarItem
                   key={item?.name}
                   active={activeSidebarItem?.name === item?.name}
-                  onClick={() => setActiveSidebarItem(item)}
+                  onClick={() => {
+                    setActiveSidebarItem(item);
+                    handleSidebarClick();
+                  }}
                 >
                   {item?.name}
                 </SidebarItem>
