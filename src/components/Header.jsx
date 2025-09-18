@@ -15,6 +15,7 @@ import {
 import {
   API_URL,
   CLUSTERS_TOKEN,
+  KDFM,
   LICENSE_DATE_ISO_FORMAT,
   LICENSE_EXPIRE_PROMPT_DAYS,
   LICENSE_TYPE,
@@ -524,12 +525,16 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                       data-tooltip-id="cluster-tooltip"
                     >
                       <ClusterIcon />
-                      {selectedCluster?.label && (
-                        <NameDiv>
-                          <StatusDiv /> {selectedCluster.label}
-                        </NameDiv>
-                      )}
-                      {selectedCluster?.label && <DownArrowIcon />}
+                      <NameDiv>
+                        {selectedCluster?.label ? (
+                          <>
+                            <StatusDiv /> {selectedCluster.label}
+                          </>
+                        ) : (
+                          `${KDFM.SELECT_CLUSTER}`
+                        )}
+                      </NameDiv>
+                      <DownArrowIcon />
                     </IconCusterButton>
                   )}
                 {/* <IconButton>
