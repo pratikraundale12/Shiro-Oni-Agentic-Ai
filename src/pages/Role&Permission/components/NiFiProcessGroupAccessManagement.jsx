@@ -217,6 +217,8 @@ const NiFiProcessGroupAccessManagement = () => {
     label: 'All',
     value: 'all',
   });
+  const [initialGrpsData, setInitialGrpsData] = useState([]);
+  const [initialUsersData, setInitialUsersData] = useState([]);
 
   useEffect(() => {
     if (processGroupList && processGroupList.length > 0 && !activeSidebarItem) {
@@ -224,6 +226,8 @@ const NiFiProcessGroupAccessManagement = () => {
       // Clear any existing checkbox data when component first loads
       setGrpsData([]);
       setUsersData([]);
+      setInitialGrpsData([]);
+      setInitialUsersData([]);
       setSelectedPolicy(null);
     }
   }, [processGroupList, activeSidebarItem]);
@@ -242,8 +246,10 @@ const NiFiProcessGroupAccessManagement = () => {
     // Only set data if a policy is selected
     if (selectedPolicy && !isEmpty(groupsPerPolicies?.userGroups)) {
       setGrpsData(groupsPerPolicies?.userGroups);
+      setInitialGrpsData(groupsPerPolicies?.userGroups);
     } else {
       setGrpsData([]);
+      setInitialGrpsData([]);
     }
   }, [groupsPerPolicies?.userGroups, selectedPolicy]);
 
@@ -251,8 +257,10 @@ const NiFiProcessGroupAccessManagement = () => {
     // Only set data if a policy is selected
     if (selectedPolicy && !isEmpty(groupsPerPolicies?.users)) {
       setUsersData(groupsPerPolicies?.users);
+      setInitialUsersData(groupsPerPolicies?.users);
     } else {
       setUsersData([]);
+      setInitialUsersData([]);
     }
   }, [groupsPerPolicies?.users, selectedPolicy]);
 
@@ -276,16 +284,13 @@ const NiFiProcessGroupAccessManagement = () => {
   }, [activeSidebarItem?.id, clusterNiFiPolicies?.flowPolicies]);
 
   const getRootFilteredPolicies = useCallback(() => {
-    if (
-      !processGroupList?.[0]?.parentGroupId ||
-      !clusterNiFiPolicies?.flowPolicies
-    ) {
+    const parentGroupId = processGroupList?.[0]?.parentGroupId;
+    if (!parentGroupId || !clusterNiFiPolicies?.flowPolicies) {
       return [];
     }
 
     const processGroupPolicies = clusterNiFiPolicies.flowPolicies.find(
-      policyGroup =>
-        policyGroup['process-group-id'] === processGroupList?.[0]?.parentGroupId
+      policyGroup => policyGroup['process-group-id'] === parentGroupId
     );
 
     return (
@@ -295,7 +300,7 @@ const NiFiProcessGroupAccessManagement = () => {
         ...policy,
       })) || []
     );
-  }, [processGroupList?.[0]?.parentGroupId, clusterNiFiPolicies?.flowPolicies]);
+  }, [processGroupList, clusterNiFiPolicies?.flowPolicies]);
 
   const policyList = isSwitchEnabled
     ? getRootFilteredPolicies()
@@ -308,6 +313,8 @@ const NiFiProcessGroupAccessManagement = () => {
     // Clear checkbox data when switching process groups
     setGrpsData([]);
     setUsersData([]);
+    setInitialGrpsData([]);
+    setInitialUsersData([]);
     dispatch(
       RolesActions.fetchClusterNiFiPolicies({
         clusterId: selectedCluster?.value,
@@ -593,6 +600,8 @@ const NiFiProcessGroupAccessManagement = () => {
     if (!selectedPolicy) {
       setGrpsData([]);
       setUsersData([]);
+      setInitialGrpsData([]);
+      setInitialUsersData([]);
     }
   }, [selectedPolicy]);
 
@@ -613,6 +622,33 @@ const NiFiProcessGroupAccessManagement = () => {
       })
     );
     dispatch(NamespacesActions.fetchNamespaces());
+  };
+
+  // Check if any changes have been made to the checkbox data
+  const hasChanges = () => {
+    if (!selectedPolicy) return false;
+
+    // Compare current groups data with initial groups data
+    const groupsChanged =
+      grpsData.length !== initialGrpsData.length ||
+      !grpsData.every(item =>
+        initialGrpsData.some(initial => initial.id === item.id)
+      ) ||
+      !initialGrpsData.every(item =>
+        grpsData.some(current => current.id === item.id)
+      );
+
+    // Compare current users data with initial users data
+    const usersChanged =
+      usersData.length !== initialUsersData.length ||
+      !usersData.every(item =>
+        initialUsersData.some(initial => initial.id === item.id)
+      ) ||
+      !initialUsersData.every(item =>
+        usersData.some(current => current.id === item.id)
+      );
+
+    return groupsChanged || usersChanged;
   };
 
   return (
@@ -642,7 +678,7 @@ const NiFiProcessGroupAccessManagement = () => {
               onClick={() => {
                 handleSavePermission();
               }}
-              disabled={isEmpty(selectedPolicy)}
+              disabled={!hasChanges()}
             >
               Save Changes
             </Button>
