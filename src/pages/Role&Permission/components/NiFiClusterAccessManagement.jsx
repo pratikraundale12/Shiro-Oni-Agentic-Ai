@@ -576,7 +576,10 @@ const NiFiClusterAccessManagement = () => {
                   <TabContainer>
                     <Tab
                       active={activeTab === 'groups'}
-                      onClick={() => setActiveTab('groups')}
+                      onClick={() => {
+                        setActiveTab('groups');
+                        handleSidebarClick();
+                      }}
                     >
                       <TabIcon>
                         <GroupUserIcon />
@@ -585,7 +588,10 @@ const NiFiClusterAccessManagement = () => {
                     </Tab>
                     <Tab
                       active={activeTab === 'users'}
-                      onClick={() => setActiveTab('users')}
+                      onClick={() => {
+                        setActiveTab('users');
+                        handleSidebarClick();
+                      }}
                     >
                       <TabIcon>
                         <NewUserIcon />
