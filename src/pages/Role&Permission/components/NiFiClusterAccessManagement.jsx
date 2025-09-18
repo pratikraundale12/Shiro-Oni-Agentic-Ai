@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import { Button, CheckboxField } from '../../../shared';
+import { Button, CheckboxField, SelectField } from '../../../shared';
 import { FullPageLoader, Table } from '../../../components';
 import GroupUserIcon from '../../../assets/Icons/GroupUserIcon';
 import NewUserIcon from '../../../assets/Icons/NewUserIcon';
@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
 import { theme } from '../../../styles';
-import { SmallSearchIcon } from '../../../assets';
+import { DocumentTextIcon, SmallSearchIcon } from '../../../assets';
 
 const Container = styled.div`
   background-color: #fbfcff;
@@ -50,14 +50,10 @@ const SidebarItem = styled.div`
   ${props =>
     props.active &&
     `
-    background-color: #fff3e0;
-    color: #ff6b35;
+    background-color: ${theme.colors.primary};
+    color: #ffff ;
     font-weight: 500;
   `}
-
-  &:hover {
-    background-color: #f1f3f4;
-  }
 `;
 
 const ContentArea = styled.div`
@@ -70,6 +66,7 @@ const TabContainer = styled.div`
   display: flex;
   border-bottom: 1px solid #e9ecef;
   background-color: white;
+  justify-content: space-between;
 `;
 
 const Tab = styled.button`
@@ -165,6 +162,12 @@ const NiFiClusterAccessManagement = () => {
   const [groupsColumns, setGroupsColumns] = useState([]);
   const [usersColumns, setUsersColumns] = useState([]);
   const [usersActions, setUsersActions] = useState([]);
+  const [selectedGroupDropdown, setSelectedGroupDropdown] = useState({
+    label: 'All',
+    value: 'all',
+  });
+  console.log(usersActions, 'usersActions');
+
   const clusterNiFiPolicies = useSelector(
     RolesSelectors.getClusterNiFiPolicies
   );
@@ -378,9 +381,25 @@ const NiFiClusterAccessManagement = () => {
       id: name?.id,
     };
   });
-  const filteredDataUsers = userIdentities?.filter(item =>
-    item?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const groupOptions = [
+    { label: 'All', value: 'all' },
+    ...(clusterUsers?.userGroups?.map(ele => ({
+      label: ele?.identity,
+      value: ele?.id,
+    })) || []),
+  ];
+
+  const specificGroupByDropdown = clusterUsers?.userGroups?.filter(
+    ele => ele?.id === selectedGroupDropdown?.value
   );
+  const usersOfSelectedGroup =
+    Array.isArray(specificGroupByDropdown?.[0]?.users) &&
+    specificGroupByDropdown?.[0]?.users?.map(name => {
+      return {
+        name: name?.identity,
+        id: name?.id,
+      };
+    });
 
   const userGroupIdentities = clusterUsers?.userGroups?.map(name => {
     return {
@@ -388,6 +407,14 @@ const NiFiClusterAccessManagement = () => {
       id: name?.id,
     };
   });
+  const userList =
+    selectedGroupDropdown?.value === 'all'
+      ? userIdentities
+      : usersOfSelectedGroup;
+
+  const filteredDataUsers = userList?.filter(item =>
+    item?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const filteredDataUsersGrp = userGroupIdentities?.filter(item =>
     item?.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -461,26 +488,44 @@ const NiFiClusterAccessManagement = () => {
           <ContentArea>
             {
               <>
-                <TabContainer>
-                  <Tab
-                    active={activeTab === 'groups'}
-                    onClick={() => setActiveTab('groups')}
-                  >
-                    <TabIcon>
-                      <GroupUserIcon />
-                    </TabIcon>
-                    Groups
-                  </Tab>
-                  <Tab
-                    active={activeTab === 'users'}
-                    onClick={() => setActiveTab('users')}
-                  >
-                    <TabIcon>
-                      <NewUserIcon />
-                    </TabIcon>
-                    Users
-                  </Tab>
-                </TabContainer>
+                <div className="d-flex justify-content-between">
+                  <TabContainer>
+                    <Tab
+                      active={activeTab === 'groups'}
+                      onClick={() => setActiveTab('groups')}
+                    >
+                      <TabIcon>
+                        <GroupUserIcon />
+                      </TabIcon>
+                      Groups
+                    </Tab>
+                    <Tab
+                      active={activeTab === 'users'}
+                      onClick={() => setActiveTab('users')}
+                    >
+                      <TabIcon>
+                        <NewUserIcon />
+                      </TabIcon>
+                      Users
+                    </Tab>
+                  </TabContainer>{' '}
+                  {activeTab !== 'groups' && (
+                    <SelectField
+                      id="policy"
+                      className="w-25"
+                      name="policy"
+                      icon={<DocumentTextIcon />}
+                      options={groupOptions || []}
+                      value={selectedGroupDropdown}
+                      placeholder={'Select Group'}
+                      showCircleIcon={true}
+                      sortAlphabetically={false}
+                      onChange={e => {
+                        setSelectedGroupDropdown(e);
+                      }}
+                    />
+                  )}
+                </div>
                 {
                   <>
                     <SearchContainer>
@@ -524,10 +569,11 @@ const NiFiClusterAccessManagement = () => {
                             : 'users-table'
                         }
                         emptyMessage={
-                          !isEmpty(activeSidebarItem) &&
-                          isEmpty(filteredDataUsersGrp)
-                            ? 'No Data Found'
-                            : 'Select Any Policy'
+                          'No Data Found'
+                          // !isEmpty(activeSidebarItem) &&
+                          // isEmpty(filteredDataUsersGrp)
+                          //   ? 'No Data Found'
+                          //   : 'Select Any Policy'
                         }
                       />
                     </div>
