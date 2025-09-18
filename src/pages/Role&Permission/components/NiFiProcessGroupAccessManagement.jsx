@@ -20,14 +20,11 @@ import {
   RolesSelectors,
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  DocumentTextIcon,
-  LessArrowIcon,
-  SmallSearchIcon,
-} from '../../../assets';
+import { DocumentTextIcon, SmallSearchIcon } from '../../../assets';
 import { isEmpty } from 'lodash';
 import Breadcrumb from '../../../shared/Breadcrumb';
 import { theme } from '../../../styles';
+import Hierarchy from '../../../assets/Icons/Hierarchy';
 
 const Container = styled.div`
   background-color: #fbfcff;
@@ -64,8 +61,8 @@ const SidebarItem = styled.div`
   ${props =>
     props.active &&
     `
-    background-color: #fff3e0;
-    color: #ff6b35;
+    background-color: #E4842B;
+    color: #fff;
     font-weight: 500;
   `}
 
@@ -78,7 +75,8 @@ const SidebarItem = styled.div`
   `}
 
   &:hover {
-    background-color: ${props => (props.disabled ? 'transparent' : '#f1f3f4')};
+    background-color: ${props => (props.disabled ? 'transparent' : '#E4842B')};
+    color: #fff;
   }
 `;
 
@@ -189,13 +187,17 @@ const BreadcrumbContainer = styled.div`
   align-items: center;
 `;
 
+const SidebarButton = styled.button`
+  padding: 3px;
+  border-radius: 100%;
+`;
+
 const NiFiProcessGroupAccessManagement = () => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('groups');
   const [searchTerm, setSearchTerm] = useState('');
   const [grpsData, setGrpsData] = useState([]);
   const [usersData, setUsersData] = useState([]);
-  const [activeSidebarItem, setActiveSidebarItem] = useState();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [isSwitchEnabled, setIsSwitchEnabled] = useState(false);
@@ -205,25 +207,50 @@ const NiFiProcessGroupAccessManagement = () => {
   const processGroupList = useSelector(state =>
     GridSelectors.getGridData(state, 'namespaces')
   );
+  const [activeSidebarItem, setActiveSidebarItem] = useState(
+    processGroupList[0]
+  );
   const namespaces = useSelector(NamespacesSelectors.getNamespacesAllData);
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
   const groupsPerPolicies = useSelector(RolesSelectors.getFlowPolicyDetails);
 
   useEffect(() => {
-    if (!isEmpty(groupsPerPolicies?.userGroups)) {
+    if (processGroupList && processGroupList.length > 0 && !activeSidebarItem) {
+      setActiveSidebarItem(processGroupList[0]);
+      // Clear any existing checkbox data when component first loads
+      setGrpsData([]);
+      setUsersData([]);
+      setSelectedPolicy(null);
+    }
+  }, [processGroupList, activeSidebarItem]);
+
+  useEffect(() => {
+    if (selectedCluster?.value) {
+      dispatch(
+        RolesActions.fetchClusterNiFiPolicies({
+          clusterId: selectedCluster?.value,
+        })
+      );
+    }
+  }, [dispatch, selectedCluster?.value]);
+
+  useEffect(() => {
+    // Only set data if a policy is selected
+    if (selectedPolicy && !isEmpty(groupsPerPolicies?.userGroups)) {
       setGrpsData(groupsPerPolicies?.userGroups);
     } else {
       setGrpsData([]);
     }
-  }, [groupsPerPolicies?.userGroups]);
+  }, [groupsPerPolicies?.userGroups, selectedPolicy]);
 
   useEffect(() => {
-    if (!isEmpty(groupsPerPolicies?.users)) {
+    // Only set data if a policy is selected
+    if (selectedPolicy && !isEmpty(groupsPerPolicies?.users)) {
       setUsersData(groupsPerPolicies?.users);
     } else {
       setUsersData([]);
     }
-  }, [groupsPerPolicies?.users]);
+  }, [groupsPerPolicies?.users, selectedPolicy]);
 
   // Filter policies based on selected process group
   const getFilteredPolicies = useCallback(() => {
@@ -273,6 +300,9 @@ const NiFiProcessGroupAccessManagement = () => {
   const handleSidebarClick = item => {
     setActiveSidebarItem(item);
     setSelectedPolicy(null);
+    // Clear checkbox data when switching process groups
+    setGrpsData([]);
+    setUsersData([]);
     dispatch(
       RolesActions.fetchClusterNiFiPolicies({
         clusterId: selectedCluster?.value,
@@ -349,9 +379,19 @@ const NiFiProcessGroupAccessManagement = () => {
     {
       label: 'Permission',
       renderCell: item => {
-        let hasPermission = grpsData.some(ele => ele?.id === item?.id);
-        let hasUserPermission = usersData.some(ele => ele?.id === item?.id);
+        // Only show checked state if a policy is selected
+        let hasPermission =
+          selectedPolicy && grpsData.some(ele => ele?.id === item?.id);
+        let hasUserPermission =
+          selectedPolicy && usersData.some(ele => ele?.id === item?.id);
+
         const handleChangeCheck = (check, item) => {
+          // Check if no policy is selected and user is trying to check the checkbox
+          if (check && !selectedPolicy) {
+            toast.warning('Please select policy');
+            return;
+          }
+
           if (check) {
             setGrpsData(prev => [...prev, item]);
             setUsersData(prev => [...prev, item]);
@@ -369,7 +409,9 @@ const NiFiProcessGroupAccessManagement = () => {
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <CheckboxField
               name={`${item?.id}`}
-              checked={hasPermission || hasUserPermission}
+              checked={
+                selectedPolicy ? hasPermission || hasUserPermission : false
+              }
               onChange={e => {
                 handleChangeCheck(e.target.checked, item);
               }}
@@ -419,6 +461,7 @@ const NiFiProcessGroupAccessManagement = () => {
   );
 
   const handleSwitchChange = e => {
+    setActiveSidebarItem(null);
     setIsSwitchEnabled(e.target.checked);
     if (!isSwitchEnabled) {
       dispatch(
@@ -432,6 +475,14 @@ const NiFiProcessGroupAccessManagement = () => {
   useEffect(() => {
     setSearchTerm('');
   }, [activeTab, activeSidebarItem]);
+
+  // Clear checkbox data when no policy is selected
+  useEffect(() => {
+    if (!selectedPolicy) {
+      setGrpsData([]);
+      setUsersData([]);
+    }
+  }, [selectedPolicy]);
 
   // Show toast message when no cluster is selected
   useEffect(() => {
@@ -498,13 +549,13 @@ const NiFiProcessGroupAccessManagement = () => {
                     onClick={() => !isSwitchEnabled && handleSidebarClick(item)}
                   >
                     {item?.name}
-                    <button
+                    <SidebarButton
                       type="button"
                       onClick={e => handleChildProcessGroupClick(e, item)}
                       className="ml-2"
                     >
-                      <LessArrowIcon />
-                    </button>
+                      <Hierarchy />
+                    </SidebarButton>
                   </SidebarItem>
                 ))}
               {!isEmpty(namespaces?.data) &&
@@ -519,13 +570,13 @@ const NiFiProcessGroupAccessManagement = () => {
                         }
                       >
                         {item?.name}
-                        <button
+                        <SidebarButton
                           type="button"
                           onClick={e => handleChildProcessGroupClick(e, item)}
                           className="ml-2"
                         >
-                          <LessArrowIcon />
-                        </button>
+                          <Hierarchy />
+                        </SidebarButton>
                       </SidebarItem>
                     )}
                   </span>
@@ -605,11 +656,9 @@ const NiFiProcessGroupAccessManagement = () => {
                 <div>
                   <TableHeight
                     data={
-                      isEmpty(selectedPolicy)
-                        ? []
-                        : activeTab === 'groups'
-                          ? filteredDataUsersGrp
-                          : filteredDataUsers
+                      activeTab === 'groups'
+                        ? filteredDataUsersGrp
+                        : filteredDataUsers
                     }
                     columns={COLUMN}
                     className={
