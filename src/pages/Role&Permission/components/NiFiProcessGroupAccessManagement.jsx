@@ -73,11 +73,6 @@ const SidebarItem = styled.div`
     cursor: not-allowed;
     pointer-events: none;
   `}
-
-  &:hover {
-    background-color: ${props => (props.disabled ? 'transparent' : '#E4842B')};
-    color: #fff;
-  }
 `;
 
 const ContentArea = styled.div`
