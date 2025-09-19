@@ -12,8 +12,9 @@ import {
 import favicon from '../../assets/images/default-favicon.ico';
 import { EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, InputField, UploadField } from '../../shared';
+import { Button, InputField, UploadField, SelectField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import { CalendarIcon} from '../../assets/Icons/CalendarIcon';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -131,6 +132,7 @@ export const AppSettings = () => {
     appendIfChanged('favicon', data?.favicon, settingData?.favicon, true);
     appendIfChanged('title', data?.title, settingData?.title);
     appendIfChanged('email', data?.email, settingData?.email);
+    appendIfChanged('time_format', data?.time_format, settingData?.time_format);
 
     if (dirtyFields.refresh || data.refresh !== settingData?.refresh) {
       const refreshValue = [false, 'Off'].includes(data.refresh)
@@ -162,6 +164,7 @@ export const AppSettings = () => {
       setValue('logo', settingData?.logo);
       setValue('favicon', settingData?.favicon);
       setValue('title', settingData?.title);
+      setValue('time_format', settingData?.time_format || 'MM/DD/YY');
 
       setValue(
         'refresh',
@@ -184,7 +187,8 @@ export const AppSettings = () => {
         value.title !== settingData?.title ||
         value.refresh !==
           (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
-        value.email !== settingData?.email;
+        value.email !== settingData?.email ||
+        value.time_format !== settingData?.time_format;
       setIsChanged(isModified);
     });
 
@@ -269,6 +273,22 @@ export const AppSettings = () => {
             />
           </div>
         </InputFields>
+        
+        <InputFields className="row">
+          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+            <SelectField
+              name="time_format"
+              label={KDFM.TIME_FORMAT}
+              icon={<CalendarIcon />}
+              errors={errors}
+              control={control}
+              options={[{value:'MM/DD/YY',label:'MM/DD/YY'},{value:'DD/MM/YY',label:'DD/MM/YY'},{value:'YYYY/MM/DD',label:'YYYY/MM/DD'}]}
+              placeholder="Select Time Format"
+              sortAlphabetically={false}
+            />
+          </div>
+        </InputFields>
+        
         <FlexWrapper className="mt-3">
           <ButtonDiv>
             <StyledCancelButton

@@ -65,21 +65,6 @@ export const ActvityHistory = () => {
     row: {},
   });
 
-  const convertDateTime = dateString => {
-    if (!dateString) return 'No date provided';
-
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
-  };
-
   const getSortIcon = (sortingState, type) => {
     return sortingState === type ? <SortUpIcon /> : <SortDownIcon />;
   };
@@ -224,7 +209,7 @@ export const ActvityHistory = () => {
       width: '14%',
       resize: true,
       renderCell: item => (
-        <TextRender text={convertDateTime(item.timestamp) || KDFM.NA} />
+        <TextRender text={item.formattedTimestamp || KDFM.NA} />
       ),
       sort: { sortKey: 'timestamp' },
     },
