@@ -12,7 +12,7 @@ import {
   RolesSelectors,
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual, sortBy } from 'lodash';
 import { toast } from 'react-toastify';
 import { theme } from '../../../styles';
 import { DocumentTextIcon, SmallSearchIcon } from '../../../assets';
@@ -166,7 +166,24 @@ const NiFiClusterAccessManagement = () => {
     label: 'All',
     value: 'all',
   });
+  const [disableSaveBtn, setDisableSaveBtn] = useState(false);
 
+  const arePoliciesDifferent = (obj1, obj2) => {
+    if (!obj1?.policies || !obj2?.policies) return true;
+
+    if (obj1.policies.length !== obj2.policies.length) return true;
+
+    return obj1.policies.some((p1, index) => {
+      const p2 = obj2.policies[index];
+
+      const p1Users = sortBy(p1.users, 'id');
+      const p2Users = sortBy(p2.users, 'id');
+      const p1Groups = sortBy(p1.userGroups, 'id');
+      const p2Groups = sortBy(p2.userGroups, 'id');
+
+      return !isEqual(p1Users, p2Users) || !isEqual(p1Groups, p2Groups);
+    });
+  };
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
   const rawGroup = clusterUsers?.userGroups?.map(ele => ({
     identity: ele?.identity,
@@ -207,20 +224,37 @@ const NiFiClusterAccessManagement = () => {
   const policiesAndActions = useSelector(
     RolesSelectors.getPoliciesAndActionsData
   );
+
+  useEffect(() => {
+    if (!isEmpty(usersActions)) {
+      const isDifferent = arePoliciesDifferent(
+        usersActions,
+        policiesAndActions
+      );
+      setDisableSaveBtn(isDifferent);
+    }
+  }, [usersActions]);
   useEffect(() => {
     if (!isEmpty(policiesAndActions)) {
       setUsersActions(policiesAndActions);
     }
   }, [policiesAndActions]);
 
-  const sidebarItems = [
-    ...(clusterNiFiPolicies?.accessPolicies?.map(policy => policy) || []),
-  ];
+  const sidebarItems = useMemo(
+    () => clusterNiFiPolicies?.accessPolicies || [],
+    [clusterNiFiPolicies]
+  );
+  useEffect(() => {
+    if (!isEmpty(sidebarItems)) {
+      setActiveSidebarItem(sidebarItems?.[0]);
+    }
+  }, [sidebarItems]);
+
   const [checkboxStates, setCheckboxStates] = useState({});
   useEffect(() => {
     if (activeSidebarItem?.policies?.length) {
       const initialStates = activeSidebarItem?.policies.reduce((acc, item) => {
-        acc[item.id] = false; // initially unchecked
+        acc[item.id] = false;
         return acc;
       }, {});
       setCheckboxStates(initialStates);
@@ -541,7 +575,7 @@ const NiFiClusterAccessManagement = () => {
         <ButtonsContainer>
           <Button
             size="sm"
-            disabled={isEmpty(activeSidebarItem)}
+            disabled={isEmpty(activeSidebarItem) || !disableSaveBtn}
             onClick={() => {
               handleSavePermission();
             }}
