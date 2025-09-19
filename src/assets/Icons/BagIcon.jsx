@@ -9,15 +9,32 @@ export const BagIcon = ({
   color = theme.colors.darker,
 }) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
+    viewBox="0 0 20 20"
     fill="none"
-    viewBox="0 0 18 22"
+    xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      fill={color}
-      d="M15 7h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h2V6a6 6 0 1 1 12 0v1ZM2 9v10h14V9H2Zm6 4h2v2H8v-2Zm-4 0h2v2H4v-2Zm8 0h2v2h-2v-2Zm1-6V6a4 4 0 0 0-8 0v1h8Z"
+      d="M5 8.33366V6.66699C5 3.90866 5.83333 1.66699 10 1.66699C14.1667 1.66699 15 3.90866 15 6.66699V8.33366"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M9.99935 15.4167C11.1499 15.4167 12.0827 14.4839 12.0827 13.3333C12.0827 12.1827 11.1499 11.25 9.99935 11.25C8.84876 11.25 7.91602 12.1827 7.91602 13.3333C7.91602 14.4839 8.84876 15.4167 9.99935 15.4167Z"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14.166 18.333H5.83268C2.49935 18.333 1.66602 17.4997 1.66602 14.1663V12.4997C1.66602 9.16634 2.49935 8.33301 5.83268 8.33301H14.166C17.4993 8.33301 18.3327 9.16634 18.3327 12.4997V14.1663C18.3327 17.4997 17.4993 18.333 14.166 18.333Z"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

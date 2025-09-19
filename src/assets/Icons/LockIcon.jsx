@@ -3,15 +3,34 @@ import PropTypes from 'prop-types';
 
 export const LockIcon = ({ width = 18, height = 20, color = '#444445' }) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
-    viewBox="0 0 18 20"
     fill="none"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      fill={color}
-      d="M12 2H2v16h14V6h-4V2ZM0 .992C0 .444.447 0 .999 0H13l5 5v13.992A1 1 0 0 1 17.007 20H.993A1 1 0 0 1 0 19.008V.992ZM12 9h1v5H5V9h1V8a3 3 0 1 1 6 0v1Zm-2 0V8a1 1 0 1 0-2 0v1h2Z"
+      d="M20.9099 11.1203C20.9099 16.0103 17.3599 20.5903 12.5099 21.9303C12.1799 22.0203 11.8198 22.0203 11.4898 21.9303C6.63984 20.5903 3.08984 16.0103 3.08984 11.1203V6.73028C3.08984 5.91028 3.70986 4.98028 4.47986 4.67028L10.0498 2.39031C11.2998 1.88031 12.7098 1.88031 13.9598 2.39031L19.5298 4.67028C20.2898 4.98028 20.9199 5.91028 20.9199 6.73028L20.9099 11.1203Z"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12 12.5C13.1046 12.5 14 11.6046 14 10.5C14 9.39543 13.1046 8.5 12 8.5C10.8954 8.5 10 9.39543 10 10.5C10 11.6046 10.8954 12.5 12 12.5Z"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12 12.5V15.5"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

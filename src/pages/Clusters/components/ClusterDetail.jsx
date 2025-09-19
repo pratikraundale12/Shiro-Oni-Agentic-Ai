@@ -10,7 +10,7 @@ const Container = styled.div`
     height: auto;
   }
 `;
-const ClusterDetail = ({ data, columns }) => {
+const ClusterDetail = ({ data, columns, displayFullWidth = false }) => {
   const CLUSTERCOLUMNS = [
     {
       label: KDFM.CLUSTER_NAME,
@@ -40,7 +40,7 @@ const ClusterDetail = ({ data, columns }) => {
   ];
 
   return (
-    <Container className="col-6">
+    <Container className={`${displayFullWidth ? 'col-12' : 'col-6'}`}>
       <Table
         data={[data || {}]}
         columns={!isEmpty(columns) ? columns : CLUSTERCOLUMNS}
@@ -53,6 +53,7 @@ const ClusterDetail = ({ data, columns }) => {
 ClusterDetail.propTypes = {
   data: PropTypes.object.isRequired,
   columns: PropTypes.array,
+  displayFullWidth: PropTypes.bool,
 };
 
 export default ClusterDetail;

@@ -1,23 +1,42 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export const LogoutIcon = ({ color = '#444445' }) => {
+export const LogoutIcon = ({ width = 18, height = 18, color = '#444445' }) => {
   return (
     <svg
-      width="18"
-      height="18"
-      viewBox="0 0 12 12"
+      width={width}
+      height={height}
+      viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M6 11C3.23857 11 1 8.7614 1 6C1 3.23857 3.23857 1 6 1C7.63565 1 9.08785 1.78539 10.0001 2.99961L8.64545 2.99966C7.94035 2.3775 7.01425 2 6 2C3.79086 2 2 3.79086 2 6C2 8.20915 3.79086 10 6 10C7.0145 10 7.9408 9.6223 8.64595 8.9999H10.0005C9.08825 10.2144 7.63585 11 6 11ZM9.5 8V6.5H5.5V5.5H9.5V4L12 6L9.5 8Z"
-        fill={color}
+        d="M7.41797 6.29922C7.6763 3.29922 9.21797 2.07422 12.593 2.07422H12.7013C16.4263 2.07422 17.918 3.56589 17.918 7.29089V12.7242C17.918 16.4492 16.4263 17.9409 12.7013 17.9409H12.593C9.24297 17.9409 7.7013 16.7326 7.4263 13.7826"
+        stroke={color}
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M1.66602 10H12.3993"
+        stroke={color}
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.543 7.20898L13.3346 10.0007L10.543 12.7923"
+        stroke={color}
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
 };
 
 LogoutIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
   color: PropTypes.string,
 };

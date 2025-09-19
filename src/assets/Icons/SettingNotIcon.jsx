@@ -17,7 +17,7 @@ export const SettingNotIcon = ({ width = 80, height = 80 }) => (
   </svg>
 );
 
-NameSpaceIcon.propTypes = {
+SettingNotIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
 };

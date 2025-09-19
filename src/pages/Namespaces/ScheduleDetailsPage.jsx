@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   CrossIcon,
+  ScheduleDeploymentIcon,
   SmallNotThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
@@ -301,6 +302,11 @@ const ScheduleDeploymentTab = ({
             setScheduleErrors({});
             setScheduleDeployTime(value);
           }}
+          icon={
+            <span className="icon-placeholder">
+              <ScheduleDeploymentIcon />
+            </span>
+          }
         />
 
         <div className=" p-3">

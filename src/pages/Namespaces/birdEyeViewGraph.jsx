@@ -379,28 +379,25 @@ const RectangleGraph = ({
 
   const handleExpand = () => {
     const center = findMaxRectangleCluster(data);
-
     if (!center) return;
 
     const svgWidth = 600;
-
     const svgHeight = 250;
-
     const xScale = xScaleRef.current;
-
     const yScale = yScaleRef.current;
-    const xavg = (center.x + xCurrent) / 2;
-    const yavg = (center.y + yCurrent) / 2;
 
-    //FOCUS ON ORANGE
-    // const centerX = xScale(xCurrent);
-    // const centerY = yScale(yCurrent);
-    //FOCUS ON GROUP
-    // const centerX = xScale(center.x);
-    // const centerY = yScale(center.y);
-    //FOCUS ON AVG
-    const centerX = xScale(xavg);
-    const centerY = yScale(yavg);
+    // Ensure all coordinates are numbers
+    const x1 = isNaN(center.x) ? 0 : center.x;
+    const y1 = isNaN(center.y) ? 0 : center.y;
+    const x2 = isNaN(xCurrent) ? 0 : xCurrent;
+    const y2 = isNaN(yCurrent) ? 0 : yCurrent;
+
+    const xavg = (x1 + x2) / 2;
+    const yavg = (y1 + y2) / 2;
+
+    // Avoid NaN before calling translate
+    const centerX = isNaN(xScale(xavg)) ? 0 : xScale(xavg);
+    const centerY = isNaN(yScale(yavg)) ? 0 : yScale(yavg);
 
     const offsetX = 30;
     const initialTransform = d3.zoomIdentity

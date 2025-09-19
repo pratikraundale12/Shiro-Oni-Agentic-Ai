@@ -3,6 +3,7 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   ClusterIcon,
@@ -14,6 +15,7 @@ import {
 import {
   API_URL,
   CLUSTERS_TOKEN,
+  KDFM,
   LICENSE_DATE_ISO_FORMAT,
   LICENSE_EXPIRE_PROMPT_DAYS,
   LICENSE_TYPE,
@@ -293,7 +295,7 @@ const ProfileDropdown = () => {
       <ProfileButton
         type="button"
         onClick={() => setShowMenu(prev => !prev)}
-        title="Profile"
+        data-tooltip-id="profile-tooltip"
       >
         <ProfileRender url={currentUser?.photo} />
         <ProfileInfo>
@@ -507,7 +509,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                   <>
                     <IconButton
                       onClick={() => handleRoute('setting')}
-                      title="Settings"
+                      data-tooltip-id="settings-tooltip"
                     >
                       <SettingSmallIcon />
                     </IconButton>
@@ -523,15 +525,19 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                           ClustersActions.fetchClusters({ params: { page: 1 } })
                         );
                       }}
-                      title="Cluster"
+                      data-tooltip-id="cluster-tooltip"
                     >
                       <ClusterIcon />
-                      {selectedCluster?.label && (
-                        <NameDiv>
-                          <StatusDiv /> {selectedCluster.label}
-                        </NameDiv>
-                      )}
-                      {selectedCluster?.label && <DownArrowIcon />}
+                      <NameDiv>
+                        {selectedCluster?.label ? (
+                          <>
+                            <StatusDiv /> {selectedCluster.label}
+                          </>
+                        ) : (
+                          `${KDFM.SELECT_CLUSTER}`
+                        )}
+                      </NameDiv>
+                      <DownArrowIcon />
                     </IconCusterButton>
                   )}
                 {/* <IconButton>
@@ -548,6 +554,32 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
       </Container>
       {clusterLogin && <ClusterLoginModal />}
       {displaySessionTab && <SessionExpiredLabel closeTab={closeTab} />}
+
+      {/* Tooltips */}
+      <ReactTooltip
+        id="profile-tooltip"
+        place="bottom"
+        content="Profile"
+        style={{
+          zIndex: 9999,
+        }}
+      />
+      <ReactTooltip
+        id="settings-tooltip"
+        place="bottom"
+        content="Settings"
+        style={{
+          zIndex: 9999,
+        }}
+      />
+      <ReactTooltip
+        id="cluster-tooltip"
+        place="bottom"
+        content="Cluster"
+        style={{
+          zIndex: 9999,
+        }}
+      />
     </>
   );
 };

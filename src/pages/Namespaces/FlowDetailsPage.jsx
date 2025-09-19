@@ -203,6 +203,17 @@ const FlowDetailsPage = () => {
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
+  const registryDropdownOptions = registryData.map(item => ({
+    label: item?.name,
+    value: item?.nifiRegistryId,
+    default_registry_id: item?.is_default,
+    url: item?.url,
+  }));
+
+  const defaultRegistry = registryDropdownOptions.find(
+    item => item.default_registry_id === true
+  );
+  const defaultRegistryUrl = defaultRegistry?.url || '';
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
@@ -229,6 +240,9 @@ const FlowDetailsPage = () => {
   const tableRef = useRef(null);
   const shouldRevertChanges = useSelector(
     NamespacesSelectors.getShouldRevertChanges
+  );
+  const registrySelectedId = useSelector(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
   );
 
   useEffect(() => {
@@ -265,11 +279,13 @@ const FlowDetailsPage = () => {
       x:
         storedXcord ||
         xStateCoordinate ||
-        registryDetailsData?.position?.[0]?.x,
+        registryDetailsData?.position?.[0]?.x ||
+        0,
       y:
         storedYcord ||
         yStateCoordinate ||
-        registryDetailsData?.position?.[0]?.y,
+        registryDetailsData?.position?.[0]?.y ||
+        0,
       width: 384,
       height: 176,
       color: theme.colors.primary,
@@ -532,6 +548,12 @@ const FlowDetailsPage = () => {
     }
   }, [dispatch, change_request_var]);
 
+  const localRegistryIdArr = registryData?.filter(
+    item =>
+      item?.nifiRegistryId ===
+      (selectedNameSpace?.registryId || registrySelectedId)
+  );
+
   useEffect(() => {
     dispatch(SettingsActions.setSettingsData({}));
   }, [dispatch]);
@@ -661,7 +683,8 @@ const FlowDetailsPage = () => {
                         value={
                           storedXcord ||
                           xStateCoordinate ||
-                          selectedNameSpace?.position?.x
+                          selectedNameSpace?.position?.x ||
+                          0
                         }
                         icon={<CanvasXIcon />}
                         onChange={e => handleXCoordinateChangeInput(e)}
@@ -676,7 +699,8 @@ const FlowDetailsPage = () => {
                         value={
                           storedYcord ||
                           yStateCoordinate ||
-                          selectedNameSpace?.position?.y
+                          selectedNameSpace?.position?.y ||
+                          0
                         }
                         icon={<CanvasYIcon />}
                         onChange={e => handleYCoordinateChangeInput(e)}
@@ -735,7 +759,9 @@ const FlowDetailsPage = () => {
                     label={KDFM.NIFI_URL}
                     placeholder={KDFM.ENTER_NIFI_URL}
                     value={
-                      registryAllDetails?.nifi_url || registryData?.nifiUrl
+                      registryAllDetails?.nifi_url ||
+                      registryData?.nifiUrl ||
+                      versionListData?.graphData?.nifiUrl
                     }
                     icon={<LinkIcon />}
                     disabled
@@ -747,7 +773,12 @@ const FlowDetailsPage = () => {
                     type="text"
                     label={KDFM.REGISTRY_URL}
                     placeholder={KDFM.ENTER_REGISTRY_URL}
-                    value={registryData?.url}
+                    value={
+                      registryData?.url ||
+                      localRegistryIdArr?.[0]?.url ||
+                      registryDropdownOptions?.[0]?.url ||
+                      defaultRegistryUrl
+                    }
                     icon={<LinkIcon />}
                     disabled
                   />

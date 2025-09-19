@@ -33,13 +33,13 @@ const GlobalStyle = createGlobalStyle`
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.colors.primaryFocus};
+    background: ${props => props.theme.colors.primaryScrollbar};
     border-radius: 10px;
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: ${props => props.theme.colors.primaryFocus};
+    background: ${props => props.theme.colors.primaryScrollbarHover};
   }
 
   a {

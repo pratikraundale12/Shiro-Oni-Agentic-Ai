@@ -509,7 +509,7 @@ export const ListNamespaces = () => {
             data-tooltip-id={`tooltip-group-details`}
           >
             <IconButton>
-              <OpenEyeIcon width={14} height={14} />
+              <OpenEyeIcon width={18} height={18} />
             </IconButton>
           </button>
           <ReactTooltip
@@ -536,7 +536,7 @@ export const ListNamespaces = () => {
                 disabled={!item?.version}
               >
                 <IconButton>
-                  <CalenderIcon2 width={14} height={14} color="grey" />
+                  <CalenderIcon2 width={18} height={18} />
                 </IconButton>
               </button>
               <ReactTooltip
@@ -564,7 +564,7 @@ export const ListNamespaces = () => {
                 data-tooltip-id={`tooltip-delete-${item.id}`}
               >
                 <IconButton>
-                  <DeleteSmallIcon width={14} height={14} />
+                  <DeleteSmallIcon width={18} height={18} />
                 </IconButton>
               </button>
             )}
@@ -599,6 +599,7 @@ export const ListNamespaces = () => {
   ];
 
   const handleSelect = item => {
+    dispatch(NamespacesActions.setSelectedRegistryOnDeploy(item?.registryId));
     if (isEmpty(registryData)) {
       toast.error(
         'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
@@ -620,6 +621,7 @@ export const ListNamespaces = () => {
       NamespacesActions.fetchVersionData({
         bucketId: item.bucketId,
         flowId: item.flowId,
+        registryId: item?.registryId,
       })
     );
     history.push('/process-group/flow-details', {

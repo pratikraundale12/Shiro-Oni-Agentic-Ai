@@ -98,7 +98,7 @@ const ListRoleModal = () => {
                 type="button"
                 data-tooltip-id={`Edit-${item?.role_id}`}
               >
-                <PencilIcon color="black" />
+                <PencilIcon color="black" width={16} height={16} />
               </IconButton>
               <ReactTooltip
                 id={`Edit-${item?.role_id}`}
@@ -124,7 +124,7 @@ const ListRoleModal = () => {
                 }}
                 data-tooltip-id={`Delete-${item?.role_id}`}
               >
-                <DeleteSmallIcon />
+                <DeleteSmallIcon width={16} height={16} />
               </IconButton>
             )}
             <ReactTooltip
