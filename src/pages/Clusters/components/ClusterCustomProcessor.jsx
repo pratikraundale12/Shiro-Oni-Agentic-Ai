@@ -4,17 +4,10 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button, SwitchButton } from '../../../shared';
+import { Button } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
-import { InputField, PasswordField, RadioSelectField } from '../../../shared';
 import { KDFM } from '../../../constants';
-import {
-  CurvedFolderIcon,
-  CurvedLockIcon,
-  CurvedProfileIcon,
-  QRIcons,
-} from '../../../assets';
 import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -72,14 +65,9 @@ export const ClusterCustomProcessor = ({
   );
 
   const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
-  const checkError = useSelector(ClustersSelectors.getServiceAccountCheckError);
   const isAdding = useSelector(ClustersSelectors.isAddingServiceAccountHost);
-  const addError = useSelector(ClustersSelectors.getAddServiceAccountHostError);
   const isUpdating = useSelector(
     ClustersSelectors.isUpdatingServiceAccountHost
-  );
-  const updateError = useSelector(
-    ClustersSelectors.getUpdateServiceAccountHostError
   );
 
   const loading = isChecking || isAdding || isUpdating;
@@ -247,7 +235,7 @@ export const ClusterCustomProcessor = ({
                 />
               </ModalContainer>
             </div>
-            <div className="col-5">
+            {/* <div className="col-5">
               <InputField
                 name="file_path"
                 type="text"
@@ -258,7 +246,7 @@ export const ClusterCustomProcessor = ({
                 errors={errors}
                 icon={<CurvedFolderIcon />}
               />
-            </div>
+            </div> */}
           </>
         </div>
 
@@ -274,11 +262,11 @@ export const ClusterCustomProcessor = ({
             </Button>
           </div>
         </FlexWrapper>
-        {(checkError || addError || updateError) && (
+        {/* {(checkError || addError || updateError) && (
           <p className="text-danger mt-2">
             {checkError || addError || updateError}
           </p>
-        )}
+        )} */}
       </Container>
     </>
   );
