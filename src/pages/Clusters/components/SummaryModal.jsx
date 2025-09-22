@@ -138,7 +138,6 @@ export const SummaryModal = ({
       toast.error(response.message);
     }
   };
-
   const addCluster = async () => {
     const selectedRegistriesId = selectedRegistriesArray?.map(
       item => item?.value
@@ -153,6 +152,7 @@ export const SummaryModal = ({
       approver_enable: approverEnable,
       start_stop_requires_approval: approverEnableForStartAndStop,
       change_request_enable: changeRequestEnable,
+      default_registry_id: default_registry_data || null,
       ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
       ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
     };
