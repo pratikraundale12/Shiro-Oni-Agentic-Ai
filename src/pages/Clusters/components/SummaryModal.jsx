@@ -305,7 +305,7 @@ export const SummaryModal = ({
     <>
       <FullPageLoader loading={loading} />
       <Modal
-        title={KDFM.CLUSTER_SUMMARY + 'thisis summary'}
+        title={KDFM.CLUSTER_SUMMARY}
         isOpen={openSummary}
         onRequestClose={() => setOpenSummary(false)}
         size="sm"

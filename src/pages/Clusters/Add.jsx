@@ -270,6 +270,23 @@ export const Add = () => {
           );
         }
       ),
+    default_registry: yup
+      .string()
+      .required('Default Registry is required')
+      .test(
+        'default-registry-in-selected',
+        'Default registry must be one of the selected registries',
+        function (value) {
+          if (!value) return false;
+          const selectedRegistries = this.parent.registry;
+          if (!selectedRegistries || selectedRegistries.length === 0) return false;
+          return selectedRegistries.some(registry => registry.value === value);
+        }
+      ),
+    registry: yup
+      .array()
+      .min(1, 'At least one registry must be selected')
+      .required('Registry selection is required'),
   });
 
   const [registryData, setRegistryData] = useState({
@@ -312,15 +329,13 @@ export const Add = () => {
     watch,
     register,
     reset,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(handleSchemaCheck(activeTab)),
     mode: 'all',
     reValidateMode: 'onChange',
-    defaultValues: {
-      default_registry: data?.default_registry?.name,
-    },
   });
   const formStateData = watch();
   const newRegistryDataFromWatch = {
@@ -331,17 +346,19 @@ export const Add = () => {
   const selectedRegistryId = watch('registry');
   const selectedDefalutRegistryId = watch('default_registry');
 
-  // Auto-select first registry as default when multi-select changes
+  // Clear default registry if it's not in the selected registries
   useEffect(() => {
-    if (selectedRegistryId && selectedRegistryId.length > 0 && !selectedDefalutRegistryId) {
-      // If no default registry is selected and we have selected registries, set the first one as default
-      const firstSelectedRegistry = selectedRegistryId[0];
-      reset({
-        ...formStateData,
-        default_registry: firstSelectedRegistry
-      });
+    if (selectedRegistryId && selectedDefalutRegistryId) {
+      const isDefaultRegistryInSelected = selectedRegistryId.some(
+        registry => registry.value === selectedDefalutRegistryId
+      );
+      console.log(isDefaultRegistryInSelected, 'isDefaultRegistryInSelected');
+      
+      if (!isDefaultRegistryInSelected) {
+        setValue('default_registry', '');
+      }
     }
-  }, [selectedRegistryId, selectedDefalutRegistryId, formStateData, reset]);
+  }, [selectedRegistryId, selectedDefalutRegistryId, setValue]);
 
   const editClusterData = async () => {
     const selectedRegistriesId = formStateData?.registry?.map(
@@ -577,6 +594,12 @@ export const Add = () => {
         registryName: registryData?.name,
         registryUrl: registryData?.registry_url || '',
       });
+
+      // Set default registry value using setValue
+      if (data?.default_registry?.id) {
+        setValue('default_registry', data?.default_registry?.id);
+      }
+
       setClusterId(data?.id);
 
       // Check if it's a copy operation (data exists but no id)
@@ -584,7 +607,7 @@ export const Add = () => {
         setIsCopyOperation(true);
       }
     }
-  }, [activeTab, newRegistry, registries, data]);
+  }, [activeTab, newRegistry, registries, data, setValue]);
 
   const fetchRegistry = async () => {
     try {
@@ -606,6 +629,18 @@ export const Add = () => {
   }, [activeTab]);
 
   const handleRegistry = () => {
+    // Check form validation errors for default_registry
+    if (errors.default_registry) {
+      toast.error(errors.default_registry.message);
+      return;
+    }
+
+    // Validate that a default registry is selected
+    if (!selectedDefalutRegistryId) {
+      toast.error('Please select a default registry before continuing');
+      return;
+    }
+
     setIsCertificateOpen(false);
     setIsCredOpen(false);
     setTestSuccess(false);
@@ -903,7 +938,6 @@ export const Add = () => {
                   errors={errors}
                   options={selectedRegistryId}
                   placeholder="Select Default Registry"
-                  defaultValue={data?.default_registry?.name}
                 />
               </div>
             </div>
@@ -990,8 +1024,13 @@ export const Add = () => {
                   isCopyOperation
                     ? false
                     : !isEmpty(data)
-                      ? data?.registry_id == selectedRegistryId
-                      : isEmpty(selectedRegistryId)
+                      ? JSON.stringify(data?.registry_ids?.sort()) ===
+                          JSON.stringify(
+                            selectedRegistryId?.map(item => item?.value).sort()
+                          ) &&
+                        selectedDefalutRegistryId === data?.default_registry?.id
+                      : isEmpty(selectedRegistryId) ||
+                        !selectedDefalutRegistryId
                 }
               >
                 {KDFM.CONTINUE}
