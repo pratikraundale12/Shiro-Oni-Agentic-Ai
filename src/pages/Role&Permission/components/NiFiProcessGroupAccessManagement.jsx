@@ -75,6 +75,12 @@ const SidebarItem = styled.div`
   `}
 `;
 
+const NodataAvailable = styled.div`
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #444445;
+`;
 const ContentArea = styled.div`
   flex: 1;
   padding: 0;
@@ -684,29 +690,12 @@ const NiFiProcessGroupAccessManagement = () => {
         <MainContent className="gap-3">
           <Sidebar>
             <LeftsidebarScroll className="overflow-y-auto">
-              {isEmpty(namespaces?.data) &&
-                processGroupList.map(item => (
-                  <SidebarItem
-                    key={item?.id}
-                    active={activeSidebarItem?.id === item?.id}
-                    disabled={isSwitchEnabled}
-                    onClick={() => !isSwitchEnabled && handleSidebarClick(item)}
-                  >
-                    {item?.name}
-                    <SidebarButton
-                      type="button"
-                      onClick={e => handleChildProcessGroupClick(e, item)}
-                      className="ml-2"
-                    >
-                      <Hierarchy />
-                    </SidebarButton>
-                  </SidebarItem>
-                ))}
-              {!isEmpty(namespaces?.data) &&
-                namespaces?.data?.map(item => (
-                  <span key={item?.id}>
-                    {!item?.isProcessor && (
+              {isEmpty(namespaces?.data) && (
+                <>
+                  {processGroupList.length > 0 ? (
+                    processGroupList.map(item => (
                       <SidebarItem
+                        key={item?.id}
                         active={activeSidebarItem?.id === item?.id}
                         disabled={isSwitchEnabled}
                         onClick={() =>
@@ -722,9 +711,52 @@ const NiFiProcessGroupAccessManagement = () => {
                           <Hierarchy />
                         </SidebarButton>
                       </SidebarItem>
-                    )}
-                  </span>
-                ))}
+                    ))
+                  ) : (
+                    <NodataAvailable>
+                      No Process Group Available!!
+                    </NodataAvailable>
+                  )}
+                </>
+              )}
+              {!isEmpty(namespaces?.data) && (
+                <>
+                  {namespaces?.data?.length ===
+                  namespaces?.data?.filter(item => item?.isProcessor)
+                    ?.length ? (
+                    <NodataAvailable>
+                      No Process Group Available!!
+                    </NodataAvailable>
+                  ) : (
+                    <>
+                      {namespaces?.data?.map(item => (
+                        <span key={item?.id}>
+                          {!item?.isProcessor && (
+                            <SidebarItem
+                              active={activeSidebarItem?.id === item?.id}
+                              disabled={isSwitchEnabled}
+                              onClick={() =>
+                                !isSwitchEnabled && handleSidebarClick(item)
+                              }
+                            >
+                              {item?.name}
+                              <SidebarButton
+                                type="button"
+                                onClick={e =>
+                                  handleChildProcessGroupClick(e, item)
+                                }
+                                className="ml-2"
+                              >
+                                <Hierarchy />
+                              </SidebarButton>
+                            </SidebarItem>
+                          )}
+                        </span>
+                      ))}
+                    </>
+                  )}
+                </>
+              )}
             </LeftsidebarScroll>
           </Sidebar>
 
