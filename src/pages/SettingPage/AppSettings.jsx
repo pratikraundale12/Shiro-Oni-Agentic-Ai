@@ -164,7 +164,7 @@ export const AppSettings = () => {
       setValue('logo', settingData?.logo);
       setValue('favicon', settingData?.favicon);
       setValue('title', settingData?.title);
-      setValue('time_format', settingData?.time_format || 'MM/DD/YY');
+      setValue('time_format', settingData?.time_format || 'MM/DD/YYYY HH:MM AM/PM');
 
       setValue(
         'refresh',
@@ -278,12 +278,13 @@ export const AppSettings = () => {
           <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
             <SelectField
               name="time_format"
-              label={KDFM.TIME_FORMAT}
+              label={KDFM.DATE_TIME_FORMAT}
               icon={<CalendarIcon />}
               errors={errors}
               control={control}
-              options={[{value:'MM/DD/YY',label:'MM/DD/YY'},{value:'DD/MM/YY',label:'DD/MM/YY'},{value:'YYYY/MM/DD',label:'YYYY/MM/DD'}]}
-              placeholder="Select Time Format"
+              options={[{ value: 'DD/MM/YYYY HH:MM', label: 'DD/MM/YYYY HH:MM' }, { value: 'MM/DD/YYYY HH:MM AM/PM', label: 'MM/DD/YYYY HH:MM AM/PM' },
+                { value: 'YYYY/MM/DD HH:MM:SS', label: 'YYYY/MM/DD HH:MM:SS' }]}
+              placeholder="Select Date/Time Format"
               sortAlphabetically={false}
             />
           </div>

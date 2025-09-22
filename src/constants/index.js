@@ -277,7 +277,7 @@ export const KDFM = {
   CHANGE_REQUEST: 'Change Request',
   PLEASE_LOGIN_TO_CLUSTER: 'Please login to cluster',
   SELECT_PROCESS_GROUP: 'Select Process Group',
-  TIME_FORMAT: 'Time Format',
+  DATE_TIME_FORMAT: 'Date/Time Format',
 
   // License constants
   TRIAL: 'Trial',
