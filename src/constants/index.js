@@ -313,3 +313,8 @@ export const SIDE_MENUS_DISPLAY = [
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];
 export const SEARCH_INPUT_ERROR = 'Please enter atleast 2 characters to search';
+export const DATE_TIME_FORMAT_OPTIONS = [
+  { value: 'DD/MM/YYYY HH:MM', label: 'DD/MM/YYYY HH:MM' },
+  { value: 'MM/DD/YYYY HH:MM AM/PM', label: 'MM/DD/YYYY HH:MM AM/PM' },
+  { value: 'YYYY/MM/DD HH:MM:SS', label: 'YYYY/MM/DD HH:MM:SS' },
+];

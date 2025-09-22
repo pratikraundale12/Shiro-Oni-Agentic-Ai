@@ -10,7 +10,7 @@ import {
   GalleryIcon,
 } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
-import { EMAIL_REGEX, KDFM } from '../../constants';
+import { DATE_TIME_FORMAT_OPTIONS, EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, UploadField, SelectField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
@@ -282,8 +282,7 @@ export const AppSettings = () => {
               icon={<CalendarIcon />}
               errors={errors}
               control={control}
-              options={[{ value: 'DD/MM/YYYY HH:MM', label: 'DD/MM/YYYY HH:MM' }, { value: 'MM/DD/YYYY HH:MM AM/PM', label: 'MM/DD/YYYY HH:MM AM/PM' },
-                { value: 'YYYY/MM/DD HH:MM:SS', label: 'YYYY/MM/DD HH:MM:SS' }]}
+              options={DATE_TIME_FORMAT_OPTIONS}
               placeholder="Select Date/Time Format"
               sortAlphabetically={false}
             />
