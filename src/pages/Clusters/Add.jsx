@@ -938,6 +938,7 @@ export const Add = () => {
                   errors={errors}
                   options={selectedRegistryId}
                   placeholder="Select Default Registry"
+                  required={true}
                 />
               </div>
             </div>
