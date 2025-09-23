@@ -96,7 +96,7 @@ const ClusterNavigationTab = ({
           {KDFM.SERVICE_ACCOUNT}
         </NavButton>
       )}
-      {data && (
+      {data && data?.status === 'Connected' && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
           onClick={() =>

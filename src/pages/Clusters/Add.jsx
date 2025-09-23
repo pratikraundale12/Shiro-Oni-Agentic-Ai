@@ -807,13 +807,15 @@ export const Add = () => {
         )}
         {activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR && (
           <FormContainer>
-            <ClusterCustomProcessor
-              tags={tags}
-              hostToEdit={hostToEdit}
-              clusterData={clusterData}
-              clusterId={clusterId}
-              data={data}
-            />
+            {data?.status === 'Connected' && (
+              <ClusterCustomProcessor
+                tags={tags}
+                hostToEdit={hostToEdit}
+                clusterData={clusterData}
+                clusterId={clusterId}
+                data={data}
+              />
+            )}
           </FormContainer>
         )}
       </Container>

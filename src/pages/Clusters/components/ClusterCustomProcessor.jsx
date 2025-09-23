@@ -4,16 +4,18 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button } from '../../../shared';
+import { Button, InputField } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { KDFM } from '../../../constants';
 import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { FullPageLoader } from '../../../components';
+import { FullPageLoader, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
+import { CurvedFolderIcon } from '../../../assets';
+import { theme } from '../../../styles';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -45,7 +47,12 @@ const FlexWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
 `;
-
+const NodeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  color: ${theme.colors.primary};
+`;
 export const ClusterCustomProcessor = ({
   tags,
   hostToEdit,
@@ -209,6 +216,63 @@ export const ClusterCustomProcessor = ({
 
     navigate(-1);
   };
+  const COLUMNS = [
+    {
+      label: 'File Name',
+      renderCell: item => <>{item?.host_name || 'N/A'}</>,
+      resize: true,
+      width: '40%',
+    },
+    {
+      label: 'File',
+      renderCell: item => <>{item?.port}</>,
+      resize: true,
+      width: '40%',
+    },
+
+    {
+      label: 'Actions',
+      renderCell: item => (
+        <>
+          {
+            <span data-tooltip-id={`certificate-${item?.id}-detail`}>
+              {/* <NotePadIcon
+                height="21"
+                width="21"
+                color={
+                  item?.has_certificate
+                    ? theme.colors.primary
+                    : theme.colors.darkGrey
+                }
+              /> */}
+            </span>
+          }{' '}
+          {/* <ReactTooltip
+            id={`certificate-${item?.id}-detail`}
+            place="bottom"
+            effect="solid"
+            content={
+              item?.has_certificate ? 'Has Certificate' : 'No Certificate'
+            }
+            style={{
+              width: '130px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          /> */}
+        </>
+      ),
+      resize: true,
+      width: '20%',
+    },
+    // {
+    //   label: 'Status',
+    //   renderCell: item => <></>,
+    //   resize: true,
+    //   width: '8%',
+    // },
+  ];
 
   return (
     <>
@@ -217,7 +281,7 @@ export const ClusterCustomProcessor = ({
       <Container>
         <div className="row mb-3">
           <>
-            <div className="col-5">
+            <div className="col-6">
               <ModalContainer>
                 <PemUploadField
                   name="nar_file"
@@ -235,18 +299,135 @@ export const ClusterCustomProcessor = ({
                 />
               </ModalContainer>
             </div>
-            {/* <div className="col-5">
+            <div className="col-6">
               <InputField
                 name="file_path"
                 type="text"
-                label="File path"
-                placeholder="Enter file path"
+                label="File Name"
+                placeholder="Enter File Name"
                 required
                 register={register}
                 errors={errors}
                 icon={<CurvedFolderIcon />}
               />
-            </div> */}
+            </div>
+            <div>
+              <NodeWrapper
+                className="col-6"
+                style={{ fontSize: '15px', fontWeight: '600' }}
+              >
+                NODE: ec2-3-110-203-38.ap-south-1.compute.amazonaws.com
+              </NodeWrapper>
+              <div
+                className="row ms-1 pt-"
+                style={{
+                  border: `1px solid ${theme.colors.darkGrey}`,
+                  borderRadius: '12px',
+                }}
+              >
+                <div className="col-4">
+                  <ModalContainer>
+                    <PemUploadField
+                      name="ssh_file"
+                      label="SSH file"
+                      watch={watch}
+                      control={control}
+                      required
+                      rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                      placeholder={KDFM.UPLOAD_P12_FILE}
+                      errors={errors}
+                      fileLable="Custom SSH file"
+                      // validExtensionsArray={['.nar']}
+                      // acceptString={'.nar'}
+                      // errorText={'Nar'}
+                    />
+                  </ModalContainer>
+                </div>
+                <div className="col-4">
+                  <InputField
+                    name="file_path"
+                    type="text"
+                    label="Username"
+                    placeholder="Enter Username"
+                    required
+                    register={register}
+                    errors={errors}
+                    icon={<CurvedFolderIcon />}
+                  />
+                </div>
+                <div className="col-4">
+                  <InputField
+                    name="file_path"
+                    type="text"
+                    label="File Path"
+                    placeholder="Enter File Path"
+                    required
+                    register={register}
+                    errors={errors}
+                    icon={<CurvedFolderIcon />}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-1">
+              <NodeWrapper
+                className="col-6"
+                style={{ fontSize: '15px', fontWeight: '600' }}
+              >
+                NODE: ec2-3-110-203-38.ap-south-1.compute.amazonaws.com
+              </NodeWrapper>
+              <div
+                className="row ms-1 pt-"
+                style={{
+                  border: `1px solid ${theme.colors.darkGrey}`,
+                  borderRadius: '12px',
+                }}
+              >
+                <div className="col-4">
+                  <ModalContainer>
+                    <PemUploadField
+                      name="ssh_file"
+                      label="SSH file"
+                      watch={watch}
+                      control={control}
+                      required
+                      rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                      placeholder={KDFM.UPLOAD_P12_FILE}
+                      errors={errors}
+                      fileLable="Custom SSH file"
+                      // validExtensionsArray={['.nar']}
+                      // acceptString={'.nar'}
+                      // errorText={'Nar'}
+                    />
+                  </ModalContainer>
+                </div>
+                <div className="col-4">
+                  <InputField
+                    name="file_path"
+                    type="text"
+                    label="Username"
+                    placeholder="Enter Username"
+                    required
+                    register={register}
+                    errors={errors}
+                    icon={<CurvedFolderIcon />}
+                  />
+                </div>
+                <div className="col-4">
+                  <InputField
+                    name="file_path"
+                    type="text"
+                    label="File Path"
+                    placeholder="Enter File Path"
+                    required
+                    register={register}
+                    errors={errors}
+                    icon={<CurvedFolderIcon />}
+                  />
+                </div>
+              </div>
+            </div>
           </>
         </div>
 
@@ -262,11 +443,14 @@ export const ClusterCustomProcessor = ({
             </Button>
           </div>
         </FlexWrapper>
-        {/* {(checkError || addError || updateError) && (
-          <p className="text-danger mt-2">
-            {checkError || addError || updateError}
-          </p>
-        )} */}
+        <div className="mt-2">
+          <Table
+            data={[]}
+            columns={COLUMNS}
+            // customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
+            // tableWithFullHeight={true}
+          />
+        </div>
       </Container>
     </>
   );
