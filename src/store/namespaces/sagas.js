@@ -1295,6 +1295,8 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+  console.log(selectedNamespace, 'selectedNamespace');
+
   const selectedRegistryId = yield select(
     NamespacesSelectors.getSelectedRegistryOnDeploy
   );
@@ -1346,6 +1348,7 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
       {
         clusterId: selectedCluster?.value,
         registriesId:
+          selectedNamespace?.registryId ||
           localRegistryIdArr?.[0]?.localRegistryId ||
           defaultRegistryValue ||
           registryDropdownOptions?.[0]?.local_registry_id,
