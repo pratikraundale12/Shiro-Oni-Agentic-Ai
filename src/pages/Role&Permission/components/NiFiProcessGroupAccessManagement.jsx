@@ -220,6 +220,7 @@ const NiFiProcessGroupAccessManagement = () => {
   });
   const [initialGrpsData, setInitialGrpsData] = useState([]);
   const [initialUsersData, setInitialUsersData] = useState([]);
+  const [sidebarSearchTerm, setSidebarSearchTerm] = useState('');
 
   useEffect(() => {
     if (processGroupList && processGroupList.length > 0 && !activeSidebarItem) {
@@ -409,6 +410,15 @@ const NiFiProcessGroupAccessManagement = () => {
     item?.identity.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Filter process groups based on sidebar search term
+  const filteredProcessGroupList = processGroupList?.filter(item =>
+    item?.name?.toLowerCase()?.includes(sidebarSearchTerm?.toLowerCase())
+  );
+
+  const filteredNamespacesData = namespaces?.data?.filter(item =>
+    item?.name?.toLowerCase()?.includes(sidebarSearchTerm?.toLowerCase())
+  );
+
   // Check if all items are selected
   const isAllSelected = () => {
     if (!selectedPolicy) return false;
@@ -596,6 +606,10 @@ const NiFiProcessGroupAccessManagement = () => {
     setSearchTerm('');
   }, [activeTab, activeSidebarItem]);
 
+  useEffect(() => {
+    setSidebarSearchTerm('');
+  }, [activeSidebarItem]);
+
   // Clear checkbox data when no policy is selected
   useEffect(() => {
     if (!selectedPolicy) {
@@ -689,11 +703,24 @@ const NiFiProcessGroupAccessManagement = () => {
       <Container>
         <MainContent className="gap-3">
           <Sidebar>
+            <SearchContainer>
+              <SmallSearchIcon
+                width={18}
+                height={18}
+                color={theme.colors.darkGrey1}
+              />
+              <Search
+                type="search"
+                placeholder="Search process groups"
+                value={sidebarSearchTerm}
+                onChange={e => setSidebarSearchTerm(e.target.value)}
+              />
+            </SearchContainer>
             <LeftsidebarScroll className="overflow-y-auto">
               {isEmpty(namespaces?.data) && (
                 <>
-                  {processGroupList.length > 0 ? (
-                    processGroupList.map(item => (
+                  {filteredProcessGroupList.length > 0 ? (
+                    filteredProcessGroupList.map(item => (
                       <SidebarItem
                         key={item?.id}
                         active={activeSidebarItem?.id === item?.id}
@@ -712,6 +739,8 @@ const NiFiProcessGroupAccessManagement = () => {
                         </SidebarButton>
                       </SidebarItem>
                     ))
+                  ) : sidebarSearchTerm ? (
+                    <NodataAvailable>No Process Groups Found</NodataAvailable>
                   ) : (
                     <NodataAvailable>
                       No Process Group Available!!
@@ -721,15 +750,19 @@ const NiFiProcessGroupAccessManagement = () => {
               )}
               {!isEmpty(namespaces?.data) && (
                 <>
-                  {namespaces?.data?.length ===
-                  namespaces?.data?.filter(item => item?.isProcessor)
+                  {filteredNamespacesData?.length ===
+                  filteredNamespacesData?.filter(item => item?.isProcessor)
                     ?.length ? (
-                    <NodataAvailable>
-                      No Process Group Available!!
-                    </NodataAvailable>
+                    sidebarSearchTerm ? (
+                      <NodataAvailable>No Process Groups Found</NodataAvailable>
+                    ) : (
+                      <NodataAvailable>
+                        No Process Group Available!!
+                      </NodataAvailable>
+                    )
                   ) : (
                     <>
-                      {namespaces?.data?.map(item => (
+                      {filteredNamespacesData?.map(item => (
                         <span key={item?.id}>
                           {!item?.isProcessor && (
                             <SidebarItem
