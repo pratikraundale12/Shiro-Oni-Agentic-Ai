@@ -4,51 +4,65 @@ const Hierarchy = () => {
   return (
     <div>
       <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
+        width="24"
+        height="24"
+        viewBox="0 0 210 210"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M10 20C10 21.1046 10.8954 22 12 22C13.1046 22 14 21.1046 14 20C14 18.8954 13.1046 18 12 18C10.8954 18 10 18.8954 10 20Z"
-          stroke="#444445"
-          strokeWidth="1.5"
+          d="M61.25 118.125V65.625C61.25 63.2088 63.2088 61.25 65.625 61.25H113.75C116.166 61.25 118.125 63.2088 118.125 65.625V95.375"
+          stroke="black"
+          strokeWidth="8.75"
+        />
+        <path d="M35 61.25L35 109.375" stroke="black" strokeWidth="8.75" />
+        <path d="M148.75 175L100.625 175" stroke="black" strokeWidth="8.75" />
+        <path d="M175 59.25L175 146.75" stroke="black" strokeWidth="8.75" />
+        <path d="M60.25 35L147.75 35" stroke="black" strokeWidth="8.75" />
+        <rect
+          x="157.5"
+          y="21.875"
+          width="26.25"
+          height="26.25"
+          rx="4.375"
+          stroke="#040404"
+          strokeWidth="8.75"
+        />
+        <rect
+          x="21.875"
+          y="21.875"
+          width="26.25"
+          height="26.25"
+          rx="4.375"
+          stroke="#040404"
+          strokeWidth="8.75"
+        />
+        <rect
+          x="157.5"
+          y="157.5"
+          width="26.25"
+          height="26.25"
+          rx="4.375"
+          stroke="#040404"
+          strokeWidth="8.75"
+        />
+        <path
+          d="M91.875 133.583V96.25C91.875 93.8338 93.8338 91.875 96.25 91.875H140C142.416 91.875 144.375 93.8338 144.375 96.25V144.375C144.375 146.791 142.416 148.75 140 148.75H96.1483"
+          stroke="black"
+          strokeWidth="8.75"
+        />
+        <circle cx="63.4375" cy="146.562" r="37.1875" fill="#040404" />
+        <path
+          d="M63.9793 126.875V163.333"
+          stroke="white"
+          strokeWidth="8.75"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M18 20C18 21.1046 18.8954 22 20 22C21.1046 22 22 21.1046 22 20C22 18.8954 21.1046 18 20 18C18.8954 18 18 18.8954 18 20Z"
-          stroke="#444445"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M2 20C2 21.1046 2.89543 22 4 22C5.10457 22 6 21.1046 6 20C6 18.8954 5.10457 18 4 18C2.89543 18 2 18.8954 2 20Z"
-          stroke="#444445"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M10 4C10 5.10457 10.8954 6 12 6C13.1046 6 14 5.10457 14 4C14 2.89543 13.1046 2 12 2C10.8954 2 10 2.89543 10 4Z"
-          stroke="#444445"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M12 6V18"
-          stroke="#444445"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M20 18V14C20 12 19 11 17 11H7C5 11 4 12 4 14V18"
-          stroke="#444445"
-          strokeWidth="1.5"
+          d="M45.75 145.103H82.2083"
+          stroke="white"
+          strokeWidth="8.75"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
