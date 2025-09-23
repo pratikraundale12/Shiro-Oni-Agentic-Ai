@@ -76,7 +76,6 @@ const SummaryDetails = () => {
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
-  console.log(singleNamespaceData, 'namespace data');
 
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
