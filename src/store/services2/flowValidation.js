@@ -17,12 +17,19 @@ export const flowValidationAPI = api => {
   const deleteRule = id => api.delete(`/rule/${id}`);
   const emailReportApi = data => api.post(`/namespace/email-report`, data);
   const validateRandomFlowApi = data => api.post(`/validate-random-flow`, data);
-  const getFlows = () => api.get('/inventry-flow');
+  const getFlows = flowType => {
+    if (flowType) {
+      return api.get(`/inventry-flow?type=${flowType}`);
+    }
+    return api.get(`/inventry-flow`);
+  };
   const setRulePriorityApi = (ruleScopeId, data) =>
     api.put(`/rule-priority/${ruleScopeId}`, data);
 
   const validateDeploymentFlow = (clusterId, data) =>
     api.post(`/clusters/${clusterId}/validate-deployment-flow`, data);
+
+  const uploadFlow = data => api.post('/inventry-flow/upload', data);
 
   return {
     ruleScopeApi,
@@ -41,5 +48,6 @@ export const flowValidationAPI = api => {
     getFlows,
     setRulePriorityApi,
     validateDeploymentFlow,
+    uploadFlow,
   };
 };

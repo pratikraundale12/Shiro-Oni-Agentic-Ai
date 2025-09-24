@@ -157,7 +157,7 @@ export const ListClusters = () => {
   const failedClusterNiFiDeleteOpen = useSelector(
     ClustersSelectors.getIsFailedClusterDeleteModalOpen
   );
-  const [unInstallNiFi, setUninstallNiFi] = useState(false);
+  const [unInstallNiFi, setUninstallNiFi] = useState(true);
 
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
