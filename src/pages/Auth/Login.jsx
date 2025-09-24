@@ -93,7 +93,7 @@ export const Login = () => {
             name="email"
             type="text"
             label="E-mail Address"
-            placeholder="Enter your Email Address"
+            placeholder="Enter Your Email Address"
             register={register}
             watch={watch}
             errors={errors}

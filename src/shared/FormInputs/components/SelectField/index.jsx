@@ -15,7 +15,7 @@ import FieldErrorMessage from '../FieldErrorMessage';
 const Container = styled.div`
   position: relative;
   width: 100%;
-  /* margin-bottom: 1rem; */
+  margin-bottom: 1.4rem;
 
   path {
     fill: ${props => props.theme.colors.darkGrey1};

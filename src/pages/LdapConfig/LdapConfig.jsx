@@ -616,7 +616,7 @@ export const LdapConfig = () => {
                 register={trimRegisterForm1}
                 label="LDAP URL"
                 errors={errorsForm1}
-                placeholder="Enter your LDAP URL"
+                placeholder="Enter Your LDAP URL"
                 icon={<LinkIcon />}
                 disabled={!ldapEnabled}
                 required
@@ -629,7 +629,7 @@ export const LdapConfig = () => {
                 register={trimRegisterForm1}
                 label="Login DN"
                 errors={errorsForm1}
-                placeholder="Enter your Login DN"
+                placeholder="Enter Your Login DN"
                 icon={<QRIcons />}
                 disabled={!ldapEnabled}
                 required
@@ -668,7 +668,7 @@ export const LdapConfig = () => {
                 register={trimRegisterForm2}
                 type="text"
                 label="Base DN"
-                placeholder="Enter your Base DN"
+                placeholder="Enter Your Base DN"
                 icon={<QRIcons />}
                 disabled={!secondFormState || !ldapEnabled}
                 errors={errorsForm2}
@@ -681,7 +681,7 @@ export const LdapConfig = () => {
                 register={trimRegisterForm2}
                 type="text"
                 label="Groups DN"
-                placeholder="Enter your Groups DN"
+                placeholder="Enter Your Groups DN"
                 icon={<QRIcons />}
                 disabled={!secondFormState || !ldapEnabled}
                 errors={errorsForm2}
@@ -694,7 +694,7 @@ export const LdapConfig = () => {
                 type="text"
                 register={trimRegisterForm2}
                 label="Users DN"
-                placeholder="Enter your Users DN"
+                placeholder="Enter Your Users DN"
                 icon={<QRIcons />}
                 disabled={!secondFormState || !ldapEnabled}
                 errors={errorsForm2}
