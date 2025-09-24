@@ -9,6 +9,7 @@ import { KDFM } from '../../constants';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import AddOrEditVariablesModal from './AddOrEditVariablesModal';
 import Collapsible from './Collapsible';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -114,9 +115,20 @@ const VariableTab = () => {
             onClick={() => {
               handleEditClick(item);
             }}
+            data-tooltip-id={`Edit-${item?.id}`}
           >
-            <PencilIcon style={{ color: 'black' }} />
+            <PencilIcon />
           </IconButton>
+          <ReactTooltip
+            id={`Edit-${item?.id}`}
+            place="left"
+            content="Edit"
+            style={{
+              width: 'auto',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
         </div>
       ),
     },
