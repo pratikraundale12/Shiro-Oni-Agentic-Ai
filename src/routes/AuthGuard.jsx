@@ -13,6 +13,16 @@ import {
   LoadingSelectors,
 } from '../store';
 
+const BoldCheckboxField = styled(CheckboxField)`
+  label {
+    font-weight: 600;
+    font-size: 16px;
+    color: #444445;
+    font-family: Red Hat Display;
+    line-height: 24px;
+  }
+`;
+
 const Container = styled.div`
   width: 100%;
   height: 100vh;
@@ -116,7 +126,7 @@ const AuthGuard = () => {
       >
         <>
           <TermsOfUse />
-          <CheckboxField
+          <BoldCheckboxField
             name="has_accepted_terms"
             label="I agree to the Terms and Conditions"
             defaultChecked={false}
