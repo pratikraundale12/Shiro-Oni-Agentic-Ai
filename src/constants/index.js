@@ -73,6 +73,7 @@ export const CLUSTER_MODULE_TABS = {
   REGISTRY: 'registry',
   SERVICE_ACCOUNT: 'service account',
   CUSTOM_PROCESSOR: 'Custom Processor',
+  SSH_DETAILS: 'SSH Details',
 };
 
 export const CLUSTER_STATUS = {

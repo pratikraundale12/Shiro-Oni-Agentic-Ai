@@ -98,6 +98,20 @@ const ClusterNavigationTab = ({
       )}
       {data && data?.status === 'Connected' && (
         <NavButton
+          active={activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS}
+          onClick={() =>
+            Object.keys(data || {})?.length
+              ? setActiveTab(CLUSTER_MODULE_TABS.SSH_DETAILS)
+              : {}
+          }
+          disabled={isRegistryDetailDisable}
+          data-tooltip-id="navButtonTooltip"
+        >
+          SSH Details
+        </NavButton>
+      )}
+      {data && data?.status === 'Connected' && (
+        <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
           onClick={() =>
             Object.keys(data || {})?.length

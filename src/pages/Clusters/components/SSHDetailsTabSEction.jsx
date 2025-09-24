@@ -14,7 +14,7 @@ import * as yup from 'yup';
 import { FullPageLoader, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
-import { CurvedFolderIcon } from '../../../assets';
+import { AddIcon, CurvedFolderIcon } from '../../../assets';
 import { theme } from '../../../styles';
 
 const Container = styled.div``;
@@ -53,7 +53,7 @@ const NodeWrapper = styled.div`
   justify-content: start;
   color: ${theme.colors.primary};
 `;
-export const ClusterCustomProcessor = ({
+export const SSHDetailsTabSection = ({
   tags,
   hostToEdit,
   clusterData,
@@ -70,6 +70,8 @@ export const ClusterCustomProcessor = ({
   const [changeRequestEnabled, setChangeRequestEnabled] = useState(
     data?.has_custom_service_account || false
   );
+  const [sshItem, setSshItem] = useState([]);
+  console.log(sshItem, 'sshItem');
 
   const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
   const isAdding = useSelector(ClustersSelectors.isAddingServiceAccountHost);
@@ -216,118 +218,166 @@ export const ClusterCustomProcessor = ({
 
     navigate(-1);
   };
+  useEffect(() => {
+    dispatch(
+      ClustersActions.fetchHostNodesList({
+        selected: false,
+        clusterId: data?.id,
+        update_node: false,
+      })
+    );
+  }, [dispatch]);
+  useEffect(() => {
+    if (typeof data?.total_nodes === 'number') {
+      const newItems = [];
+      for (let i = 0; i < data.total_nodes; i++) {
+        newItems.push({
+          id: i,
+          hostIp: '',
+          pemFile: '',
+          clusterId: '',
+          username: '',
+          nifiLibPath: '',
+        });
+      }
+      setSshItem(newItems);
+    }
+  }, [data?.total_nodes]);
+
   const COLUMNS = [
     {
-      label: 'File Name',
+      label: 'Node',
       renderCell: item => <>{item?.host_name || 'N/A'}</>,
       resize: true,
-      width: '40%',
+      width: '25%',
     },
     {
       label: 'File',
-      renderCell: item => <>{item?.port}</>,
+      renderCell: item => <>{item?.port || 'N/A'}</>,
       resize: true,
-      width: '40%',
+      width: '25%',
     },
-
+    {
+      label: 'File Path',
+      renderCell: item => <>{item?.port || 'N/A'}</>,
+      resize: true,
+      width: '20%',
+    },
+    {
+      label: 'File Path',
+      renderCell: item => <>{item?.port || 'N/A'}</>,
+      resize: true,
+      width: '20%',
+    },
     {
       label: 'Actions',
       renderCell: item => (
         <>
           {
             <span data-tooltip-id={`certificate-${item?.id}-detail`}>
-              {/* <NotePadIcon
-                height="21"
-                width="21"
-                color={
-                  item?.has_certificate
-                    ? theme.colors.primary
-                    : theme.colors.darkGrey
-                }
-              /> */}
+              {' '}
+              <AddIcon color={theme.colors.primary} />
             </span>
           }{' '}
-          {/* <ReactTooltip
-            id={`certificate-${item?.id}-detail`}
-            place="bottom"
-            effect="solid"
-            content={
-              item?.has_certificate ? 'Has Certificate' : 'No Certificate'
-            }
-            style={{
-              width: '130px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-              zIndex: 10000,
-            }}
-          /> */}
         </>
       ),
       resize: true,
-      width: '20%',
+      width: '10%',
     },
-    // {
-    //   label: 'Status',
-    //   renderCell: item => <></>,
-    //   resize: true,
-    //   width: '8%',
-    // },
   ];
-
   return (
     <>
       <FullPageLoader loading={loading} />
 
       <Container>
         <div className="row mb-3">
-          <>
-            <div className="col-6">
-              <ModalContainer>
-                <PemUploadField
-                  name="nar_file"
-                  label="Custom Nar file"
-                  watch={watch}
-                  control={control}
-                  required
-                  rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                  placeholder={KDFM.UPLOAD_P12_FILE}
-                  errors={errors}
-                  fileLable="Custom Nar file"
-                  validExtensionsArray={['.nar']}
-                  acceptString={'.nar'}
-                  errorText={'Nar'}
-                />
-              </ModalContainer>
-            </div>
-          </>
+          {/* <>
+            {sshItem?.map(ele => (
+              <div className="mt-1" key={ele?.id}>
+                <NodeWrapper
+                  className="col-6"
+                  style={{ fontSize: '15px', fontWeight: '600' }}
+                >
+                  NODE: {ele?.id + 1}
+                </NodeWrapper>
+                <div
+                  className="row ms-1 pt-"
+                  style={{
+                    border: `1px solid ${theme.colors.darkGrey}`,
+                    borderRadius: '12px',
+                  }}
+                >
+                  <div className="col-4">
+                    <ModalContainer>
+                      <PemUploadField
+                        name="ssh_file"
+                        label="SSH file"
+                        watch={watch}
+                        control={control}
+                        required
+                        rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                        placeholder={KDFM.UPLOAD_P12_FILE}
+                        errors={errors}
+                        fileLable="Custom SSH file"
+                      
+                      />
+                    </ModalContainer>
+                  </div>
+                  <div className="col-4">
+                    <InputField
+                      name="file_path"
+                      type="text"
+                      label="Username"
+                      placeholder="Enter Username"
+                      required
+                      register={register}
+                      errors={errors}
+                      icon={<CurvedFolderIcon />}
+                    />
+                  </div>
+                  <div className="col-4">
+                    <InputField
+                      name="file_path"
+                      type="text"
+                      label="File Path"
+                      placeholder="Enter File Path"
+                      required
+                      register={register}
+                      errors={errors}
+                      icon={<CurvedFolderIcon />}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </> */}
         </div>
-
+        <div className="mt-2">
+          <Table
+            data={sshItem || []}
+            columns={COLUMNS}
+            // customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
+            // tableWithFullHeight={true}
+          />
+        </div>
         <FlexWrapper>
-          <div className="" style={{ display: 'flex', gap: '1rem' }}>
+          <div className=" mt-2" style={{ display: 'flex', gap: '1rem' }}>
             <Button
               type="button"
               variant="primary"
               loading={loading}
               onClick={handleSave}
             >
-              Upload and Restart
+              Save
             </Button>
           </div>
         </FlexWrapper>
-        <div className="mt-2">
-          <Table
-            data={[]}
-            columns={COLUMNS}
-            // customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
-            // tableWithFullHeight={true}
-          />
-        </div>
       </Container>
     </>
   );
 };
 
-ClusterCustomProcessor.propTypes = {
+SSHDetailsTabSection.propTypes = {
   tags: PropTypes.string.isRequired,
   clusterData: PropTypes.shape({
     clusterName: PropTypes.string,

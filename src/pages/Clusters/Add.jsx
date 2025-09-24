@@ -42,6 +42,7 @@ import { Title } from './components/Title';
 import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
 import { AuthenticationSelectors } from '../../store/authentication';
 import { ClusterCustomProcessor } from './components/ClusterCustomProcessor';
+import { SSHDetailsTabSection } from './components/SSHDetailsTabSEction';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -809,6 +810,19 @@ export const Add = () => {
           <FormContainer>
             {data?.status === 'Connected' && (
               <ClusterCustomProcessor
+                tags={tags}
+                hostToEdit={hostToEdit}
+                clusterData={clusterData}
+                clusterId={clusterId}
+                data={data}
+              />
+            )}
+          </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS && (
+          <FormContainer>
+            {data?.status === 'Connected' && (
+              <SSHDetailsTabSection
                 tags={tags}
                 hostToEdit={hostToEdit}
                 clusterData={clusterData}
