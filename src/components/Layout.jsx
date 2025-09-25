@@ -579,9 +579,9 @@ export const Layout = ({ children }) => {
                     active={isAdminLogin}
                   >
                     <RedirectionSection>
-                      <RedirectionText active={isAdminLogin}>
+                      <RedirectionTextLogin active={isAdminLogin}>
                         Administrator
-                      </RedirectionText>
+                      </RedirectionTextLogin>
                     </RedirectionSection>
                   </StyledLoginBox>
                 </LoginBtnContainer>
