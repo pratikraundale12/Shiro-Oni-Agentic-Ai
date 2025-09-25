@@ -86,7 +86,7 @@ export const UserLogin = () => {
             name="username"
             type="text"
             label="Username"
-            placeholder="Enter your Username"
+            placeholder="Enter Your Username"
             register={register}
             errors={errors}
             icon={<UserIcon />}

@@ -809,7 +809,7 @@ export const Setting = () => {
                 name="username"
                 type="text"
                 label="Username"
-                placeholder="Enter your Username"
+                placeholder="Enter Your Username"
                 register={register}
                 errors={errors}
                 icon={<UserIcon />}
@@ -823,7 +823,7 @@ export const Setting = () => {
                 watch={watch}
                 label="Password"
                 disableToggle={false}
-                placeholder="Enter your Password"
+                placeholder="Enter Your Password"
               />
             </div>
           </InputFields>

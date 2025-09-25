@@ -226,7 +226,7 @@ export const ServiceAccountSettings = () => {
                 name="username"
                 type="text"
                 label="Username"
-                placeholder="Enter your Username"
+                placeholder="Enter Your Username"
                 register={register}
                 errors={errors}
                 icon={<CurvedProfileIcon height={24} width={24} />}
@@ -240,7 +240,7 @@ export const ServiceAccountSettings = () => {
                 watch={watch}
                 label="Password"
                 disableToggle={false}
-                placeholder="Enter your Password"
+                placeholder="Enter Your Password"
                 icon={<CurvedLockIcon height={24} width={24} />}
               />
             </div>

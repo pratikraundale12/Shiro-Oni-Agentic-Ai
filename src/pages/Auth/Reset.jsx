@@ -123,7 +123,7 @@ export const Reset = () => {
           <PasswordField
             name="password"
             label="New Password"
-            placeholder="Enter your New Password"
+            placeholder="Enter Your New Password"
             required
             register={register}
             errors={errors}
