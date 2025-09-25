@@ -307,21 +307,6 @@ export const ListScheduleDeployment = () => {
     );
   };
 
-  const convertDateTime = dateString => {
-    if (!dateString) return 'No date provided';
-
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
-  };
-
   const getDefSchedule = async item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setIsDiffModalOpen(true));
@@ -409,7 +394,7 @@ export const ListScheduleDeployment = () => {
           place="left"
           content={'Sanity Check'}
           style={{
-            width: '110px',
+            width: '120px',
             whiteSpace: 'normal',
             wordWrap: 'break-word',
           }}
@@ -856,7 +841,7 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => (
-        <TextRender text={convertDateTime(item?.scheduled_date_time)} />
+        <TextRender text={item?.scheduled_time} />
       ),
       sort: { sortKey: 'deploy_time' },
       width: '13%',

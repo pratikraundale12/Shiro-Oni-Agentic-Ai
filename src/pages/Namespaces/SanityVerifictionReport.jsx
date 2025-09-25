@@ -46,7 +46,7 @@ const ActionContainer = styled.div`
   background-color: #fff7ed;
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #ea580c;
+  border: 1px solid #e4842b;
   width: fit-content;
   font-family: Red Hat Display;
   font-size: 16px;
@@ -63,6 +63,14 @@ const WarningIcon = styled.div`
 const MessageText = styled.span`
   color: #374151;
   font-size: 14px;
+  white-space: nowrap;
+  margin-right: 16px;
+`;
+const MessageTextData = styled.span`
+  color: #e4842b;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: Red Hat Display;
   white-space: nowrap;
   margin-right: 16px;
 `;
@@ -177,11 +185,11 @@ const SanityVerifictionReport = () => {
                   <MessageText>Last Sanity Check Report</MessageText>
                 </NotificationContainer>
                 <ActionContainer>
-                  <MessageText>
+                  <MessageTextData>
                     {lastSanityReport?.data?.updated_at
                       ? formatDate(lastSanityReport?.data?.updated_at)
                       : 'No sanity performed yet'}
-                  </MessageText>
+                  </MessageTextData>
                 </ActionContainer>
               </div>
             </div>

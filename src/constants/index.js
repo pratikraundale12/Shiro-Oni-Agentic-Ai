@@ -190,8 +190,8 @@ export const KDFM = {
   DOWNGRADE: 'Downgrade',
   USERNAME: 'Username',
   PASSWORD: 'Password',
-  ENTER_USERNAME: 'Enter your Username',
-  ENTER_PASSWORD: 'Enter your Password',
+  ENTER_USERNAME: 'Enter Your Username',
+  ENTER_PASSWORD: 'Enter Your Password',
   NO_DATA_FOUND: 'No Data Found!!',
   NIFI_URL: 'NiFi URL',
   LOGS_URL: 'Logs URL',
@@ -244,7 +244,7 @@ export const KDFM = {
   TAG: 'Tag',
   SELECTED_VERSION: 'Selected Version',
   GROUP_EMAIL: 'Group Email Id',
-  ENTER_GROUP_EMAIL: 'Enter your Group Email',
+  ENTER_GROUP_EMAIL: 'Enter Your Group Email',
   EMAIL_REMINDER: 'Email Reminder Time',
   REMINDER_EMPHASISED_TEXT: 'before deployment schedule time',
   CONFIGURE: 'Configure',
@@ -277,6 +277,7 @@ export const KDFM = {
   CHANGE_REQUEST: 'Change Request',
   PLEASE_LOGIN_TO_CLUSTER: 'Please login to cluster',
   SELECT_PROCESS_GROUP: 'Select Process Group',
+  DATE_TIME_FORMAT: 'Date/Time Format',
 
   // License constants
   TRIAL: 'Trial',
@@ -312,3 +313,8 @@ export const SIDE_MENUS_DISPLAY = [
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];
 export const SEARCH_INPUT_ERROR = 'Please enter atleast 2 characters to search';
+export const DATE_TIME_FORMAT_OPTIONS = [
+  { value: 'DD/MM/YYYY HH:MM', label: 'DD/MM/YYYY HH:MM' },
+  { value: 'MM/DD/YYYY HH:MM AM/PM', label: 'MM/DD/YYYY HH:MM AM/PM' },
+  { value: 'YYYY/MM/DD HH:MM:SS', label: 'YYYY/MM/DD HH:MM:SS' },
+];
