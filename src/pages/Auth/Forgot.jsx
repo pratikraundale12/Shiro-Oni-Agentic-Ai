@@ -159,7 +159,7 @@ export const Forgot = () => {
             name="email"
             type="email"
             label="E-mail Address"
-            placeholder="Enter your Email Address"
+            placeholder="Enter Your Email Address"
             required
             register={register}
             errors={errors}

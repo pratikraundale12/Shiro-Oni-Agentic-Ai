@@ -661,18 +661,22 @@ export const ListControllerService = () => {
                 }}
               />
             </RefreshIocnPanel>
-            {!(selectedCluster?.value && !isEmpty(selectedCluster?.value)) && (
+            {
               <ReactTooltip
                 id={`tooltip-group-namespace-refresh`}
                 place="left"
-                content={'Login to Cluster'}
+                content={
+                  !(selectedCluster?.value && !isEmpty(selectedCluster?.value))
+                    ? 'Login to the cluster'
+                    : 'Refresh'
+                }
                 style={{
                   width: 'auto',
                   whiteSpace: 'normal',
                   wordWrap: 'break-word',
                 }}
               />
-            )}
+            }
           </div>
         )}
       </div>

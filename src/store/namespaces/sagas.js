@@ -1308,7 +1308,6 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     default_registry_id: item?.is_default,
     local_registry_id: item?.localRegistryId,
   }));
-  console.log(registryDropdownOptions, 'registryDropdownOptions');
 
   const defaultRegistry = registryDropdownOptions.find(
     item => item.default_registry_id === true
