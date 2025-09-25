@@ -30,6 +30,7 @@ import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from './ProcessGroupSorting';
+import { ErrorsSelectors } from '../../store/helpers/error_redux';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -162,11 +163,18 @@ export const ListNamespaces = () => {
   );
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const settingsAPIdata = useSelector(SettingsSelectors.getSettingsData);
+  const [settingsFetchStarted, setSettingsFetchStarted] = useState(false);
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
     dispatch(SettingsActions.fetchSettings());
-  }, []);
+    setSettingsFetchStarted(true);
+  }, [dispatch]);
+
+  const error = useSelector(state =>
+    ErrorsSelectors.getError(state, 'fetchSettings')
+  );
+
   const settingsAPIcall = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchSettings')
   );
@@ -185,18 +193,29 @@ export const ListNamespaces = () => {
   const parsedSelectedCluster = JSON.parse(selectedClusterString);
 
   useEffect(() => {
+    const isUnauthorized =
+      error &&
+      (error?.error?.raw?.status === 401 ||
+        error?.error?.code === 'invalid_token' ||
+        (error?.message &&
+          error?.message.toLowerCase().includes('user session expired.')));
+
+    if (!settingsFetchStarted) return;
+    if (isUnauthorized) return;
     if (
       (!isEmpty(settingsAPIdata) &&
         isEmpty(settingsAPIdata?.username) &&
         isEmpty(selectedClusterObj) &&
         isEmpty(parsedSelectedCluster?.value) &&
-        !settingsAPIcall) ||
+        !settingsAPIcall &&
+        !error) ||
       (!isEmpty(settingsAPIdata) &&
         isEmpty(settingsAPIdata?.username) &&
         !isEmpty(selectedClusterObj) &&
         !selectedClusterObj?.[0]?.has_custom_service_account &&
         !isEmpty(parsedSelectedCluster?.value) &&
-        !settingsAPIcall)
+        !settingsAPIcall &&
+        !error)
     ) {
       toast.info(
         isEmpty(selectedCluster?.value)
@@ -207,7 +226,9 @@ export const ListNamespaces = () => {
     } else if (
       !isEmpty(settingsAPIdata) &&
       !isEmpty(settingsAPIdata?.username) &&
-      isEmpty(parsedSelectedCluster?.value)
+      isEmpty(parsedSelectedCluster?.value) &&
+      !settingsAPIcall &&
+      !error
     ) {
       toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
         toastId: 'please-login-cluster-toast',
@@ -219,6 +240,10 @@ export const ListNamespaces = () => {
     selectedClusterObj,
     parsedSelectedCluster,
     settingsAPIcall,
+    selectedCluster?.value,
+    settingsAPIdata,
+    error,
+    settingsFetchStarted,
   ]);
 
   const handleScheduleClick = item => {

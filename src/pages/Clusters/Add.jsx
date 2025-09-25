@@ -333,12 +333,16 @@ export const Add = () => {
 
   // Auto-select first registry as default when multi-select changes
   useEffect(() => {
-    if (selectedRegistryId && selectedRegistryId.length > 0 && !selectedDefalutRegistryId) {
+    if (
+      selectedRegistryId &&
+      selectedRegistryId.length > 0 &&
+      !selectedDefalutRegistryId
+    ) {
       // If no default registry is selected and we have selected registries, set the first one as default
       const firstSelectedRegistry = selectedRegistryId[0];
       reset({
         ...formStateData,
-        default_registry: firstSelectedRegistry
+        default_registry: firstSelectedRegistry,
       });
     }
   }, [selectedRegistryId, selectedDefalutRegistryId, formStateData, reset]);
@@ -597,7 +601,7 @@ export const Add = () => {
 
       setRegistries(names);
     } catch (error) {
-      console.error('Failed to fetch registries:', error);
+      toast.error(error?.response?.data?.message);
     }
   };
 

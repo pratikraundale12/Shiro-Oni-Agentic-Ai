@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { history } from '../../helpers/history';
 import { ACCESS_TOKEN, API_URL } from '../../constants';
 
 const API = axios.create({
@@ -23,7 +23,7 @@ API.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       localStorage.clear();
       localStorage.removeItem(ACCESS_TOKEN);
-      window.location.href = '/login';
+      history.push('/login');
     }
     return Promise.reject(error);
   }

@@ -182,3 +182,4 @@ export * from './AuditLogIcon';
 export * from './FlowValidationIcon';
 export * from './ScheduleDetailsIcon';
 export * from './CircleCrossIcon';
+export * from './TermsOfUseIcon';

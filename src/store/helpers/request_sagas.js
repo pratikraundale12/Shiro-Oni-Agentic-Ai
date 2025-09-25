@@ -1,5 +1,5 @@
 import { call, put } from 'redux-saga/effects';
-// import { ErrorsActions } from './error_redux';
+import { ErrorsActions } from './error_redux';
 import { LoadingActions } from './loading_redux';
 // import { AuthorizationActions } from '../authorization/redux';
 import { toast } from 'react-toastify';
@@ -11,17 +11,24 @@ import {
 import { AuthenticationActions } from '../authentication';
 
 export function* requestSaga({
-  // errorSection,
+  errorSection,
   loadingSection,
   apiMethod,
   apiParams = [],
   successAction = () => null,
   clusterId,
 }) {
-  // yield put(ErrorsActions.clearError(errorSection));
+  // Clear any existing error for this section
+  if (errorSection) {
+    yield put(ErrorsActions.clearError(errorSection));
+  }
+
   yield put(LoadingActions.startLoading(loadingSection));
+
   const response = yield call(apiMethod, ...apiParams);
+
   yield put(LoadingActions.stopLoading(loadingSection));
+
   if (response.ok) {
     const action = successAction(response.data);
     if (action) {
@@ -51,9 +58,14 @@ export function* requestSaga({
   ) {
     yield put(AuthenticationActions.logout({ url: '/login' }));
   } else {
-    // yield put(
-    //   ErrorsActions.showError(errorSection, response.data, response.problem)
-    // );
+    if (errorSection) {
+      const payload = {
+        section: errorSection,
+        error: response?.data,
+        problem: response?.problem,
+      };
+      yield put(ErrorsActions.showError(payload));
+    }
   }
   return response;
 }

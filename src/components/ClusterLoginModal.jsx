@@ -149,7 +149,6 @@ export const ClusterLoginModal = () => {
         }
       } else {
         toast.error(response.message || 'Error while getting data');
-
         setLoading(false);
       }
     } catch (error) {
