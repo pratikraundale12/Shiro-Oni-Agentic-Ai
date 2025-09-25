@@ -11,11 +11,12 @@ import { KDFM } from '../../../constants';
 import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { FullPageLoader, Table } from '../../../components';
+import { FullPageLoader, IconButton, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
-import { AddIcon, CurvedFolderIcon } from '../../../assets';
+import { AddIcon, CurvedFolderIcon, PencilIcon } from '../../../assets';
 import { theme } from '../../../styles';
+import { AddSSHModal } from './AddSSHModal';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -53,6 +54,7 @@ const NodeWrapper = styled.div`
   justify-content: start;
   color: ${theme.colors.primary};
 `;
+
 export const SSHDetailsTabSection = ({
   tags,
   hostToEdit,
@@ -71,6 +73,8 @@ export const SSHDetailsTabSection = ({
     data?.has_custom_service_account || false
   );
   const [sshItem, setSshItem] = useState([]);
+  const [selectedSSH, setSelectedSSH] = useState({});
+  const [isSSHModalOpen, setIsSSHModalOpen] = useState(false);
   console.log(sshItem, 'sshItem');
 
   const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
@@ -234,7 +238,7 @@ export const SSHDetailsTabSection = ({
         newItems.push({
           id: i,
           hostIp: '',
-          pemFile: '',
+          file: '',
           clusterId: '',
           username: '',
           nifiLibPath: '',
@@ -247,25 +251,25 @@ export const SSHDetailsTabSection = ({
   const COLUMNS = [
     {
       label: 'Node',
-      renderCell: item => <>{item?.host_name || 'N/A'}</>,
+      renderCell: item => <>{item?.hostIp || 'N/A'}</>,
       resize: true,
       width: '25%',
     },
     {
       label: 'File',
-      renderCell: item => <>{item?.port || 'N/A'}</>,
+      renderCell: item => <>{item?.file || item?.hostIp || 'N/A'}</>,
       resize: true,
       width: '25%',
     },
     {
       label: 'File Path',
-      renderCell: item => <>{item?.port || 'N/A'}</>,
+      renderCell: item => <>{item?.nifiLibPath || 'N/A'}</>,
       resize: true,
       width: '20%',
     },
     {
-      label: 'File Path',
-      renderCell: item => <>{item?.port || 'N/A'}</>,
+      label: 'User',
+      renderCell: item => <>{item?.username || 'N/A'}</>,
       resize: true,
       width: '20%',
     },
@@ -276,7 +280,19 @@ export const SSHDetailsTabSection = ({
           {
             <span data-tooltip-id={`certificate-${item?.id}-detail`}>
               {' '}
-              <AddIcon color={theme.colors.primary} />
+              <IconButton
+                onClick={() => {
+                  setIsSSHModalOpen(true);
+                  setSelectedSSH(item);
+                }}
+                title="Settings"
+              >
+                <PencilIcon
+                  color={theme.colors.primary}
+                  width={18}
+                  height={18}
+                />
+              </IconButton>
             </span>
           }{' '}
         </>
@@ -290,68 +306,6 @@ export const SSHDetailsTabSection = ({
       <FullPageLoader loading={loading} />
 
       <Container>
-        <div className="row mb-3">
-          {/* <>
-            {sshItem?.map(ele => (
-              <div className="mt-1" key={ele?.id}>
-                <NodeWrapper
-                  className="col-6"
-                  style={{ fontSize: '15px', fontWeight: '600' }}
-                >
-                  NODE: {ele?.id + 1}
-                </NodeWrapper>
-                <div
-                  className="row ms-1 pt-"
-                  style={{
-                    border: `1px solid ${theme.colors.darkGrey}`,
-                    borderRadius: '12px',
-                  }}
-                >
-                  <div className="col-4">
-                    <ModalContainer>
-                      <PemUploadField
-                        name="ssh_file"
-                        label="SSH file"
-                        watch={watch}
-                        control={control}
-                        required
-                        rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                        placeholder={KDFM.UPLOAD_P12_FILE}
-                        errors={errors}
-                        fileLable="Custom SSH file"
-                      
-                      />
-                    </ModalContainer>
-                  </div>
-                  <div className="col-4">
-                    <InputField
-                      name="file_path"
-                      type="text"
-                      label="Username"
-                      placeholder="Enter Username"
-                      required
-                      register={register}
-                      errors={errors}
-                      icon={<CurvedFolderIcon />}
-                    />
-                  </div>
-                  <div className="col-4">
-                    <InputField
-                      name="file_path"
-                      type="text"
-                      label="File Path"
-                      placeholder="Enter File Path"
-                      required
-                      register={register}
-                      errors={errors}
-                      icon={<CurvedFolderIcon />}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </> */}
-        </div>
         <div className="mt-2">
           <Table
             data={sshItem || []}
@@ -372,6 +326,12 @@ export const SSHDetailsTabSection = ({
             </Button>
           </div>
         </FlexWrapper>
+        <AddSSHModal
+          isSSHModalOpen={isSSHModalOpen}
+          setIsSSHModalOpen={setIsSSHModalOpen}
+          selectedSSH={selectedSSH}
+          setSshItem={setSshItem}
+        />
       </Container>
     </>
   );

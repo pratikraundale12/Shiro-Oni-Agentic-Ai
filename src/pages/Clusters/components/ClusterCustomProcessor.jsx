@@ -310,7 +310,15 @@ export const ClusterCustomProcessor = ({
               loading={loading}
               onClick={handleSave}
             >
-              Upload and Restart
+              Upload
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              loading={loading}
+              onClick={handleSave}
+            >
+              Restart
             </Button>
           </div>
         </FlexWrapper>

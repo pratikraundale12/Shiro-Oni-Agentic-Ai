@@ -42,7 +42,7 @@ import { Title } from './components/Title';
 import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
 import { AuthenticationSelectors } from '../../store/authentication';
 import { ClusterCustomProcessor } from './components/ClusterCustomProcessor';
-import { SSHDetailsTabSection } from './components/SSHDetailsTabSEction';
+import { SSHDetailsTabSection } from './components/SSHDetailsTabSection';
 
 const Wrapper = styled.div`
   margin-top: 4px;
