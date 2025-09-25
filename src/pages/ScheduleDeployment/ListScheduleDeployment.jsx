@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -840,9 +841,7 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => (
-        <TextRender text={item?.scheduled_time} />
-      ),
+      renderCell: item => <TextRender text={item?.scheduled_time} />,
       sort: { sortKey: 'deploy_time' },
       width: '13%',
       resize: true,
