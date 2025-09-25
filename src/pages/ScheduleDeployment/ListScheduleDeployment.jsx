@@ -409,7 +409,7 @@ export const ListScheduleDeployment = () => {
           place="left"
           content={'Sanity Check'}
           style={{
-            width: '110px',
+            width: '120px',
             whiteSpace: 'normal',
             wordWrap: 'break-word',
           }}

@@ -13,6 +13,7 @@ import { PrivacyPolicy } from '../pages/PolicyAndTermsOfUse/PrivacyPolicy';
 import { TermsOfUse } from '../pages/PolicyAndTermsOfUse/TermsOfUse';
 import { SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const MainContainer = styled.div`
   width: 100%;
@@ -125,12 +126,23 @@ const UnAuthGuard = () => {
         <button
           className="btn btn-toggle d-none d-lg-block"
           onClick={() => handleToggleSidebar()}
+          data-tooltip-id={`tooltip-open-close-sidebar`}
         >
           {isToggleSidebar ? (
             <CollapseSidebarIconRight />
           ) : (
             <CollapseSidebarIconLeft />
           )}
+          <ReactTooltip
+            id={`tooltip-open-close-sidebar`}
+            place="left"
+            content={isToggleSidebar ? 'Open sidebar' : 'Close sidebar'}
+            style={{
+              width: '120px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
         </button>
         {getImage()}
         <List className="sidebar-navigation">

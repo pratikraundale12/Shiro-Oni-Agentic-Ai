@@ -57,15 +57,6 @@ const QuickInsightHeadingText = styled.h4`
   }
 `;
 
-const InsightIconContiner = styled.div`
-  padding-top: 5px;
-  /* margin-bottom: 0.5rem; */
-  display: flex;
-  align-items: start;
-  gap: 16px;
-  margin-left: 10px;
-`;
-
 const InsightDataContiner = styled.div`
   margin: 25px 0;
   display: flex;
@@ -243,6 +234,40 @@ const Tab = styled.div`
     props.active ? 'rgba(255, 122, 0, 1)' : 'transparent'};
   &:hover {
     color: rgba(255, 122, 0, 1);
+  }
+`;
+
+const InsightIconContiner = styled.div`
+  padding-top: 5px;
+  /* margin-bottom: 0.5rem; */
+  display: flex;
+  align-items: start;
+  gap: 16px;
+  margin-left: 10px;
+
+  svg path {
+    transition: stroke 0.3s;
+  }
+
+  ${Tab}:hover & svg path {
+    stroke: rgba(255, 122, 0, 1);
+  }
+`;
+
+const InsightIconContinerV2 = styled.div`
+  padding-top: 5px;
+  /* margin-bottom: 0.5rem; */
+  display: flex;
+  align-items: start;
+  gap: 16px;
+  margin-left: 10px;
+
+  svg path {
+    transition: stroke 0.3s;
+  }
+
+  ${Tab}:hover & svg path {
+    fill: rgba(255, 122, 0, 1);
   }
 `;
 
@@ -472,11 +497,11 @@ export const Dashboard = () => {
               active={activeTab === 'QuickInsights'}
               onClick={() => setActiveTab('QuickInsights')}
             >
-              <InsightIconContiner active={activeTab === 'QuickInsights'}>
+              <InsightIconContinerV2 active={activeTab === 'QuickInsights'}>
                 <LensIcon
                   color={activeTab === 'QuickInsights' ? '#f0701a' : '#6c757d'}
                 />
-              </InsightIconContiner>
+              </InsightIconContinerV2>
               <QuickInsightHeadingText>Quick Insights</QuickInsightHeadingText>
             </Tab>
 
@@ -588,7 +613,7 @@ export const Dashboard = () => {
                 content={
                   selectedCluster?.value && !isEmpty(selectedCluster?.value)
                     ? 'Refresh'
-                    : 'Login to Cluster'
+                    : 'Login to the cluster'
                 }
                 style={{
                   width: 'auto',
