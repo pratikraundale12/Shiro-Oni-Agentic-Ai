@@ -14,7 +14,7 @@ import { DATE_TIME_FORMAT_OPTIONS, EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, UploadField, SelectField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
-import { CalendarIcon} from '../../assets/Icons/CalendarIcon';
+import { CalendarIcon } from '../../assets/Icons/CalendarIcon';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -164,7 +164,10 @@ export const AppSettings = () => {
       setValue('logo', settingData?.logo);
       setValue('favicon', settingData?.favicon);
       setValue('title', settingData?.title);
-      setValue('time_format', settingData?.time_format || 'MM/DD/YYYY HH:MM AM/PM');
+      setValue(
+        'time_format',
+        settingData?.time_format || 'MM/DD/YYYY HH:MM AM/PM'
+      );
 
       setValue(
         'refresh',
@@ -273,7 +276,7 @@ export const AppSettings = () => {
             />
           </div>
         </InputFields>
-        
+
         <InputFields className="row">
           <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
             <SelectField
@@ -288,7 +291,7 @@ export const AppSettings = () => {
             />
           </div>
         </InputFields>
-        
+
         <FlexWrapper className="mt-3">
           <ButtonDiv>
             <StyledCancelButton
