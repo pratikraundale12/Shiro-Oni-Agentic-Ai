@@ -1439,6 +1439,7 @@ export function* fetchAddPropertyToAdd(api, { payload }) {
     toast.error(response?.message || response?.data?.message);
   }
 }
+
 //
 export function* namespacesSagas(api) {
   yield all([

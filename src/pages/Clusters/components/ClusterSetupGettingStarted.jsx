@@ -5,8 +5,8 @@ import {
   ManageConfigGearIcon,
   SSHCredentialsPaperIcon,
 } from '../../../assets';
-import { useDispatch } from 'react-redux';
-import { ClustersActions } from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { ClustersActions, ClustersSelectors } from '../../../store';
 import { KDFM } from '../../../constants';
 const Container = styled.div`
   height: calc(100% - 57px);
@@ -43,6 +43,9 @@ const BottomText = styled.span`
 `;
 const ClusterSetupGettingStartedTab = () => {
   const dispatch = useDispatch();
+  const createClusterVisKubernetes = useSelector(
+    ClustersSelectors.getCreateClusterMethod
+  );
   useEffect(() => {
     return () => {
       dispatch(ClustersActions.setLastVisitedTab('getting_started'));
@@ -68,12 +71,16 @@ const ClusterSetupGettingStartedTab = () => {
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <HighLightText>
-                    {KDFM.GETTING_STARTED_MANAGE_HOST_TITLE}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.GETTING_STARTED_MANAGE_HOST_TITLE
+                      : 'Manage Kube Cluster'}
                   </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <BottomText>
-                    {KDFM.GETTING_STARTED_MANAGE_HOST_DESCRIPTION}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.GETTING_STARTED_MANAGE_HOST_DESCRIPTION
+                      : 'Manage Kubernetes Cluster'}
                   </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
@@ -86,7 +93,9 @@ const ClusterSetupGettingStartedTab = () => {
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    {KDFM.MANAGE_HOST}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.MANAGE_HOST
+                      : 'Manage Kube Cluster'}
                   </BottomText>
                 </div>
               </div>

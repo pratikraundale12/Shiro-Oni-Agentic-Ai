@@ -92,15 +92,53 @@ export const clustersAPI = api => {
     clusterId,
     process_id,
     process_name,
+    cluster_type,
   }) => {
-    return api.get(
-      `/clusters/${clusterId}/ansible-logs?process_id=${process_id}&process_name=${process_name}`
-    );
+    let url = `/clusters/${clusterId}/ansible-logs?process_id=${process_id}&process_name=${process_name}`;
+
+    if (cluster_type) {
+      url += `&cluster_type=${cluster_type}`;
+    }
+
+    return api.get(url);
   };
+
   const fetchAllConfigPropertiesWithValue = ({ version }) => {
     return api.post(`/clusters/config-properties/${version}`);
   };
-
+  const fetchMasterHostNodesList = () => {
+    const url = `cluster-nodes/list-master-nodes`;
+    return api.get(url);
+  };
+  const fetchConfigFieldsForKubernetes = () => {
+    return api.get(`/config-fields`);
+  };
+  const createConfigForKubernetesCluster = ({ payload }) => {
+    return api.post(`/create-config`, payload);
+  };
+  const fetchConfigListForKubernetes = () => {
+    return api.get(`/list-configs`);
+  };
+  const createKubernetesCluster = ({ payload }) => {
+    return api.post(`/kube/create-cluster`, payload);
+  };
+  const deleteKubeConfig = ({ id }) => api.delete(`/delete-kube-config/${id}`);
+  const fetchConfigVersionsPerConfig = ({ config_name }) => {
+    return api.get(`/config-version?config_name=${config_name}`);
+  };
+  const createKubernetesMasterNodeCluster = ({ payload }) => {
+    return api.post(`/clusters/add-master-node`, payload);
+  };
+  const deleteMasterNodeConfig = ({ id }) =>
+    api.delete(`/delete-master-node/${id}`);
+  const fetchKubeClusterDataToUpgrade = ({ id }) => {
+    return api.get(`/clusters/${id}/get-upgrade-details`);
+  };
+  const deleteClusterKube = ({ clusterIdToDelete, deleteType, payload }) =>
+    api.post(
+      `clusters/delete-kube-cluster/${clusterIdToDelete}/${deleteType}`,
+      payload
+    );
   return {
     fetchClusters,
     fetchClusterList,
@@ -132,5 +170,16 @@ export const clustersAPI = api => {
     deleteAnsibleClusterHard,
     fetchAnsibleCLusterProcessData,
     fetchAllConfigPropertiesWithValue,
+    fetchMasterHostNodesList,
+    fetchConfigFieldsForKubernetes,
+    createConfigForKubernetesCluster,
+    fetchConfigListForKubernetes,
+    deleteKubeConfig,
+    createKubernetesCluster,
+    fetchConfigVersionsPerConfig,
+    createKubernetesMasterNodeCluster,
+    deleteMasterNodeConfig,
+    fetchKubeClusterDataToUpgrade,
+    deleteClusterKube,
   };
 };

@@ -12,11 +12,13 @@ import { Modal } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
   CreateClusterIcon,
+  InfoIcon,
   ManageClusterIcon,
   SelectedTickIconOrange,
 } from '../../../assets';
 import { theme } from '../../../styles';
 import { history } from '../../../helpers/history';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { isEmpty } from 'lodash';
 
 const Container = styled.div`
@@ -97,9 +99,25 @@ const TickIconStyle = styled.div`
   right: 10px;
 `;
 
+const Divstyled = styled.div`
+  border: 2px solid
+    ${({ borderSelected }) =>
+      borderSelected ? theme.colors.primary : '#DDE4F0'};
+  background-color: ${({ borderSelected }) =>
+    borderSelected ? '#f5f7fa' : '#fff'};
+  border-radius: 8px;
+  color: #444445;
+  font-family: Red Hat Display;
+  font-weight: 600;
+  font-size: 14px;
+  height: 40px;
+  cursor: pointer;
+`;
+
 export const AddOrEditClusterModal = () => {
   const dispatch = useDispatch();
   const [selectedFlow, setSelectedFlow] = useState(null);
+  const [createNewClusterMethod, setCreateNewCusterMethod] = useState('VM');
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
 
   const isModalOpen = useSelector(
@@ -124,6 +142,9 @@ export const AddOrEditClusterModal = () => {
       setSelectedFlow(null);
     }
   }, [isModalOpen]);
+  useEffect(() => {
+    dispatch(ClustersActions.setCreateClusterMethod(createNewClusterMethod));
+  }, [createNewClusterMethod]);
 
   return (
     <Modal
@@ -219,6 +240,66 @@ export const AddOrEditClusterModal = () => {
           </div>
         </BulletContainer>
       </Container>
+      {selectedFlow === KDFM.CREATE_CLUSTER_FLOW && (
+        <div className="mt-4 row" style={{ height: '50px' }}>
+          <div className="col-6">
+            <Divstyled
+              className=" h-100 w-100 d-flex justify-content-center align-items-center"
+              borderSelected={createNewClusterMethod === 'VM'}
+              onClick={() => setCreateNewCusterMethod('VM')}
+            >
+              {' '}
+              <span data-tooltip-id={`tooltip-VM`}>
+                <InfoIcon
+                  color={
+                    createNewClusterMethod === 'VM'
+                      ? theme.colors.primary
+                      : theme.colors.darkGrey2
+                  }
+                />
+              </span>
+              &nbsp; Virtual Machine / Instances
+            </Divstyled>
+            <ReactTooltip
+              id={`tooltip-VM`}
+              place="top"
+              content={'THIS IS DEMO TEXT FOR VM'}
+              style={{
+                whiteSpace: 'normal',
+                zIndex: 9999,
+              }}
+            />
+          </div>
+          <div className="col-6">
+            <Divstyled
+              className=" h-100 w-100 d-flex justify-content-center align-items-center"
+              borderSelected={createNewClusterMethod === 'Kubernetes'}
+              onClick={() => setCreateNewCusterMethod('Kubernetes')}
+            >
+              {' '}
+              <span data-tooltip-id={`tooltip-Kubernetes`}>
+                <InfoIcon
+                  color={
+                    createNewClusterMethod === 'Kubernetes'
+                      ? theme.colors.primary
+                      : theme.colors.darkGrey2
+                  }
+                />
+              </span>{' '}
+              &nbsp;Kubernetes
+            </Divstyled>{' '}
+            <ReactTooltip
+              id={`tooltip-Kubernetes`}
+              place="top"
+              content={'THIS IS DEMO TEXT FOR KUBERNETES'}
+              style={{
+                whiteSpace: 'normal',
+                zIndex: 9999,
+              }}
+            />
+          </div>
+        </div>
+      )}
     </Modal>
   );
 };

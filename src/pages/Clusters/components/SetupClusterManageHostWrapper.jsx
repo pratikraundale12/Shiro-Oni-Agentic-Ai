@@ -29,6 +29,7 @@ import {
 import { AddHostIPModal } from './AddHostIPModal';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
 import { theme } from '../../../styles';
+import { KubernetesAddHostModal } from './KubeAddHostModal';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -70,6 +71,9 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
     LoadingSelectors.getLoading(state, 'fetchHostNodesList')
   );
   const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
+  const createClusterVisKubernetes = useSelector(
+    ClustersSelectors.getCreateClusterMethod
+  );
   const COLUMNS = [
     {
       label: 'Host Name',
@@ -201,14 +205,60 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       width: '10%',
     },
   ];
+  const COLUMNS_KUBERNETSTES_FLOW = [
+    {
+      label: 'Kubernetes Cluster Name',
+      renderCell: item => (
+        <div className="d-flex gap-2">{item?.kube_cluster_name || 'N/A'}</div>
+      ),
+
+      resize: true,
+      width: '80%',
+    },
+
+    {
+      label: 'Actions',
+      renderCell: item => (
+        <ActionTd>
+          {/* <IconButton
+            onClick={() => {
+              setHostToEdit(item);
+              dispatch(ClustersActions.setIsAddHostIPModalOpen(true));
+            }}
+            className="pencil-icon-schedule-list"
+          >
+            <PencilIcon width={16} height={16} />
+          </IconButton> */}
+          {!item?.is_selected && (
+            <IconButton
+              onClick={() => {
+                setIsDeleteModalOpen(true);
+                setHostToDelete(item);
+              }}
+              className="pencil-icon-schedule-list"
+            >
+              <DeleteSmallIcon width={16} height={16} color="red" />
+            </IconButton>
+          )}
+        </ActionTd>
+      ),
+      resize: true,
+      width: '20%',
+    },
+  ];
   useEffect(() => {
-    dispatch(
-      ClustersActions.fetchHostNodesList({
-        selected: true,
-        clusterId: null,
-        update_node: false,
-      })
-    );
+    if (createClusterVisKubernetes === 'VM') {
+      dispatch(
+        ClustersActions.fetchHostNodesList({
+          selected: true,
+          clusterId: null,
+          update_node: false,
+        })
+      );
+    } else {
+      dispatch(ClustersActions.fetchMasterHostNodesList());
+    }
+
     return () => {
       ClustersActions.setHostIpList([]);
       dispatch(ClustersActions.setLastVisitedTab('manage_host'));
@@ -222,27 +272,39 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <TableContainer>
           <div className="d-flex justify-content-between mt-3 mb-3">
-            <div className="ms-3 mt-2">
-              <div style={{ fontSize: '14px', fontWeight: '600' }}>Legends</div>
-              <NotePadIcon
-                height="21"
-                width="21"
-                color={theme.colors.primary}
-              />{' '}
-              : Host with certificates &nbsp;&nbsp;
-              <NotePadIcon
-                height="21"
-                width="21"
-                color={theme.colors.darkGrey}
-              />{' '}
-              : Host with no certificates
-            </div>
+            {
+              <div className="ms-3 mt-2">
+                {createClusterVisKubernetes === 'VM' && (
+                  <>
+                    <div style={{ fontSize: '14px', fontWeight: '600' }}>
+                      Legends
+                    </div>
+                    <NotePadIcon
+                      height="21"
+                      width="21"
+                      color={theme.colors.primary}
+                    />{' '}
+                    : Host with certificates &nbsp;&nbsp;
+                    <NotePadIcon
+                      height="21"
+                      width="21"
+                      color={theme.colors.darkGrey}
+                    />{' '}
+                    : Host with no certificates
+                  </>
+                )}
+              </div>
+            }
             <div className="col-auto me-3">
               <Button
                 size="md"
-                onClick={() =>
-                  dispatch(ClustersActions.setIsAddHostIPModalOpen(true))
-                }
+                onClick={() => {
+                  if (createClusterVisKubernetes === 'VM') {
+                    dispatch(ClustersActions.setIsAddHostIPModalOpen(true));
+                  } else {
+                    dispatch(ClustersActions.setkubeHostModalOpen(true));
+                  }
+                }}
                 className="w-auto px-3"
                 style={{ minWidth: 'auto' }}
               >
@@ -251,7 +313,9 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
                   style={{ fontSize: '14px', fontWeight: '750' }}
                 >
                   <PlusCircleIcon height={19} width={19} color={'#fff'} />
-                  Add New Host
+                  {createClusterVisKubernetes === 'VM'
+                    ? 'Add New Host'
+                    : 'Add Kube Cluster'}
                 </div>
               </Button>
             </div>
@@ -259,7 +323,11 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           <div className="ms-3 me-3">
             <Table
               data={listHostIpData || []}
-              columns={COLUMNS}
+              columns={
+                createClusterVisKubernetes === 'VM'
+                  ? COLUMNS
+                  : COLUMNS_KUBERNETSTES_FLOW
+              }
               customNoDataText="No Host IP Available"
               tableWithFullHeight={true}
             />
@@ -272,9 +340,19 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           icon={<DeleteDustbinIcon />}
           isOpen={isDeleteModalOpen}
           onSubmit={() => {
-            dispatch(
-              ClustersActions.deleteIndividualHost({ hostId: hostToDelete?.id })
-            );
+            if (createClusterVisKubernetes === 'VM') {
+              dispatch(
+                ClustersActions.deleteIndividualHost({
+                  hostId: hostToDelete?.id,
+                })
+              );
+            } else {
+              dispatch(
+                ClustersActions.deleteMasterNodeConfig({
+                  hostId: hostToDelete?.id,
+                })
+              );
+            }
             setIsDeleteModalOpen(false);
           }}
           onRequestClose={() => {
@@ -312,6 +390,10 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
         </BottomButtonDiv>
       </BottomButton>
       <AddHostIPModal hostToEdit={hostToEdit} setHostToEdit={setHostToEdit} />
+      <KubernetesAddHostModal
+        ostToEdit={hostToEdit}
+        setHostToEdit={setHostToEdit}
+      />
     </Wrapper>
   );
 };

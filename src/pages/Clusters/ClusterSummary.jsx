@@ -83,13 +83,7 @@ export const ClusterSummary = () => {
     {
       label: 'Address',
       renderCell: item => (
-        <StyledLink
-          target="_blank"
-          rel="noopener noreferrer"
-          href={item?.nodeUrl}
-        >
-          {item?.nodeUrl}
-        </StyledLink>
+       <TextRender text={item.address} />
       ),
       width: '20%',
       resize: true,
