@@ -2,7 +2,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { Button, CheckboxField, SelectField } from '../../../shared';
-import { FullPageLoader, Table } from '../../../components';
+import {
+  FullPageLoader,
+  LoaderContainer,
+  Table,
+  TextRender,
+} from '../../../components';
 import GroupUserIcon from '../../../assets/Icons/GroupUserIcon';
 import NewUserIcon from '../../../assets/Icons/NewUserIcon';
 import {
@@ -15,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty, isEqual, sortBy } from 'lodash';
 import { toast } from 'react-toastify';
 import { theme } from '../../../styles';
-import { DocumentTextIcon, SmallSearchIcon } from '../../../assets';
+import { DocumentTextIcon, NoDataIcon, SmallSearchIcon } from '../../../assets';
 
 const Container = styled.div`
   background-color: #fbfcff;
@@ -23,6 +28,7 @@ const Container = styled.div`
   border: 1px solid #dde4f0;
   padding: 20px 15px;
   border-radius: 20px;
+  height: 87%;
 `;
 
 const MainContent = styled.div`
@@ -31,7 +37,7 @@ const MainContent = styled.div`
 
 const Sidebar = styled.div`
   min-width: 280px;
-  background-color: #f8f9fa;
+  background-color: #fff;
   border: 1px solid #dde4f0;
   border-radius: 20px;
   padding: 14px 6px;
@@ -40,12 +46,12 @@ const Sidebar = styled.div`
 
 const SidebarItem = styled.div`
   padding: 10px 12px;
+  margin-bottom: 2px;
   font-size: 16px;
   font-weight: 500;
   line-height: 20px;
   color: #444445;
   cursor: pointer;
-  border-bottom: 1px solid #e9ecef;
 
   ${props =>
     props.active &&
@@ -53,6 +59,7 @@ const SidebarItem = styled.div`
     background-color: ${theme.colors.primary};
     color: #ffff ;
     font-weight: 500;
+    border-radius: 8px;
   `}
 `;
 
@@ -64,9 +71,8 @@ const ContentArea = styled.div`
 
 const TabContainer = styled.div`
   display: flex;
-  border-bottom: 1px solid #e9ecef;
-  background-color: white;
-  justify-content: space-between;
+  justify-content: left;
+  width: 100%;
 `;
 
 const Tab = styled.button`
@@ -85,13 +91,20 @@ const Tab = styled.button`
   ${props =>
     props.active &&
     `
-    color: #ff6b35;
-    border-bottom-color: #ff6b35;
+    color: #FF7A00;
+    border-bottom-color: #FF7A00;
   `}
+  &:hover {
+    color: rgba(255, 122, 0, 1);
+  }
 `;
 
 const TabIcon = styled.span`
   font-size: 16px;
+
+  ${Tab}:hover & svg path {
+    stroke: rgba(255, 122, 0, 1);
+  }
 `;
 
 const SearchContainer = styled.div`
@@ -107,7 +120,7 @@ const SearchContainer = styled.div`
 
 const Search = styled.input`
   width: 100%;
-  border-radius: 2px;
+  border-radius: 4px;
   padding: 12px 12px 12px 40px;
   font-size: 16px;
   margin: 14px 0;
@@ -155,6 +168,14 @@ const LeftsidebarScroll = styled.div`
   max-height: calc(100vh - 370px);
 `;
 
+const LoadingText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+`;
+
 const NiFiClusterAccessManagement = () => {
   const [activeTab, setActiveTab] = useState('groups');
   const [activeSidebarItem, setActiveSidebarItem] = useState(null);
@@ -185,6 +206,7 @@ const NiFiClusterAccessManagement = () => {
     });
   };
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
+  console.log('Users and Groups:', clusterUsers);
   const rawGroup = clusterUsers?.userGroups?.map(ele => ({
     identity: ele?.identity,
     id: ele?.id,
@@ -271,14 +293,17 @@ const NiFiClusterAccessManagement = () => {
       const columns = [
         {
           label: nameColumnLabel,
-          renderCell: item => (
-            <div style={{ fontSize: '14px', color: '#212529' }}>
-              {item.name}
-            </div>
-          ),
-          width: `12%`,
+          renderCell: item => <TextRender text={item.name} />,
         },
       ];
+
+      // compute widths based on policy(action) count
+      const policyCount = activeSidebarItem?.policies?.length || 0;
+      const policyMinPx = 270; // control width of columns
+      const nameColWidth = policyCount === 0 ? '1fr' : '20%';
+      const otherColWidth = `minmax(${policyMinPx}px, 1fr)`;
+      columns[0].width = nameColWidth;
+
       const handlePropertyHeaderClick = (item, click) => {
         if (activeTab === 'groups') {
           setUsersActions(prevState => ({
@@ -307,19 +332,12 @@ const NiFiClusterAccessManagement = () => {
         }));
         handlePropertyHeaderClick(item, checked);
       };
+
       activeSidebarItem?.policies?.forEach((sidebarItem, index) => {
         columns.push({
           label: (
             <>
-              {' '}
               <div className="d-flex justify-content-center gap-1 ms-1">
-                {/* <CheckboxField
-                  // name={`${sidebarItem?.id}`}
-                  // checked={hasPermission || hasUserPermission}
-                  onChange={e => {
-                    handlePropertyHeaderClick(sidebarItem, e.target.checked);
-                  }}
-                /> */}
                 <CheckboxField
                   name={`name-${sidebarItem.id}`}
                   checked={checkboxStates[sidebarItem.id] || false}
@@ -429,8 +447,7 @@ const NiFiClusterAccessManagement = () => {
               </div>
             );
           },
-
-          width: `30%`,
+          width: otherColWidth,
         });
       });
 
@@ -440,7 +457,15 @@ const NiFiClusterAccessManagement = () => {
     return createDynamicColumns(
       activeTab === 'groups' ? 'All Groups' : 'All Users'
     );
-  }, [activeSidebarItem, policiesAndActions, activeTab, usersActions]);
+  }, [
+    activeSidebarItem,
+    policiesAndActions,
+    activeTab,
+    usersActions,
+    checkboxStates,
+    rawGroup,
+    rawUsers,
+  ]);
 
   useEffect(() => {
     setGroupsColumns(dynamicColumns);
@@ -464,7 +489,7 @@ const NiFiClusterAccessManagement = () => {
         })
       );
     } else {
-      toast.info('Please login to cluster');
+      toast.info('Please login to the cluster.');
     }
   }, [dispatch, selectedCluster]);
 
@@ -565,148 +590,174 @@ const NiFiClusterAccessManagement = () => {
     });
   };
 
+  const getSearchPlaceholder = () => {
+    if (activeTab === 'groups') return 'Select Group Names';
+    if (activeTab === 'users') return 'Select User Names';
+    return 'Search';
+  };
+
   return (
     <>
       <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
-      <Flex className="mb-4">
+      <Flex className="mb-3">
         <Flex>
           <Title>Cluster Access Management</Title>
         </Flex>
-        <ButtonsContainer>
-          <Button
-            size="sm"
-            disabled={isEmpty(activeSidebarItem) || !disableSaveBtn}
-            onClick={() => {
-              handleSavePermission();
-            }}
-          >
-            Save Changes
-          </Button>
-        </ButtonsContainer>
+        {selectedCluster?.value && (
+          <ButtonsContainer>
+            <Button
+              size="sm"
+              disabled={isEmpty(activeSidebarItem) || !disableSaveBtn}
+              onClick={() => {
+                handleSavePermission();
+              }}
+            >
+              Save Changes
+            </Button>
+          </ButtonsContainer>
+        )}
       </Flex>
       <Container>
-        <MainContent className="gap-3">
-          <Sidebar>
-            <LeftsidebarScroll className="overflow-y-auto">
-              {sidebarItems.map(item => (
-                <SidebarItem
-                  key={item?.name}
-                  active={activeSidebarItem?.name === item?.name}
-                  onClick={() => {
-                    setActiveSidebarItem(item);
-                    handleSidebarClick();
-                  }}
-                >
-                  {item?.name}
-                </SidebarItem>
-              ))}
-            </LeftsidebarScroll>
-          </Sidebar>
+        {selectedCluster?.value ? (
+          <MainContent className="gap-3">
+            <Sidebar>
+              <LeftsidebarScroll className="overflow-y-auto">
+                {sidebarItems.map(item => (
+                  <SidebarItem
+                    key={item?.name}
+                    active={activeSidebarItem?.name === item?.name}
+                    onClick={() => {
+                      setActiveSidebarItem(item);
+                      handleSidebarClick();
+                    }}
+                  >
+                    {item?.name}
+                  </SidebarItem>
+                ))}
+              </LeftsidebarScroll>
+            </Sidebar>
 
-          <ContentArea>
-            {
-              <>
-                <div className="d-flex justify-content-between">
-                  <TabContainer>
-                    <Tab
-                      active={activeTab === 'groups'}
-                      onClick={() => {
-                        setActiveTab('groups');
-                        handleSidebarClick();
-                      }}
-                    >
-                      <TabIcon>
-                        <GroupUserIcon />
-                      </TabIcon>
-                      Groups
-                    </Tab>
-                    <Tab
-                      active={activeTab === 'users'}
-                      onClick={() => {
-                        setActiveTab('users');
-                        handleSidebarClick();
-                      }}
-                    >
-                      <TabIcon>
-                        <NewUserIcon />
-                      </TabIcon>
-                      Users
-                    </Tab>
-                  </TabContainer>{' '}
-                  {activeTab !== 'groups' && (
-                    <SelectField
-                      id="policy"
-                      className="w-25"
-                      name="policy"
-                      icon={<DocumentTextIcon />}
-                      options={groupOptions || []}
-                      value={selectedGroupDropdown}
-                      placeholder={'Select Group'}
-                      showCircleIcon={true}
-                      sortAlphabetically={false}
-                      onChange={e => {
-                        setSelectedGroupDropdown(e);
-                      }}
-                    />
-                  )}
-                </div>
-                {
-                  <>
-                    <SearchContainer>
-                      <SmallSearchIcon
-                        width={18}
-                        height={18}
-                        color={theme.colors.darkGrey1}
+            <ContentArea>
+              {
+                <>
+                  <div
+                    className="d-flex justify-content-between align-items-center"
+                    style={{ borderBottom: '1px solid #e9ecef' }}
+                  >
+                    <TabContainer>
+                      <Tab
+                        active={activeTab === 'groups'}
+                        onClick={() => {
+                          setActiveTab('groups');
+                          handleSidebarClick();
+                        }}
+                      >
+                        <TabIcon>
+                          <GroupUserIcon
+                            color={
+                              activeTab === 'groups' ? '#f0701a' : '#6c757d'
+                            }
+                          />
+                        </TabIcon>
+                        Groups
+                      </Tab>
+                      <Tab
+                        active={activeTab === 'users'}
+                        onClick={() => {
+                          setActiveTab('users');
+                          handleSidebarClick();
+                        }}
+                      >
+                        <TabIcon>
+                          <NewUserIcon
+                            color={
+                              activeTab === 'users' ? '#f0701a' : '#6c757d'
+                            }
+                          />
+                        </TabIcon>
+                        Users
+                      </Tab>
+                    </TabContainer>
+                    {activeTab !== 'groups' && (
+                      <SelectField
+                        id="policy"
+                        className="w-25 mb-0"
+                        name="policy"
+                        icon={<DocumentTextIcon />}
+                        options={groupOptions || []}
+                        value={selectedGroupDropdown}
+                        placeholder={'Select Group'}
+                        showCircleIcon={true}
+                        sortAlphabetically={false}
+                        onChange={e => {
+                          setSelectedGroupDropdown(e);
+                        }}
                       />
-                      <Search
-                        type="search"
-                        placeholder={`search ${activeTab}`}
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                      />
-                    </SearchContainer>
+                    )}
+                  </div>
+                  {
+                    <>
+                      <SearchContainer>
+                        <SmallSearchIcon
+                          width={18}
+                          height={18}
+                          color={theme.colors.darkGrey1}
+                        />
+                        <Search
+                          type="search"
+                          placeholder={getSearchPlaceholder()}
+                          value={searchTerm}
+                          onChange={e => setSearchTerm(e.target.value)}
+                        />
+                      </SearchContainer>
 
-                    <div
-                      style={{
-                        backgroundColor: '#F5F7FA',
-                        borderRadius: '14px',
-                      }}
-                    >
-                      <TableHeight
-                        data={
-                          isEmpty(activeSidebarItem)
-                            ? []
-                            : activeTab === 'groups'
-                              ? filteredDataUsersGrp
-                              : filteredDataUsers
-                        }
-                        columns={
-                          isEmpty(activeSidebarItem)
-                            ? []
-                            : activeTab === 'groups'
-                              ? groupsColumns
-                              : usersColumns
-                        }
-                        className={
-                          activeTab === 'groups'
-                            ? 'groups-table'
-                            : 'users-table'
-                        }
-                        emptyMessage={
-                          'No Data Found'
-                          // !isEmpty(activeSidebarItem) &&
-                          // isEmpty(filteredDataUsersGrp)
-                          //   ? 'No Data Found'
-                          //   : 'Select Any Policy'
-                        }
-                      />
-                    </div>
-                  </>
-                }
-              </>
-            }
-          </ContentArea>
-        </MainContent>
+                      <div
+                        style={{
+                          backgroundColor: '#F5F7FA',
+                          borderRadius: '14px',
+                        }}
+                      >
+                        <TableHeight
+                          data={
+                            isEmpty(activeSidebarItem)
+                              ? []
+                              : activeTab === 'groups'
+                                ? filteredDataUsersGrp
+                                : filteredDataUsers
+                          }
+                          columns={
+                            isEmpty(activeSidebarItem)
+                              ? []
+                              : activeTab === 'groups'
+                                ? groupsColumns
+                                : usersColumns
+                          }
+                          className={
+                            activeTab === 'groups'
+                              ? 'groups-table'
+                              : 'users-table'
+                          }
+                          emptyMessage={
+                            'No Data Found'
+                            // !isEmpty(activeSidebarItem) &&
+                            // isEmpty(filteredDataUsersGrp)
+                            //   ? 'No Data Found'
+                            //   : 'Select Any Policy'
+                          }
+                        />
+                      </div>
+                    </>
+                  }
+                </>
+              }
+            </ContentArea>
+          </MainContent>
+        ) : (
+          <LoaderContainer>
+            <NoDataIcon width={140} />
+            <LoadingText>No Policies Available</LoadingText>
+          </LoaderContainer>
+        )}
       </Container>
     </>
   );
