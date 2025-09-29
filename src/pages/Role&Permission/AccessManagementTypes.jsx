@@ -8,7 +8,7 @@ import { RadioField } from '../../shared/FormInputs';
 const OptionsContainer = styled.div`
   display: flex;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 10px;
 `;
 
 const AccessManagementTypes = () => {

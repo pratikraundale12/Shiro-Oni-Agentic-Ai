@@ -206,7 +206,6 @@ const NiFiClusterAccessManagement = () => {
     });
   };
   const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
-  console.log('Users and Groups:', clusterUsers);
   const rawGroup = clusterUsers?.userGroups?.map(ele => ({
     identity: ele?.identity,
     id: ele?.id,
@@ -283,6 +282,17 @@ const NiFiClusterAccessManagement = () => {
     }
   }, [activeSidebarItem?.policies]);
 
+  const userGroupIdentities = clusterUsers?.userGroups?.map(name => {
+    return {
+      name: name?.identity,
+      id: name?.id,
+    };
+  });
+
+  const filteredDataUsersGrp = userGroupIdentities?.filter(item =>
+    item?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const dynamicColumns = useMemo(() => {
     function getEqualParts(num) {
       if (!num || num <= 0) return 0;
@@ -304,136 +314,172 @@ const NiFiClusterAccessManagement = () => {
       const otherColWidth = `minmax(${policyMinPx}px, 1fr)`;
       columns[0].width = nameColWidth;
 
-      const handlePropertyHeaderClick = (item, click) => {
-        if (activeTab === 'groups') {
-          setUsersActions(prevState => ({
-            ...prevState,
-            policies: prevState.policies.map(policy =>
-              policy.policyId === item?.id
-                ? { ...policy, userGroups: click ? rawGroup : [] }
-                : policy
-            ),
+      const visibleRows =
+        (activeTab === 'groups' ? filteredDataUsersGrp : filteredDataUsers) ||
+        [];
+
+      const handleHeaderToggle = (sidebarItem, checked) => {
+        setCheckboxStates(prev => ({ ...prev, [sidebarItem.id]: checked }));
+
+        if (checked) {
+          const toAdd = visibleRows.map(row => ({
+            id: row.id,
+            identity: row.name,
           }));
+          if (activeTab === 'groups') {
+            setUsersActions(prev => ({
+              ...prev,
+              policies: prev.policies.map(policy =>
+                policy.policyId === sidebarItem.id
+                  ? { ...policy, userGroups: toAdd }
+                  : policy
+              ),
+            }));
+          } else {
+            setUsersActions(prev => ({
+              ...prev,
+              policies: prev.policies.map(policy =>
+                policy.policyId === sidebarItem.id
+                  ? { ...policy, users: toAdd, userCount: toAdd.length }
+                  : policy
+              ),
+            }));
+          }
         } else {
-          setUsersActions(prevState => ({
-            ...prevState,
-            policies: prevState.policies.map(policy =>
-              policy.policyId === item?.id
-                ? { ...policy, users: click ? rawUsers : [] }
+          setUsersActions(prev => ({
+            ...prev,
+            policies: prev.policies.map(policy =>
+              policy.policyId === sidebarItem.id
+                ? activeTab === 'groups'
+                  ? { ...policy, userGroups: [] }
+                  : { ...policy, users: [], userCount: 0 }
                 : policy
             ),
           }));
         }
       };
-      const handleCheckboxChange = (item, checked) => {
-        setCheckboxStates(prev => ({
-          ...prev,
-          [item.id]: checked,
-        }));
-        handlePropertyHeaderClick(item, checked);
+
+      const handleRowToggle = (check, item, sidebarItem) => {
+        if (activeTab === 'groups') {
+          if (check) {
+            setUsersActions(prev => ({
+              ...prev,
+              policies: prev.policies.map(policy =>
+                policy.policyId === sidebarItem?.id
+                  ? {
+                      ...policy,
+                      userGroups: policy.userGroups.some(
+                        group => group.id === item.id
+                      )
+                        ? policy.userGroups
+                        : [
+                            ...policy.userGroups,
+                            { id: item.id, identity: item.name },
+                          ],
+                    }
+                  : policy
+              ),
+            }));
+          } else {
+            setUsersActions(prev => ({
+              ...prev,
+              policies: prev.policies.map(policy =>
+                policy.policyId === sidebarItem?.id
+                  ? {
+                      ...policy,
+                      userGroups: policy.userGroups.filter(
+                        group => group.id !== item.id
+                      ),
+                    }
+                  : policy
+              ),
+            }));
+          }
+        } else {
+          if (check) {
+            setUsersActions(prev => ({
+              ...prev,
+              policies: prev.policies.map(policy =>
+                policy.policyId === sidebarItem.id
+                  ? {
+                      ...policy,
+                      users: [
+                        ...policy.users,
+                        { id: item.id, identity: item.name },
+                      ],
+                      userCount: policy.userCount + 1,
+                    }
+                  : policy
+              ),
+            }));
+          } else {
+            setUsersActions(prev => ({
+              ...prev,
+              policies: prev.policies.map(policy =>
+                policy.policyId === sidebarItem.id
+                  ? {
+                      ...policy,
+                      users: policy.users.filter(user => user.id !== item.id),
+                      userCount: policy.userCount - 1,
+                    }
+                  : policy
+              ),
+            }));
+          }
+        }
       };
 
       activeSidebarItem?.policies?.forEach((sidebarItem, index) => {
+        const targetPolicy = usersActions?.policies?.find(
+          policy => policy.policyId === sidebarItem.id
+        );
+        const targetArr =
+          activeTab === 'groups'
+            ? targetPolicy?.userGroups || []
+            : targetPolicy?.users || [];
+
+        const visibleIds = visibleRows.map(r => r.id);
+        const isAllSelected =
+          visibleRows.length > 0 &&
+          visibleIds.every(id => targetArr.some(target => target.id === id));
+        const isSomeSelected =
+          visibleRows.length > 0 &&
+          visibleIds.some(id => targetArr.some(target => target.id === id)) &&
+          !isAllSelected;
+        const headerDisabled = visibleRows.length === 0;
+
         columns.push({
           label: (
-            <>
-              <div className="d-flex justify-content-center gap-1 ms-1">
-                <CheckboxField
-                  name={`name-${sidebarItem.id}`}
-                  checked={checkboxStates[sidebarItem.id] || false}
-                  onCheckBoxChange={e =>
-                    handleCheckboxChange(sidebarItem, e.target.checked)
-                  }
-                />
-                {activeSidebarItem?.hasSubNames
+            <div
+              className="d-flex justify-content-center gap-1 ms-1"
+              style={{
+                alignItems: 'center',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+              title={
+                activeSidebarItem?.hasSubNames
                   ? activeSidebarItem?.policies?.[index]?.subName
-                  : sidebarItem?.actionName}
-              </div>
-            </>
+                  : sidebarItem?.actionName
+              }
+            >
+              <CheckboxField
+                name={`name-${sidebarItem.id}`}
+                checked={isAllSelected}
+                indeterminate={isSomeSelected}
+                disabled={headerDisabled}
+                onCheckBoxChange={e =>
+                  handleHeaderToggle(sidebarItem, e.target.checked)
+                }
+              />
+              {activeSidebarItem?.hasSubNames
+                ? activeSidebarItem?.policies?.[index]?.subName
+                : sidebarItem?.actionName}
+            </div>
           ),
           renderCell: item => {
-            const targetPolicies = usersActions?.policies?.filter(
-              ele => ele?.policyId === sidebarItem?.id
-            );
-            const targetUserArrBasedOnAction =
-              activeTab === 'groups'
-                ? targetPolicies?.[0]?.userGroups
-                : targetPolicies?.[0]?.users;
-
-            const permissionExists = targetUserArrBasedOnAction?.some(
-              obj => obj.id === item?.id
-            );
-            const handleChangeCheck = (check, item, sidebarItem) => {
-              if (activeTab === 'groups') {
-                if (check) {
-                  setUsersActions(prev => ({
-                    ...prev,
-                    policies: prev.policies.map(policy =>
-                      policy.policyId === sidebarItem?.id
-                        ? {
-                            ...policy,
-                            userGroups: policy.userGroups.some(
-                              group => group.id === item?.id
-                            )
-                              ? policy.userGroups
-                              : [
-                                  ...policy.userGroups,
-                                  { id: item.id, identity: item.name },
-                                ],
-                          }
-                        : policy
-                    ),
-                  }));
-                } else {
-                  setUsersActions(prev => ({
-                    ...prev,
-                    policies: prev.policies.map(policy =>
-                      policy.policyId === sidebarItem?.id
-                        ? {
-                            ...policy,
-                            userGroups: policy.userGroups.filter(
-                              group => group.id !== item?.id
-                            ),
-                          }
-                        : policy
-                    ),
-                  }));
-                }
-              } else {
-                if (check) {
-                  setUsersActions(prevData => ({
-                    ...prevData,
-                    policies: prevData.policies.map(policy =>
-                      policy.policyId === sidebarItem.id
-                        ? {
-                            ...policy,
-                            users: [
-                              ...policy.users,
-                              { id: item.id, identity: item.name },
-                            ],
-                            userCount: policy.userCount + 1,
-                          }
-                        : policy
-                    ),
-                  }));
-                } else {
-                  setUsersActions(prevData => ({
-                    ...prevData,
-                    policies: prevData.policies.map(policy =>
-                      policy.policyId === sidebarItem.id
-                        ? {
-                            ...policy,
-                            users: policy.users.filter(
-                              group => group.id !== item?.id
-                            ),
-                            userCount: policy.userCount - 1,
-                          }
-                        : policy
-                    ),
-                  }));
-                }
-              }
-            };
+            const permissionExists = targetArr.some(obj => obj.id === item?.id);
 
             return (
               <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -441,7 +487,7 @@ const NiFiClusterAccessManagement = () => {
                   name={`${sidebarItem?.actionName}-${item.name}`}
                   checked={permissionExists}
                   onChange={e => {
-                    handleChangeCheck(e.target.checked, item, sidebarItem);
+                    handleRowToggle(e.target.checked, item, sidebarItem);
                   }}
                 />
               </div>
@@ -463,8 +509,8 @@ const NiFiClusterAccessManagement = () => {
     activeTab,
     usersActions,
     checkboxStates,
-    rawGroup,
-    rawUsers,
+    filteredDataUsers,
+    filteredDataUsersGrp,
   ]);
 
   useEffect(() => {
@@ -533,16 +579,6 @@ const NiFiClusterAccessManagement = () => {
     })) || []),
   ];
 
-  const userGroupIdentities = clusterUsers?.userGroups?.map(name => {
-    return {
-      name: name?.identity,
-      id: name?.id,
-    };
-  });
-
-  const filteredDataUsersGrp = userGroupIdentities?.filter(item =>
-    item?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
   const handleSavePermission = () => {
     const actionPayload = activeSidebarItem?.policies?.map(ele => ele?.action);
     const subPayload = activeSidebarItem?.policies?.map(
