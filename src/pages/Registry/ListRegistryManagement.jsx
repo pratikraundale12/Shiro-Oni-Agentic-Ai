@@ -122,26 +122,25 @@ const ListRegistryManagementPage = () => {
               wordWrap: 'break-word',
             }}
           />
-          {
-            userPermissions.includes('delete_registry') && (
-              <button
-                onClick={() => {
-                  setSelectedItem(item);
-                  dispatch(RegistryActions.setIsDeleteModalOpen(true));
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                }}
-                data-tooltip-id={`tooltip-group-delete-registry`}
-              >
-                <IconButton>
-                  <DeleteSmallIcon width={14} height={14} color="red" />
-                </IconButton>
-              </button>
-            )}
+          {userPermissions.includes('delete_registry') && (
+            <button
+              onClick={() => {
+                setSelectedItem(item);
+                dispatch(RegistryActions.setIsDeleteModalOpen(true));
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+              }}
+              data-tooltip-id={`tooltip-group-delete-registry`}
+            >
+              <IconButton>
+                <DeleteSmallIcon width={14} height={14} color="red" />
+              </IconButton>
+            </button>
+          )}
           <ReactTooltip
             id={`tooltip-group-delete-registry`}
             place="left"
