@@ -7,7 +7,12 @@ import {
   SelectField,
   SwitchButton,
 } from '../../../shared';
-import { FullPageLoader, Table } from '../../../components';
+import {
+  FullPageLoader,
+  IconButton,
+  LoaderContainer,
+  Table,
+} from '../../../components';
 import GroupUserIcon from '../../../assets/Icons/GroupUserIcon';
 import NewUserIcon from '../../../assets/Icons/NewUserIcon';
 import {
@@ -20,11 +25,15 @@ import {
   RolesSelectors,
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { DocumentTextIcon, SmallSearchIcon } from '../../../assets';
+import {
+  DocumentTextIcon,
+  Hierarchy,
+  NoDataIcon,
+  SmallSearchIcon,
+} from '../../../assets';
 import { isEmpty } from 'lodash';
 import Breadcrumb from '../../../shared/Breadcrumb';
 import { theme } from '../../../styles';
-import Hierarchy from '../../../assets/Icons/Hierarchy';
 
 const Container = styled.div`
   background-color: #fbfcff;
@@ -32,36 +41,43 @@ const Container = styled.div`
   border: 1px solid #dde4f0;
   padding: 20px 15px;
   border-radius: 20px;
+  height: 87%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const MainContent = styled.div`
   display: flex;
+  flex: 1;
+  min-height: 0;
 `;
 
 const Sidebar = styled.div`
   min-width: 280px;
-  background-color: #f8f9fa;
+  background-color: #fff;
   border: 1px solid #dde4f0;
   border-radius: 20px;
   padding: 14px 6px;
   overflow: hidden;
+  height: 100%;
+  min-height: 0;
 `;
 
 const SidebarItem = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 10px 12px;
+  align-items: center;
+  padding: 2px 12px;
   font-size: 16px;
   font-weight: 500;
   line-height: 20px;
   color: #444445;
   cursor: pointer;
-  border-bottom: 1px solid #e9ecef;
 
   ${props =>
     props.active &&
     `
-    background-color: #E4842B;
+    background-color: ${theme.colors.primary};
     color: #fff;
     font-weight: 500;
   `}
@@ -84,13 +100,17 @@ const NodataAvailable = styled.div`
 const ContentArea = styled.div`
   flex: 1;
   padding: 0;
+  overflow: hidden;
+  height: 100%;
+  min-height: 0;
+  border-radius: 20px;
+  border-bottom: 1px solid #dde4f0;
 `;
 
 const TabContainer = styled.div`
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid #e9ecef;
-  background-color: white;
 `;
 
 const Tab = styled.button`
@@ -109,13 +129,20 @@ const Tab = styled.button`
   ${props =>
     props.active &&
     `
-    color: #ff6b35;
-    border-bottom-color: #ff6b35;
+    color: #FF7A00;
+    border-bottom-color: #FF7A00;
   `}
+  &:hover {
+    color: rgba(255, 122, 0, 1);
+  }
 `;
 
 const TabIcon = styled.span`
   font-size: 16px;
+
+  ${Tab}:hover & svg path {
+    stroke: rgba(255, 122, 0, 1);
+  }
 `;
 
 const SearchContainer = styled.div`
@@ -131,7 +158,7 @@ const SearchContainer = styled.div`
 
 const Search = styled.input`
   width: 100%;
-  border-radius: 2px;
+  border-radius: 4px;
   padding: 12px 12px 12px 40px;
   font-size: 16px;
   margin: 14px 0;
@@ -167,6 +194,7 @@ const Title = styled.h3`
 
 const TableHeight = styled(Table)`
   height: calc(100vh - 410px);
+  padding-bottom: 50px;
 
   & thead th {
     text-align: center;
@@ -191,6 +219,14 @@ const BreadcrumbContainer = styled.div`
 const SidebarButton = styled.button`
   padding: 3px;
   border-radius: 100%;
+`;
+
+const LoadingText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
 `;
 
 const NiFiProcessGroupAccessManagement = () => {
@@ -436,7 +472,7 @@ const NiFiProcessGroupAccessManagement = () => {
   // Handle select all functionality
   const handleSelectAll = checked => {
     if (!selectedPolicy) {
-      toast.info('Please select policy');
+      toast.info('Please select a policy.');
       return;
     }
 
@@ -517,7 +553,7 @@ const NiFiProcessGroupAccessManagement = () => {
         const handleChangeCheck = (check, item) => {
           // Check if no policy is selected and user is trying to check the checkbox
           if (check && !selectedPolicy) {
-            toast.info('Please select policy');
+            toast.info('Please select a policy.');
             return;
           }
 
@@ -623,7 +659,7 @@ const NiFiProcessGroupAccessManagement = () => {
   // Show toast message when no cluster is selected
   useEffect(() => {
     if (!selectedCluster?.value) {
-      toast.info('Please login to cluster');
+      toast.info('Please login to the cluster.');
     }
   }, [selectedCluster]);
 
@@ -675,8 +711,8 @@ const NiFiProcessGroupAccessManagement = () => {
         <Flex>
           <Title>Process Group Access Management</Title>
         </Flex>
-        <div className="d-flex align-items-center justify-content-end gap-xl-3 gap-2">
-          {selectedCluster?.value && (
+        {selectedCluster?.value && (
+          <div className="d-flex align-items-center justify-content-end gap-xl-3 gap-2">
             <div>
               <SwitchButton
                 id="openModalInput1"
@@ -686,217 +722,292 @@ const NiFiProcessGroupAccessManagement = () => {
                 isDisabled={false}
               />
             </div>
-          )}
-          <ButtonsContainer>
-            <Button
-              size="sm"
-              onClick={() => {
-                handleSavePermission();
-              }}
-              disabled={!hasChanges()}
-            >
-              Save Changes
-            </Button>
-          </ButtonsContainer>
-        </div>
+            <ButtonsContainer>
+              <Button
+                size="sm"
+                onClick={() => {
+                  handleSavePermission();
+                }}
+                disabled={!hasChanges()}
+              >
+                Save Changes
+              </Button>
+            </ButtonsContainer>
+          </div>
+        )}
       </Flex>
       <Container>
-        <MainContent className="gap-3">
-          <Sidebar>
-            <SearchContainer>
-              <SmallSearchIcon
-                width={18}
-                height={18}
-                color={theme.colors.darkGrey1}
-              />
-              <Search
-                type="search"
-                placeholder="Search process groups"
-                value={sidebarSearchTerm}
-                onChange={e => setSidebarSearchTerm(e.target.value)}
-              />
-            </SearchContainer>
-            <LeftsidebarScroll className="overflow-y-auto">
-              {isEmpty(namespaces?.data) && (
-                <>
-                  {filteredProcessGroupList.length > 0 ? (
-                    filteredProcessGroupList.map(item => (
-                      <SidebarItem
-                        key={item?.id}
-                        active={activeSidebarItem?.id === item?.id}
-                        disabled={isSwitchEnabled}
-                        onClick={() =>
-                          !isSwitchEnabled && handleSidebarClick(item)
-                        }
-                      >
-                        {item?.name}
-                        <SidebarButton
-                          type="button"
-                          onClick={e => handleChildProcessGroupClick(e, item)}
-                          className="ml-2"
+        {selectedCluster?.value ? (
+          <MainContent className="gap-3">
+            <Sidebar>
+              <SearchContainer>
+                <SmallSearchIcon
+                  width={18}
+                  height={18}
+                  color={theme.colors.darkGrey1}
+                />
+                <Search
+                  type="search"
+                  placeholder="Search process groups"
+                  value={sidebarSearchTerm}
+                  onChange={e => setSidebarSearchTerm(e.target.value)}
+                />
+              </SearchContainer>
+              <LeftsidebarScroll className="overflow-y-auto">
+                {isEmpty(namespaces?.data) && (
+                  <>
+                    {filteredProcessGroupList.length > 0 ? (
+                      filteredProcessGroupList.map(item => (
+                        <SidebarItem
+                          key={item?.id}
+                          active={activeSidebarItem?.id === item?.id}
+                          disabled={isSwitchEnabled}
+                          onClick={() =>
+                            !isSwitchEnabled && handleSidebarClick(item)
+                          }
                         >
-                          <Hierarchy />
-                        </SidebarButton>
-                      </SidebarItem>
-                    ))
-                  ) : sidebarSearchTerm ? (
-                    <NodataAvailable>No Process Groups Found</NodataAvailable>
-                  ) : (
-                    <NodataAvailable>
-                      No Process Group Available!!
-                    </NodataAvailable>
-                  )}
-                </>
-              )}
-              {!isEmpty(namespaces?.data) && (
-                <>
-                  {filteredNamespacesData?.length ===
-                  filteredNamespacesData?.filter(item => item?.isProcessor)
-                    ?.length ? (
-                    sidebarSearchTerm ? (
+                          {item?.name}
+                          <SidebarButton
+                            type="button"
+                            onClick={e => handleChildProcessGroupClick(e, item)}
+                            className="ml-2"
+                            style={{
+                              backgroundColor:
+                                activeSidebarItem?.id === item?.id
+                                  ? '#FF7A00'
+                                  : '#fff',
+                            }}
+                          >
+                            <IconButton
+                              style={{
+                                backgroundColor:
+                                  activeSidebarItem?.id === item?.id
+                                    ? '#FF7A00'
+                                    : '#fff',
+                                border:
+                                  activeSidebarItem?.id === item?.id
+                                    ? '1px solid #fff'
+                                    : '1px solid #CCC',
+                                padding: '5px',
+                              }}
+                            >
+                              <Hierarchy
+                                color={
+                                  activeSidebarItem?.id === item?.id
+                                    ? '#fff'
+                                    : '#444445'
+                                }
+                                plusSignBackground={
+                                  activeSidebarItem?.id === item?.id
+                                    ? '##FF7A00'
+                                    : '#444445'
+                                }
+                              />
+                            </IconButton>
+                          </SidebarButton>
+                        </SidebarItem>
+                      ))
+                    ) : sidebarSearchTerm ? (
                       <NodataAvailable>No Process Groups Found</NodataAvailable>
                     ) : (
                       <NodataAvailable>
                         No Process Group Available!!
                       </NodataAvailable>
-                    )
-                  ) : (
-                    <>
-                      {filteredNamespacesData?.map(item => (
-                        <span key={item?.id}>
-                          {!item?.isProcessor && (
-                            <SidebarItem
-                              active={activeSidebarItem?.id === item?.id}
-                              disabled={isSwitchEnabled}
-                              onClick={() =>
-                                !isSwitchEnabled && handleSidebarClick(item)
-                              }
-                            >
-                              {item?.name}
-                              <SidebarButton
-                                type="button"
-                                onClick={e =>
-                                  handleChildProcessGroupClick(e, item)
+                    )}
+                  </>
+                )}
+                {!isEmpty(namespaces?.data) && (
+                  <>
+                    {filteredNamespacesData?.length ===
+                    filteredNamespacesData?.filter(item => item?.isProcessor)
+                      ?.length ? (
+                      sidebarSearchTerm ? (
+                        <NodataAvailable>
+                          No Process Groups Found
+                        </NodataAvailable>
+                      ) : (
+                        <NodataAvailable>
+                          No Process Group Available!!
+                        </NodataAvailable>
+                      )
+                    ) : (
+                      <>
+                        {filteredNamespacesData?.map(item => (
+                          <span key={item?.id}>
+                            {!item?.isProcessor && (
+                              <SidebarItem
+                                active={activeSidebarItem?.id === item?.id}
+                                disabled={isSwitchEnabled}
+                                onClick={() =>
+                                  !isSwitchEnabled && handleSidebarClick(item)
                                 }
-                                className="ml-2"
                               >
-                                <Hierarchy />
-                              </SidebarButton>
-                            </SidebarItem>
-                          )}
-                        </span>
-                      ))}
-                    </>
-                  )}
-                </>
-              )}
-            </LeftsidebarScroll>
-          </Sidebar>
+                                {item?.name}
+                                <SidebarButton
+                                  type="button"
+                                  onClick={e =>
+                                    handleChildProcessGroupClick(e, item)
+                                  }
+                                  className="ml-2"
+                                  style={{
+                                    backgroundColor:
+                                      activeSidebarItem?.id === item?.id
+                                        ? '#FF7A00'
+                                        : '#fff',
+                                  }}
+                                >
+                                  <IconButton
+                                    style={{
+                                      backgroundColor:
+                                        activeSidebarItem?.id === item?.id
+                                          ? '#FF7A00'
+                                          : '#fff',
+                                      border:
+                                        activeSidebarItem?.id === item?.id
+                                          ? '1px solid #fff'
+                                          : '1px solid #CCC',
+                                      padding: '5px',
+                                    }}
+                                  >
+                                    <Hierarchy
+                                      color={
+                                        activeSidebarItem?.id === item?.id
+                                          ? '#fff'
+                                          : '#444445'
+                                      }
+                                      plusSignBackground={
+                                        activeSidebarItem?.id === item?.id
+                                          ? '##FF7A00'
+                                          : '#444445'
+                                      }
+                                    />
+                                  </IconButton>
+                                </SidebarButton>
+                              </SidebarItem>
+                            )}
+                          </span>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+              </LeftsidebarScroll>
+            </Sidebar>
 
-          <ContentArea>
-            <BreadcrumbContainer className="d-flex  mb-3 mt-3">
-              <Breadcrumb
-                module="role_permission"
-                path={
-                  namespaces?.breadcrumb?.map(item => ({
-                    label: item.name,
-                    value: item.id,
-                    id: item.id,
-                  })) || []
-                }
-                activeSidebarItem={activeSidebarItem}
-              />
-            </BreadcrumbContainer>
-            <TabContainer>
-              <div className="d-flex">
-                <Tab
-                  active={activeTab === 'groups'}
-                  onClick={() => setActiveTab('groups')}
-                >
-                  <TabIcon>
-                    <GroupUserIcon />
-                  </TabIcon>
-                  Groups
-                </Tab>
-                <Tab
-                  active={activeTab === 'users'}
-                  onClick={() => setActiveTab('users')}
-                >
-                  <TabIcon>
-                    <NewUserIcon />
-                  </TabIcon>
-                  Users
-                </Tab>
-              </div>
-              <div className="d-flex align-items-center gap-3 w-100 justify-content-end">
-                {activeTab !== 'groups' && (
+            <ContentArea>
+              <BreadcrumbContainer className="d-flex  mb-3 mt-3">
+                <Breadcrumb
+                  module="role_permission"
+                  path={
+                    namespaces?.breadcrumb?.map(item => ({
+                      label: item.name,
+                      value: item.id,
+                      id: item.id,
+                    })) || []
+                  }
+                  activeSidebarItem={activeSidebarItem}
+                />
+              </BreadcrumbContainer>
+              <TabContainer>
+                <div className="d-flex">
+                  <Tab
+                    active={activeTab === 'groups'}
+                    onClick={() => setActiveTab('groups')}
+                  >
+                    <TabIcon>
+                      <GroupUserIcon
+                        color={activeTab === 'groups' ? '#f0701a' : '#6c757d'}
+                      />
+                    </TabIcon>
+                    Groups
+                  </Tab>
+                  <Tab
+                    active={activeTab === 'users'}
+                    onClick={() => setActiveTab('users')}
+                  >
+                    <TabIcon>
+                      <NewUserIcon
+                        color={activeTab === 'users' ? '#f0701a' : '#6c757d'}
+                      />
+                    </TabIcon>
+                    Users
+                  </Tab>
+                </div>
+                <div className="d-flex align-items-center gap-3 w-100 justify-content-end">
+                  {activeTab !== 'groups' && (
+                    <SelectField
+                      id="policy"
+                      className="w-25 mb-0"
+                      name="policy"
+                      icon={<DocumentTextIcon />}
+                      options={groupOptions || []}
+                      value={selectedGroupDropdown}
+                      placeholder={'Select Group'}
+                      showCircleIcon={true}
+                      sortAlphabetically={false}
+                      onChange={e => {
+                        setSelectedGroupDropdown(e);
+                      }}
+                    />
+                  )}
                   <SelectField
                     id="policy"
-                    className="w-25"
+                    className="w-25 mb-0"
                     name="policy"
                     icon={<DocumentTextIcon />}
-                    options={groupOptions || []}
-                    value={selectedGroupDropdown}
-                    placeholder={'Select Group'}
+                    options={policyList}
+                    value={selectedPolicy}
+                    placeholder={
+                      policyList.length === 0
+                        ? 'No policies available'
+                        : 'Select Policy'
+                    }
+                    disabled={policyList.length === 0}
                     showCircleIcon={true}
                     sortAlphabetically={false}
-                    onChange={e => {
-                      setSelectedGroupDropdown(e);
-                    }}
-                  />
-                )}
-                <SelectField
-                  id="policy"
-                  className="w-25"
-                  name="policy"
-                  icon={<DocumentTextIcon />}
-                  options={policyList}
-                  value={selectedPolicy}
-                  placeholder={
-                    policyList.length === 0
-                      ? 'No policies available'
-                      : 'Select Policy'
-                  }
-                  disabled={policyList.length === 0}
-                  showCircleIcon={true}
-                  sortAlphabetically={false}
-                  onChange={handlePolicyChange}
-                />
-              </div>
-            </TabContainer>
-            {
-              <>
-                <SearchContainer>
-                  <SmallSearchIcon
-                    width={18}
-                    height={18}
-                    color={theme.colors.darkGrey1}
-                  />
-                  <Search
-                    type="search"
-                    placeholder={`search ${activeTab}`}
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                  />
-                </SearchContainer>
-
-                <div>
-                  <TableHeight
-                    data={
-                      activeTab === 'groups'
-                        ? filteredDataUsersGrp
-                        : filteredDataUsers
-                    }
-                    columns={COLUMN}
-                    className={
-                      activeTab === 'groups' ? 'groups-table' : 'users-table'
-                    }
+                    onChange={handlePolicyChange}
                   />
                 </div>
-              </>
-            }
-          </ContentArea>
-        </MainContent>
+              </TabContainer>
+              {
+                <>
+                  <SearchContainer>
+                    <SmallSearchIcon
+                      width={18}
+                      height={18}
+                      color={theme.colors.darkGrey1}
+                    />
+                    <Search
+                      type="search"
+                      placeholder={`search ${activeTab}`}
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                    />
+                  </SearchContainer>
+
+                  <div>
+                    <TableHeight
+                      data={
+                        activeTab === 'groups'
+                          ? filteredDataUsersGrp
+                          : filteredDataUsers
+                      }
+                      columns={COLUMN}
+                      className={
+                        activeTab === 'groups' ? 'groups-table' : 'users-table'
+                      }
+                    />
+                  </div>
+                </>
+              }
+            </ContentArea>
+          </MainContent>
+        ) : (
+          <LoaderContainer>
+            <NoDataIcon width={140} />
+            <LoadingText>No Policies Available</LoadingText>
+          </LoaderContainer>
+        )}
       </Container>
     </>
   );
