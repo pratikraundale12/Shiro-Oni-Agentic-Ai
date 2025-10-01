@@ -245,6 +245,10 @@ export function* fetchPoliciesandActions(api, { payload }) {
 }
 export function* updateClusterPermissionsAndActions(api, { payload }) {
   const gridData = yield select(GridSelectors.getModuleAllData, 'namespaces');
+  const isSwitchEnabled = payload?.isSwitchEnabled === true;
+  const pgName = isSwitchEnabled
+    ? gridData?.breadcrumb?.[0]?.name || ''
+    : payload?.activeSidebarItem?.name || '';
 
   const response = yield call(requestSaga, {
     errorSection: 'updateClusterPermissionsAndActions',
@@ -254,6 +258,8 @@ export function* updateClusterPermissionsAndActions(api, { payload }) {
       {
         id: payload?.id,
         payload: payload?.descriptionPayload,
+        forCluster: payload?.forCluster,
+        pgName,
       },
     ],
   });

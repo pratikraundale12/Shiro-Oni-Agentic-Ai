@@ -1,6 +1,7 @@
 /*eslint-disable*/
 import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button, CheckboxField, SelectField } from '../../../shared';
 import {
   FullPageLoader,
@@ -174,6 +175,15 @@ const LoadingText = styled.div`
   font-size: 28px;
   font-weight: 600;
   text-align: center;
+`;
+
+const LeftSidebarHeading = styled.div`
+  font-size: 18px;
+  color: #343434;
+  padding: 10px 0 10px 8px;
+  font-weight: 600;
+  border-bottom: 1px solid #dde4f0;
+  margin-bottom: 15px;
 `;
 
 const NiFiClusterAccessManagement = () => {
@@ -472,10 +482,22 @@ const NiFiClusterAccessManagement = () => {
                 onCheckBoxChange={e =>
                   handleHeaderToggle(sidebarItem, e.target.checked)
                 }
+                data-tooltip-id={`name-${sidebarItem.id}`}
               />
               {activeSidebarItem?.hasSubNames
                 ? activeSidebarItem?.policies?.[index]?.subName
                 : sidebarItem?.actionName}
+              <ReactTooltip
+                id={`name-${sidebarItem?.id}`}
+                place="bottom"
+                effect="solid"
+                content="Select"
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
             </div>
           ),
           renderCell: item => {
@@ -488,6 +510,18 @@ const NiFiClusterAccessManagement = () => {
                   checked={permissionExists}
                   onChange={e => {
                     handleRowToggle(e.target.checked, item, sidebarItem);
+                  }}
+                  data-tooltip-id={`name-${sidebarItem.id}`}
+                />
+                <ReactTooltip
+                  id={`name-${sidebarItem?.id}`}
+                  place="bottom"
+                  effect="solid"
+                  content="Select"
+                  style={{
+                    width: 'auto',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
                   }}
                 />
               </div>
@@ -595,6 +629,7 @@ const NiFiClusterAccessManagement = () => {
       id: selectedCluster?.value,
       descriptionPayload: usersActions,
       updatedAPIpayload,
+      forCluster: true,
     };
 
     dispatch(RolesActions.updateClusterPermissionsAndActions(payload));
@@ -658,18 +693,21 @@ const NiFiClusterAccessManagement = () => {
           <MainContent className="gap-3">
             <Sidebar>
               <LeftsidebarScroll className="overflow-y-auto">
-                {sidebarItems.map(item => (
-                  <SidebarItem
-                    key={item?.name}
-                    active={activeSidebarItem?.name === item?.name}
-                    onClick={() => {
-                      setActiveSidebarItem(item);
-                      handleSidebarClick();
-                    }}
-                  >
-                    {item?.name}
-                  </SidebarItem>
-                ))}
+                <>
+                  <LeftSidebarHeading>Policies</LeftSidebarHeading>
+                  {sidebarItems.map(item => (
+                    <SidebarItem
+                      key={item?.name}
+                      active={activeSidebarItem?.name === item?.name}
+                      onClick={() => {
+                        setActiveSidebarItem(item);
+                        handleSidebarClick();
+                      }}
+                    >
+                      {item?.name}
+                    </SidebarItem>
+                  ))}
+                </>
               </LeftsidebarScroll>
             </Sidebar>
 
