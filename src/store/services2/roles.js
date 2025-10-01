@@ -29,8 +29,27 @@ export const rolesAPI = api => {
 
   const fetchPoliciesandActions = ({ id, payload = {} }) =>
     api.post(`clusters/${id}/nifi-access-policies`, payload);
-  const updateClusterPermissionsAndActions = ({ id, payload = {} }) =>
-    api.put(`clusters/${id}/update-policies`, payload);
+
+  const updateClusterPermissionsAndActions = ({
+    id,
+    payload = {},
+    forCluster,
+    pgName,
+  }) => {
+    let url = `clusters/${id}/update-policies`;
+
+    const queryParams = new URLSearchParams();
+
+    if (forCluster !== undefined) queryParams.append('forCluster', forCluster);
+    if (pgName) queryParams.append('pgName', pgName);
+
+    if (Array.from(queryParams).length > 0) {
+      url += `?${queryParams.toString()}`;
+    }
+
+    return api.put(url, payload);
+  };
+
   return {
     fetchClustersRolesAccess,
     fetchRoleClusters,

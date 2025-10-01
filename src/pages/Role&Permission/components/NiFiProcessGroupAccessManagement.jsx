@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import {
   Button,
   CheckboxField,
@@ -539,6 +540,18 @@ const NiFiProcessGroupAccessManagement = () => {
             checked={isAllSelected()}
             onChange={e => handleSelectAll(e.target.checked)}
             style={{ margin: 0 }}
+            data-tooltip-id={`tooltip-id`}
+          />
+          <ReactTooltip
+            id={`tooltip-id`}
+            place="bottom"
+            effect="solid"
+            content="Select"
+            style={{
+              width: 'auto',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
           />
           <span>Permission</span>
         </div>
@@ -579,6 +592,18 @@ const NiFiProcessGroupAccessManagement = () => {
               }
               onChange={e => {
                 handleChangeCheck(e.target.checked, item);
+              }}
+              data-tooltip-id={`name-${item.id}`}
+            />
+            <ReactTooltip
+              id={`name-${item?.id}`}
+              place="bottom"
+              effect="solid"
+              content="Select"
+              style={{
+                width: 'auto',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
               }}
             />
           </div>
