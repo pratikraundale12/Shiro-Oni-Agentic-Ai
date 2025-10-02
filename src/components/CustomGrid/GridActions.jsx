@@ -1080,7 +1080,7 @@ export const GridActions = ({
                   content={
                     selectedCluster?.value && !isEmpty(selectedCluster?.value)
                       ? 'Refresh'
-                      : 'Login to Cluster'
+                      : 'Login to the cluster'
                   }
                   style={{
                     width: 'auto',

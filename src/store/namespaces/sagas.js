@@ -26,13 +26,17 @@ export function* fetchNamespaces(api) {
   );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'fetchNamespaces',
     loadingSection: 'fetchNamespaces',
     apiMethod: api.fetchNamespaces,
     apiParams: [{ queryParams }],
     successAction: NamespacesActions.fetchNamespacesSuccess,
   });
+
+  if (!response.ok) {
+    toast.error(response?.data?.message);
+  }
 }
 
 export function* fetchDestNamespaces(api) {
@@ -1307,7 +1311,6 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     default_registry_id: item?.is_default,
     local_registry_id: item?.localRegistryId,
   }));
-  console.log(registryDropdownOptions, 'registryDropdownOptions');
 
   const defaultRegistry = registryDropdownOptions.find(
     item => item.default_registry_id === true

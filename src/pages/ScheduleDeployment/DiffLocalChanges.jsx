@@ -59,7 +59,7 @@ const ActionContainer = styled.div`
   background-color: #fff7ed;
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #ea580c;
+  border: 1px solid #e4842b;
   width: fit-content;
   font-family: Red Hat Display;
   font-size: 16px;

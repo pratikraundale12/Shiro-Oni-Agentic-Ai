@@ -105,7 +105,7 @@ const PasswordInputField = ({
         icon={icon}
         placeholder={placeholder || 'Enter Your Password'}
         rightIcon={
-          !disableToggle ? (
+          !disableToggle && value ? (
             <TogglePassword show={show} onToggle={togglePassword} {...props} />
           ) : null
         }
@@ -136,9 +136,9 @@ PasswordInputField.propTypes = {
   required: PropTypes.string,
   placeholder: PropTypes.string,
   helperText: PropTypes.string,
-  showStrengthMeter: PropTypes.boolean,
+  showStrengthMeter: PropTypes.bool,
   icon: PropTypes.func,
-  disableToggle: PropTypes.boolean,
+  disableToggle: PropTypes.bool,
 };
 
 export default PasswordInputField;

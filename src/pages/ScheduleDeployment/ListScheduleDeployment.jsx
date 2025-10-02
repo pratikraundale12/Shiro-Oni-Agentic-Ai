@@ -205,7 +205,6 @@ export const ListScheduleDeployment = () => {
             event.currentTarget.blur();
           }}
           data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
-          style={{ border: 'transparent' }}
         >
           <CrossWithCircleIcon color="red" />
         </IconButton>
@@ -234,7 +233,6 @@ export const ListScheduleDeployment = () => {
             event.currentTarget.blur();
           }}
           data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
-          style={{ border: 'transparent' }}
         >
           <TickIconWithCircle />
         </IconButton>
@@ -290,7 +288,6 @@ export const ListScheduleDeployment = () => {
             event.currentTarget.blur();
           }}
           data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
-          style={{ border: 'transparent' }}
         >
           <RejectIcon />
         </IconButton>
@@ -308,21 +305,6 @@ export const ListScheduleDeployment = () => {
         }
       </>
     );
-  };
-
-  const convertDateTime = dateString => {
-    if (!dateString) return 'No date provided';
-
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
   };
 
   const getDefSchedule = async item => {
@@ -412,7 +394,7 @@ export const ListScheduleDeployment = () => {
           place="left"
           content={'Sanity Check'}
           style={{
-            width: '110px',
+            width: '120px',
             whiteSpace: 'normal',
             wordWrap: 'break-word',
           }}
@@ -858,9 +840,7 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => (
-        <TextRender text={convertDateTime(item?.scheduled_date_time)} />
-      ),
+      renderCell: item => <TextRender text={item?.scheduled_time} />,
       sort: { sortKey: 'deploy_time' },
       width: '13%',
       resize: true,

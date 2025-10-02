@@ -149,7 +149,6 @@ export const ClusterLoginModal = () => {
         }
       } else {
         toast.error(response.message || 'Error while getting data');
-
         setLoading(false);
       }
     } catch (error) {
@@ -257,7 +256,7 @@ export const ClusterLoginModal = () => {
           name="username"
           type="text"
           label="Username"
-          placeholder="Enter your Username"
+          placeholder="Enter Your Username"
           register={register}
           errors={errors}
           icon={<UserIcon />}
