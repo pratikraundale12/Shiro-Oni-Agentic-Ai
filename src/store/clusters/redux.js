@@ -137,6 +137,8 @@ export const ClustersActions = {
   fetchSSHstatus: createAction(`${prefix}fetchSSHstatus`),
   setSshAddedStatus: createAction(`${prefix}setSshAddedStatus`),
   addNarFile: createAction(`${prefix}addNarFile`),
+  fetchNarList: createAction(`${prefix}fetchNarList`),
+  setNarList: createAction(`${prefix}setNarList`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -189,6 +191,7 @@ export const CLUSTERS_INITIAL_STATE = {
   multiNodesTestResults: {},
   testCertificateNodes: [],
   sshAddedStatus: {},
+  narList: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -567,6 +570,12 @@ const setSshAddedStatus = (state, { payload }) => {
     sshAddedStatus: payload,
   };
 };
+const setNarList = (state, { payload }) => {
+  return {
+    ...state,
+    narList: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -704,6 +713,8 @@ export const clustersReducer = createReducer(
         setMultiNodesTestResults
       )
       .addCase(ClustersActions.setTestCertificateNodes, setTestCertificateNodes)
-      .addCase(ClustersActions.setSshAddedStatus, setSshAddedStatus);
+      .addCase(ClustersActions.setSshAddedStatus, setSshAddedStatus)
+      .addCase(ClustersActions.setNarList, setNarList);
   }
 );
+;

@@ -112,6 +112,9 @@ export const clustersAPI = api => {
   const addNarFile = ({ clusterId, payload }) => {
     return api.post(`/clusters/${clusterId}/upload-nars`, payload);
   };
+  const fetchNarList = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/nars-list`);
+  };
   return {
     fetchClusters,
     fetchClusterList,
@@ -147,5 +150,6 @@ export const clustersAPI = api => {
     updateMultipleNodeswithSSH,
     fetchSSHstatus,
     addNarFile,
+    fetchNarList,
   };
 };

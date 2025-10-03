@@ -43,6 +43,8 @@ import { ClusterServiceAccountModal } from './components/ClusterServiceAccountMo
 import { AuthenticationSelectors } from '../../store/authentication';
 import { ClusterCustomProcessor } from './components/ClusterCustomProcessor';
 import { SSHDetailsTabSection } from './components/SSHDetailsTabSection';
+import { DriversCluster } from './components/DriversClusters';
+import { FlowGzTabSection } from './components/FlowGzSection';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -822,6 +824,29 @@ export const Add = () => {
         {activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS && (
           <FormContainer>
             <SSHDetailsTabSection
+              tags={tags}
+              hostToEdit={hostToEdit}
+              clusterData={clusterData}
+              clusterId={clusterId}
+              data={data}
+            />
+          </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.DRIVERS && (
+          <FormContainer>
+            <DriversCluster
+              tags={tags}
+              hostToEdit={hostToEdit}
+              clusterData={clusterData}
+              clusterId={clusterId}
+              data={data}
+            />
+          </FormContainer>
+        )}
+
+        {activeTab === CLUSTER_MODULE_TABS.FLOW_GZ && (
+          <FormContainer>
+            <FlowGzTabSection
               tags={tags}
               hostToEdit={hostToEdit}
               clusterData={clusterData}

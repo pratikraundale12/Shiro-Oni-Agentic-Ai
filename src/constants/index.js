@@ -74,6 +74,8 @@ export const CLUSTER_MODULE_TABS = {
   SERVICE_ACCOUNT: 'service account',
   CUSTOM_PROCESSOR: 'Custom Processor',
   SSH_DETAILS: 'SSH Details',
+  DRIVERS: 'Drivers',
+  FLOW_GZ: 'Flow Migration',
 };
 
 export const CLUSTER_STATUS = {

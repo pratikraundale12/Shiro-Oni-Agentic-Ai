@@ -53,7 +53,7 @@ const NodeWrapper = styled.div`
   justify-content: start;
   color: ${theme.colors.primary};
 `;
-export const ClusterCustomProcessor = ({
+export const FlowGzTabSection = ({
   tags,
   hostToEdit,
   clusterData,
@@ -147,7 +147,7 @@ export const ClusterCustomProcessor = ({
 
   useEffect(() => {
     if (!isEmpty(data?.id)) {
-      dispatch(ClustersActions.fetchNarList(data?.id));
+      //   dispatch(ClustersActions.fetchNarList(data?.id));
     }
   }, [data?.id]);
   const handleRestart = () => {};
@@ -161,18 +161,18 @@ export const ClusterCustomProcessor = ({
             <div className="col-6">
               <ModalContainer>
                 <PemUploadField
-                  name="nar_file"
-                  label="Custom Nar file"
+                  name="driver"
+                  label="Driver file"
                   watch={watch}
                   control={control}
                   required
                   rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
                   placeholder={KDFM.UPLOAD_P12_FILE}
                   errors={errors}
-                  fileLable="Custom Nar file"
-                  validExtensionsArray={['.nar']}
-                  acceptString={'.nar'}
-                  errorText={'Nar'}
+                  fileLable="Custom driver file"
+                  //   validExtensionsArray={['.nar']}
+                  //   acceptString={'.nar'}
+                  //   errorText={'Nar'}
                 />
               </ModalContainer>
             </div>
@@ -189,14 +189,6 @@ export const ClusterCustomProcessor = ({
             >
               Upload
             </Button>
-            <Button
-              type="button"
-              variant="primary"
-              loading={loading}
-              onClick={handleRestart}
-            >
-              Restart
-            </Button>
           </div>
         </FlexWrapper>
         <div className="mt-2">
@@ -212,7 +204,7 @@ export const ClusterCustomProcessor = ({
   );
 };
 
-ClusterCustomProcessor.propTypes = {
+FlowGzTabSection.propTypes = {
   tags: PropTypes.string.isRequired,
   clusterData: PropTypes.shape({
     clusterName: PropTypes.string,

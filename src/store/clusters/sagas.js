@@ -627,8 +627,27 @@ export function* addNarFile(api, { payload }) {
   });
   if (response?.ok) {
     toast.success(response?.data?.message || 'Added Successfully');
+    yield put(ClustersActions.fetchNarList(payload?.id));
   } else {
     toast.error(response?.data?.error);
+  }
+}
+
+export function* fetchNarList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchNarList',
+    loadingSection: 'fetchNarList',
+    apiMethod: api.fetchNarList,
+    apiParams: [
+      {
+        clusterId: payload,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setNarList(response?.data));
+  } else {
+    toast.error(response?.data?.message);
   }
 }
 
@@ -732,5 +751,6 @@ export function* clustersSagas(api) {
     ),
     takeLatest(ClustersActions.fetchSSHstatus, fetchSSHstatus, api),
     takeLatest(ClustersActions.addNarFile, addNarFile, api),
+    takeLatest(ClustersActions.fetchNarList, fetchNarList, api),
   ]);
 }

@@ -135,6 +135,34 @@ const ClusterNavigationTab = ({
           {CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
         </NavButton>
       )}
+      {data && (
+        <NavButton
+          active={activeTab === CLUSTER_MODULE_TABS.DRIVERS}
+          onClick={() =>
+            Object.keys(data || {})?.length
+              ? setActiveTab(CLUSTER_MODULE_TABS.DRIVERS)
+              : {}
+          }
+          disabled={isRegistryDetailDisable}
+          data-tooltip-id="navButtonTooltip"
+        >
+          {CLUSTER_MODULE_TABS.DRIVERS}
+        </NavButton>
+      )}
+      {data && (
+        <NavButton
+          active={activeTab === CLUSTER_MODULE_TABS.FLOW_GZ}
+          onClick={() =>
+            Object.keys(data || {})?.length
+              ? setActiveTab(CLUSTER_MODULE_TABS.FLOW_GZ)
+              : {}
+          }
+          disabled={isRegistryDetailDisable}
+          data-tooltip-id="navButtonTooltip"
+        >
+          {CLUSTER_MODULE_TABS.FLOW_GZ}
+        </NavButton>
+      )}
     </NavTabs>
   );
 };
