@@ -13,7 +13,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
-import { useNavigate } from 'react-router-dom';
 import { CurvedFolderIcon, DeleteSmallIcon } from '../../../assets';
 import { theme } from '../../../styles';
 import { LoadingSelectors } from '../../../store';
@@ -48,32 +47,20 @@ const FlexWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
 `;
-const NodeWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  color: ${theme.colors.primary};
-`;
 export const ClusterCustomProcessor = ({
   tags,
   hostToEdit,
-  clusterData,
   clusterId,
   data,
 }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  // const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
-  // const isAdding = useSelector(ClustersSelectors.isAddingServiceAccountHost);
-  // const isUpdating = useSelector(
-  //   ClustersSelectors.isUpdatingServiceAccountHost
-  // );
   const narList = useSelector(ClustersSelectors.getnarList);
-  console.log(narList, 'narList');
-
+  const [fileInputKey, setFileInputKey] = useState(0);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'addNarFile')
+  );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'restartCluster')
   );
   const schema = yup.object().shape({
     nar_file: yup.mixed().required('File is required'),
@@ -83,6 +70,7 @@ export const ClusterCustomProcessor = ({
     watch,
     setValue,
     handleSubmit,
+    resetField,
     control,
     reset,
     formState: { errors },
@@ -134,7 +122,7 @@ export const ClusterCustomProcessor = ({
     payloadFile.append('narFile', formdata?.nar_file);
     let payload = { payload: payloadFile, id: data?.id };
     dispatch(ClustersActions.addNarFile(payload));
-    reset();
+    setFileInputKey(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -144,15 +132,15 @@ export const ClusterCustomProcessor = ({
   }, [data?.id]);
   const handleRestart = () => {
     dispatch(
-      ClustersActions.changeClusterActionState({
-        clusterId: data?.id,
-        data: { action: 'restart' },
+      ClustersActions.restartCluster({
+        id: data?.id,
+        payload: {},
       })
     );
   };
   return (
     <>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
 
       <Container>
         <div className="row mb-3">
@@ -172,6 +160,7 @@ export const ClusterCustomProcessor = ({
                   validExtensionsArray={['.nar']}
                   acceptString={'.nar'}
                   errorText={'Nar'}
+                  key={fileInputKey}
                 />
               </ModalContainer>
             </div>
@@ -183,28 +172,17 @@ export const ClusterCustomProcessor = ({
             <Button
               type="button"
               variant="primary"
-              loading={loading}
               onClick={handleSubmit(handleUpload)}
             >
               Upload
             </Button>
-            <Button
-              type="button"
-              variant="primary"
-              loading={loading}
-              onClick={handleRestart}
-            >
+            <Button type="button" variant="primary" onClick={handleRestart}>
               Restart
             </Button>
           </div>
         </FlexWrapper>
         <div className="mt-2">
-          <Table
-            data={narList || []}
-            columns={COLUMNS}
-            // customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
-            // tableWithFullHeight={true}
-          />
+          <Table data={narList || []} columns={COLUMNS} />
         </div>
       </Container>
     </>
@@ -213,25 +191,6 @@ export const ClusterCustomProcessor = ({
 
 ClusterCustomProcessor.propTypes = {
   tags: PropTypes.string.isRequired,
-  clusterData: PropTypes.shape({
-    clusterName: PropTypes.string,
-    nifiUrl: PropTypes.string,
-    metrics_url: PropTypes.string,
-    logs_url: PropTypes.string,
-    registryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    notification_enable: PropTypes.bool,
-    approver_enable: PropTypes.bool,
-    change_request_enable: PropTypes.bool,
-    service_account_type: PropTypes.oneOf(['username_password', 'p12']),
-    service_username: PropTypes.string,
-    service_password: PropTypes.string,
-    service_account_certificate: PropTypes.string,
-    service_account_certificate_password: PropTypes.string,
-    has_custom_service_account: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.bool,
-    ]),
-  }).isRequired,
   clusterId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
     .isRequired,
   hostToEdit: PropTypes.shape({

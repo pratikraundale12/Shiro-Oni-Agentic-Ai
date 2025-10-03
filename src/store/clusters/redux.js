@@ -139,6 +139,7 @@ export const ClustersActions = {
   addNarFile: createAction(`${prefix}addNarFile`),
   fetchNarList: createAction(`${prefix}fetchNarList`),
   setNarList: createAction(`${prefix}setNarList`),
+  restartCluster: createAction(`${prefix}restartCluster`),
 };
 
 /* ------------- INITIAL STATE ------------- */

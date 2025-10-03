@@ -63,28 +63,17 @@ export const SSHDetailsTabSection = ({
   data,
 }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   // Initialize state
   const [method, setMethod] = useState(
     data?.service_account_type || 'username_password'
   );
-  // const [changeRequestEnabled, setChangeRequestEnabled] = useState(
-  //   data?.has_custom_service_account || false
-  // );
   const [sshItem, setSshItem] = useState([]);
   const [selectedSSH, setSelectedSSH] = useState({});
   const [isSSHModalOpen, setIsSSHModalOpen] = useState(false);
   const [bulkSelectItems, setBulkSelectItems] = useState([]);
-
-  const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
-  const isAdding = useSelector(ClustersSelectors.isAddingServiceAccountHost);
-  const isUpdating = useSelector(
-    ClustersSelectors.isUpdatingServiceAccountHost
-  );
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
   //
-  const loading = isChecking || isAdding || isUpdating;
 
   const schemaPassword = yup.object({
     service_username: yup.string().required('Username is required'),
@@ -149,23 +138,6 @@ export const SSHDetailsTabSection = ({
     }
   }, [data?.id]);
 
-  // useEffect(() => {
-  //   if (typeof data?.total_nodes === 'number') {
-  //     const newItems = [];
-  //     for (let i = 0; i < data.total_nodes; i++) {
-  //       newItems.push({
-  //         id: i,
-  //         hostIp: '',
-  //         file: '',
-  //         clusterId: '',
-  //         username: '',
-  //         nifiLibPath: '',
-  //       });
-  //     }
-  //     setSshItem(newItems);
-  //   }
-  // }, [data?.total_nodes]);
-
   useEffect(() => {
     if (!isEmpty(listHostIpData)) {
       const formattedData = listHostIpData?.map(item => ({
@@ -199,12 +171,14 @@ export const SSHDetailsTabSection = ({
       label: '',
       renderCell: item => (
         <>
-          <CheckboxField
-            name={`check-${item?.id}`}
-            // label="Do you want to add same data in all nodes?"
-            checked={checkboxClicked(item)}
-            onChange={e => handleCheckClick(e.target.checked, item)}
-          />
+          {data?.created_by_ansible && (
+            <CheckboxField
+              name={`check-${item?.id}`}
+              // label="Do you want to add same data in all nodes?"
+              checked={checkboxClicked(item)}
+              onChange={e => handleCheckClick(e.target.checked, item)}
+            />
+          )}
         </>
       ),
       resize: true,
@@ -222,12 +196,6 @@ export const SSHDetailsTabSection = ({
       resize: true,
       width: '35%',
     },
-    // {
-    //   label: 'Lib Path',
-    //   renderCell: item => <>{item?.nifiLibPath || 'N/A'}</>,
-    //   resize: true,
-    //   width: '20%',
-    // },
     {
       label: 'Username',
       renderCell: item => <>{item?.username || '-'}</>,
@@ -265,32 +233,28 @@ export const SSHDetailsTabSection = ({
   ];
   return (
     <>
-      <FullPageLoader loading={loading} />
+      {/* <FullPageLoader loading={loading} /> */}
 
       <Container>
         {' '}
         <FlexWrapper>
           <div className="d-flex justify-content-end w-100">
             <div className="mt-2 ">
-              <Button
-                type="button"
-                variant="primary"
-                loading={loading}
-                onClick={() => setIsSSHModalOpen(true)}
-                isBtnDisable={isEmpty(bulkSelectItems)}
-              >
-                Common SSH Configuration
-              </Button>
+              {data?.created_by_ansible && (
+                <Button
+                  type="button"
+                  variant="primary"
+                  onClick={() => setIsSSHModalOpen(true)}
+                  isBtnDisable={isEmpty(bulkSelectItems)}
+                >
+                  Common SSH Configuration
+                </Button>
+              )}
             </div>
           </div>
         </FlexWrapper>
         <div className="mt-2">
-          <Table
-            data={sshItem || []}
-            columns={COLUMNS}
-            // customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
-            // tableWithFullHeight={true}
-          />
+          <Table data={sshItem || []} columns={COLUMNS} />
         </div>
         <AddSSHModal
           isSSHModalOpen={isSSHModalOpen}

@@ -653,6 +653,21 @@ export function* fetchNarList(api, { payload }) {
   }
 }
 
+export function* restartCluster(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'restartCluster',
+    loadingSection: 'restartCluster',
+    apiMethod: api.restartCluster,
+    apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message || 'Added Successfully');
+    // yield put(ClustersActions.fetchNarList(payload?.id));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
 export function* clustersSagas(api) {
   yield all([
     takeLatest(
@@ -754,5 +769,6 @@ export function* clustersSagas(api) {
     takeLatest(ClustersActions.fetchSSHstatus, fetchSSHstatus, api),
     takeLatest(ClustersActions.addNarFile, addNarFile, api),
     takeLatest(ClustersActions.fetchNarList, fetchNarList, api),
+    takeLatest(ClustersActions.restartCluster, restartCluster, api),
   ]);
 }
