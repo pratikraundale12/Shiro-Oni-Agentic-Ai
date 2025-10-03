@@ -66,7 +66,6 @@ export const ClusterCustomProcessor = ({
     nar_file: yup.mixed().required('File is required'),
   });
   const {
-    register,
     watch,
     setValue,
     handleSubmit,

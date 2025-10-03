@@ -16,6 +16,7 @@ import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
 import { CurvedFolderIcon } from '../../../assets';
 import { theme } from '../../../styles';
+import { LoadingSelectors } from '../../../store';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -61,18 +62,13 @@ export const DriversCluster = ({
   data,
 }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
-  const isAdding = useSelector(ClustersSelectors.isAddingServiceAccountHost);
-  const isUpdating = useSelector(
-    ClustersSelectors.isUpdatingServiceAccountHost
-  );
-
-  const loading = isChecking || isAdding || isUpdating;
+  const [fileInputKey, setFileInputKey] = useState(0);
   const schema = yup.object().shape({
     driver: yup.mixed().required('File is required'),
   });
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'uploadClusterDriver')
+  );
   const {
     register,
     watch,
@@ -143,12 +139,17 @@ export const DriversCluster = ({
   ];
 
   const handleUpload = formdata => {
-    let payload = { narFile: formdata?.nar_file, id: data?.id };
+    // let payload = { narFile: formdata?.nar_file, id: data?.id };
+    const payloadFile = new FormData();
+    payloadFile.append('driverFile', formdata?.driver);
+    let payload = { payload: payloadFile, id: data?.id };
+    dispatch(ClustersActions.uploadClusterDriver(payload));
+    setFileInputKey(prev => prev + 1);
   };
 
   useEffect(() => {
     if (!isEmpty(data?.id)) {
-      //   dispatch(ClustersActions.fetchNarList(data?.id));
+      dispatch(ClustersActions.fetchDriversList(data?.id));
     }
   }, [data?.id]);
   const handleRestart = () => {};
@@ -171,9 +172,10 @@ export const DriversCluster = ({
                   placeholder={'Upload driver file'}
                   errors={errors}
                   fileLable="Custom driver file"
-                  //   validExtensionsArray={['.nar']}
-                  //   acceptString={'.nar'}
-                  //   errorText={'Nar'}
+                  key={fileInputKey}
+                  validExtensionsArray={['.jar']}
+                  acceptString={'.jar'}
+                  errorText={'Jar'}
                 />
               </ModalContainer>
             </div>
@@ -185,7 +187,6 @@ export const DriversCluster = ({
             <Button
               type="button"
               variant="primary"
-              loading={loading}
               onClick={handleSubmit(handleUpload)}
             >
               Upload

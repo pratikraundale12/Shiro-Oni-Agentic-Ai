@@ -667,7 +667,37 @@ export function* restartCluster(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
-
+export function* uploadClusterDriver(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'uploadClusterDriver',
+    loadingSection: 'uploadClusterDriver',
+    apiMethod: api.uploadClusterDriver,
+    apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message || 'Added Successfully');
+    yield put(ClustersActions.fetchDriversList(payload?.id));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* fetchDriversList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchDriversList',
+    loadingSection: 'fetchDriversList',
+    apiMethod: api.fetchDriversList,
+    apiParams: [
+      {
+        clusterId: payload,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setDriversList(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
 export function* clustersSagas(api) {
   yield all([
     takeLatest(
@@ -770,5 +800,7 @@ export function* clustersSagas(api) {
     takeLatest(ClustersActions.addNarFile, addNarFile, api),
     takeLatest(ClustersActions.fetchNarList, fetchNarList, api),
     takeLatest(ClustersActions.restartCluster, restartCluster, api),
+    takeLatest(ClustersActions.uploadClusterDriver, uploadClusterDriver, api),
+    takeLatest(ClustersActions.fetchDriversList, fetchDriversList, api),
   ]);
 }

@@ -118,6 +118,12 @@ export const clustersAPI = api => {
   const restartCluster = ({ clusterId, payload }) => {
     return api.post(`/clusters/${clusterId}/restart`, payload);
   };
+  const uploadClusterDriver = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/upload-drivers`, payload);
+  };
+  const fetchDriversList = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/drivers-list`);
+  };
 
   return {
     fetchClusters,
@@ -156,5 +162,7 @@ export const clustersAPI = api => {
     addNarFile,
     fetchNarList,
     restartCluster,
+    uploadClusterDriver,
+    fetchDriversList,
   };
 };

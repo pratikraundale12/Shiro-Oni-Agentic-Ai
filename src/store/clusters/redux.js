@@ -140,6 +140,9 @@ export const ClustersActions = {
   fetchNarList: createAction(`${prefix}fetchNarList`),
   setNarList: createAction(`${prefix}setNarList`),
   restartCluster: createAction(`${prefix}restartCluster`),
+  uploadClusterDriver: createAction(`${prefix}uploadClusterDriver`),
+  fetchDriversList: createAction(`${prefix}fetchDriversList`),
+  setDriversList: createAction(`${prefix}setDriversList`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -193,6 +196,7 @@ export const CLUSTERS_INITIAL_STATE = {
   testCertificateNodes: [],
   sshAddedStatus: {},
   narList: [],
+  driversList: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -260,6 +264,7 @@ export const ClustersSelectors = {
   getTestCertificateNodes: state => state.clusters.testCertificateNodes,
   getsshAddedStatus: state => state.clusters.sshAddedStatus,
   getnarList: state => state.clusters.narList,
+  getDriversList: state => state.clusters.driversList,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -578,6 +583,12 @@ const setNarList = (state, { payload }) => {
     narList: payload,
   };
 };
+const setDriversList = (state, { payload }) => {
+  return {
+    ...state,
+    narList: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -716,6 +727,7 @@ export const clustersReducer = createReducer(
       )
       .addCase(ClustersActions.setTestCertificateNodes, setTestCertificateNodes)
       .addCase(ClustersActions.setSshAddedStatus, setSshAddedStatus)
-      .addCase(ClustersActions.setNarList, setNarList);
+      .addCase(ClustersActions.setNarList, setNarList)
+      .addCase(ClustersActions.setDriversList, setDriversList);
   }
 );
