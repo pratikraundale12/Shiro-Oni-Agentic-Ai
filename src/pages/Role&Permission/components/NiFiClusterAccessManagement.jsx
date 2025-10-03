@@ -199,6 +199,31 @@ const NiFiClusterAccessManagement = () => {
   });
   const [disableSaveBtn, setDisableSaveBtn] = useState(false);
 
+  const [hasUserChanges, setHasUserChanges] = useState(false);
+  const [hasUserGroupChanges, setHasUserGroupChanges] = useState(false);
+  const [initialUsersActions, setInitialUsersActions] = useState(null);
+
+  const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
+  const clusterNiFiPolicies = useSelector(
+    RolesSelectors.getClusterNiFiPolicies
+  );
+  const policiesAndActions = useSelector(
+    RolesSelectors.getPoliciesAndActionsData
+  );
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusterUsers')
+  );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusterNiFiPolicies')
+  );
+  const loading3 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchPoliciesandActions')
+  );
+  const loading4 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'updateClusterPermissionsAndActions')
+  );
+
   const arePoliciesDifferent = (obj1, obj2) => {
     if (!obj1?.policies || !obj2?.policies) return true;
 
@@ -215,7 +240,106 @@ const NiFiClusterAccessManagement = () => {
       return !isEqual(p1Users, p2Users) || !isEqual(p1Groups, p2Groups);
     });
   };
-  const clusterUsers = useSelector(RolesSelectors.getClusterUsers);
+
+  const hasUserChangesOnly = (obj1, obj2) => {
+    if (!obj1?.policies || !obj2?.policies) return false;
+    return obj1.policies.some((p1, index) => {
+      const p2 = obj2.policies[index];
+      if (!p2) return false;
+      const p1Users = sortBy(p1.users, 'id');
+      const p2Users = sortBy(p2.users, 'id');
+      const p1Groups = sortBy(p1.userGroups, 'id');
+      const p2Groups = sortBy(p2.userGroups, 'id');
+      return !isEqual(p1Users, p2Users) && isEqual(p1Groups, p2Groups);
+    });
+  };
+
+  const hasUserGroupChangesOnly = (obj1, obj2) => {
+    if (!obj1?.policies || !obj2?.policies) return false;
+
+    return obj1.policies.some((p1, index) => {
+      const p2 = obj2.policies[index];
+      if (!p2) return false;
+
+      const p1Users = sortBy(p1.users, 'id');
+      const p2Users = sortBy(p2.users, 'id');
+      const p1Groups = sortBy(p1.userGroups, 'id');
+      const p2Groups = sortBy(p2.userGroups, 'id');
+      return isEqual(p1Users, p2Users) && !isEqual(p1Groups, p2Groups);
+    });
+  };
+
+  const hasAnyChanges = (obj1, obj2) => {
+    if (!obj1?.policies || !obj2?.policies) return false;
+
+    return obj1.policies.some((p1, index) => {
+      const p2 = obj2.policies[index];
+      if (!p2) return false;
+
+      const p1Users = sortBy(p1.users, 'id');
+      const p2Users = sortBy(p2.users, 'id');
+      const p1Groups = sortBy(p1.userGroups, 'id');
+      const p2Groups = sortBy(p2.userGroups, 'id');
+
+      return !isEqual(p1Users, p2Users) || !isEqual(p1Groups, p2Groups);
+    });
+  };
+
+  useEffect(() => {
+    if (!isEmpty(policiesAndActions)) {
+      setUsersActions(policiesAndActions);
+      setInitialUsersActions(policiesAndActions);
+      setHasUserChanges(false);
+      setHasUserGroupChanges(false);
+    }
+  }, [policiesAndActions]);
+
+  useEffect(() => {
+    if (initialUsersActions && usersActions) {
+      const userChanges = hasUserChangesOnly(usersActions, initialUsersActions);
+      const userGroupChanges = hasUserGroupChangesOnly(
+        usersActions,
+        initialUsersActions
+      );
+      const anyChanges = hasAnyChanges(usersActions, initialUsersActions);
+      setHasUserChanges(userChanges);
+      setHasUserGroupChanges(userGroupChanges);
+      if (activeTab === 'users') {
+        setDisableSaveBtn(!(userChanges || anyChanges));
+      } else {
+        setDisableSaveBtn(!(userGroupChanges || anyChanges));
+      }
+    }
+  }, [usersActions, initialUsersActions, activeTab]);
+
+  const handleTabSwitch = tab => {
+    setActiveTab(tab);
+    resetCheckboxTracking();
+  };
+
+  const handleGroupDropdownChange = selectedOption => {
+    setSelectedGroupDropdown(selectedOption);
+    resetCheckboxTracking();
+  };
+
+  const handleSidebarClick = item => {
+    setActiveSidebarItem(item);
+    resetCheckboxTracking();
+    setSelectedGroupDropdown({
+      label: 'All',
+      value: 'all',
+    });
+  };
+
+  const resetCheckboxTracking = () => {
+    setHasUserChanges(false);
+    setHasUserGroupChanges(false);
+    if (policiesAndActions) {
+      setInitialUsersActions(policiesAndActions);
+      setUsersActions(policiesAndActions);
+    }
+  };
+
   const rawGroup = clusterUsers?.userGroups?.map(ele => ({
     identity: ele?.identity,
     id: ele?.id,
@@ -249,32 +373,11 @@ const NiFiClusterAccessManagement = () => {
     id: ele?.id,
   }));
 
-  const clusterNiFiPolicies = useSelector(
-    RolesSelectors.getClusterNiFiPolicies
-  );
-  const policiesAndActions = useSelector(
-    RolesSelectors.getPoliciesAndActionsData
-  );
-
-  useEffect(() => {
-    if (!isEmpty(usersActions)) {
-      const isDifferent = arePoliciesDifferent(
-        usersActions,
-        policiesAndActions
-      );
-      setDisableSaveBtn(isDifferent);
-    }
-  }, [usersActions]);
-  useEffect(() => {
-    if (!isEmpty(policiesAndActions)) {
-      setUsersActions(policiesAndActions);
-    }
-  }, [policiesAndActions]);
-
   const sidebarItems = useMemo(
     () => clusterNiFiPolicies?.accessPolicies || [],
     [clusterNiFiPolicies]
   );
+
   useEffect(() => {
     if (!isEmpty(sidebarItems)) {
       setActiveSidebarItem(sidebarItems?.[0]);
@@ -553,7 +656,6 @@ const NiFiClusterAccessManagement = () => {
   }, [dynamicColumns]);
 
   const dispatch = useDispatch();
-  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   useEffect(() => {
     if (selectedCluster?.value) {
@@ -630,41 +732,31 @@ const NiFiClusterAccessManagement = () => {
       descriptionPayload: usersActions,
       updatedAPIpayload,
       forCluster: true,
+      changeFlags: {
+        usersAssignedChanged: hasUserChanges,
+        groupsAssignedChanged: hasUserGroupChanges,
+      },
+      selectedPolicyName: activeSidebarItem?.name,
     };
 
     dispatch(RolesActions.updateClusterPermissionsAndActions(payload));
-  };
-  const loading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchClusterUsers')
-  );
-  const loading2 = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchClusterNiFiPolicies')
-  );
-  const loading3 = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchPoliciesandActions')
-  );
-  const loading4 = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'updateClusterPermissionsAndActions')
-  );
-
-  const handleSidebarClick = () => {
-    setCheckboxStates(prev => {
-      const resetStates = Object.keys(prev).reduce((acc, id) => {
-        acc[id] = false;
-        return acc;
-      }, {});
-      return resetStates;
-    });
-    setSelectedGroupDropdown({
-      label: 'All',
-      value: 'all',
-    });
+    setHasUserChanges(false);
+    setHasUserGroupChanges(false);
+    setInitialUsersActions(usersActions);
   };
 
   const getSearchPlaceholder = () => {
     if (activeTab === 'groups') return 'Select Group Names';
     if (activeTab === 'users') return 'Select User Names';
     return 'Search';
+  };
+
+  const shouldEnableSave = () => {
+    if (activeTab === 'users') {
+      return hasUserChanges;
+    } else {
+      return hasUserGroupChanges;
+    }
   };
 
   return (
@@ -678,7 +770,7 @@ const NiFiClusterAccessManagement = () => {
           <ButtonsContainer>
             <Button
               size="sm"
-              disabled={isEmpty(activeSidebarItem) || !disableSaveBtn}
+              disabled={isEmpty(activeSidebarItem) || !shouldEnableSave()}
               onClick={() => {
                 handleSavePermission();
               }}
@@ -699,10 +791,7 @@ const NiFiClusterAccessManagement = () => {
                     <SidebarItem
                       key={item?.name}
                       active={activeSidebarItem?.name === item?.name}
-                      onClick={() => {
-                        setActiveSidebarItem(item);
-                        handleSidebarClick();
-                      }}
+                      onClick={() => handleSidebarClick(item)}
                     >
                       {item?.name}
                     </SidebarItem>
@@ -721,10 +810,7 @@ const NiFiClusterAccessManagement = () => {
                     <TabContainer>
                       <Tab
                         active={activeTab === 'groups'}
-                        onClick={() => {
-                          setActiveTab('groups');
-                          handleSidebarClick();
-                        }}
+                        onClick={() => handleTabSwitch('groups')}
                       >
                         <TabIcon>
                           <GroupUserIcon
@@ -737,10 +823,7 @@ const NiFiClusterAccessManagement = () => {
                       </Tab>
                       <Tab
                         active={activeTab === 'users'}
-                        onClick={() => {
-                          setActiveTab('users');
-                          handleSidebarClick();
-                        }}
+                        onClick={() => handleTabSwitch('users')}
                       >
                         <TabIcon>
                           <NewUserIcon
@@ -763,9 +846,7 @@ const NiFiClusterAccessManagement = () => {
                         placeholder={'Select Group'}
                         showCircleIcon={true}
                         sortAlphabetically={false}
-                        onChange={e => {
-                          setSelectedGroupDropdown(e);
-                        }}
+                        onChange={handleGroupDropdownChange}
                       />
                     )}
                   </div>
@@ -811,13 +892,7 @@ const NiFiClusterAccessManagement = () => {
                               ? 'groups-table'
                               : 'users-table'
                           }
-                          emptyMessage={
-                            'No Data Found'
-                            // !isEmpty(activeSidebarItem) &&
-                            // isEmpty(filteredDataUsersGrp)
-                            //   ? 'No Data Found'
-                            //   : 'Select Any Policy'
-                          }
+                          emptyMessage={'No Data Found'}
                         />
                       </div>
                     </>

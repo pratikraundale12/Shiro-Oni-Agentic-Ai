@@ -35,6 +35,8 @@ export const rolesAPI = api => {
     payload = {},
     forCluster,
     pgName,
+    selectedPolicyName,
+    changeFlags,
   }) => {
     let url = `clusters/${id}/update-policies`;
 
@@ -47,7 +49,13 @@ export const rolesAPI = api => {
       url += `?${queryParams.toString()}`;
     }
 
-    return api.put(url, payload);
+    const requestBody = {
+      ...payload,
+      selectedPolicyName,
+      changeFlags,
+    };
+
+    return api.put(url, requestBody);
   };
 
   return {

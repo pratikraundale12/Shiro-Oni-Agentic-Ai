@@ -260,6 +260,8 @@ export function* updateClusterPermissionsAndActions(api, { payload }) {
         payload: payload?.descriptionPayload,
         forCluster: payload?.forCluster,
         pgName,
+        selectedPolicyName: payload?.selectedPolicyName,
+        changeFlags: payload?.changeFlags,
       },
     ],
   });
