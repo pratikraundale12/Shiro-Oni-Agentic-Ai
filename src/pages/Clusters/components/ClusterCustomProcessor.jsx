@@ -63,14 +63,6 @@ export const ClusterCustomProcessor = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Initialize state
-  const [method, setMethod] = useState(
-    data?.service_account_type || 'username_password'
-  );
-  const [changeRequestEnabled, setChangeRequestEnabled] = useState(
-    data?.has_custom_service_account || false
-  );
-
   const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
   const isAdding = useSelector(ClustersSelectors.isAddingServiceAccountHost);
   const isUpdating = useSelector(
@@ -79,143 +71,17 @@ export const ClusterCustomProcessor = ({
 
   const loading = isChecking || isAdding || isUpdating;
 
-  const schemaPassword = yup.object({
-    service_username: yup.string().required('Username is required'),
-    service_password: yup.string().required('Password is required'),
-  });
-
-  const schemaPEM = yup.object({
-    service_account_certificate_password: yup
-      .string()
-      .required('Password is required'),
-    service_account_certificate: yup.mixed().required('P12 file is required'),
-  });
-
-  const schema = method === 'username_password' ? schemaPassword : schemaPEM;
-
   const {
     register,
     watch,
     setValue,
-    reset,
+    handleSubmit,
     control,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      service_account_type: data?.service_account_type || 'username_password',
-      service_username: data?.service_username || '',
-      service_password: data?.service_password || '',
-      service_account_certificate: data?.service_account_certificate || '',
-      service_account_certificate_password:
-        data?.service_account_certificate_password || '',
-      change_request_enable: data?.change_request_enable || false,
-    },
+    // resolver: yupResolver(schema),
   });
 
-  useEffect(() => {
-    if (method === 'username_password') {
-      setValue('service_username', data?.service_username || '');
-      setValue('service_password', data?.service_password || '');
-    } else if (method === 'p12') {
-      setValue(
-        'service_account_certificate',
-        data?.service_account_certificate || ''
-      );
-      setValue(
-        'service_account_certificate_password',
-        data?.service_account_certificate_password || ''
-      );
-    }
-  }, [method, data, setValue]);
-
-  const handleSave = async () => {
-    const formData = new FormData();
-    formData.append('name', clusterData.clusterName);
-    formData.append('nifi_url', clusterData.nifiUrl);
-
-    if (clusterData.registryId) {
-      formData.append('registry_id', clusterData.registryId);
-    }
-
-    if (clusterData.logs_url) {
-      formData.append('logs_url', clusterData.logs_url);
-    }
-
-    if (clusterData.metrics_url) {
-      formData.append('metrics_url', clusterData.metrics_url);
-    }
-
-    formData.append('tag', tags);
-    formData.append(
-      'notification_enable',
-      clusterData.notification_enable || false
-    );
-    formData.append('approver_enable', clusterData.approver_enable || false);
-    formData.append(
-      'change_request_enable',
-      clusterData.change_request_enable || false
-    );
-
-    if (changeRequestEnabled) {
-      const saType =
-        method === 'username_password' ? 'username_password' : 'p12';
-      formData.append('service_account_type', saType);
-
-      if (method === 'username_password') {
-        formData.append('service_username', watch('service_username'));
-        formData.append('service_password', watch('service_password'));
-        formData.append('has_custom_service_account', 'true');
-        formData.append('service_account_certificate_password', '');
-        formData.append('service_account_certificate', '');
-      } else {
-        formData.append('service_username', '');
-        formData.append('service_password', '');
-        formData.append('has_custom_service_account', 'true');
-        formData.append(
-          'service_account_certificate_password',
-          watch('service_account_certificate_password')
-        );
-        formData.append(
-          'service_account_certificate',
-          watch('service_account_certificate')
-        );
-      }
-    } else {
-      formData.append('has_custom_service_account', 'false');
-      formData.append('service_account_type', 'username_password');
-      formData.append('service_username', '');
-      formData.append('service_password', '');
-      formData.append('service_account_certificate_password', '');
-      formData.append('service_account_certificate', '');
-    }
-
-    if (!clusterId || !formData) {
-      console.error(
-        'ClusterServiceAccountModal: Missing clusterId or formData'
-      );
-      toast.error('Failed to save: Missing required data');
-      return;
-    }
-
-    if (isEmpty(hostToEdit)) {
-      dispatch(
-        ClustersActions.addServiceAccountHostRequest({
-          clusterId,
-          formData,
-        })
-      );
-    } else {
-      dispatch(
-        ClustersActions.updateServiceAccountHostRequest({
-          clusterId,
-          formData,
-        })
-      );
-    }
-
-    navigate(-1);
-  };
   const COLUMNS = [
     {
       label: 'File Name',
@@ -274,6 +140,11 @@ export const ClusterCustomProcessor = ({
     // },
   ];
 
+  const handleUpload = formdata => {
+    let payload = { narFile: formdata?.nar_file, id: data?.id };
+    dispatch(ClustersActions.addNarFile(payload));
+  };
+  const handleRestart = () => {};
   return (
     <>
       <FullPageLoader loading={loading} />
@@ -308,7 +179,7 @@ export const ClusterCustomProcessor = ({
               type="button"
               variant="primary"
               loading={loading}
-              onClick={handleSave}
+              onClick={handleSubmit(handleUpload)}
             >
               Upload
             </Button>
@@ -316,7 +187,7 @@ export const ClusterCustomProcessor = ({
               type="button"
               variant="primary"
               loading={loading}
-              onClick={handleSave}
+              onClick={handleRestart}
             >
               Restart
             </Button>

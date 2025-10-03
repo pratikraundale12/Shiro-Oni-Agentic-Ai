@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button, InputField } from '../../../shared';
+import { Button, CheckboxField, InputField } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { KDFM } from '../../../constants';
@@ -69,20 +69,21 @@ export const SSHDetailsTabSection = ({
   const [method, setMethod] = useState(
     data?.service_account_type || 'username_password'
   );
-  const [changeRequestEnabled, setChangeRequestEnabled] = useState(
-    data?.has_custom_service_account || false
-  );
+  // const [changeRequestEnabled, setChangeRequestEnabled] = useState(
+  //   data?.has_custom_service_account || false
+  // );
   const [sshItem, setSshItem] = useState([]);
   const [selectedSSH, setSelectedSSH] = useState({});
   const [isSSHModalOpen, setIsSSHModalOpen] = useState(false);
-  console.log(sshItem, 'sshItem');
+  const [bulkSelectItems, setBulkSelectItems] = useState([]);
 
   const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
   const isAdding = useSelector(ClustersSelectors.isAddingServiceAccountHost);
   const isUpdating = useSelector(
     ClustersSelectors.isUpdatingServiceAccountHost
   );
-
+  const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
+  //
   const loading = isChecking || isAdding || isUpdating;
 
   const schemaPassword = yup.object({
@@ -135,141 +136,101 @@ export const SSHDetailsTabSection = ({
     }
   }, [method, data, setValue]);
 
-  const handleSave = async () => {
-    const formData = new FormData();
-    formData.append('name', clusterData.clusterName);
-    formData.append('nifi_url', clusterData.nifiUrl);
-
-    if (clusterData.registryId) {
-      formData.append('registry_id', clusterData.registryId);
-    }
-
-    if (clusterData.logs_url) {
-      formData.append('logs_url', clusterData.logs_url);
-    }
-
-    if (clusterData.metrics_url) {
-      formData.append('metrics_url', clusterData.metrics_url);
-    }
-
-    formData.append('tag', tags);
-    formData.append(
-      'notification_enable',
-      clusterData.notification_enable || false
-    );
-    formData.append('approver_enable', clusterData.approver_enable || false);
-    formData.append(
-      'change_request_enable',
-      clusterData.change_request_enable || false
-    );
-
-    if (changeRequestEnabled) {
-      const saType =
-        method === 'username_password' ? 'username_password' : 'p12';
-      formData.append('service_account_type', saType);
-
-      if (method === 'username_password') {
-        formData.append('service_username', watch('service_username'));
-        formData.append('service_password', watch('service_password'));
-        formData.append('has_custom_service_account', 'true');
-        formData.append('service_account_certificate_password', '');
-        formData.append('service_account_certificate', '');
-      } else {
-        formData.append('service_username', '');
-        formData.append('service_password', '');
-        formData.append('has_custom_service_account', 'true');
-        formData.append(
-          'service_account_certificate_password',
-          watch('service_account_certificate_password')
-        );
-        formData.append(
-          'service_account_certificate',
-          watch('service_account_certificate')
-        );
-      }
-    } else {
-      formData.append('has_custom_service_account', 'false');
-      formData.append('service_account_type', 'username_password');
-      formData.append('service_username', '');
-      formData.append('service_password', '');
-      formData.append('service_account_certificate_password', '');
-      formData.append('service_account_certificate', '');
-    }
-
-    if (!clusterId || !formData) {
-      console.error(
-        'ClusterServiceAccountModal: Missing clusterId or formData'
-      );
-      toast.error('Failed to save: Missing required data');
-      return;
-    }
-
-    if (isEmpty(hostToEdit)) {
+  useEffect(() => {
+    if (data?.id) {
       dispatch(
-        ClustersActions.addServiceAccountHostRequest({
-          clusterId,
-          formData,
+        ClustersActions.fetchHostNodesList({
+          selected: false,
+          clusterId: data?.id,
+          update_node: false,
         })
       );
-    } else {
-      dispatch(
-        ClustersActions.updateServiceAccountHostRequest({
-          clusterId,
-          formData,
-        })
-      );
+      dispatch(ClustersActions.setMultiNodesTestResults({}));
     }
+  }, [data?.id]);
 
-    navigate(-1);
+  // useEffect(() => {
+  //   if (typeof data?.total_nodes === 'number') {
+  //     const newItems = [];
+  //     for (let i = 0; i < data.total_nodes; i++) {
+  //       newItems.push({
+  //         id: i,
+  //         hostIp: '',
+  //         file: '',
+  //         clusterId: '',
+  //         username: '',
+  //         nifiLibPath: '',
+  //       });
+  //     }
+  //     setSshItem(newItems);
+  //   }
+  // }, [data?.total_nodes]);
+
+  useEffect(() => {
+    if (!isEmpty(listHostIpData)) {
+      const formattedData = listHostIpData?.map(item => ({
+        id: item?.id,
+        hostIp: item.host_ip || '',
+        file: '',
+        clusterId: '',
+        username: item.username || '',
+        nifiLibPath: '',
+        port: item?.port,
+        ssh_key_name: item?.ssh_key_name,
+      }));
+      setSshItem(formattedData);
+    }
+  }, [listHostIpData]);
+
+  const handleCheckClick = (check, item) => {
+    if (check) {
+      setBulkSelectItems(prev => [...prev, item]);
+    } else {
+      setBulkSelectItems(prev => prev.filter(ele => ele.id !== item.id));
+    }
   };
-  useEffect(() => {
-    dispatch(
-      ClustersActions.fetchHostNodesList({
-        selected: false,
-        clusterId: data?.id,
-        update_node: false,
-      })
-    );
-  }, [dispatch]);
-  useEffect(() => {
-    if (typeof data?.total_nodes === 'number') {
-      const newItems = [];
-      for (let i = 0; i < data.total_nodes; i++) {
-        newItems.push({
-          id: i,
-          hostIp: '',
-          file: '',
-          clusterId: '',
-          username: '',
-          nifiLibPath: '',
-        });
-      }
-      setSshItem(newItems);
-    }
-  }, [data?.total_nodes]);
+
+  const checkboxClicked = item => {
+    return bulkSelectItems?.some(ele => ele?.id === item?.id);
+  };
 
   const COLUMNS = [
     {
-      label: 'Node',
-      renderCell: item => <>{item?.hostIp || 'N/A'}</>,
+      label: '',
+      renderCell: item => (
+        <>
+          <CheckboxField
+            name={`check-${item?.id}`}
+            // label="Do you want to add same data in all nodes?"
+            checked={checkboxClicked(item)}
+            onChange={e => handleCheckClick(e.target.checked, item)}
+          />
+        </>
+      ),
       resize: true,
-      width: '25%',
+      width: '3%',
+    },
+    {
+      label: 'Node',
+      renderCell: item => <>{item?.hostIp || '-'}</>,
+      resize: true,
+      width: '35%',
     },
     {
       label: 'File',
-      renderCell: item => <>{item?.file || item?.hostIp || 'N/A'}</>,
+      renderCell: item => <span>{item?.ssh_key_name || '-'}</span>,
       resize: true,
-      width: '25%',
+      width: '35%',
     },
+    // {
+    //   label: 'Lib Path',
+    //   renderCell: item => <>{item?.nifiLibPath || 'N/A'}</>,
+    //   resize: true,
+    //   width: '20%',
+    // },
     {
-      label: 'File Path',
-      renderCell: item => <>{item?.nifiLibPath || 'N/A'}</>,
-      resize: true,
-      width: '20%',
-    },
-    {
-      label: 'User',
-      renderCell: item => <>{item?.username || 'N/A'}</>,
+      label: 'Username',
+      renderCell: item => <>{item?.username || '-'}</>,
       resize: true,
       width: '20%',
     },
@@ -284,6 +245,7 @@ export const SSHDetailsTabSection = ({
                 onClick={() => {
                   setIsSSHModalOpen(true);
                   setSelectedSSH(item);
+                  setBulkSelectItems([]);
                 }}
                 title="Settings"
               >
@@ -298,7 +260,7 @@ export const SSHDetailsTabSection = ({
         </>
       ),
       resize: true,
-      width: '10%',
+      width: '7%',
     },
   ];
   return (
@@ -306,6 +268,22 @@ export const SSHDetailsTabSection = ({
       <FullPageLoader loading={loading} />
 
       <Container>
+        {' '}
+        <FlexWrapper>
+          <div className="d-flex justify-content-end w-100">
+            <div className="mt-2 ">
+              <Button
+                type="button"
+                variant="primary"
+                loading={loading}
+                onClick={() => setIsSSHModalOpen(true)}
+                isBtnDisable={isEmpty(bulkSelectItems)}
+              >
+                Common SSH Configuration
+              </Button>
+            </div>
+          </div>
+        </FlexWrapper>
         <div className="mt-2">
           <Table
             data={sshItem || []}
@@ -314,23 +292,15 @@ export const SSHDetailsTabSection = ({
             // tableWithFullHeight={true}
           />
         </div>
-        <FlexWrapper>
-          <div className=" mt-2" style={{ display: 'flex', gap: '1rem' }}>
-            <Button
-              type="button"
-              variant="primary"
-              loading={loading}
-              onClick={handleSave}
-            >
-              Save
-            </Button>
-          </div>
-        </FlexWrapper>
         <AddSSHModal
           isSSHModalOpen={isSSHModalOpen}
           setIsSSHModalOpen={setIsSSHModalOpen}
           selectedSSH={selectedSSH}
           setSshItem={setSshItem}
+          bulkSelectItems={bulkSelectItems}
+          setBulkSelectItems={setBulkSelectItems}
+          data={data}
+          setSelectedSSH={setSelectedSSH}
         />
       </Container>
     </>

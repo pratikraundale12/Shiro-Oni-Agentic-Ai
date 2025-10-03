@@ -100,7 +100,18 @@ export const clustersAPI = api => {
   const fetchAllConfigPropertiesWithValue = ({ version }) => {
     return api.post(`/clusters/config-properties/${version}`);
   };
-
+  const testMultipleNodes = ({ payload }) => {
+    return api.post(`/test-hosts-credentials/test-private-keys`, payload);
+  };
+  const updateMultipleNodeswithSSH = ({ id, payload }) => {
+    return api.patch(`/clusters/${id}/update-multiple-nodes`, payload);
+  };
+  const fetchSSHstatus = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/check-ssh-details`);
+  };
+  const addNarFile = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/upload-nars`, payload);
+  };
   return {
     fetchClusters,
     fetchClusterList,
@@ -132,5 +143,9 @@ export const clustersAPI = api => {
     deleteAnsibleClusterHard,
     fetchAnsibleCLusterProcessData,
     fetchAllConfigPropertiesWithValue,
+    testMultipleNodes,
+    updateMultipleNodeswithSSH,
+    fetchSSHstatus,
+    addNarFile,
   };
 };

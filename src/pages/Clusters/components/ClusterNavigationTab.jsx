@@ -1,10 +1,14 @@
 /* eslint-disable */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import styled from 'styled-components';
-import { AuthenticationSelectors } from '../../../store';
-import { useSelector } from 'react-redux';
+import {
+  AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
+} from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -37,8 +41,15 @@ const ClusterNavigationTab = ({
   isRegistryDetailDisable,
   data,
 }) => {
+  const dispatch = useDispatch();
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
+  const sshDataAdded = useSelector(ClustersSelectors.getsshAddedStatus);
   const isSuperAdmin = currentUserData?.role === 'superadmin';
+  useEffect(() => {
+    if (data?.id) {
+      dispatch(ClustersActions.fetchSSHstatus(data?.id));
+    }
+  }, [data?.id]);
 
   return (
     <NavTabs id="nav-tab" role="tablist">
@@ -96,7 +107,7 @@ const ClusterNavigationTab = ({
           {KDFM.SERVICE_ACCOUNT}
         </NavButton>
       )}
-      {data && data?.status === 'Connected' && (
+      {data && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS}
           onClick={() =>
@@ -110,7 +121,7 @@ const ClusterNavigationTab = ({
           SSH Details
         </NavButton>
       )}
-      {data && data?.status === 'Connected' && (
+      {sshDataAdded?.sshCredsAvailable && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
           onClick={() =>

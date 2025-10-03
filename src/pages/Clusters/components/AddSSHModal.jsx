@@ -9,7 +9,6 @@ import {
   LoadingSelectors,
 } from '../../../store';
 import {
-  CheckboxField,
   InputField,
   ModalWithRightBtn,
   PasswordField,
@@ -17,10 +16,11 @@ import {
 } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
+  CrossIcons,
+  CrossWithCircleIcon,
   CurvedLockIcon,
-  CurvedProfileIcon,
   DocumentTextIcon,
-  InfoIcon,
+  TickIconWithCircle,
 } from '../../../assets';
 import { isEmpty, set } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -58,35 +58,35 @@ const UploadWrapper = styled.div`
 `;
 
 export const AddSSHModal = ({
-  hostToEdit,
-  setHostToEdit,
   isSSHModalOpen,
   setIsSSHModalOpen,
   selectedSSH,
   setSshItem,
+  bulkSelectItems,
+  setBulkSelectItems,
+  data,
+  setSelectedSSH,
 }) => {
   const dispatch = useDispatch();
-  const [method, setMethod] = useState('password');
+  // const [method, setMethod] = useState('password');
   const [addCertificate, setAddCertificate] = useState(false);
   const [formData, setFormData] = useState({});
-  const [duplicateCheck, setDuplicateCheck] = useState(false);
   const isModalOpen = useSelector(ClustersSelectors.getIsAddHostIPModalOpen);
   const isPrimaryBtnDisable = useSelector(
     ClustersSelectors.getAddHostBtnDisable
   );
-  const getIndividualHostData = useSelector(
-    ClustersSelectors.getAddHostIndividualData
+  const testResponseListforMultiNodes = useSelector(
+    ClustersSelectors.getmultiNodesTestResults
   );
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
   );
+  const loading1 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'testMultipleNodes')
+  );
 
-  const onRequestClose = () => {
-    setIsSSHModalOpen(false);
-  };
-
-  const schemaPasswrd = yup.object().shape({
+  const schemaFile = yup.object().shape({
     hostIp: yup
       .string()
       .required('Host IP is required')
@@ -95,10 +95,18 @@ export const AddSSHModal = ({
         'Host IP must not have leading or trailing spaces',
         value => value === value?.trim()
       ),
-    nifiLibPath: yup.string().required('Path is required'),
+    port: yup.string().required('Port is required'),
     username: yup.string().required('Username is required'),
     file: yup.mixed().required('File is required'),
   });
+  const schemaMultipleNodes = yup.object().shape({
+    username: yup.string().required('Username is required'),
+    file: yup.mixed().required('File is required'),
+  });
+
+  const formSchema = isEmpty(bulkSelectItems)
+    ? schemaFile
+    : schemaMultipleNodes;
 
   const {
     register,
@@ -109,78 +117,112 @@ export const AddSSHModal = ({
     control,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schemaPasswrd),
+    resolver: yupResolver(formSchema),
   });
 
   useEffect(() => {
-    if (!isEmpty(hostToEdit)) {
-      setValue('host_ip', hostToEdit?.host_ip);
-      setValue('port', hostToEdit?.port);
-      setValue('username', hostToEdit?.username);
-      setValue('hostName', hostToEdit?.host_name);
-      setValue(
-        'isKeystoreCertificateAdd',
-        hostToEdit?.has_certificate.toString()
-      );
+    if (!isEmpty(selectedSSH) && data?.created_by_ansible) {
+      setValue('hostIp', selectedSSH?.hostIp);
+      setValue('port', selectedSSH?.port);
     }
-  }, [hostToEdit]);
+  }, [selectedSSH]);
+
+  const onRequestClose = () => {
+    // setValue('username', '');
+    setIsSSHModalOpen(false);
+    setBulkSelectItems([]);
+    setSelectedSSH({});
+    dispatch(ClustersActions.setAddHostBtnDisable(true));
+    dispatch(ClustersActions.setMultiNodesTestResults({}));
+    reset();
+  };
+
   const watchMethodCredentials = watch('methodForCredentials');
-  const watchCertificateSelection = watch('isKeystoreCertificateAdd');
+  // const watchCertificateSelection = watch('isKeystoreCertificateAdd');
 
   const handleTestSubmit = data => {
     setFormData(data);
-    const payload = new FormData();
-    payload.append('hostIp', data?.hostIp);
-    payload.append('username', data?.username);
-    payload.append('file', data?.file);
-    payload.append('isPassword', false);
+    if (isEmpty(bulkSelectItems)) {
+      const payload = new FormData();
+      payload.append('hostIp', data?.hostIp);
+      payload.append('username', data?.username);
+      payload.append('file', data?.file);
+      payload.append('isPassword', false);
 
-    const payloadData = { payload, data };
+      const payloadData = { payload, data };
 
-    console.log(payloadData, 'payloadData');
+      dispatch(ClustersActions.checkCredentialsClusterSetup(payloadData));
+    } else {
+      const payload = new FormData();
+      const hosts = bulkSelectItems?.map(ele => ({
+        hostIp: ele?.hostIp,
+        port: ele?.port,
+        id: ele?.id,
+      }));
 
-    dispatch(ClustersActions.checkCredentialsClusterSetup(payloadData));
+      payload.append('hosts', JSON.stringify(hosts));
+      payload.append('username', data?.username);
+      payload.append('file', data?.file);
+      payload.append('isPassword', false);
+
+      const payloadData = { payload, data };
+      dispatch(ClustersActions.testMultipleNodes(payloadData));
+    }
   };
 
   const addIndividualHost = e => {
-    console.log(formData, 'formData');
-    setSshItem(prevData =>
-      prevData.map(item =>
-        item.id === selectedSSH?.id
-          ? {
-              id: item?.id,
-              hostIp: formData?.hostIp,
-              file: formData?.file?.name,
-              clusterId: formData?.hostIp,
-              username: formData?.username,
-              nifiLibPath: formData?.nifiLibPath,
-            }
-          : item
-      )
-    );
     onRequestClose();
     reset();
     dispatch(ClustersActions.setAddHostBtnDisable(true));
-    setDuplicateCheck(false);
+    if (isEmpty(bulkSelectItems)) {
+      const payload = new FormData();
+      payload.append('hostIp', formData?.hostIp);
+      payload.append('port', formData?.port);
+      payload.append('username', formData?.username);
+      payload.append('pemFile', formData?.file);
+      payload.append('isPassword', false);
+
+      const payloadData = {
+        payload,
+        hostId: selectedSSH?.id,
+        clusterId: data?.id,
+        callForSSH: true,
+      };
+      dispatch(ClustersActions.updateIndividualHost(payloadData));
+    } else {
+      const nodesArr = testResponseListforMultiNodes?.response
+        ?.filter(ele => ele?.status === 'success')
+        .map(ele => ele.id);
+
+      const payload = new FormData();
+      payload.append('nodes', JSON.stringify(nodesArr));
+      payload.append('username', formData?.username);
+      payload.append('pemFile', formData?.file);
+      const payloadData = {
+        payload,
+        id: data?.id,
+      };
+      dispatch(ClustersActions.updateMultipleNodeswithSSH(payloadData));
+    }
   };
 
-  useEffect(() => {
-    if (watchMethodCredentials) {
-      setMethod(watchMethodCredentials);
-    }
-  }, [watchMethodCredentials]);
-  useEffect(() => {
-    if (watchCertificateSelection) {
-      setAddCertificate(watchCertificateSelection);
-    }
-  }, [watchCertificateSelection]);
+  // useEffect(() => {
+  //   if (watchMethodCredentials) {
+  //     setMethod(watchMethodCredentials);
+  //   }
+  // }, [watchMethodCredentials]);
+  // useEffect(() => {
+  //   if (watchCertificateSelection) {
+  //     setAddCertificate(watchCertificateSelection);
+  //   }
+  // }, [watchCertificateSelection]);
 
   useEffect(() => {
     if (!isModalOpen) {
       reset();
       if (dispatch) {
         dispatch(ClustersActions.setAddHostBtnDisable(true));
-        dispatch(ClustersActions.setAddHostIndividualData({}));
+        // dispatch(ClustersActions.setAddHostIndividualData({}));
       }
     }
   }, [isModalOpen]);
@@ -189,17 +231,38 @@ export const AddSSHModal = ({
     { id: 1, value: 'password', label: 'Password' },
     { id: 2, value: 'privatekey', label: 'Private Key' },
   ];
-  console.log(duplicateCheck, 'duplicateCheck');
+
+  const inputsDisabled = () => {
+    if (
+      (!isPrimaryBtnDisable || !isEmpty(selectedSSH)) &&
+      data?.created_by_ansible
+    ) {
+      return true;
+    } else if (data?.created_by_ansible) {
+      return false;
+    }
+  };
 
   return (
     <>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading1} />
       <ModalWithRightBtn
         isOpen={isSSHModalOpen}
         onRequestClose={onRequestClose}
         onSubmit={e => addIndividualHost(e)}
-        title={`${isEmpty(hostToEdit) ? 'Add' : 'Edit'} SSH Details`}
-        primaryButtonText="Add Details"
+        title={`Add SSH Details`}
+        primaryButtonText={
+          // !testResponseListforMultiNodes?.allPassed && !isEmpty(bulkSelectItems)
+          //   ? 'Add Details for Passed Nodes'
+          //   : 'Add Node Details'
+
+          isEmpty(bulkSelectItems)
+            ? 'Add Node Details'
+            : !isEmpty(bulkSelectItems) &&
+                testResponseListforMultiNodes?.allPassed
+              ? 'Add Node Details'
+              : 'Add Details for Passed Nodes'
+        }
         secondaryButtonText="Back"
         primaryButtonDisabled={isPrimaryBtnDisable}
         contentStyles={{ minWidth: '60%', maxHeight: '65%' }}
@@ -217,34 +280,39 @@ export const AddSSHModal = ({
             cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
           }}
         >
-          <div className="row">
-            <div className="col-6">
-              <InputField
-                name="hostIp"
-                type="text"
-                label="Host IP"
-                placeholder="Enter Your Host IP"
-                required
-                register={register}
-                errors={errors}
-                icon={<DocumentTextIcon />}
-                disabled={!isPrimaryBtnDisable || !isEmpty(hostToEdit)}
-              />
-            </div>{' '}
-            <div className="col-6">
-              <InputField
-                name="nifiLibPath"
-                type="text"
-                label="File Path"
-                placeholder="Enter file path"
-                required
-                register={register}
-                errors={errors}
-                icon={<DocumentTextIcon />}
-                disabled={!isPrimaryBtnDisable}
-              />
+          {isEmpty(bulkSelectItems) && (
+            <div className="row">
+              <div className="col-6">
+                <InputField
+                  name="hostIp"
+                  type="text"
+                  label="Host IP"
+                  placeholder="Enter Your Host IP"
+                  required
+                  register={register}
+                  errors={errors}
+                  icon={<DocumentTextIcon />}
+                  // disabled={!isPrimaryBtnDisable || !isEmpty(selectedSSH)}
+                  disabled={inputsDisabled()}
+                />
+              </div>{' '}
+              <div className="col-6">
+                <InputField
+                  name="port"
+                  type="text"
+                  label="Port"
+                  placeholder="Enter Port"
+                  required
+                  register={register}
+                  errors={errors}
+                  icon={<DocumentTextIcon />}
+                  // disabled={!isPrimaryBtnDisable || !isEmpty(selectedSSH)}
+                  disabled={inputsDisabled()}
+                />
+              </div>
             </div>
-          </div>
+          )}
+
           <div
             className=" d-flex justify-content-end "
             style={{
@@ -261,23 +329,23 @@ export const AddSSHModal = ({
             />
           </div>
           <div className="row">
+            {' '}
             <div className="col-6">
               <InputField
                 name="username"
                 type="text"
-                label="User Name"
+                label="Username"
                 placeholder="Enter Your User Name"
                 required
                 register={register}
                 errors={errors}
-                icon={<CurvedProfileIcon />}
+                icon={<DocumentTextIcon />}
                 disabled={!isPrimaryBtnDisable}
               />
-            </div>{' '}
+            </div>
             {(isEmpty(watchMethodCredentials) ||
               watchMethodCredentials === 'password') && (
               <>
-                {' '}
                 <div className="col-6">
                   <PasswordField
                     name="password"
@@ -317,13 +385,31 @@ export const AddSSHModal = ({
                 </span>
               </div>
             )}
-            <CheckboxField
-              name="check"
-              label="Do you want to add same data in all nodes?"
-              checked={duplicateCheck}
-              onChange={e => setDuplicateCheck(e.target.checked)}
-            />
           </div>
+          {!isEmpty(testResponseListforMultiNodes) &&
+            !testResponseListforMultiNodes?.allPassed && (
+              <>
+                {testResponseListforMultiNodes?.response?.map(ele => (
+                  <div
+                    key={ele?.hostIp}
+                    className="mb-2"
+                    style={{
+                      color: ele?.status !== 'success' ? 'red' : 'black',
+                      fontSize: '15px',
+                      fontWeight: '400',
+                    }}
+                  >
+                    {' '}
+                    {ele?.status !== 'success' ? (
+                      <CrossWithCircleIcon width={25} height={25} color="red" />
+                    ) : (
+                      <TickIconWithCircle width={25} height={25} />
+                    )}{' '}
+                    {ele?.hostIp}
+                  </div>
+                ))}
+              </>
+            )}
         </Container>
       </ModalWithRightBtn>
     </>

@@ -79,6 +79,9 @@ export const Certificate = ({
 
       const response = await testCluster(payload);
       if (response.status === 200) {
+        dispatch(
+          ClustersActions.setTestCertificateNodes(response?.data?.nodes)
+        );
         setTestSuccess(true);
         setIsCertificateOpen(false);
         setSuccessModal(true);

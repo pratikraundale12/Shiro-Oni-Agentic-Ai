@@ -169,13 +169,23 @@ export function* updateIndividualHost(api, { payload }) {
   if (response.ok) {
     toast.success('Node Updated Successfully');
     yield put(ClustersActions.setIsAddHostIPModalOpen(false));
-    yield put(
-      ClustersActions.fetchHostNodesList({
-        selected: true,
-        clusterId: null,
-        update_node: false,
-      })
-    );
+    if (payload?.callForSSH) {
+      yield put(
+        ClustersActions.fetchHostNodesList({
+          selected: false,
+          clusterId: payload?.clusterId,
+          update_node: false,
+        })
+      );
+    } else {
+      yield put(
+        ClustersActions.fetchHostNodesList({
+          selected: true,
+          clusterId: null,
+          update_node: false,
+        })
+      );
+    }
   } else {
     toast.error(response?.data?.message);
     yield put(ClustersActions.setIsAddHostIPModalOpen(false));
@@ -554,6 +564,73 @@ export function* fetchAllConfigPropertiesWithValue(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
+export function* testMultipleNodes(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'testMultipleNodes',
+    loadingSection: 'testMultipleNodes',
+    apiMethod: api.testMultipleNodes,
+    apiParams: [{ payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    //
+    toast.success(response?.data?.message || 'Tested Successfully');
+    yield put(ClustersActions.setAddHostBtnDisable(false));
+    yield put(ClustersActions.setMultiNodesTestResults(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
+export function* updateMultipleNodeswithSSH(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'updateMultipleNodeswithSSH',
+    loadingSection: 'updateMultipleNodeswithSSH',
+    apiMethod: api.updateMultipleNodeswithSSH,
+    apiParams: [{ id: payload?.id, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message || 'Tested Successfully');
+    yield put(
+      ClustersActions.fetchHostNodesList({
+        selected: false,
+        clusterId: payload?.id,
+        update_node: false,
+      })
+    );
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* fetchSSHstatus(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchSSHstatus',
+    loadingSection: 'fetchSSHstatus',
+    apiMethod: api.fetchSSHstatus,
+    apiParams: [
+      {
+        clusterId: payload,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setSshAddedStatus(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+export function* addNarFile(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'addNarFile',
+    loadingSection: 'addNarFile',
+    apiMethod: api.addNarFile,
+    apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message || 'Added Successfully');
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
 
 export function* clustersSagas(api) {
   yield all([
@@ -647,5 +724,13 @@ export function* clustersSagas(api) {
       fetchAllConfigPropertiesWithValue,
       api
     ),
+    takeLatest(ClustersActions.testMultipleNodes, testMultipleNodes, api),
+    takeLatest(
+      ClustersActions.updateMultipleNodeswithSSH,
+      updateMultipleNodeswithSSH,
+      api
+    ),
+    takeLatest(ClustersActions.fetchSSHstatus, fetchSSHstatus, api),
+    takeLatest(ClustersActions.addNarFile, addNarFile, api),
   ]);
 }

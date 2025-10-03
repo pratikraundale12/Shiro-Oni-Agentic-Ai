@@ -128,6 +128,15 @@ export const ClustersActions = {
   setClusterSetupSelectedNiFiVersion: createAction(
     `${prefix}setClusterSetupSelectedNiFiVersion`
   ),
+  testMultipleNodes: createAction(`${prefix}testMultipleNodes`),
+  updateMultipleNodeswithSSH: createAction(
+    `${prefix}updateMultipleNodeswithSSH`
+  ),
+  setMultiNodesTestResults: createAction(`${prefix}setMultiNodesTestResults`),
+  setTestCertificateNodes: createAction(`${prefix}setTestCertificateNodes`),
+  fetchSSHstatus: createAction(`${prefix}fetchSSHstatus`),
+  setSshAddedStatus: createAction(`${prefix}setSshAddedStatus`),
+  addNarFile: createAction(`${prefix}addNarFile`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -177,6 +186,9 @@ export const CLUSTERS_INITIAL_STATE = {
   clusterListItems: 10,
   allConfigPropertiesAndValue: {},
   clusterSetupSelectedNiFiVersion: null,
+  multiNodesTestResults: {},
+  testCertificateNodes: [],
+  sshAddedStatus: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -240,6 +252,9 @@ export const ClustersSelectors = {
     state.clusters.allConfigPropertiesAndValue,
   getClusterSetupSelectedNiFiVersion: state =>
     state.clusters.clusterSetupSelectedNiFiVersion,
+  getmultiNodesTestResults: state => state.clusters.multiNodesTestResults,
+  getTestCertificateNodes: state => state.clusters.testCertificateNodes,
+  getsshAddedStatus: state => state.clusters.sshAddedStatus,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -534,6 +549,24 @@ const setClusterSetupSelectedNiFiVersion = (state, { payload }) => {
     clusterSetupSelectedNiFiVersion: payload,
   };
 };
+const setMultiNodesTestResults = (state, { payload }) => {
+  return {
+    ...state,
+    multiNodesTestResults: payload,
+  };
+};
+const setTestCertificateNodes = (state, { payload }) => {
+  return {
+    ...state,
+    testCertificateNodes: payload,
+  };
+};
+const setSshAddedStatus = (state, { payload }) => {
+  return {
+    ...state,
+    sshAddedStatus: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -665,6 +698,12 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setClusterSetupSelectedNiFiVersion,
         setClusterSetupSelectedNiFiVersion
-      );
+      )
+      .addCase(
+        ClustersActions.setMultiNodesTestResults,
+        setMultiNodesTestResults
+      )
+      .addCase(ClustersActions.setTestCertificateNodes, setTestCertificateNodes)
+      .addCase(ClustersActions.setSshAddedStatus, setSshAddedStatus);
   }
 );

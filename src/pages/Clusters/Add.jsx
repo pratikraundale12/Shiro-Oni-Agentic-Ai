@@ -461,9 +461,9 @@ export const Add = () => {
   }, [
     watchedFields,
     clusterData,
-    setClusterData,
-    setRegistryData,
-    setTest,
+    // setClusterData,
+    // setRegistryData,
+    // setTest,
     activeTab,
   ]);
   useEffect(() => {
@@ -808,7 +808,7 @@ export const Add = () => {
         )}
         {activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR && (
           <FormContainer>
-            {data?.status === 'Connected' && (
+            {
               <ClusterCustomProcessor
                 tags={tags}
                 hostToEdit={hostToEdit}
@@ -816,20 +816,18 @@ export const Add = () => {
                 clusterId={clusterId}
                 data={data}
               />
-            )}
+            }
           </FormContainer>
         )}
         {activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS && (
           <FormContainer>
-            {data?.status === 'Connected' && (
-              <SSHDetailsTabSection
-                tags={tags}
-                hostToEdit={hostToEdit}
-                clusterData={clusterData}
-                clusterId={clusterId}
-                data={data}
-              />
-            )}
+            <SSHDetailsTabSection
+              tags={tags}
+              hostToEdit={hostToEdit}
+              clusterData={clusterData}
+              clusterId={clusterId}
+              data={data}
+            />
           </FormContainer>
         )}
       </Container>
