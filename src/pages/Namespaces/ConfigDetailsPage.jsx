@@ -135,6 +135,11 @@ const TopRightIcon = styled.div`
 
 const ConfigDetailsPage = () => {
   const dispatch = useDispatch();
+
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+
   const breadcrumbDataOnDeploy = [
     {
       label: KDFM.NIFI_FLOW,
@@ -462,7 +467,7 @@ const ConfigDetailsPage = () => {
             </IconContentV2>
             <TabLabelWithIcon>
               {KDFM.CONTROLLER_SERVICE}
-              {singleNameSpace?.invalidCount > 0 && (
+              {registryDetailsData?.hasInvalidControllerService > 0 && (
                 <TopRightIcon>
                   <InvalidProcessorIcon width={12} height={12} />
                 </TopRightIcon>
