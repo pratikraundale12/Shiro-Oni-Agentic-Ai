@@ -135,7 +135,7 @@ const ClusterNavigationTab = ({
           {CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
         </NavButton>
       )}
-      {data && (
+      {sshDataAdded?.sshCredsAvailable && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.DRIVERS}
           onClick={() =>
@@ -149,7 +149,7 @@ const ClusterNavigationTab = ({
           {CLUSTER_MODULE_TABS.DRIVERS}
         </NavButton>
       )}
-      {data && (
+      {sshDataAdded?.sshCredsAvailable && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.FLOW_GZ}
           onClick={() =>

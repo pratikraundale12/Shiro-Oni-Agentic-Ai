@@ -177,6 +177,7 @@ export function* updateIndividualHost(api, { payload }) {
           update_node: false,
         })
       );
+      yield put(ClustersActions.fetchSSHstatus(payload?.clusterId));
     } else {
       yield put(
         ClustersActions.fetchHostNodesList({
@@ -597,6 +598,7 @@ export function* updateMultipleNodeswithSSH(api, { payload }) {
         update_node: false,
       })
     );
+    yield put(ClustersActions.fetchSSHstatus(payload?.id));
   } else {
     toast.error(response?.data?.error);
   }

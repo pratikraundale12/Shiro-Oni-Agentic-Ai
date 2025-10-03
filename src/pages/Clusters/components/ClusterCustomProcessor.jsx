@@ -14,8 +14,9 @@ import * as yup from 'yup';
 import { FullPageLoader, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
-import { CurvedFolderIcon } from '../../../assets';
+import { CurvedFolderIcon, DeleteSmallIcon } from '../../../assets';
 import { theme } from '../../../styles';
+import { LoadingSelectors } from '../../../store';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -63,37 +64,44 @@ export const ClusterCustomProcessor = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
-  const isAdding = useSelector(ClustersSelectors.isAddingServiceAccountHost);
-  const isUpdating = useSelector(
-    ClustersSelectors.isUpdatingServiceAccountHost
+  // const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
+  // const isAdding = useSelector(ClustersSelectors.isAddingServiceAccountHost);
+  // const isUpdating = useSelector(
+  //   ClustersSelectors.isUpdatingServiceAccountHost
+  // );
+  const narList = useSelector(ClustersSelectors.getnarList);
+  console.log(narList, 'narList');
+
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'addNarFile')
   );
-
-  const loading = isChecking || isAdding || isUpdating;
-
+  const schema = yup.object().shape({
+    nar_file: yup.mixed().required('File is required'),
+  });
   const {
     register,
     watch,
     setValue,
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm({
-    // resolver: yupResolver(schema),
+    resolver: yupResolver(schema),
   });
 
   const COLUMNS = [
     {
       label: 'File Name',
-      renderCell: item => <>{item?.host_name || 'N/A'}</>,
+      renderCell: item => <>{item?.name || 'N/A'}</>,
       resize: true,
       width: '40%',
     },
     {
       label: 'File',
-      renderCell: item => <>{item?.port}</>,
+      renderCell: item => <>{item?.narPath}</>,
       resize: true,
-      width: '40%',
+      width: '50%',
     },
 
     {
@@ -111,38 +119,22 @@ export const ClusterCustomProcessor = ({
                     : theme.colors.darkGrey
                 }
               /> */}
+              <DeleteSmallIcon color="red" />
             </span>
           }{' '}
-          {/* <ReactTooltip
-            id={`certificate-${item?.id}-detail`}
-            place="bottom"
-            effect="solid"
-            content={
-              item?.has_certificate ? 'Has Certificate' : 'No Certificate'
-            }
-            style={{
-              width: '130px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-              zIndex: 10000,
-            }}
-          /> */}
         </>
       ),
       resize: true,
-      width: '20%',
+      width: '10%',
     },
-    // {
-    //   label: 'Status',
-    //   renderCell: item => <></>,
-    //   resize: true,
-    //   width: '8%',
-    // },
   ];
 
   const handleUpload = formdata => {
-    let payload = { narFile: formdata?.nar_file, id: data?.id };
+    const payloadFile = new FormData();
+    payloadFile.append('narFile', formdata?.nar_file);
+    let payload = { payload: payloadFile, id: data?.id };
     dispatch(ClustersActions.addNarFile(payload));
+    reset();
   };
 
   useEffect(() => {
@@ -150,7 +142,14 @@ export const ClusterCustomProcessor = ({
       dispatch(ClustersActions.fetchNarList(data?.id));
     }
   }, [data?.id]);
-  const handleRestart = () => {};
+  const handleRestart = () => {
+    dispatch(
+      ClustersActions.changeClusterActionState({
+        clusterId: data?.id,
+        data: { action: 'restart' },
+      })
+    );
+  };
   return (
     <>
       <FullPageLoader loading={loading} />
@@ -167,7 +166,7 @@ export const ClusterCustomProcessor = ({
                   control={control}
                   required
                   rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                  placeholder={KDFM.UPLOAD_P12_FILE}
+                  placeholder={'Upload nar file'}
                   errors={errors}
                   fileLable="Custom Nar file"
                   validExtensionsArray={['.nar']}
@@ -201,7 +200,7 @@ export const ClusterCustomProcessor = ({
         </FlexWrapper>
         <div className="mt-2">
           <Table
-            data={[]}
+            data={narList || []}
             columns={COLUMNS}
             // customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
             // tableWithFullHeight={true}

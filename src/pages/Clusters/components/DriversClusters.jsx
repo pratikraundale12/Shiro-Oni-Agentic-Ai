@@ -70,7 +70,9 @@ export const DriversCluster = ({
   );
 
   const loading = isChecking || isAdding || isUpdating;
-
+  const schema = yup.object().shape({
+    driver: yup.mixed().required('File is required'),
+  });
   const {
     register,
     watch,
@@ -79,7 +81,7 @@ export const DriversCluster = ({
     control,
     formState: { errors },
   } = useForm({
-    // resolver: yupResolver(schema),
+    resolver: yupResolver(schema),
   });
 
   const COLUMNS = [
@@ -142,7 +144,6 @@ export const DriversCluster = ({
 
   const handleUpload = formdata => {
     let payload = { narFile: formdata?.nar_file, id: data?.id };
-    dispatch(ClustersActions.addNarFile(payload));
   };
 
   useEffect(() => {
@@ -167,7 +168,7 @@ export const DriversCluster = ({
                   control={control}
                   required
                   rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                  placeholder={KDFM.UPLOAD_P12_FILE}
+                  placeholder={'Upload driver file'}
                   errors={errors}
                   fileLable="Custom driver file"
                   //   validExtensionsArray={['.nar']}

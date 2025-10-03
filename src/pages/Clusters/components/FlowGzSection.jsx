@@ -14,7 +14,7 @@ import * as yup from 'yup';
 import { FullPageLoader, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
-import { CurvedFolderIcon } from '../../../assets';
+import { CurvedFolderIcon, DocumentTextIcon, QRIcons } from '../../../assets';
 import { theme } from '../../../styles';
 
 const Container = styled.div``;
@@ -70,7 +70,9 @@ export const FlowGzTabSection = ({
   );
 
   const loading = isChecking || isAdding || isUpdating;
-
+  const schema = yup.object().shape({
+    driver: yup.mixed().required('File is required'),
+  });
   const {
     register,
     watch,
@@ -79,7 +81,7 @@ export const FlowGzTabSection = ({
     control,
     formState: { errors },
   } = useForm({
-    // resolver: yupResolver(schema),
+    resolver: yupResolver(schema),
   });
 
   const COLUMNS = [
@@ -142,7 +144,6 @@ export const FlowGzTabSection = ({
 
   const handleUpload = formdata => {
     let payload = { narFile: formdata?.nar_file, id: data?.id };
-    dispatch(ClustersActions.addNarFile(payload));
   };
 
   useEffect(() => {
@@ -162,12 +163,12 @@ export const FlowGzTabSection = ({
               <ModalContainer>
                 <PemUploadField
                   name="driver"
-                  label="Driver file"
+                  label="Flow file"
                   watch={watch}
                   control={control}
                   required
                   rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                  placeholder={KDFM.UPLOAD_P12_FILE}
+                  placeholder={'Upload flow file'}
                   errors={errors}
                   fileLable="Custom driver file"
                   //   validExtensionsArray={['.nar']}
@@ -175,6 +176,19 @@ export const FlowGzTabSection = ({
                   //   errorText={'Nar'}
                 />
               </ModalContainer>
+            </div>
+            <div className="col-6">
+              {' '}
+              <InputField
+                name="nifi_sensitive_props_key"
+                type="text"
+                label="nifi.sensitive.props.key"
+                placeholder="Enter nifi.sensitive.props.key"
+                required
+                register={register}
+                errors={errors}
+                icon={<DocumentTextIcon />}
+              />
             </div>
           </>
         </div>
@@ -189,16 +203,16 @@ export const FlowGzTabSection = ({
             >
               Upload
             </Button>
+            <Button
+              type="button"
+              variant="primary"
+              loading={loading}
+              onClick={handleRestart}
+            >
+              Restore Previous File
+            </Button>
           </div>
         </FlexWrapper>
-        <div className="mt-2">
-          <Table
-            data={[]}
-            columns={COLUMNS}
-            // customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
-            // tableWithFullHeight={true}
-          />
-        </div>
       </Container>
     </>
   );

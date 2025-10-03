@@ -258,6 +258,7 @@ export const ClustersSelectors = {
   getmultiNodesTestResults: state => state.clusters.multiNodesTestResults,
   getTestCertificateNodes: state => state.clusters.testCertificateNodes,
   getsshAddedStatus: state => state.clusters.sshAddedStatus,
+  getnarList: state => state.clusters.narList,
 };
 
 /* ------------- REDUCERS ------------------- */
