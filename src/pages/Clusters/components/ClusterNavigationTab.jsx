@@ -121,21 +121,38 @@ const ClusterNavigationTab = ({
           SSH Details
         </NavButton>
       )}
-      {sshDataAdded?.sshCredsAvailable && (
-        <NavButton
-          active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
-          onClick={() =>
-            Object.keys(data || {})?.length
-              ? setActiveTab(CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR)
-              : {}
-          }
-          disabled={isRegistryDetailDisable}
-          data-tooltip-id="navButtonTooltip"
-        >
-          {CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
-        </NavButton>
-      )}
-      {sshDataAdded?.sshCredsAvailable && (
+      {
+        <>
+          <NavButton
+            active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
+            onClick={() =>
+              Object.keys(data || {})?.length
+                ? setActiveTab(CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR)
+                : {}
+            }
+            disabled={!sshDataAdded?.sshCredsAvailable}
+            data-tooltip-id="custom_processor"
+          >
+            {CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
+          </NavButton>
+          {!sshDataAdded?.sshCredsAvailable && (
+            <ReactTooltip
+              id="custom_processor"
+              place="right"
+              effect="solid"
+              content="Add SSH details"
+              style={{
+                whiteSpace: 'normal',
+                zIndex: 9999,
+              }}
+              event="focus"
+              eventOff="blur"
+            />
+          )}
+        </>
+      }
+
+      {false && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.DRIVERS}
           onClick={() =>
@@ -143,13 +160,28 @@ const ClusterNavigationTab = ({
               ? setActiveTab(CLUSTER_MODULE_TABS.DRIVERS)
               : {}
           }
-          disabled={isRegistryDetailDisable}
-          data-tooltip-id="navButtonTooltip"
+          disabled={true}
+          data-tooltip-id="drivers"
         >
           {CLUSTER_MODULE_TABS.DRIVERS}
         </NavButton>
       )}
-      {sshDataAdded?.sshCredsAvailable && (
+      {!sshDataAdded?.sshCredsAvailable && (
+        <ReactTooltip
+          id="drivers"
+          place="right"
+          effect="solid"
+          content="Add SSH details"
+          style={{
+            whiteSpace: 'normal',
+            zIndex: 9999,
+          }}
+          event="focus"
+          eventOff="blur"
+        />
+      )}
+
+      {false && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.FLOW_GZ}
           onClick={() =>
@@ -157,11 +189,25 @@ const ClusterNavigationTab = ({
               ? setActiveTab(CLUSTER_MODULE_TABS.FLOW_GZ)
               : {}
           }
-          disabled={isRegistryDetailDisable}
-          data-tooltip-id="navButtonTooltip"
+          disabled={true}
+          data-tooltip-id="flow_gz"
         >
           {CLUSTER_MODULE_TABS.FLOW_GZ}
         </NavButton>
+      )}
+      {!sshDataAdded?.sshCredsAvailable && (
+        <ReactTooltip
+          id="flow_gz"
+          place="right"
+          effect="solid"
+          content="Add SSH details"
+          style={{
+            whiteSpace: 'normal',
+            zIndex: 9999,
+          }}
+          event="focus"
+          eventOff="blur"
+        />
       )}
     </NavTabs>
   );

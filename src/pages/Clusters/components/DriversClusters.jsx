@@ -1,21 +1,17 @@
 /*eslint-disable*/
-import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button, InputField } from '../../../shared';
+import { Button } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
-import { KDFM } from '../../../constants';
 import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
-import { useNavigate } from 'react-router-dom';
-import { CurvedFolderIcon } from '../../../assets';
-import { theme } from '../../../styles';
+import { DeleteSmallIcon } from '../../../assets';
 import { LoadingSelectors } from '../../../store';
 
 const Container = styled.div``;
@@ -48,19 +44,8 @@ const FlexWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
 `;
-const NodeWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  color: ${theme.colors.primary};
-`;
-export const DriversCluster = ({
-  tags,
-  hostToEdit,
-  clusterData,
-  clusterId,
-  data,
-}) => {
+
+export const DriversCluster = ({ data }) => {
   const dispatch = useDispatch();
   const [fileInputKey, setFileInputKey] = useState(0);
   const schema = yup.object().shape({
@@ -69,10 +54,13 @@ export const DriversCluster = ({
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'uploadClusterDriver')
   );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'restartCluster')
+  );
+  const driverList = useSelector(ClustersSelectors.getDriversList);
+
   const {
-    register,
     watch,
-    setValue,
     handleSubmit,
     control,
     formState: { errors },
@@ -83,15 +71,15 @@ export const DriversCluster = ({
   const COLUMNS = [
     {
       label: 'File Name',
-      renderCell: item => <>{item?.host_name || 'N/A'}</>,
+      renderCell: item => <>{item?.name || 'N/A'}</>,
       resize: true,
       width: '40%',
     },
     {
-      label: 'File',
-      renderCell: item => <>{item?.port}</>,
+      label: 'File Path',
+      renderCell: item => <>{item?.jarPath}</>,
       resize: true,
-      width: '40%',
+      width: '50%',
     },
 
     {
@@ -100,46 +88,17 @@ export const DriversCluster = ({
         <>
           {
             <span data-tooltip-id={`certificate-${item?.id}-detail`}>
-              {/* <NotePadIcon
-                height="21"
-                width="21"
-                color={
-                  item?.has_certificate
-                    ? theme.colors.primary
-                    : theme.colors.darkGrey
-                }
-              /> */}
+              {<DeleteSmallIcon color="red" />}
             </span>
           }{' '}
-          {/* <ReactTooltip
-            id={`certificate-${item?.id}-detail`}
-            place="bottom"
-            effect="solid"
-            content={
-              item?.has_certificate ? 'Has Certificate' : 'No Certificate'
-            }
-            style={{
-              width: '130px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-              zIndex: 10000,
-            }}
-          /> */}
         </>
       ),
       resize: true,
-      width: '20%',
+      width: '10%',
     },
-    // {
-    //   label: 'Status',
-    //   renderCell: item => <></>,
-    //   resize: true,
-    //   width: '8%',
-    // },
   ];
 
   const handleUpload = formdata => {
-    // let payload = { narFile: formdata?.nar_file, id: data?.id };
     const payloadFile = new FormData();
     payloadFile.append('driverFile', formdata?.driver);
     let payload = { payload: payloadFile, id: data?.id };
@@ -152,10 +111,17 @@ export const DriversCluster = ({
       dispatch(ClustersActions.fetchDriversList(data?.id));
     }
   }, [data?.id]);
-  const handleRestart = () => {};
+  const handleRestart = () => {
+    dispatch(
+      ClustersActions.restartCluster({
+        id: data?.id,
+        payload: {},
+      })
+    );
+  };
   return (
     <>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
 
       <Container>
         <div className="row mb-3">
@@ -191,15 +157,13 @@ export const DriversCluster = ({
             >
               Upload
             </Button>
+            <Button type="button" variant="primary" onClick={handleRestart}>
+              Restart
+            </Button>
           </div>
         </FlexWrapper>
         <div className="mt-2">
-          <Table
-            data={[]}
-            columns={COLUMNS}
-            // customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
-            // tableWithFullHeight={true}
-          />
+          <Table data={driverList || []} columns={COLUMNS} />
         </div>
       </Container>
     </>
@@ -207,35 +171,6 @@ export const DriversCluster = ({
 };
 
 DriversCluster.propTypes = {
-  tags: PropTypes.string.isRequired,
-  clusterData: PropTypes.shape({
-    clusterName: PropTypes.string,
-    nifiUrl: PropTypes.string,
-    metrics_url: PropTypes.string,
-    logs_url: PropTypes.string,
-    registryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    notification_enable: PropTypes.bool,
-    approver_enable: PropTypes.bool,
-    change_request_enable: PropTypes.bool,
-    service_account_type: PropTypes.oneOf(['username_password', 'p12']),
-    service_username: PropTypes.string,
-    service_password: PropTypes.string,
-    service_account_certificate: PropTypes.string,
-    service_account_certificate_password: PropTypes.string,
-    has_custom_service_account: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.bool,
-    ]),
-  }).isRequired,
-  clusterId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-    .isRequired,
-  hostToEdit: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    isPassword: PropTypes.bool,
-    username: PropTypes.string,
-    password: PropTypes.string,
-    service_account_certificate_password: PropTypes.string,
-  }),
   data: PropTypes.shape({
     clusterName: PropTypes.string,
     nifiUrl: PropTypes.string,

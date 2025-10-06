@@ -586,7 +586,7 @@ const setNarList = (state, { payload }) => {
 const setDriversList = (state, { payload }) => {
   return {
     ...state,
-    narList: payload,
+    driversList: payload,
   };
 };
 

@@ -1,20 +1,17 @@
 /*eslint-disable*/
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button, InputField } from '../../../shared';
+import { Button } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
-import { KDFM } from '../../../constants';
 import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
-import { CurvedFolderIcon, DeleteSmallIcon } from '../../../assets';
-import { theme } from '../../../styles';
+import { DeleteSmallIcon } from '../../../assets';
 import { LoadingSelectors } from '../../../store';
 
 const Container = styled.div``;
@@ -47,12 +44,7 @@ const FlexWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
 `;
-export const ClusterCustomProcessor = ({
-  tags,
-  hostToEdit,
-  clusterId,
-  data,
-}) => {
+export const ClusterCustomProcessor = ({ data }) => {
   const dispatch = useDispatch();
   const narList = useSelector(ClustersSelectors.getnarList);
   const [fileInputKey, setFileInputKey] = useState(0);
@@ -67,11 +59,8 @@ export const ClusterCustomProcessor = ({
   });
   const {
     watch,
-    setValue,
     handleSubmit,
-    resetField,
     control,
-    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -97,16 +86,7 @@ export const ClusterCustomProcessor = ({
         <>
           {
             <span data-tooltip-id={`certificate-${item?.id}-detail`}>
-              {/* <NotePadIcon
-                height="21"
-                width="21"
-                color={
-                  item?.has_certificate
-                    ? theme.colors.primary
-                    : theme.colors.darkGrey
-                }
-              /> */}
-              <DeleteSmallIcon color="red" />
+              {false && <DeleteSmallIcon color="red" />}
             </span>
           }{' '}
         </>
@@ -189,16 +169,6 @@ export const ClusterCustomProcessor = ({
 };
 
 ClusterCustomProcessor.propTypes = {
-  tags: PropTypes.string.isRequired,
-  clusterId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-    .isRequired,
-  hostToEdit: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    isPassword: PropTypes.bool,
-    username: PropTypes.string,
-    password: PropTypes.string,
-    service_account_certificate_password: PropTypes.string,
-  }),
   data: PropTypes.shape({
     clusterName: PropTypes.string,
     nifiUrl: PropTypes.string,
