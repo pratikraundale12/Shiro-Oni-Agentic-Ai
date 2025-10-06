@@ -2,6 +2,8 @@ import { toast } from 'react-toastify';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { requestSaga } from '../helpers/request_sagas';
 import { RolesActions, RolesSelectors } from './redux';
+import { NamespacesSelectors } from '../namespaces';
+import { GridSelectors } from '../grid';
 
 export function* fetchRoles(api) {
   const response = yield call(requestSaga, {
@@ -152,6 +154,154 @@ export function* editRole(api, { payload }) {
   yield put(RolesActions.setInActiveUserIdModelOpen(false));
 }
 
+export function* fetchClusterUsers(
+  api,
+  { payload: { clusterId, params = {} } }
+) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchClusterUsers',
+    loadingSection: 'fetchClusterUsers',
+    apiMethod: api.fetchClusterUsers,
+    apiParams: [{ clusterId, params }],
+    successAction: RolesActions.fetchClusterUsersSuccess,
+  });
+  if (response?.data?.message) {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* fetchClusterUserGroups(
+  api,
+  { payload: { clusterId, namespaceId, params = {} } }
+) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchClusterUserGroups',
+    loadingSection: 'fetchClusterUserGroups',
+    apiMethod: api.fetchClusterUserGroups,
+    apiParams: [{ clusterId, namespaceId, params }],
+    successAction: RolesActions.fetchClusterUserGroupsSuccess,
+  });
+  if (response?.data?.message) {
+    toast.error(response?.data?.message || 'Failed to fetch flow policy data');
+  }
+}
+
+export function* fetchClusterNiFiPolicies(
+  api,
+  { payload: { clusterId, params = {} } }
+) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchClusterNiFiPolicies',
+    loadingSection: 'fetchClusterNiFiPolicies',
+    apiMethod: api.fetchClusterNiFiPolicies,
+    apiParams: [{ clusterId, params }],
+    successAction: RolesActions.fetchClusterNiFiPoliciesSuccess,
+  });
+  if (!response.ok) {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* fetchFlowPolicyDetails(
+  api,
+  { payload: { clusterId, namespaceId, params = {} } }
+) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchFlowPolicyDetails',
+    loadingSection: 'fetchFlowPolicyDetails',
+    apiMethod: api.fetchFlowPolicyDetails,
+    apiParams: [{ clusterId, namespaceId, params }],
+    successAction: RolesActions.fetchFlowPolicyDetailsSuccess,
+  });
+  if (response?.data?.message) {
+    toast.error(response?.data?.message);
+  }
+}
+export function* fetchPoliciesandActions(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchPoliciesandActions',
+    loadingSection: 'fetchPoliciesandActions',
+    apiMethod: api.fetchPoliciesandActions,
+    apiParams: [
+      {
+        id: payload?.payload?.id,
+        payload: payload?.payload?.descriptionPayload,
+      },
+    ],
+  });
+  if (response.ok) {
+    yield put(RolesActions.setPoliciesAndActionsData(response.data));
+  } else if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+export function* updateClusterPermissionsAndActions(api, { payload }) {
+  const gridData = yield select(GridSelectors.getModuleAllData, 'namespaces');
+  const isSwitchEnabled = payload?.isSwitchEnabled === true;
+  const pgName = isSwitchEnabled
+    ? gridData?.breadcrumb?.[0]?.name || ''
+    : payload?.activeSidebarItem?.name || '';
+
+  const response = yield call(requestSaga, {
+    errorSection: 'updateClusterPermissionsAndActions',
+    loadingSection: 'updateClusterPermissionsAndActions',
+    apiMethod: api.updateClusterPermissionsAndActions,
+    apiParams: [
+      {
+        id: payload?.id,
+        payload: payload?.descriptionPayload,
+        forCluster: payload?.forCluster,
+        pgName,
+        selectedPolicyName: payload?.selectedPolicyName,
+        changeFlags: payload?.changeFlags,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message || 'Updated successfully');
+    if (payload?.updatedAPIpayload) {
+      yield put(
+        RolesActions.fetchPoliciesandActions({
+          payload: {
+            id: payload?.id,
+            descriptionPayload: payload?.updatedAPIpayload,
+          },
+        })
+      );
+    } else {
+      yield put(
+        RolesActions.fetchClusterNiFiPolicies({
+          clusterId: payload?.id,
+        })
+      );
+      yield put(
+        RolesActions.fetchFlowPolicyDetails({
+          clusterId: payload?.id,
+          namespaceId:
+            payload?.isSwitchEnabled === true
+              ? gridData?.data?.[0]?.parentGroupId
+              : payload?.activeSidebarItem?.id,
+
+          params: {
+            action: payload?.selectedPolicy?.action,
+            resource: payload?.selectedPolicy?.preProcessGroupSegment,
+          },
+        })
+      );
+    }
+  } else if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* rolesSagas(api) {
   yield all([
     takeLatest(RolesActions.fetchRoles, fetchRoles, api),
@@ -161,5 +311,31 @@ export function* rolesSagas(api) {
     takeLatest(RolesActions.fetchLdap, fetchLdap, api),
     takeLatest(RolesActions.deleteRole, deleteRole, api),
     takeLatest(RolesActions.editRole, editRole, api),
+    takeLatest(RolesActions.fetchClusterUsers, fetchClusterUsers, api),
+    takeLatest(
+      RolesActions.fetchClusterUserGroups,
+      fetchClusterUserGroups,
+      api
+    ),
+    takeLatest(
+      RolesActions.fetchClusterNiFiPolicies,
+      fetchClusterNiFiPolicies,
+      api
+    ),
+    takeLatest(
+      RolesActions.fetchFlowPolicyDetails,
+      fetchFlowPolicyDetails,
+      api
+    ),
+    takeLatest(
+      RolesActions.fetchPoliciesandActions,
+      fetchPoliciesandActions,
+      api
+    ),
+    takeLatest(
+      RolesActions.updateClusterPermissionsAndActions,
+      updateClusterPermissionsAndActions,
+      api
+    ),
   ]);
 }
