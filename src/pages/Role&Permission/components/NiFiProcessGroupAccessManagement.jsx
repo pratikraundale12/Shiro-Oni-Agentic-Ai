@@ -584,7 +584,7 @@ const NiFiProcessGroupAccessManagement = () => {
             id={`tooltip-id`}
             place="bottom"
             effect="solid"
-            content="Select"
+            content="Select All"
             style={{
               width: 'auto',
               whiteSpace: 'normal',
