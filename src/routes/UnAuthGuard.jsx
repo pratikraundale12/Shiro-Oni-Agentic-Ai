@@ -3,7 +3,12 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { DfmCollapsedIcon, KsolvesDataFlowIcon, LoginIcon } from '../assets';
+import {
+  DfmCollapsedIcon,
+  KsolvesDataFlowIcon,
+  LoginIcon,
+  TermsOfUseIcon,
+} from '../assets';
 import { CollapseSidebarIconLeft } from '../assets/Icons/CollapseSidebarIconLeft';
 import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRight';
 import { PolicyIcon } from '../assets/Icons/PolicyIcon';
@@ -53,7 +58,7 @@ export const UNAUTHROUTES_MENU = [
   {
     name: 'Terms of use',
     path: '/policy/terms-of-use',
-    icon: PolicyIcon,
+    icon: TermsOfUseIcon,
     pages: [
       {
         path: '',
