@@ -143,6 +143,41 @@ export const ClustersActions = {
   uploadClusterDriver: createAction(`${prefix}uploadClusterDriver`),
   fetchDriversList: createAction(`${prefix}fetchDriversList`),
   setDriversList: createAction(`${prefix}setDriversList`),
+  setCreateClusterMethod: createAction(`${prefix}setCreateClusterMethod`),
+  fetchMasterHostNodesList: createAction(`${prefix}fetchMasterHostNodesList`),
+  fetchConfigFieldsForKubernetes: createAction(
+    `${prefix}fetchConfigFieldsForKubernetes`
+  ),
+  setKubernetesConfigFields: createAction(`${prefix}setKubernetesConfigFields`),
+  createConfigForKubernetesCluster: createAction(
+    `${prefix}createConfigForKubernetesCluster`
+  ),
+  fetchConfigListForKubernetes: createAction(
+    `${prefix}fetchConfigListForKubernetes`
+  ),
+  setListConfigListKubernetes: createAction(
+    `${prefix}setListConfigListKubernetes`
+  ),
+  setkubeCofigToEdit: createAction(`${prefix}setkubeCofigToEdit`),
+  deleteKubeConfig: createAction(`${prefix}deleteKubeConfig`),
+  createKubernetesCluster: createAction(`${prefix}createKubernetesCluster`),
+  fetchConfigVersionsPerConfig: createAction(
+    `${prefix}fetchConfigVersionsPerConfig`
+  ),
+  setkubConfigVersion: createAction(`${prefix}setkubConfigVersion`),
+  setkubeHostModalOpen: createAction(`${prefix}setkubeHostModalOpen`),
+  createKubernetesMasterNodeCluster: createAction(
+    `${prefix}createKubernetesMasterNodeCluster`
+  ),
+  deleteMasterNodeConfig: createAction(`${prefix}deleteMasterNodeConfig`),
+  fetchKubeClusterDataToUpgrade: createAction(
+    `${prefix}fetchKubeClusterDataToUpgrade`
+  ),
+  setkubeClusterUpgradeData: createAction(`${prefix}setkubeClusterUpgradeData`),
+  setIsOpenDeleteKubeClusterModal: createAction(
+    `${prefix}setIsOpenDeleteKubeClusterModal`
+  ),
+  deleteClusterKube: createAction(`${prefix}deleteClusterKube`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -197,6 +232,14 @@ export const CLUSTERS_INITIAL_STATE = {
   sshAddedStatus: {},
   narList: [],
   driversList: [],
+  createClusterMethod: 'vm',
+  kubernetesConfigFields: {},
+  listConfigListKubernetes: [],
+  kubeCofigToEdit: {},
+  kubConfigVersion: [],
+  kubeHostModalOpen: false,
+  kubeClusterUpgradeData: {},
+  isOpenDeleteKubeClusterModal: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -265,6 +308,15 @@ export const ClustersSelectors = {
   getsshAddedStatus: state => state.clusters.sshAddedStatus,
   getnarList: state => state.clusters.narList,
   getDriversList: state => state.clusters.driversList,
+  getCreateClusterMethod: state => state.clusters.createClusterMethod,
+  getKubernetesConfigFields: state => state.clusters.kubernetesConfigFields,
+  getlistConfigListKubernetes: state => state.clusters.listConfigListKubernetes,
+  getkubeCofigToEdit: state => state.clusters.kubeCofigToEdit,
+  getkubConfigVersion: state => state.clusters.kubConfigVersion,
+  getkubeHostModalOpen: state => state.clusters.kubeHostModalOpen,
+  getkubeClusterUpgradeData: state => state.clusters.kubeClusterUpgradeData,
+  getisOpenDeleteKubeClusterModal: state =>
+    state.clusters.isOpenDeleteKubeClusterModal,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -589,6 +641,54 @@ const setDriversList = (state, { payload }) => {
     driversList: payload,
   };
 };
+const setCreateClusterMethod = (state, { payload }) => {
+  return {
+    ...state,
+    createClusterMethod: payload,
+  };
+};
+const setKubernetesConfigFields = (state, { payload }) => {
+  return {
+    ...state,
+    kubernetesConfigFields: payload,
+  };
+};
+const setListConfigListKubernetes = (state, { payload }) => {
+  return {
+    ...state,
+    listConfigListKubernetes: payload,
+  };
+};
+const setkubeCofigToEdit = (state, { payload }) => {
+  return {
+    ...state,
+    kubeCofigToEdit: payload,
+  };
+};
+const setkubConfigVersion = (state, { payload }) => {
+  return {
+    ...state,
+    kubConfigVersion: payload,
+  };
+};
+const setkubeHostModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    kubeHostModalOpen: payload,
+  };
+};
+const setkubeClusterUpgradeData = (state, { payload }) => {
+  return {
+    ...state,
+    kubeClusterUpgradeData: payload,
+  };
+};
+const setIsOpenDeleteKubeClusterModal = (state, { payload }) => {
+  return {
+    ...state,
+    isOpenDeleteKubeClusterModal: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -728,6 +828,26 @@ export const clustersReducer = createReducer(
       .addCase(ClustersActions.setTestCertificateNodes, setTestCertificateNodes)
       .addCase(ClustersActions.setSshAddedStatus, setSshAddedStatus)
       .addCase(ClustersActions.setNarList, setNarList)
-      .addCase(ClustersActions.setDriversList, setDriversList);
+      .addCase(ClustersActions.setDriversList, setDriversList)
+      .addCase(ClustersActions.setCreateClusterMethod, setCreateClusterMethod)
+      .addCase(
+        ClustersActions.setKubernetesConfigFields,
+        setKubernetesConfigFields
+      )
+      .addCase(
+        ClustersActions.setListConfigListKubernetes,
+        setListConfigListKubernetes
+      )
+      .addCase(ClustersActions.setkubeCofigToEdit, setkubeCofigToEdit)
+      .addCase(ClustersActions.setkubConfigVersion, setkubConfigVersion)
+      .addCase(ClustersActions.setkubeHostModalOpen, setkubeHostModalOpen)
+      .addCase(
+        ClustersActions.setkubeClusterUpgradeData,
+        setkubeClusterUpgradeData
+      )
+      .addCase(
+        ClustersActions.setIsOpenDeleteKubeClusterModal,
+        setIsOpenDeleteKubeClusterModal
+      );
   }
 );

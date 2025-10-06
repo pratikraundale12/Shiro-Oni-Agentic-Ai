@@ -15,6 +15,7 @@ import { GreenRightCircleIcon } from '../../../assets';
 import { history } from '../../../helpers/history';
 import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
+import KubeClusterDetailsSection from './KuberClusterDetailsSection';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -52,6 +53,9 @@ const SetupClusterWrapper = ({ activeTab }) => {
   );
   const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
+  const createClusterVisKubernetes = useSelector(
+    ClustersSelectors.getCreateClusterMethod
+  );
   const schema = yup.object().shape({
     clusterName: yup
       .string()
@@ -151,75 +155,86 @@ const SetupClusterWrapper = ({ activeTab }) => {
 
   return (
     <Wrapper>
-      <Title
-        title={
-          !isEmpty(nodesUpdateAnsbibleClusterId)
-            ? 'Add Nodes'
-            : !isEmpty(clusterIdForAnsible)
-              ? 'Upgrade Cluster'
-              : 'Add New Cluster'
-        }
-      />
-
-      <Container>
-        <ClusterSetupNavigationTab activeTab={activeTab} />
-        <ClusterDetailTab
-          register={register}
-          control={control}
-          errors={errors}
-          watch={watch}
-          hostList={hostList}
-          setHostList={setHostList}
-          setValue={setValue}
-          reset={reset}
-          loadingFullPage={loadingFullPage}
-        />
-      </Container>
-      <BottomButton className="bottom-button-divs d-flex">
-        <BottomButtonDiv className="btn-div d-flex">
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={() => {
-              if (lastVisit === 'cluster') {
-                history.push(`/clusters`);
-              } else {
-                dispatch(ClustersActions.setActiveTabClusterSetup(lastVisit));
-              }
-            }}
-          >
-            {KDFM.BACK}
-          </Button>
-
-          <Button
-            type="submit"
-            onClick={handleSubmit(handleCreateCluster)}
-            disabled={
-              !isEmpty(clusterIdForAnsible) ? !disableSubmitOnUpgrade() : false
+      {createClusterVisKubernetes === 'VM' && (
+        <>
+          <Title
+            title={
+              !isEmpty(nodesUpdateAnsbibleClusterId)
+                ? 'Add Nodes'
+                : !isEmpty(clusterIdForAnsible)
+                  ? 'Upgrade Cluster'
+                  : 'Add New Cluster'
             }
-          >
-            {!isEmpty(nodesUpdateAnsbibleClusterId)
-              ? 'Add Nodes'
-              : !isEmpty(clusterIdForAnsible)
-                ? 'Upgrade Cluster'
-                : 'Create Cluster'}
-          </Button>
-        </BottomButtonDiv>
-      </BottomButton>
-      <ModalWithIcon
-        title={'Cluster Created Successfully'}
-        primaryButtonText={'Navigate'}
-        icon={<GreenRightCircleIcon />}
-        isOpen={isSuccessModalOpen}
-        onSubmit={() => {
-          setIsSuccessModalOpen(false);
-          history.push(`/clusters`);
-        }}
-        primaryText={'Cluster Created Successfully'}
-        secondaryText={
-          'Your Cluster was Added Successfully.You can now proceed to the next steps'
-        }
-      />
+          />
+
+          <Container>
+            <ClusterSetupNavigationTab activeTab={activeTab} />
+            <ClusterDetailTab
+              register={register}
+              control={control}
+              errors={errors}
+              watch={watch}
+              hostList={hostList}
+              setHostList={setHostList}
+              setValue={setValue}
+              reset={reset}
+              loadingFullPage={loadingFullPage}
+            />
+          </Container>
+          <BottomButton className="bottom-button-divs d-flex">
+            <BottomButtonDiv className="btn-div d-flex">
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => {
+                  if (lastVisit === 'cluster') {
+                    history.push(`/clusters`);
+                  } else {
+                    dispatch(
+                      ClustersActions.setActiveTabClusterSetup(lastVisit)
+                    );
+                  }
+                }}
+              >
+                {KDFM.BACK}
+              </Button>
+
+              <Button
+                type="submit"
+                onClick={handleSubmit(handleCreateCluster)}
+                disabled={
+                  !isEmpty(clusterIdForAnsible)
+                    ? !disableSubmitOnUpgrade()
+                    : false
+                }
+              >
+                {!isEmpty(nodesUpdateAnsbibleClusterId)
+                  ? 'Add Nodes'
+                  : !isEmpty(clusterIdForAnsible)
+                    ? 'Upgrade Cluster'
+                    : 'Create Cluster'}
+              </Button>
+            </BottomButtonDiv>
+          </BottomButton>
+          <ModalWithIcon
+            title={'Cluster Created Successfully'}
+            primaryButtonText={'Navigate'}
+            icon={<GreenRightCircleIcon />}
+            isOpen={isSuccessModalOpen}
+            onSubmit={() => {
+              setIsSuccessModalOpen(false);
+              history.push(`/clusters`);
+            }}
+            primaryText={'Cluster Created Successfully'}
+            secondaryText={
+              'Your Cluster was Added Successfully.You can now proceed to the next steps'
+            }
+          />
+        </>
+      )}
+      {createClusterVisKubernetes !== 'VM' && (
+        <KubeClusterDetailsSection activeTab={activeTab} />
+      )}
     </Wrapper>
   );
 };
