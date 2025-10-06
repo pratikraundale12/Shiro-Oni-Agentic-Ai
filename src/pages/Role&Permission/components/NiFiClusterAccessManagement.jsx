@@ -571,11 +571,6 @@ const NiFiClusterAccessManagement = () => {
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
               }}
-              title={
-                activeSidebarItem?.hasSubNames
-                  ? activeSidebarItem?.policies?.[index]?.subName
-                  : sidebarItem?.actionName
-              }
             >
               <CheckboxField
                 name={`name-${sidebarItem.id}`}
@@ -585,22 +580,32 @@ const NiFiClusterAccessManagement = () => {
                 onCheckBoxChange={e =>
                   handleHeaderToggle(sidebarItem, e.target.checked)
                 }
-                data-tooltip-id={`name-${sidebarItem.id}`}
+                data-tooltip-id={`name-${
+                  activeSidebarItem?.hasSubNames
+                    ? activeSidebarItem?.policies?.[index]?.subName
+                    : sidebarItem?.actionName
+                }`}
               />
-              {activeSidebarItem?.hasSubNames
-                ? activeSidebarItem?.policies?.[index]?.subName
-                : sidebarItem?.actionName}
               <ReactTooltip
-                id={`name-${sidebarItem?.id}`}
+                id={`name-${
+                  activeSidebarItem?.hasSubNames
+                    ? activeSidebarItem?.policies?.[index]?.subName
+                    : sidebarItem?.actionName
+                }`}
                 place="bottom"
                 effect="solid"
-                content="Select"
+                content="Select All"
                 style={{
                   width: 'auto',
                   whiteSpace: 'normal',
                   wordWrap: 'break-word',
                 }}
               />
+              <span>
+                {activeSidebarItem?.hasSubNames
+                  ? activeSidebarItem?.policies?.[index]?.subName
+                  : sidebarItem?.actionName}
+              </span>
             </div>
           ),
           renderCell: item => {
