@@ -55,13 +55,7 @@ const NodeWrapper = styled.div`
   color: ${theme.colors.primary};
 `;
 
-export const SSHDetailsTabSection = ({
-  tags,
-  hostToEdit,
-  clusterData,
-  clusterId,
-  data,
-}) => {
+export const SSHDetailsTabSection = ({ data }) => {
   const dispatch = useDispatch();
 
   // Initialize state
@@ -272,35 +266,6 @@ export const SSHDetailsTabSection = ({
 };
 
 SSHDetailsTabSection.propTypes = {
-  tags: PropTypes.string.isRequired,
-  clusterData: PropTypes.shape({
-    clusterName: PropTypes.string,
-    nifiUrl: PropTypes.string,
-    metrics_url: PropTypes.string,
-    logs_url: PropTypes.string,
-    registryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    notification_enable: PropTypes.bool,
-    approver_enable: PropTypes.bool,
-    change_request_enable: PropTypes.bool,
-    service_account_type: PropTypes.oneOf(['username_password', 'p12']),
-    service_username: PropTypes.string,
-    service_password: PropTypes.string,
-    service_account_certificate: PropTypes.string,
-    service_account_certificate_password: PropTypes.string,
-    has_custom_service_account: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.bool,
-    ]),
-  }).isRequired,
-  clusterId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-    .isRequired,
-  hostToEdit: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    isPassword: PropTypes.bool,
-    username: PropTypes.string,
-    password: PropTypes.string,
-    service_account_certificate_password: PropTypes.string,
-  }),
   data: PropTypes.shape({
     clusterName: PropTypes.string,
     nifiUrl: PropTypes.string,

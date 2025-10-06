@@ -460,14 +460,7 @@ export const Add = () => {
     } else if (nifiUrl?.startsWith('http') || registryUrl?.startsWith('http')) {
       setTest(false);
     }
-  }, [
-    watchedFields,
-    clusterData,
-    // setClusterData,
-    // setRegistryData,
-    // setTest,
-    activeTab,
-  ]);
+  }, [watchedFields, clusterData, activeTab]);
   useEffect(() => {
     if (data?.registry_id || data?.created_by_ansible) {
       reset({
@@ -810,37 +803,17 @@ export const Add = () => {
         )}
         {activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR && (
           <FormContainer>
-            {
-              <ClusterCustomProcessor
-                tags={tags}
-                hostToEdit={hostToEdit}
-                clusterData={clusterData}
-                clusterId={clusterId}
-                data={data}
-              />
-            }
+            {<ClusterCustomProcessor data={data} />}
           </FormContainer>
         )}
         {activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS && (
           <FormContainer>
-            <SSHDetailsTabSection
-              tags={tags}
-              hostToEdit={hostToEdit}
-              clusterData={clusterData}
-              clusterId={clusterId}
-              data={data}
-            />
+            <SSHDetailsTabSection data={data} />
           </FormContainer>
         )}
         {activeTab === CLUSTER_MODULE_TABS.DRIVERS && (
           <FormContainer>
-            <DriversCluster
-              tags={tags}
-              hostToEdit={hostToEdit}
-              clusterData={clusterData}
-              clusterId={clusterId}
-              data={data}
-            />
+            <DriversCluster data={data} />
           </FormContainer>
         )}
 
