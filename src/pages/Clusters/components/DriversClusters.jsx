@@ -88,7 +88,7 @@ export const DriversCluster = ({ data }) => {
         <>
           {
             <span data-tooltip-id={`certificate-${item?.id}-detail`}>
-              {<DeleteSmallIcon color="red" />}
+              {false && <DeleteSmallIcon color="red" />}
             </span>
           }{' '}
         </>

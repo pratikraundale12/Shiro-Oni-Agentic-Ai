@@ -152,7 +152,7 @@ const ClusterNavigationTab = ({
         </>
       }
 
-      {false && (
+      {
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.DRIVERS}
           onClick={() =>
@@ -160,12 +160,12 @@ const ClusterNavigationTab = ({
               ? setActiveTab(CLUSTER_MODULE_TABS.DRIVERS)
               : {}
           }
-          disabled={true}
+          disabled={!sshDataAdded?.sshCredsAvailable}
           data-tooltip-id="drivers"
         >
           {CLUSTER_MODULE_TABS.DRIVERS}
         </NavButton>
-      )}
+      }
       {!sshDataAdded?.sshCredsAvailable && (
         <ReactTooltip
           id="drivers"
