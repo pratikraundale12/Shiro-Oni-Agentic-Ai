@@ -68,8 +68,6 @@ export const AddSSHModal = ({
   setSelectedSSH,
 }) => {
   const dispatch = useDispatch();
-  // const [method, setMethod] = useState('password');
-  const [addCertificate, setAddCertificate] = useState(false);
   const [formData, setFormData] = useState({});
   const isModalOpen = useSelector(ClustersSelectors.getIsAddHostIPModalOpen);
   const isPrimaryBtnDisable = useSelector(
@@ -128,7 +126,6 @@ export const AddSSHModal = ({
   }, [selectedSSH]);
 
   const onRequestClose = () => {
-    // setValue('username', '');
     setIsSSHModalOpen(false);
     setBulkSelectItems([]);
     setSelectedSSH({});
@@ -138,7 +135,6 @@ export const AddSSHModal = ({
   };
 
   const watchMethodCredentials = watch('methodForCredentials');
-  // const watchCertificateSelection = watch('isKeystoreCertificateAdd');
 
   const handleTestSubmit = data => {
     setFormData(data);
@@ -206,23 +202,11 @@ export const AddSSHModal = ({
     }
   };
 
-  // useEffect(() => {
-  //   if (watchMethodCredentials) {
-  //     setMethod(watchMethodCredentials);
-  //   }
-  // }, [watchMethodCredentials]);
-  // useEffect(() => {
-  //   if (watchCertificateSelection) {
-  //     setAddCertificate(watchCertificateSelection);
-  //   }
-  // }, [watchCertificateSelection]);
-
   useEffect(() => {
     if (!isModalOpen) {
       reset();
       if (dispatch) {
         dispatch(ClustersActions.setAddHostBtnDisable(true));
-        // dispatch(ClustersActions.setAddHostIndividualData({}));
       }
     }
   }, [isModalOpen]);
@@ -252,10 +236,6 @@ export const AddSSHModal = ({
         onSubmit={e => addIndividualHost(e)}
         title={`Add SSH Details`}
         primaryButtonText={
-          // !testResponseListforMultiNodes?.allPassed && !isEmpty(bulkSelectItems)
-          //   ? 'Add Details for Passed Nodes'
-          //   : 'Add Node Details'
-
           isEmpty(bulkSelectItems)
             ? 'Add Node Details'
             : !isEmpty(bulkSelectItems) &&
@@ -276,7 +256,6 @@ export const AddSSHModal = ({
       >
         <Container
           style={{
-            // pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
             cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
           }}
         >
@@ -292,7 +271,6 @@ export const AddSSHModal = ({
                   register={register}
                   errors={errors}
                   icon={<DocumentTextIcon />}
-                  // disabled={!isPrimaryBtnDisable || !isEmpty(selectedSSH)}
                   disabled={inputsDisabled()}
                 />
               </div>{' '}
@@ -306,7 +284,6 @@ export const AddSSHModal = ({
                   register={register}
                   errors={errors}
                   icon={<DocumentTextIcon />}
-                  // disabled={!isPrimaryBtnDisable || !isEmpty(selectedSSH)}
                   disabled={inputsDisabled()}
                 />
               </div>
