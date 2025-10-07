@@ -190,8 +190,6 @@ const NiFiClusterAccessManagement = () => {
   const [activeTab, setActiveTab] = useState('groups');
   const [activeSidebarItem, setActiveSidebarItem] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [groupsColumns, setGroupsColumns] = useState([]);
-  const [usersColumns, setUsersColumns] = useState([]);
   const [usersActions, setUsersActions] = useState([]);
   const [selectedGroupDropdown, setSelectedGroupDropdown] = useState({
     label: 'All',
@@ -210,6 +208,7 @@ const NiFiClusterAccessManagement = () => {
   const policiesAndActions = useSelector(
     RolesSelectors.getPoliciesAndActionsData
   );
+
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchClusterUsers')
@@ -365,9 +364,13 @@ const NiFiClusterAccessManagement = () => {
     selectedGroupDropdown?.value === 'all'
       ? userIdentities
       : usersOfSelectedGroup;
-  const filteredDataUsers = userList?.filter(item =>
-    item?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+  const filteredDataUsers = useMemo(() => {
+    if (!userList) return [];
+    const s = (searchTerm || '').toLowerCase();
+    return userList.filter(item => item?.name?.toLowerCase().includes(s));
+  }, [userList, searchTerm]);
+
   const rawUsers = filteredDataUsers?.map(ele => ({
     identity: ele?.name,
     id: ele?.id,
@@ -402,9 +405,13 @@ const NiFiClusterAccessManagement = () => {
     };
   });
 
-  const filteredDataUsersGrp = userGroupIdentities?.filter(item =>
-    item?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredDataUsersGrp = useMemo(() => {
+    if (!userGroupIdentities) return [];
+    const s = (searchTerm || '').toLowerCase();
+    return userGroupIdentities.filter(item =>
+      item?.name?.toLowerCase().includes(s)
+    );
+  }, [userGroupIdentities, searchTerm]);
 
   const dynamicColumns = useMemo(() => {
     function getEqualParts(num) {
@@ -647,18 +654,11 @@ const NiFiClusterAccessManagement = () => {
     );
   }, [
     activeSidebarItem,
-    policiesAndActions,
     activeTab,
     usersActions,
-    checkboxStates,
     filteredDataUsers,
     filteredDataUsersGrp,
   ]);
-
-  useEffect(() => {
-    setGroupsColumns(dynamicColumns);
-    setUsersColumns(dynamicColumns);
-  }, [dynamicColumns]);
 
   const dispatch = useDispatch();
 
@@ -886,11 +886,7 @@ const NiFiClusterAccessManagement = () => {
                                 : filteredDataUsers
                           }
                           columns={
-                            isEmpty(activeSidebarItem)
-                              ? []
-                              : activeTab === 'groups'
-                                ? groupsColumns
-                                : usersColumns
+                            isEmpty(activeSidebarItem) ? [] : dynamicColumns
                           }
                           className={
                             activeTab === 'groups'
