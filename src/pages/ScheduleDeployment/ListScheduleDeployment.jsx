@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

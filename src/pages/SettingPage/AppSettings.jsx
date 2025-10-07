@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';

@@ -997,7 +997,7 @@ export const GridActions = ({
         </ButtonsContainer>
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
-            {module === 'namespaces' && !isEmpty(gridDataNamespace) && (
+            {module === 'namespaces' && (
               <>
                 {selectedCluster?.value && (
                   <Button
