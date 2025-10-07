@@ -120,8 +120,26 @@ const IconContentV2 = styled.div`
     stroke: rgba(255, 122, 0, 1);
   }
 `;
+
+const TabLabelWithIcon = styled.div`
+  position: relative;
+  display: inline-block;
+  padding-right: 16px; /* give space for the icon */
+`;
+
+const TopRightIcon = styled.div`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+`;
+
 const ConfigDetailsPage = () => {
   const dispatch = useDispatch();
+
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+
   const breadcrumbDataOnDeploy = [
     {
       label: KDFM.NIFI_FLOW,
@@ -195,8 +213,6 @@ const ConfigDetailsPage = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    dispatch(NamespacesActions.setSelectedNamespace({}));
-    history.push('/process-group');
   };
   useEffect(() => {
     if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
@@ -449,7 +465,14 @@ const ConfigDetailsPage = () => {
                 }
               />
             </IconContentV2>
-            {KDFM.CONTROLLER_SERVICE}{' '}
+            <TabLabelWithIcon>
+              {KDFM.CONTROLLER_SERVICE}
+              {registryDetailsData?.hasInvalidControllerService > 0 && (
+                <TopRightIcon>
+                  <InvalidProcessorIcon width={12} height={12} />
+                </TopRightIcon>
+              )}
+            </TabLabelWithIcon>
           </Tab>
         </TabWrapper>
         <TabContent>{renderContent()}</TabContent>
