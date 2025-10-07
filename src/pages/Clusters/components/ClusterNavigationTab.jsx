@@ -1,10 +1,14 @@
 /* eslint-disable */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import styled from 'styled-components';
-import { AuthenticationSelectors } from '../../../store';
-import { useSelector } from 'react-redux';
+import {
+  AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
+} from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -37,8 +41,15 @@ const ClusterNavigationTab = ({
   isRegistryDetailDisable,
   data,
 }) => {
+  const dispatch = useDispatch();
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
+  const sshDataAdded = useSelector(ClustersSelectors.getsshAddedStatus);
   const isSuperAdmin = currentUserData?.role === 'superadmin';
+  useEffect(() => {
+    if (data?.id) {
+      dispatch(ClustersActions.fetchSSHstatus(data?.id));
+    }
+  }, [data?.id]);
 
   return (
     <NavTabs id="nav-tab" role="tablist">
@@ -95,6 +106,108 @@ const ClusterNavigationTab = ({
         >
           {KDFM.SERVICE_ACCOUNT}
         </NavButton>
+      )}
+      {data && (
+        <NavButton
+          active={activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS}
+          onClick={() =>
+            Object.keys(data || {})?.length
+              ? setActiveTab(CLUSTER_MODULE_TABS.SSH_DETAILS)
+              : {}
+          }
+          disabled={isRegistryDetailDisable}
+          data-tooltip-id="navButtonTooltip"
+        >
+          SSH Details
+        </NavButton>
+      )}
+      {
+        <>
+          <NavButton
+            active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
+            onClick={() =>
+              Object.keys(data || {})?.length
+                ? setActiveTab(CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR)
+                : {}
+            }
+            disabled={!sshDataAdded?.sshCredsAvailable}
+            data-tooltip-id="custom_processor"
+          >
+            {CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
+          </NavButton>
+          {!sshDataAdded?.sshCredsAvailable && (
+            <ReactTooltip
+              id="custom_processor"
+              place="right"
+              effect="solid"
+              content="Add SSH details"
+              style={{
+                whiteSpace: 'normal',
+                zIndex: 9999,
+              }}
+              event="focus"
+              eventOff="blur"
+            />
+          )}
+        </>
+      }
+
+      {false && (
+        <NavButton
+          active={activeTab === CLUSTER_MODULE_TABS.DRIVERS}
+          onClick={() =>
+            Object.keys(data || {})?.length
+              ? setActiveTab(CLUSTER_MODULE_TABS.DRIVERS)
+              : {}
+          }
+          disabled={true}
+          data-tooltip-id="drivers"
+        >
+          {CLUSTER_MODULE_TABS.DRIVERS}
+        </NavButton>
+      )}
+      {!sshDataAdded?.sshCredsAvailable && (
+        <ReactTooltip
+          id="drivers"
+          place="right"
+          effect="solid"
+          content="Add SSH details"
+          style={{
+            whiteSpace: 'normal',
+            zIndex: 9999,
+          }}
+          event="focus"
+          eventOff="blur"
+        />
+      )}
+
+      {false && (
+        <NavButton
+          active={activeTab === CLUSTER_MODULE_TABS.FLOW_GZ}
+          onClick={() =>
+            Object.keys(data || {})?.length
+              ? setActiveTab(CLUSTER_MODULE_TABS.FLOW_GZ)
+              : {}
+          }
+          disabled={true}
+          data-tooltip-id="flow_gz"
+        >
+          {CLUSTER_MODULE_TABS.FLOW_GZ}
+        </NavButton>
+      )}
+      {!sshDataAdded?.sshCredsAvailable && (
+        <ReactTooltip
+          id="flow_gz"
+          place="right"
+          effect="solid"
+          content="Add SSH details"
+          style={{
+            whiteSpace: 'normal',
+            zIndex: 9999,
+          }}
+          event="focus"
+          eventOff="blur"
+        />
       )}
     </NavTabs>
   );

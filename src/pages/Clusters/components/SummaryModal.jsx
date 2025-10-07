@@ -119,6 +119,10 @@ export const SummaryModal = ({
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const clusterData = useSelector(ClustersSelectors.getAddEditClusterData);
+  const certificateNodesData = useSelector(
+    ClustersSelectors.getTestCertificateNodes
+  );
+
   const addRegistry = async () => {
     const data = {
       name: registryData?.registryName,
@@ -146,6 +150,7 @@ export const SummaryModal = ({
       change_request_enable: changeRequestEnable,
       ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
       ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
+      nodes: certificateNodesData || [],
     };
     const response = await createCluster(data);
 

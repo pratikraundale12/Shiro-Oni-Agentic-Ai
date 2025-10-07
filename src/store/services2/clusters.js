@@ -106,6 +106,31 @@ export const clustersAPI = api => {
   const fetchAllConfigPropertiesWithValue = ({ version }) => {
     return api.post(`/clusters/config-properties/${version}`);
   };
+  const testMultipleNodes = ({ payload }) => {
+    return api.post(`/test-hosts-credentials/test-private-keys`, payload);
+  };
+  const updateMultipleNodeswithSSH = ({ id, payload }) => {
+    return api.patch(`/clusters/${id}/update-multiple-nodes`, payload);
+  };
+  const fetchSSHstatus = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/check-ssh-details`);
+  };
+  const addNarFile = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/upload-nars`, payload);
+  };
+  const fetchNarList = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/nars-list`);
+  };
+  const restartCluster = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/restart`, payload);
+  };
+  const uploadClusterDriver = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/upload-drivers`, payload);
+  };
+  const fetchDriversList = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/drivers-list`);
+  };
+
   const fetchMasterHostNodesList = () => {
     const url = `cluster-nodes/list-master-nodes`;
     return api.get(url);
@@ -170,6 +195,14 @@ export const clustersAPI = api => {
     deleteAnsibleClusterHard,
     fetchAnsibleCLusterProcessData,
     fetchAllConfigPropertiesWithValue,
+    testMultipleNodes,
+    updateMultipleNodeswithSSH,
+    fetchSSHstatus,
+    addNarFile,
+    fetchNarList,
+    restartCluster,
+    uploadClusterDriver,
+    fetchDriversList,
     fetchMasterHostNodesList,
     fetchConfigFieldsForKubernetes,
     createConfigForKubernetesCluster,

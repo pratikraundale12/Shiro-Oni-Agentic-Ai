@@ -41,6 +41,10 @@ import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
 import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
 import { AuthenticationSelectors } from '../../store/authentication';
+import { ClusterCustomProcessor } from './components/ClusterCustomProcessor';
+import { SSHDetailsTabSection } from './components/SSHDetailsTabSection';
+import { DriversCluster } from './components/DriversClusters';
+import { FlowGzTabSection } from './components/FlowGzSection';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -456,14 +460,7 @@ export const Add = () => {
     } else if (nifiUrl?.startsWith('http') || registryUrl?.startsWith('http')) {
       setTest(false);
     }
-  }, [
-    watchedFields,
-    clusterData,
-    setClusterData,
-    setRegistryData,
-    setTest,
-    activeTab,
-  ]);
+  }, [watchedFields, clusterData, activeTab]);
   useEffect(() => {
     if (data?.registry_id || data?.created_by_ansible) {
       reset({
@@ -796,6 +793,33 @@ export const Add = () => {
         {isSuperAdmin && activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT && (
           <FormContainer>
             <ClusterServiceAccountModal
+              tags={tags}
+              hostToEdit={hostToEdit}
+              clusterData={clusterData}
+              clusterId={clusterId}
+              data={data}
+            />
+          </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR && (
+          <FormContainer>
+            {<ClusterCustomProcessor data={data} />}
+          </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS && (
+          <FormContainer>
+            <SSHDetailsTabSection data={data} />
+          </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.DRIVERS && (
+          <FormContainer>
+            <DriversCluster data={data} />
+          </FormContainer>
+        )}
+
+        {activeTab === CLUSTER_MODULE_TABS.FLOW_GZ && (
+          <FormContainer>
+            <FlowGzTabSection
               tags={tags}
               hostToEdit={hostToEdit}
               clusterData={clusterData}

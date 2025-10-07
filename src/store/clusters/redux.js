@@ -128,6 +128,21 @@ export const ClustersActions = {
   setClusterSetupSelectedNiFiVersion: createAction(
     `${prefix}setClusterSetupSelectedNiFiVersion`
   ),
+  testMultipleNodes: createAction(`${prefix}testMultipleNodes`),
+  updateMultipleNodeswithSSH: createAction(
+    `${prefix}updateMultipleNodeswithSSH`
+  ),
+  setMultiNodesTestResults: createAction(`${prefix}setMultiNodesTestResults`),
+  setTestCertificateNodes: createAction(`${prefix}setTestCertificateNodes`),
+  fetchSSHstatus: createAction(`${prefix}fetchSSHstatus`),
+  setSshAddedStatus: createAction(`${prefix}setSshAddedStatus`),
+  addNarFile: createAction(`${prefix}addNarFile`),
+  fetchNarList: createAction(`${prefix}fetchNarList`),
+  setNarList: createAction(`${prefix}setNarList`),
+  restartCluster: createAction(`${prefix}restartCluster`),
+  uploadClusterDriver: createAction(`${prefix}uploadClusterDriver`),
+  fetchDriversList: createAction(`${prefix}fetchDriversList`),
+  setDriversList: createAction(`${prefix}setDriversList`),
   setCreateClusterMethod: createAction(`${prefix}setCreateClusterMethod`),
   fetchMasterHostNodesList: createAction(`${prefix}fetchMasterHostNodesList`),
   fetchConfigFieldsForKubernetes: createAction(
@@ -212,6 +227,11 @@ export const CLUSTERS_INITIAL_STATE = {
   clusterListItems: 10,
   allConfigPropertiesAndValue: {},
   clusterSetupSelectedNiFiVersion: null,
+  multiNodesTestResults: {},
+  testCertificateNodes: [],
+  sshAddedStatus: {},
+  narList: [],
+  driversList: [],
   createClusterMethod: 'vm',
   kubernetesConfigFields: {},
   listConfigListKubernetes: [],
@@ -283,6 +303,11 @@ export const ClustersSelectors = {
     state.clusters.allConfigPropertiesAndValue,
   getClusterSetupSelectedNiFiVersion: state =>
     state.clusters.clusterSetupSelectedNiFiVersion,
+  getmultiNodesTestResults: state => state.clusters.multiNodesTestResults,
+  getTestCertificateNodes: state => state.clusters.testCertificateNodes,
+  getsshAddedStatus: state => state.clusters.sshAddedStatus,
+  getnarList: state => state.clusters.narList,
+  getDriversList: state => state.clusters.driversList,
   getCreateClusterMethod: state => state.clusters.createClusterMethod,
   getKubernetesConfigFields: state => state.clusters.kubernetesConfigFields,
   getlistConfigListKubernetes: state => state.clusters.listConfigListKubernetes,
@@ -586,6 +611,36 @@ const setClusterSetupSelectedNiFiVersion = (state, { payload }) => {
     clusterSetupSelectedNiFiVersion: payload,
   };
 };
+const setMultiNodesTestResults = (state, { payload }) => {
+  return {
+    ...state,
+    multiNodesTestResults: payload,
+  };
+};
+const setTestCertificateNodes = (state, { payload }) => {
+  return {
+    ...state,
+    testCertificateNodes: payload,
+  };
+};
+const setSshAddedStatus = (state, { payload }) => {
+  return {
+    ...state,
+    sshAddedStatus: payload,
+  };
+};
+const setNarList = (state, { payload }) => {
+  return {
+    ...state,
+    narList: payload,
+  };
+};
+const setDriversList = (state, { payload }) => {
+  return {
+    ...state,
+    driversList: payload,
+  };
+};
 const setCreateClusterMethod = (state, { payload }) => {
   return {
     ...state,
@@ -766,6 +821,14 @@ export const clustersReducer = createReducer(
         ClustersActions.setClusterSetupSelectedNiFiVersion,
         setClusterSetupSelectedNiFiVersion
       )
+      .addCase(
+        ClustersActions.setMultiNodesTestResults,
+        setMultiNodesTestResults
+      )
+      .addCase(ClustersActions.setTestCertificateNodes, setTestCertificateNodes)
+      .addCase(ClustersActions.setSshAddedStatus, setSshAddedStatus)
+      .addCase(ClustersActions.setNarList, setNarList)
+      .addCase(ClustersActions.setDriversList, setDriversList)
       .addCase(ClustersActions.setCreateClusterMethod, setCreateClusterMethod)
       .addCase(
         ClustersActions.setKubernetesConfigFields,

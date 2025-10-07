@@ -200,7 +200,16 @@ export function* updateIndividualHost(api, { payload }) {
   if (response.ok) {
     toast.success('Node Updated Successfully');
     yield put(ClustersActions.setIsAddHostIPModalOpen(false));
-    if (createClusterVisKubernetes === 'VM') {
+    if (payload?.callForSSH) {
+      yield put(
+        ClustersActions.fetchHostNodesList({
+          selected: false,
+          clusterId: payload?.clusterId,
+          update_node: false,
+        })
+      );
+      yield put(ClustersActions.fetchSSHstatus(payload?.clusterId));
+    } else if (createClusterVisKubernetes === 'VM') {
       yield put(
         ClustersActions.fetchHostNodesList({
           selected: true,
@@ -591,6 +600,22 @@ export function* fetchAllConfigPropertiesWithValue(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
+export function* testMultipleNodes(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'testMultipleNodes',
+    loadingSection: 'testMultipleNodes',
+    apiMethod: api.testMultipleNodes,
+    apiParams: [{ payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    //
+    toast.success(response?.data?.message || 'Tested Successfully');
+    yield put(ClustersActions.setAddHostBtnDisable(false));
+    yield put(ClustersActions.setMultiNodesTestResults(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
 export function* fetchConfigFieldsForKubernetes(api) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchConfigFieldsForKubernetes',
@@ -719,6 +744,122 @@ export function* fetchKubeClusterDataToUpgrade(api, { payload }) {
   }
 }
 
+export function* updateMultipleNodeswithSSH(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'updateMultipleNodeswithSSH',
+    loadingSection: 'updateMultipleNodeswithSSH',
+    apiMethod: api.updateMultipleNodeswithSSH,
+    apiParams: [{ id: payload?.id, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message || 'Tested Successfully');
+    yield put(
+      ClustersActions.fetchHostNodesList({
+        selected: false,
+        clusterId: payload?.id,
+        update_node: false,
+      })
+    );
+    yield put(ClustersActions.fetchSSHstatus(payload?.id));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* fetchSSHstatus(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchSSHstatus',
+    loadingSection: 'fetchSSHstatus',
+    apiMethod: api.fetchSSHstatus,
+    apiParams: [
+      {
+        clusterId: payload,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setSshAddedStatus(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+export function* addNarFile(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'addNarFile',
+    loadingSection: 'addNarFile',
+    apiMethod: api.addNarFile,
+    apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message || 'Added Successfully');
+    yield put(ClustersActions.fetchNarList(payload?.id));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
+export function* fetchNarList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchNarList',
+    loadingSection: 'fetchNarList',
+    apiMethod: api.fetchNarList,
+    apiParams: [
+      {
+        clusterId: payload,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setNarList(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* restartCluster(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'restartCluster',
+    loadingSection: 'restartCluster',
+    apiMethod: api.restartCluster,
+    apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message || 'Added Successfully');
+    // yield put(ClustersActions.fetchNarList(payload?.id));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* uploadClusterDriver(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'uploadClusterDriver',
+    loadingSection: 'uploadClusterDriver',
+    apiMethod: api.uploadClusterDriver,
+    apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message || 'Added Successfully');
+    yield put(ClustersActions.fetchDriversList(payload?.id));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* fetchDriversList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchDriversList',
+    loadingSection: 'fetchDriversList',
+    apiMethod: api.fetchDriversList,
+    apiParams: [
+      {
+        clusterId: payload,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setDriversList(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
 export function* deleteClusterKube(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'deleteClusterKube',
@@ -841,6 +982,18 @@ export function* clustersSagas(api) {
       fetchAllConfigPropertiesWithValue,
       api
     ),
+    takeLatest(ClustersActions.testMultipleNodes, testMultipleNodes, api),
+    takeLatest(
+      ClustersActions.updateMultipleNodeswithSSH,
+      updateMultipleNodeswithSSH,
+      api
+    ),
+    takeLatest(ClustersActions.fetchSSHstatus, fetchSSHstatus, api),
+    takeLatest(ClustersActions.addNarFile, addNarFile, api),
+    takeLatest(ClustersActions.fetchNarList, fetchNarList, api),
+    takeLatest(ClustersActions.restartCluster, restartCluster, api),
+    takeLatest(ClustersActions.uploadClusterDriver, uploadClusterDriver, api),
+    takeLatest(ClustersActions.fetchDriversList, fetchDriversList, api),
     takeLatest(
       ClustersActions.fetchMasterHostNodesList,
       fetchMasterHostNodesList,

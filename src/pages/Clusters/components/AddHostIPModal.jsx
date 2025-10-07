@@ -271,6 +271,8 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
       const payloadData = {
         payload,
         hostId: hostToEdit?.id,
+        callForSSH: false,
+        clusterId: null,
       };
       dispatch(ClustersActions.updateIndividualHost(payloadData));
     }
