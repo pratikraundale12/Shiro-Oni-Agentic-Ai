@@ -2,7 +2,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -408,13 +408,15 @@ export const Add = () => {
   const checkDuplicateRegistry = registries?.some(
     reg => reg.registry_url === watchedFields?.[5]
   );
+
+  const clusterName = useWatch({ control, name: 'clusterName' });
+  const nifiUrl = useWatch({ control, name: 'nifiUrl' });
+  const metrics_url = useWatch({ control, name: 'metrics_url' });
+  const logs_url = useWatch({ control, name: 'logs_url' });
+  const registryName = useWatch({ control, name: 'registryName' });
+  const registryUrl = useWatch({ control, name: 'registryUrl' });
+
   useEffect(() => {
-    const clusterName = watchedFields?.[0];
-    const logs_url = watchedFields?.[3];
-    const nifiUrl = watchedFields?.[1];
-    const metrics_url = watchedFields?.[2];
-    const registryUrl = watchedFields?.[5];
-    const registryName = watchedFields?.[4];
     if (activeTab === 'cluster') {
       if (
         clusterName !== clusterData.clusterName ||
@@ -460,7 +462,21 @@ export const Add = () => {
     } else if (nifiUrl?.startsWith('http') || registryUrl?.startsWith('http')) {
       setTest(false);
     }
-  }, [watchedFields, clusterData, activeTab]);
+  }, [
+    clusterName,
+    nifiUrl,
+    logs_url,
+    metrics_url,
+    registryName,
+    registryUrl,
+    activeTab,
+    newRegistry,
+    isEditDetails,
+    data?.id,
+    clusterData,
+    registryData,
+  ]);
+
   useEffect(() => {
     if (data?.registry_id || data?.created_by_ansible) {
       reset({
@@ -497,12 +513,28 @@ export const Add = () => {
       console.error('Failed to fetch registry details:', error);
     }
   };
+
+  const noRegistryAPIcall = () => {
+    if (
+      activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR ||
+      activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS ||
+      activeTab === CLUSTER_MODULE_TABS.DRIVERS ||
+      activeTab === CLUSTER_MODULE_TABS.FLOW_GZ ||
+      activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   useEffect(() => {
-    fetchRegistry();
+    if (noRegistryAPIcall()) {
+      fetchRegistry();
+    }
   }, [activeTab]);
 
   useEffect(() => {
-    if (selectedRegistryId) {
+    if (selectedRegistryId && noRegistryAPIcall()) {
       fetchRegistryDetails();
     }
   }, [registries, selectedRegistryId, activeTab, newRegistry]);
