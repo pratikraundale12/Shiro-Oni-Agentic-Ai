@@ -156,12 +156,22 @@ const ClusterControlButtons = () => {
                 hoverColor="#58e715"
                 activeTextColor="#fff"
                 onClick={
-                  !(startInitiated || stopInitiated || restartInitiated)
+                  !(
+                    startInitiated ||
+                    stopInitiated ||
+                    restartInitiated ||
+                    selectedMethod === 'start'
+                  )
                     ? handleStartClick
                     : null
                 }
                 data-tooltip-id="start"
-                disabled={startInitiated || stopInitiated || restartInitiated}
+                disabled={
+                  startInitiated ||
+                  stopInitiated ||
+                  restartInitiated ||
+                  selectedMethod === 'start'
+                }
               >
                 <TriangleIcons color="#B5BDC8" />
               </ActiveButtonDiv>
@@ -179,12 +189,22 @@ const ClusterControlButtons = () => {
                 hoverColor="#c52b2b"
                 activeTextColor="#fff"
                 onClick={
-                  !(startInitiated || stopInitiated || restartInitiated)
+                  !(
+                    startInitiated ||
+                    stopInitiated ||
+                    restartInitiated ||
+                    selectedMethod === 'stop'
+                  )
                     ? handleStopClick
                     : null
                 }
                 data-tooltip-id="stop"
-                disabled={startInitiated || stopInitiated || restartInitiated}
+                disabled={
+                  startInitiated ||
+                  stopInitiated ||
+                  restartInitiated ||
+                  selectedMethod === 'stop'
+                }
               >
                 <SquareBoxIcon color="#B5BDC8" />
               </ActiveButtonDiv>
