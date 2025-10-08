@@ -26,8 +26,8 @@ const AddProperties = ({
   setIsAddpropertiesModalOpen,
   setUpdatedData,
   updatedData,
-  setReferenceListPropertyTableData,
   isFromControllerServieTab = false,
+  setReferenceListPropertyTableData,
 }) => {
   const { register, handleSubmit, control, reset, setValue, watch } = useForm();
   const [sensitiveValueChanged, setSenstiveValueChanged] = useState(false);
