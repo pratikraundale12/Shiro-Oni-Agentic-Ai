@@ -1300,6 +1300,7 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+
   const selectedRegistryId = yield select(
     NamespacesSelectors.getSelectedRegistryOnDeploy
   );
