@@ -26,6 +26,8 @@ const AddProperties = ({
   setIsAddpropertiesModalOpen,
   setUpdatedData,
   updatedData,
+  setReferenceListPropertyTableData,
+  isFromControllerServieTab = false,
 }) => {
   const { register, handleSubmit, control, reset, setValue, watch } = useForm();
   const [sensitiveValueChanged, setSenstiveValueChanged] = useState(false);
@@ -77,6 +79,19 @@ const AddProperties = ({
             : item
         )
       );
+      if (!isFromControllerServieTab) {
+        setReferenceListPropertyTableData(prevData =>
+          prevData.map(item =>
+            item.name === selectedPropertyToEdit.name
+              ? {
+                  ...item,
+                  value: isEmpty(data?.value) && !check ? null : data.value,
+                  empty_string_set: data?.check,
+                }
+              : item
+          )
+        );
+      }
       toast.success(KDFM.PROPERTY_EDITED);
     }
     setIsAddpropertiesModalOpen(false);
