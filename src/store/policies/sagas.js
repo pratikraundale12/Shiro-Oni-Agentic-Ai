@@ -16,13 +16,15 @@ export function* fetchPolicies(api) {
 }
 
 export function* fetchPoliciesRoles(api, { payload: { roleId, params = {} } }) {
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'fetchPoliciesRoles',
     loadingSection: 'fetchPoliciesRoles',
     apiMethod: api.fetchPoliciesRoles,
     apiParams: [{ params, payload: { roleId } }],
     successAction: PoliciesActions.fetchPoliciesRolesSuccess,
   });
+
+  if (!response?.ok) toast.error(response?.data?.message);
 }
 
 // export function* fetchRolesPolicies(api) {

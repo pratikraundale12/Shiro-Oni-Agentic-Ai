@@ -35,20 +35,6 @@ const AuditLog = () => {
   const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
   const [sortingState, setSortingState] = useState('');
   const [isSanityCheckModalOpen, setIsSanitCheckModalOpen] = useState(false);
-  const convertDateTime = dateString => {
-    if (!dateString) return 'No date provided';
-
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
-  };
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -163,7 +149,7 @@ const AuditLog = () => {
         </>
       ),
       renderCell: item => (
-        <TextRender text={convertDateTime(item.timestamp) || KDFM.NA} />
+        <TextRender text={item.formattedTimestamp || KDFM.NA} />
       ),
       width: '15%',
       resize: true,

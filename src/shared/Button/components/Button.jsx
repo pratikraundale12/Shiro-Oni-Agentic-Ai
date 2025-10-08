@@ -84,7 +84,7 @@ const StyledButton = styled.button.withConfig({
       props.variant !== 'quaternary' &&
       `
         path {
-          fill: ${props.theme.colors.white};
+          // fill: ${props.theme.colors.white};
         }
       `}
   }

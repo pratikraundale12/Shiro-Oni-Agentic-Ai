@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { resettableReducer } from 'reduxsauce';
-// import { errorsReducer } from './helpers/error_redux';
+import { errorsReducer } from './helpers/error_redux';
 import { activityHistoryReducer } from './activityHistory/redux';
 import { authenticationReducer } from './authentication';
 import { clustersReducer } from './clusters';
@@ -21,7 +21,7 @@ export default combineReducers({
   auth: resettable(authenticationReducer),
 
   // System
-  // errors: resettable(errorsReducer),
+  errors: resettable(errorsReducer),
   loaders: resettable(loadingReducer),
 
   // Data

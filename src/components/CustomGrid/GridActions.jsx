@@ -997,7 +997,7 @@ export const GridActions = ({
         </ButtonsContainer>
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
-            {module === 'namespaces' && !isEmpty(gridDataNamespace) && (
+            {module === 'namespaces' && (
               <>
                 {selectedCluster?.value && (
                   <Button
@@ -1080,7 +1080,7 @@ export const GridActions = ({
                   content={
                     selectedCluster?.value && !isEmpty(selectedCluster?.value)
                       ? 'Refresh'
-                      : 'Login to Cluster'
+                      : 'Login to the cluster'
                   }
                   style={{
                     width: 'auto',

@@ -22,6 +22,7 @@ import { KDFM, SEARCH_INPUT_ERROR } from '../../constants';
 import { Button, FieldErrorMessage, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
+  ErrorsSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
@@ -199,6 +200,10 @@ export const ListControllerService = () => {
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
+  const error = useSelector(state =>
+    ErrorsSelectors.getError(state, 'fetchClusters')
+  );
+
   const fetchingClusters = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchClusters')
   );
@@ -211,6 +216,14 @@ export const ListControllerService = () => {
   }, [fetchingClusters]);
 
   useEffect(() => {
+    const isUnauthorized =
+      error &&
+      (error?.error?.raw?.status === 401 ||
+        error?.error?.code === 'invalid_token' ||
+        (error?.message &&
+          error?.message.toLowerCase().includes('user session expired.')));
+    if (isUnauthorized) return;
+
     if (
       hasTriedFetchingClusters &&
       !fetchingClusters &&
@@ -220,7 +233,12 @@ export const ListControllerService = () => {
         toastId: 'please-login-cluster-toast',
       });
     }
-  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
+  }, [
+    selectedCluster?.value,
+    fetchingClusters,
+    hasTriedFetchingClusters,
+    error,
+  ]);
 
   useEffect(() => {
     setIsUserCanWrite(csPermission?.canWrite);
@@ -661,18 +679,22 @@ export const ListControllerService = () => {
                 }}
               />
             </RefreshIocnPanel>
-            {!(selectedCluster?.value && !isEmpty(selectedCluster?.value)) && (
+            {
               <ReactTooltip
                 id={`tooltip-group-namespace-refresh`}
                 place="left"
-                content={'Login to Cluster'}
+                content={
+                  !(selectedCluster?.value && !isEmpty(selectedCluster?.value))
+                    ? 'Login to the cluster'
+                    : 'Refresh'
+                }
                 style={{
                   width: 'auto',
                   whiteSpace: 'normal',
                   wordWrap: 'break-word',
                 }}
               />
-            )}
+            }
           </div>
         )}
       </div>

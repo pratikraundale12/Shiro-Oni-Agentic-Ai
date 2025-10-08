@@ -279,7 +279,8 @@ export const Add = () => {
         function (value) {
           if (!value) return false;
           const selectedRegistries = this.parent.registry;
-          if (!selectedRegistries || selectedRegistries.length === 0) return false;
+          if (!selectedRegistries || selectedRegistries.length === 0)
+            return false;
           return selectedRegistries.some(registry => registry.value === value);
         }
       ),
@@ -350,10 +351,9 @@ export const Add = () => {
   useEffect(() => {
     if (selectedRegistryId && selectedDefalutRegistryId) {
       const isDefaultRegistryInSelected = selectedRegistryId.some(
-        registry => registry.value === selectedDefalutRegistryId
+        registry => registry?.value === selectedDefalutRegistryId
       );
-      console.log(isDefaultRegistryInSelected, 'isDefaultRegistryInSelected');
-      
+
       if (!isDefaultRegistryInSelected) {
         setValue('default_registry', '');
       }
@@ -620,7 +620,7 @@ export const Add = () => {
 
       setRegistries(names);
     } catch (error) {
-      console.error('Failed to fetch registries:', error);
+      toast.error(error?.response?.data?.message);
     }
   };
 

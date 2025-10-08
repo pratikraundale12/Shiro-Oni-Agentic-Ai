@@ -1,7 +1,7 @@
 export const VERSION = 'Version 2.1.23-1';
 export const WELCOME_BACK = 'Welcome Back!';
 export const LOGIN_TO_YOUR_ACCOUNT = 'Login to your account';
-export const FORGOT_PASSWORD = 'Forgot password?';
+export const FORGOT_PASSWORD = 'Forgot Password?';
 export const SIGN_IN_TO_YOUR_ACCOUNT = 'Sign in to your Account';
 export const OR_DO_IT_VIA_OTHER_ACCOUNTS = 'or do it via other accounts';
 export const GOOGLE = 'Google';

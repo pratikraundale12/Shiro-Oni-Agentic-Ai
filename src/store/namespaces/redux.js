@@ -541,6 +541,7 @@ export const NamespacesSelectors = {
   getServiceDefinitionLoading: state =>
     state.namespaces.serviceDefinitionLoading,
   getServiceDefinitionError: state => state.namespaces.serviceDefinitionError,
+  getNamespacesAllData: state => state.namespaces.clusterNamespaces,
   getSelectedRegistryOnDeploy: state =>
     state.namespaces.selectedRegistryOnDeploy,
 };

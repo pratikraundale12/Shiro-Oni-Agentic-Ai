@@ -14,6 +14,7 @@ export function* fetchNamespaces(api) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+
   const queryParams = {
     clusterId: selectedCluster?.value || '',
     namespaceId: selectedNamespace?.value || '',
@@ -26,13 +27,17 @@ export function* fetchNamespaces(api) {
   );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'fetchNamespaces',
     loadingSection: 'fetchNamespaces',
     apiMethod: api.fetchNamespaces,
     apiParams: [{ queryParams }],
     successAction: NamespacesActions.fetchNamespacesSuccess,
   });
+
+  if (!response.ok) {
+    toast.error(response?.data?.message);
+  }
 }
 
 export function* fetchDestNamespaces(api) {
