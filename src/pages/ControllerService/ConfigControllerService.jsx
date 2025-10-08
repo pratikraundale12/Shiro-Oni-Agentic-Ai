@@ -73,7 +73,9 @@ export const ConfigControllerService = ({
           referenceListPropertyTableData?.some(
             obj =>
               obj?.name === dep?.propertyName &&
-              dep?.dependentValues?.includes(obj?.value)
+              (dep?.dependentValues
+                ? dep?.dependentValues?.includes(obj?.value)
+                : !isEmpty(obj?.value) && obj?.value !== null)
           )
         )
     );
