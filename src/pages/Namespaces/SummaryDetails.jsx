@@ -76,6 +76,7 @@ const SummaryDetails = () => {
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
+
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
@@ -138,8 +139,8 @@ const SummaryDetails = () => {
               >
                 <div>
                   <span>
-                    {localRegistryIdArr?.[0]?.url ||
-                      singleNamespaceData?.registryUrl ||
+                    {singleNamespaceData?.registryUrl ||
+                      localRegistryIdArr?.[0]?.url ||
                       'N/A'}
                   </span>
                 </div>

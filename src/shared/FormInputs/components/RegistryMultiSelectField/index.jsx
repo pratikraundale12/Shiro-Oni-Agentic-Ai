@@ -54,7 +54,13 @@ const CustomOption = ({ children, isSelected, innerProps }) => (
     <CheckboxField
       checked={isSelected}
       label={children}
-      onClick={e => e.stopPropagation()}
+      onClick={e => {
+        e.stopPropagation();
+        // Use the innerProps onClick which handles the selection
+        if (innerProps && innerProps.onClick) {
+          innerProps.onClick(e);
+        }
+      }}
     />
   </CustomOptionContainer>
 );

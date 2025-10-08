@@ -199,10 +199,14 @@ const FlowDetailsPage = () => {
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+  console.log(selectedNameSpace, 'selectedNameSpace');
+
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
+  console.log(registryData, 'registryData');
+
   const registryDropdownOptions = registryData.map(item => ({
     label: item?.name,
     value: item?.nifiRegistryId,
@@ -774,6 +778,7 @@ const FlowDetailsPage = () => {
                     label={KDFM.REGISTRY_URL}
                     placeholder={KDFM.ENTER_REGISTRY_URL}
                     value={
+                      selectedNameSpace?.registryUrl ||
                       registryData?.url ||
                       localRegistryIdArr?.[0]?.url ||
                       registryDropdownOptions?.[0]?.url ||
