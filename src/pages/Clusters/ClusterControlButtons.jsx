@@ -282,7 +282,7 @@ const ClusterControlButtons = () => {
           }
 
           <div
-            className="col-3 pe-2 d-flex align-items-center"
+            className="col-2 pe-2 d-flex align-items-center"
             style={{
               backgroundColor: '#F5F7FA',
               borderRadius: '10px',
