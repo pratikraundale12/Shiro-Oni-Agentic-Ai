@@ -229,60 +229,57 @@ export const ClusterLoginModal = () => {
   return (
     <>
       <FullPageLoader loading={loading} />
-      <span className='login-modal-tour'>
-        <Modal
-          title="Enable Cluster"
-          isOpen={isObject(clusterLogin) || clusterLogin}
-          onRequestClose={() =>
-            dispatch(AuthenticationActions.setClusterLogin())
-          }
-          size="sm"
-          loading={loading}
-          secondaryButtonText="Back"
-          primaryButtonText={isFieldsDisabled ? 'Switch' : 'Submit'}
-          primaryButtonDisabled={selectedCluster?.value == clusterId}
-          onSubmit={isFieldsDisabled ? onSwitchCluster : handleSubmit(onSubmit)}
-          footerAlign="start"
-          contentStyles={{ minWidth: '30%' }}
-          primaryButtonProps={{ id: 'enable-cluster-submit-btn' }}
-        >
-          <SelectField
-            label="Select Cluster"
-            id="select-cluster"
-            name="cluster_id"
-            control={control}
-            icon={<ClusterIcon />}
-            errors={errors}
-            options={sortedClusters}
-            defaultValue={clusterLogin}
-            placeholder="Select Cluster"
-            required
-            disabled={isObject(clusterLogin)}
-            showCircleIcon={true}
-          />
 
-          <InputField
-            name="username"
-            type="text"
-            label="Username"
-            placeholder="Enter your Username"
-            register={register}
-            errors={errors}
-            icon={<UserIcon />}
-            required={!isFieldsDisabled}
-            disabled={isFieldsDisabled}
-          />
-          <PasswordField
-            name="password"
-            register={register}
-            errors={errors}
-            watch={watch}
-            required={!isFieldsDisabled}
-            label="Password"
-            disabled={isFieldsDisabled}
-          />
-        </Modal>
-      </span>
+      <Modal
+        title="Enable Cluster"
+        isOpen={isObject(clusterLogin) || clusterLogin}
+        onRequestClose={() => dispatch(AuthenticationActions.setClusterLogin())}
+        size="sm"
+        loading={loading}
+        secondaryButtonText="Back"
+        primaryButtonText={isFieldsDisabled ? 'Switch' : 'Submit'}
+        primaryButtonDisabled={selectedCluster?.value == clusterId}
+        onSubmit={isFieldsDisabled ? onSwitchCluster : handleSubmit(onSubmit)}
+        footerAlign="start"
+        contentStyles={{ minWidth: '30%' }}
+        primaryButtonProps={{ id: 'enable-cluster-submit-btn' }}
+      >
+        <SelectField
+          label="Select Cluster"
+          id="select-cluster"
+          name="cluster_id"
+          control={control}
+          icon={<ClusterIcon />}
+          errors={errors}
+          options={sortedClusters}
+          defaultValue={clusterLogin}
+          placeholder="Select Cluster"
+          required
+          disabled={isObject(clusterLogin)}
+          showCircleIcon={true}
+        />
+
+        <InputField
+          name="username"
+          type="text"
+          label="Username"
+          placeholder="Enter your Username"
+          register={register}
+          errors={errors}
+          icon={<UserIcon />}
+          required={!isFieldsDisabled}
+          disabled={isFieldsDisabled}
+        />
+        <PasswordField
+          name="password"
+          register={register}
+          errors={errors}
+          watch={watch}
+          required={!isFieldsDisabled}
+          label="Password"
+          disabled={isFieldsDisabled}
+        />
+      </Modal>
     </>
   );
 };

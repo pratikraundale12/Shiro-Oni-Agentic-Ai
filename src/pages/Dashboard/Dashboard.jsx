@@ -332,12 +332,10 @@ export const Dashboard = () => {
       <Loader loading={loading} />
       <TopSection>
         <QuickInsightHeading>
-          <InsightIconContiner className="test-1">
+          <InsightIconContiner>
             <LensIcon />
           </InsightIconContiner>
-          <QuickInsightHeadingText className="test-2">
-            Quick Insights
-          </QuickInsightHeadingText>
+          <QuickInsightHeadingText>Quick Insights</QuickInsightHeadingText>
         </QuickInsightHeading>
         <DropdownWrapper>
           <DropdownContainer
