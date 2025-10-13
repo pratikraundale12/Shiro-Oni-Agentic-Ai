@@ -229,7 +229,6 @@ export const ClusterLoginModal = () => {
   return (
     <>
       <FullPageLoader loading={loading} />
-
       <Modal
         title="Enable Cluster"
         isOpen={isObject(clusterLogin) || clusterLogin}
