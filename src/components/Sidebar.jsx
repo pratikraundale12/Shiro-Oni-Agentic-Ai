@@ -20,6 +20,8 @@ import {
   AiFlowGeneratorSelectors,
   AuthenticationActions,
   AuthenticationSelectors,
+  ClustersActions,
+  GridSelectors,
   LoadingSelectors,
   NamespacesActions,
 } from '../store';
@@ -309,16 +311,33 @@ export const Sidebar = ({
     );
   };
 
+  const [clusterTabTour, setClusterTabTour] = useState(false);
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'clusters')
+  );
+
+  useEffect(() => {
+    if (!isEmpty(gridData) && clusterTabTour) {
+      setTimeout(() => {
+        dispatch(ClustersActions.setTourIndex(2));
+        setClusterTabTour(false);
+      }, 500);
+    }
+  }, [gridData]);
+
   return (
     <Container
       className={`${isOpenSidebar ? 'menuOpen' : ''} ${collapsed ? 'toggleSidebar' : ''}`}
     >
-      <button
-        className="btn btn-hamburger d-lg-none"
-        onClick={() => handleOpenSidebar()}
-      >
-        <img alt="menu" src="/img/Frame.png" />
-      </button>
+      <span className="test">
+        <button
+          className="btn btn-hamburger d-lg-none  dashboard-step "
+          onClick={() => handleOpenSidebar()}
+        >
+          <img alt="menu" src="/img/Frame.png" />
+        </button>
+      </span>
+
       <button
         className="btn btn-toggle d-none d-lg-block"
         onClick={toggleCollapse}
@@ -332,11 +351,29 @@ export const Sidebar = ({
           return (
             <>
               {currentUser.role === 'superadmin' ? (
-                <div key={item.path}>
+                <div
+                  key={item.path}
+                  className={
+                    item?.name === 'Clusters'
+                      ? 'cluster'
+                      : item?.name === 'Data Flow Inventory'
+                        ? 'data_flow_inventory'
+                        : ''
+                  }
+                >
+                  {console.log(item)}
                   <Item
                     key={item.path}
                     active={active}
-                    onClick={() => handleRoute(item.path)}
+                    onClick={() => {
+                      handleRoute(item.path);
+                      if (item?.name === 'Clusters') {
+                        setClusterTabTour(true);
+                        // setTimeout(() => {
+                        //   dispatch(ClustersActions.setTourIndex(2));
+                        // }, 3000);
+                      }
+                    }}
                     path={item.path}
                     data-tooltip-id={`tooltip-${item.path}`}
                   >
@@ -362,7 +399,13 @@ export const Sidebar = ({
                   <Item
                     key={item.path}
                     active={active}
-                    onClick={() => handleRoute(item.path)}
+                    onClick={() => {
+                      handleRoute(item.path);
+                      if (item?.name === 'Clusters') {
+                        setClusterTabTour(true);
+                        dispatch(ClustersActions.setTourIndex(2));
+                      }
+                    }}
                     path={item.path}
                     data-tooltip-id={`tooltip-${item.path}`}
                   >
@@ -388,7 +431,6 @@ export const Sidebar = ({
           );
         })}
       </List>
-
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
         <span className="version-content">{`V${collapsed ? '' : 'ersion'} 2.1.14`}</span>

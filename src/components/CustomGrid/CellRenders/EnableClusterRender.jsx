@@ -9,6 +9,7 @@ import { CLUSTERS_TOKEN, CLUSTER_STATUS } from '../../../constants';
 import {
   AuthenticationActions,
   ClustersActions,
+  ClustersSelectors,
   DashboardActions,
   GridActions,
   NamespacesActions,
@@ -38,6 +39,7 @@ const EnableClusterText = styled.div`
 export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
+  const stepIndex = useSelector(ClustersSelectors.getTourIndex);
 
   const handleClusterAction = () => {
     if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
@@ -109,10 +111,16 @@ export const EnableClusterRender = ({ item }) => {
         <IconButton
           data-tooltip-id={`${item?.id}1`}
           disabled={item?.status === CLUSTER_STATUS.DEACTIVATED}
+          className="test-cluster"
+          onClick={() => {
+            dispatch(ClustersActions.setTourIndex(4));
+          }}
         >
           {item?.status === CLUSTER_STATUS.DISCONNECTED ||
           item?.status === CLUSTER_STATUS.DEACTIVATED ? (
-            <LoginIcon />
+            <span>
+              <LoginIcon />
+            </span>
           ) : (
             <LogoutIcon color="#a51e1e" />
           )}

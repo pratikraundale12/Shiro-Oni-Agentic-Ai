@@ -15,6 +15,8 @@ import { ModalWithIcon } from './shared';
 import store from './store/configureStore';
 import { GlobalStyles, theme } from './styles';
 import { GlobalProvider } from './utils';
+import Joyride from 'react-joyride';
+import { AppTour, Tour } from './components/Apptour';
 
 function App() {
   const [isModal, setIsModal] = useState(false);
@@ -39,7 +41,7 @@ function App() {
     }
   }
 
-  if (!ENABLE_CONSOLE_LOGS) {
+  if (ENABLE_CONSOLE_LOGS) {
     disableConsole();
   }
   const handleContinue = () => {
@@ -66,9 +68,11 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
+
       <Provider store={store}>
         <GlobalProvider>
           <Routes />
+          {!location.pathname.includes('login') && <Tour />}
           <ModalWithIcon
             title={'Lost Internet Connection'}
             primaryButtonText={'Continue'}
