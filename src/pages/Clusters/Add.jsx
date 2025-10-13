@@ -1040,7 +1040,7 @@ export const Add = () => {
           {activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry && (
             <Button
               id="registry-details-continue-btn"
-              onClick={handleSubmit(handleNewRgistrySave)}
+              onClick={handleNewRgistrySave}
               disabled={isDisabled()}
             >
               {KDFM.SAVE}
