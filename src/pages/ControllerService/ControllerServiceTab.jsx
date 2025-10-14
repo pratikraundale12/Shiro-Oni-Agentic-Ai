@@ -2186,6 +2186,7 @@ const ControllerServiceTab = ({
           setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
           setUpdatedData={setUpdatedData}
           updatedData={updatedData}
+          isFromControllerServiceTab={true}
         />
 
         <PropertyDropdownModal
