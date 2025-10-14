@@ -33,7 +33,7 @@ const PropertyDropdownModal = ({
   isFromExternalService,
   selectedItemFromList,
   setReferenceListPropertyTableData = () => {},
-  isFromControllerServieTab = false,
+  isFromControllerServiceTab = false,
 }) => {
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
@@ -143,7 +143,7 @@ const PropertyDropdownModal = ({
           : item
       )
     );
-    if (!isFromControllerServieTab) {
+    if (!isFromControllerServiceTab) {
       setReferenceListPropertyTableData(prevData =>
         prevData.map(item =>
           item.name === selectedPropertyToEdit.name
