@@ -457,14 +457,15 @@ function DeployPage() {
   };
   const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
 
-  useEffect(() => {
-    if (enableTour) {
+  if (enableTour) {
+    setTimeout(() => {
+      dispatch(ClustersActions.setTourStart(false));
       setTimeout(() => {
+        dispatch(ClustersActions.setTourIndex(8));
         dispatch(ClustersActions.setTourStart(true));
-        dispatch(ClustersActions.setTourIndex(9));
-      }, 300);
-    }
-  }, [dispatch]);
+      }, 50);
+    }, 300);
+  }
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryData')

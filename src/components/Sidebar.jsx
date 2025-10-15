@@ -324,13 +324,13 @@ export const Sidebar = ({
       setTimeout(() => {
         dispatch(ClustersActions.setTourIndex(2));
         setClusterTabTour(false);
-      }, 5000);
+      }, 1000);
     }
   }, [gridData]);
   useEffect(() => {
     if (!isEmpty(DataflowInventroyFlows) && inventoryTour && enableTour) {
       setTimeout(() => {
-        dispatch(ClustersActions.setTourIndex(6));
+        dispatch(ClustersActions.setTourIndex(5));
         setInventoryTour(false);
       }, 500);
     }

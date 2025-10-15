@@ -1,11 +1,9 @@
+/*eslint-disable*/
 import Joyride from 'react-joyride';
 import { useEffect } from 'react';
-// import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-// import { history } from '../helpers/history';
 import {
   AuthenticationActions,
-  // AuthenticationActions,
   ClustersActions,
   ClustersSelectors,
 } from '../store';
@@ -16,13 +14,12 @@ export const Tour = () => {
 
   const stepIndex = useSelector(ClustersSelectors.getTourIndex);
   const run = useSelector(ClustersSelectors.getTourStart);
-  // const shouldResumeRef = useRef(false);
 
   const steps = [
     {
-      target: 'body', // Use 'body' to show modal in center
+      target: 'body',
       content: 'Here’s a quick tour to get you started.',
-      placement: 'center', // Centers the tooltip
+      placement: 'center',
       disableBeacon: true,
       title: 'Welcome to DFM!',
     },
@@ -49,11 +46,6 @@ export const Tour = () => {
       },
       target: '.cluster',
       title: 'Cluster Module',
-    },
-    {
-      target: '.test-1',
-      content: 'This is Cluster login icon',
-      disableBeacon: true,
     },
     {
       target: '.test-cluster',
@@ -86,7 +78,6 @@ export const Tour = () => {
       ),
       disableBeacon: true,
       disableOverlayClose: true,
-      // hideCloseButton: true,
       hideFooter: true,
       placement: 'bottom',
       spotlightClicks: true,
@@ -107,7 +98,6 @@ export const Tour = () => {
       ),
       disableBeacon: true,
       disableOverlayClose: true,
-      // hideCloseButton: true,
       hideFooter: true,
       placement: 'bottom',
       spotlightClicks: true,
@@ -136,7 +126,7 @@ export const Tour = () => {
       ),
       disableBeacon: true,
       spotlightClicks: false,
-      hideFooter: false, // keep footer so user can click "Next"
+      hideFooter: false,
       disableOverlayClose: true,
       styles: {
         options: {
@@ -178,17 +168,12 @@ export const Tour = () => {
       disableBeacon: true,
       title: 'Deploy Process Group',
       locale: {
-        // back: 'Previous',
-        // close: 'Done',
-        last: 'End the Tour', // 👈 changes the “Next” or “Close” button text for this step
-        // next: 'Continue',
-        // skip: 'Skip Tour',
+        last: 'End the Tour',
       },
       customStepId: 'tour-end-last-step',
     },
   ];
 
-  // Start tour on mount
   useEffect(() => {
     const timer = setTimeout(
       () => dispatch(ClustersActions.setTourStart(true)),
@@ -207,15 +192,15 @@ export const Tour = () => {
       scrollToFirstStep
       disableScrolling={true}
       disableBeacon={true}
-      disableOverlayClose={true} // Prevent clicking on grey area to close
+      disableOverlayClose={true}
       spotlightClicks={false}
       // showProgress
       styles={{
         options: {
           zIndex: 10000,
           overlayColor: 'rgba(0, 0, 0, 0.6)',
-          primaryColor: '#007bff', // Next button color
-          backgroundColor: '#fff', // Tooltip background
+          primaryColor: '#007bff',
+          backgroundColor: '#fff',
           textColor: '#333',
           arrowColor: '#fff',
         },
@@ -254,12 +239,11 @@ export const Tour = () => {
           fontWeight: '500',
         },
         buttonBack: {
-          display: 'none', // hides the back button
+          display: 'none',
         },
       }}
       callback={data => {
-        const { index, type, action, status } = data;
-        console.log(data, 'data');
+        const { index, type, action, status, lifecycle } = data;
 
         if (action === 'close' || status === 'skipped') {
           dispatch(ClustersActions.setTourStart(false));
@@ -268,46 +252,39 @@ export const Tour = () => {
 
           return;
         }
-        if (type === 'step:after' && index === 3) {
+        if (action === 'update' && index === 3 && lifecycle === 'tooltip') {
           setTimeout(() => {
             dispatch(ClustersActions.setTourStart(false));
           }, 4000);
           return;
         }
-        if (type === 'step:after' && index === 5) {
+        if (type === 'step:after' && index === 4) {
           setTimeout(() => {
             dispatch(ClustersActions.setTourStart(false));
           }, 2000);
           return;
         }
-        if (index === 7 && action === 'next') {
+        if (index === 6 && action === 'next') {
           dispatch(ClustersActions.setTourStart(false));
 
           return;
         }
-        if (type === 'spotlight:click' && index === 7) {
-          // Move to next step manually
+        if (type === 'spotlight:click' && index === 6) {
           dispatch(ClustersActions.setTourIndex(stepIndex + 1));
         }
 
         if (
           type === 'step:after' &&
+          index !== 2 &&
           index !== 3 &&
           index !== 4 &&
-          index !== 5 &&
-          index !== 6 &&
-          index !== 8
+          index !== 5
         ) {
-          //   setStepIndex(index + 1);
           dispatch(ClustersActions.setTourIndex(stepIndex + 1));
         }
-        if (type === 'step:after' && index === 3) {
-          dispatch(ClustersActions.setTourIndex(4));
+        if (type === 'step:after' && index === 2) {
+          dispatch(ClustersActions.setTourIndex(3));
         }
-
-        // Tour ended
-        // if (type === 'tour:end') {
-        // }
         if (type === 'tour:end' && status === 'finished' && action === 'next') {
           dispatch(AuthenticationActions.setDfmTour(false));
           dispatch(ClustersActions.setTourStart(false));

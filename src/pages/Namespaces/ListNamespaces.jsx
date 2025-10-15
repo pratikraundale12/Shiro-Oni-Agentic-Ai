@@ -17,7 +17,6 @@ import { history } from '../../helpers/history';
 import {
   AuthenticationSelectors,
   ClustersActions,
-  ClustersSelectors,
   GridSelectors,
   NamespacesActions,
 } from '../../store';
@@ -469,7 +468,7 @@ export const ListNamespaces = () => {
     if (gridPermissions?.canWrite && enableTour) {
       setTimeout(() => {
         dispatch(ClustersActions.setTourStart(true));
-        dispatch(ClustersActions.setTourIndex(8));
+        dispatch(ClustersActions.setTourIndex(7));
       }, 300);
     }
   }, [gridPermissions]);

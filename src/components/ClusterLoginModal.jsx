@@ -153,7 +153,7 @@ export const ClusterLoginModal = () => {
         }
         if (enableTour) {
           dispatch(ClustersActions.setTourStart(true));
-          dispatch(ClustersActions.setTourIndex(5));
+          dispatch(ClustersActions.setTourIndex(4));
         }
       } else {
         toast.error(response.message || 'Error while getting data');

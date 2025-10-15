@@ -233,7 +233,7 @@ export function* addFlowToRegistryInventory(api, { payload }) {
     }
     if (enableTour) {
       yield put(ClustersActions.setTourStart(true));
-      yield put(ClustersActions.setTourIndex(7));
+      yield put(ClustersActions.setTourIndex(6));
     }
   }
 }

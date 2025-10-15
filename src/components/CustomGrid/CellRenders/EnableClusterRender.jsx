@@ -10,7 +10,6 @@ import {
   AuthenticationActions,
   AuthenticationSelectors,
   ClustersActions,
-  ClustersSelectors,
   DashboardActions,
   GridActions,
   NamespacesActions,
@@ -40,7 +39,6 @@ const EnableClusterText = styled.div`
 export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
-  const stepIndex = useSelector(ClustersSelectors.getTourIndex);
   const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
 
   const handleClusterAction = () => {
@@ -117,7 +115,7 @@ export const EnableClusterRender = ({ item }) => {
           onClick={() => {
             if (enableTour) {
               setTimeout(() => {
-                dispatch(ClustersActions.setTourIndex(4));
+                dispatch(ClustersActions.setTourIndex(3));
               }, 500);
             }
           }}

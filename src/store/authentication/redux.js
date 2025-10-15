@@ -50,7 +50,7 @@ export const AUTHENTICATION_INITIAL_STATE = {
   hasTermsAndPoliciesAccepted: false,
   data: {},
   keycloakConfig: {},
-  dfmTour: true,
+  dfmTour: false,
 };
 
 /* ------------- SELECTORS ------------------ */
