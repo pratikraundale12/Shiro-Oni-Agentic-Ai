@@ -8,6 +8,7 @@ import { LoginIcon, LogoutIcon } from '../../../assets';
 import { CLUSTERS_TOKEN, CLUSTER_STATUS } from '../../../constants';
 import {
   AuthenticationActions,
+  AuthenticationSelectors,
   ClustersActions,
   ClustersSelectors,
   DashboardActions,
@@ -40,6 +41,7 @@ export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const stepIndex = useSelector(ClustersSelectors.getTourIndex);
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
 
   const handleClusterAction = () => {
     if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
@@ -113,7 +115,11 @@ export const EnableClusterRender = ({ item }) => {
           disabled={item?.status === CLUSTER_STATUS.DEACTIVATED}
           className="test-cluster"
           onClick={() => {
-            dispatch(ClustersActions.setTourIndex(4));
+            if (enableTour) {
+              setTimeout(() => {
+                dispatch(ClustersActions.setTourIndex(4));
+              }, 500);
+            }
           }}
         >
           {item?.status === CLUSTER_STATUS.DISCONNECTED ||

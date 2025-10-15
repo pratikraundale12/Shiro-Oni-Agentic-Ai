@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -14,7 +14,13 @@ import {
 import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { NamespacesActions } from '../../store';
+import {
+  AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
+  GridSelectors,
+  NamespacesActions,
+} from '../../store';
 import { FlowValidationActions } from '../../store/flowValidation';
 import { SchedularActions } from '../../store/schedular/redux';
 import { theme } from '../../styles';
@@ -90,6 +96,7 @@ export const ListNamespaces = () => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
   };
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
 
   useEffect(() => {
     dispatch(SchedularActions.setScheduleFromList(false));
@@ -454,6 +461,18 @@ export const ListNamespaces = () => {
       },
     });
   };
+  const gridPermissions = useSelector(state =>
+    GridSelectors.getGridDataPermissions(state, 'namespaces')
+  );
+
+  useEffect(() => {
+    if (gridPermissions?.canWrite && enableTour) {
+      setTimeout(() => {
+        dispatch(ClustersActions.setTourStart(true));
+        dispatch(ClustersActions.setTourIndex(8));
+      }, 300);
+    }
+  }, [gridPermissions]);
 
   return (
     <>

@@ -30,6 +30,7 @@ import { theme } from '../styles';
 import { Loader } from './Loader';
 import DiscardFlowConfirmationModal from '../pages/AiFlowGenerator/DiscardFlowConfirmationModal';
 import { isEmpty } from 'lodash';
+import { FlowValidationSelectors } from '../store/flowValidation';
 
 export const Container = styled.div`
   height: 100%;
@@ -312,31 +313,39 @@ export const Sidebar = ({
   };
 
   const [clusterTabTour, setClusterTabTour] = useState(false);
+  const [inventoryTour, setInventoryTour] = useState(false);
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'clusters')
   );
-
+  const DataflowInventroyFlows = useSelector(FlowValidationSelectors.getFlows);
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
   useEffect(() => {
-    if (!isEmpty(gridData) && clusterTabTour) {
+    if (!isEmpty(gridData) && clusterTabTour && enableTour) {
       setTimeout(() => {
         dispatch(ClustersActions.setTourIndex(2));
         setClusterTabTour(false);
-      }, 500);
+      }, 5000);
     }
   }, [gridData]);
+  useEffect(() => {
+    if (!isEmpty(DataflowInventroyFlows) && inventoryTour && enableTour) {
+      setTimeout(() => {
+        dispatch(ClustersActions.setTourIndex(6));
+        setInventoryTour(false);
+      }, 500);
+    }
+  }, [DataflowInventroyFlows]);
 
   return (
     <Container
       className={`${isOpenSidebar ? 'menuOpen' : ''} ${collapsed ? 'toggleSidebar' : ''}`}
     >
-      <span className="test">
-        <button
-          className="btn btn-hamburger d-lg-none  dashboard-step "
-          onClick={() => handleOpenSidebar()}
-        >
-          <img alt="menu" src="/img/Frame.png" />
-        </button>
-      </span>
+      <button
+        className="btn btn-hamburger d-lg-none  dashboard-step "
+        onClick={() => handleOpenSidebar()}
+      >
+        <img alt="menu" src="/img/Frame.png" />
+      </button>
 
       <button
         className="btn btn-toggle d-none d-lg-block"
@@ -361,7 +370,6 @@ export const Sidebar = ({
                         : ''
                   }
                 >
-                  {console.log(item)}
                   <Item
                     key={item.path}
                     active={active}
@@ -369,9 +377,8 @@ export const Sidebar = ({
                       handleRoute(item.path);
                       if (item?.name === 'Clusters') {
                         setClusterTabTour(true);
-                        // setTimeout(() => {
-                        //   dispatch(ClustersActions.setTourIndex(2));
-                        // }, 3000);
+                      } else if (item?.name === 'Data Flow Inventory') {
+                        setInventoryTour(true);
                       }
                     }}
                     path={item.path}
@@ -395,7 +402,16 @@ export const Sidebar = ({
                   )}
                 </div>
               ) : item?.name !== 'Setting' ? (
-                <div key={item.path}>
+                <div
+                  key={item.path}
+                  className={
+                    item?.name === 'Clusters'
+                      ? 'cluster'
+                      : item?.name === 'Data Flow Inventory'
+                        ? 'data_flow_inventory'
+                        : ''
+                  }
+                >
                   <Item
                     key={item.path}
                     active={active}
@@ -403,7 +419,8 @@ export const Sidebar = ({
                       handleRoute(item.path);
                       if (item?.name === 'Clusters') {
                         setClusterTabTour(true);
-                        dispatch(ClustersActions.setTourIndex(2));
+                      } else if (item?.name === 'Data Flow Inventory') {
+                        setInventoryTour(true);
                       }
                     }}
                     path={item.path}

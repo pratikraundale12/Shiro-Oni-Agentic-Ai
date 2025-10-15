@@ -15,7 +15,11 @@ import { AddsquareIcon } from '../../assets/Icons/AddSquareIcon';
 import { FullPageLoader } from '../../components';
 import { API_URL } from '../../constants';
 import { history } from '../../helpers/history';
-import { AuthenticationSelectors, LoadingSelectors } from '../../store';
+import {
+  AuthenticationSelectors,
+  ClustersActions,
+  LoadingSelectors,
+} from '../../store';
 import {
   AiFlowGeneratorActions,
   AiFlowGeneratorSelectors,
@@ -573,6 +577,7 @@ const DataFlowInventory = () => {
                             <FlowCard
                               isLastRow={isLastRow}
                               isLastCol={isLastCol}
+                              className={index === 0 ? 'dfi-card-one' : ''}
                             >
                               <CardHeader>
                                 <IconsContainer>

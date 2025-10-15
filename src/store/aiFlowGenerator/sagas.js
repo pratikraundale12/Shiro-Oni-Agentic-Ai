@@ -5,6 +5,8 @@ import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { AiFlowGeneratorActions, AiFlowGeneratorSelectors } from './redux';
+import { ClustersActions } from '../clusters';
+import { AuthenticationSelectors } from '../authentication';
 
 export function* fetchDefaultRecentFlows(api, { payload }) {
   yield put(AiFlowGeneratorActions.setGeneratedFlow({}));
@@ -201,6 +203,8 @@ export function* addFlowToRegistryInventory(api, { payload }) {
   );
   const clusterId = selectedClusterToken?.id;
   const registryData = yield select(AiFlowGeneratorSelectors.getRegistry);
+  const enableTour = yield select(AuthenticationSelectors.getDfmTour);
+
   const registryId = registryData[0]?.id;
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -226,6 +230,10 @@ export function* addFlowToRegistryInventory(api, { payload }) {
           response?.data?.message ||
           'Failed to add flow to registry'
       );
+    }
+    if (enableTour) {
+      yield put(ClustersActions.setTourStart(true));
+      yield put(ClustersActions.setTourIndex(7));
     }
   }
 }

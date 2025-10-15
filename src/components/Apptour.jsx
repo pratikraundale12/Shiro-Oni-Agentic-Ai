@@ -1,361 +1,22 @@
-/*eslint-disable*/
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import Joyride from "react-joyride";
-
-// export const AppTour = () => {
-//   const navigate = useNavigate();
-//   const [run, setRun] = useState(true);
-
-//   const steps = [
-//     {
-//       target: ".dashboard-step",
-//       content: "This is your dashboard",
-//     },
-//     {
-//       target: ".settings-step",
-//       content: "Here you can change settings",
-//       // Navigate to settings page before showing this step
-//     //   preStepCallback: () => navigate("/settings"),
-//     },
-//   ];
-
-//   return <Joyride steps={steps} run={run} continuous showSkipButton />;
-// };
-
-// WORKING GOOD BUT HAV ISSUE IN NAVIGATEIN
-// Tour.js
-// import Joyride from 'react-joyride';
-// import { useEffect, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-
-// export const Tour = () => {
-//   const [run, setRun] = useState(false);
-//   const navigate = useNavigate();
-
-//   const steps = [
-//     { target: '.test', content: 'Welcome to DFM!. Lets have a small tour' },
-//     { target: '.cluster', content: 'This is Cluster Module' },
-//     { target: '.settings-step', content: 'This is settings!' },
-//   ];
-
-//   useEffect(() => {
-//     // Wait a short delay to ensure page elements are mounted
-//     const timer = setTimeout(() => setRun(true), 500);
-//     return () => clearTimeout(timer);
-//   }, []);
-
-//   useEffect(() => {
-//     // when navigating, ensure Joyride re-runs after route change
-//     if (location.pathname === '/clusters') {
-//       setTimeout(() => {
-//         setRun(true);
-//         setStepIndex(1); // resume from 2nd step
-//       }, 500); // small delay for DOM to mount
-//     }
-//   }, [location.pathname]);
-
-//   return (
-//     <Joyride
-//       steps={steps}
-//       run={run}
-//       continuous
-//       showSkipButton
-//       scrollToFirstStep
-//       styles={{ options: { zIndex: 10000 } }}
-//       //   callback={data => {
-//       //     const { index, type } = data;
-
-//       //     // If step requires navigation
-//       //     if (index === 0 && type === 'step:after') {
-//       //       navigate('/clusters'); // navigate to next page
-//       //     }
-//       //   }}
-//       callback={data => {
-//         const { index, type } = data;
-
-//         if (type === 'step:after') {
-//           if (index === 0) {
-//             setRun(false); // stop before navigating
-//             navigate('/clusters');
-//           } else if (index === 1) {
-//             setRun(false);
-//             navigate('/settings');
-//           }
-//         }
-//       }}
-//     />
-//   );
-// };
-
-// NAVIGATION AUTO TO SEOCND STEP
-// import Joyride from 'react-joyride';
-// import { useEffect, useState } from 'react';
-// import { useNavigate, useLocation } from 'react-router-dom';
-// import { useDispatch } from 'react-redux';
-// import { history } from '../helpers/history';
-
-// export const Tour = () => {
-//   const [run, setRun] = useState(false);
-//   const [stepIndex, setStepIndex] = useState(0);
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const dispatch = useDispatch();
-
-//   const steps = [
-//     { target: '.test', content: 'Welcome to DFM!. Lets have a small tour' },
-//     { target: '.cluster', content: 'This is Cluster Module' },
-//     { target: '.settings-step', content: 'This is settings!' },
-//   ];
-
-//   useEffect(() => {
-//     const timer = setTimeout(() => setRun(true), 500);
-//     return () => clearTimeout(timer);
-//   }, []);
-
-//   useEffect(() => {
-//     // when navigating, ensure Joyride re-runs after route change
-//     if (location.pathname === '/clusters') {
-//       setTimeout(() => {
-//         setRun(true);
-//         setStepIndex(1); // resume from 2nd step
-//       }, 500); // small delay for DOM to mount
-//     }
-//   }, [location.pathname]);
-
-//   return (
-//     <Joyride
-//       steps={steps}
-//       run={run}
-//       stepIndex={stepIndex}
-//       continuous
-//       showSkipButton
-//       scrollToFirstStep
-//       styles={{ options: { zIndex: 10000 } }}
-//       callback={data => {
-//         const { index, type } = data;
-
-//         if (type === 'step:after') {
-//           if (index === 0) {
-//             setRun(false); // stop before navigating
-//             navigate('/clusters');
-//             dispatch(AuthenticationActions.setRoute('clusters'));
-//             history.push(`/clusters`);
-//           }
-//           //   } else if (index === 1) {
-//           //     setRun(false);
-//           //     navigate('/settings');
-//           //   }
-//         }
-//       }}
-//     />
-//   );
-// };
-
-// import Joyride from 'react-joyride';
-// import { useEffect, useRef, useState } from 'react';
-// import { useNavigate, useLocation } from 'react-router-dom';
-// import { useDispatch } from 'react-redux';
-// import { history } from '../helpers/history';
-// import { AuthenticationActions } from '../store';
-
-// export const Tour = () => {
-//   const [run, setRun] = useState(false);
-//   const [stepIndex, setStepIndex] = useState(0);
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const dispatch = useDispatch();
-
-//   const shouldResumeRef = useRef(false); // track if navigation came from step 0
-
-//   const steps = [
-//     { target: '.test', content: 'Welcome to DFM!. Let’s have a small tour' },
-//     { target: '.cluster', content: 'This is Cluster Module' },
-//     { target: '.settings-step', content: 'This is settings!' },
-//   ];
-
-//   // Start tour on initial mount
-//   useEffect(() => {
-//     const timer = setTimeout(() => setRun(true), 500);
-//     return () => clearTimeout(timer);
-//   }, []);
-
-// //   Resume only if we actually navigated from the tour
-//     useEffect(() => {
-//       if (shouldResumeRef.current && location.pathname === '/clusters') {
-//         const timer = setTimeout(() => {
-//           setRun(true);
-//           setStepIndex(1);
-//           shouldResumeRef.current = false; // reset after resuming
-//         }, 500);
-//         return () => clearTimeout(timer);
-//       }
-//     }, [location.pathname]);
-
-//     return (
-//       <Joyride
-//         steps={steps}
-//         run={run}
-//         stepIndex={stepIndex}
-//         continuous
-//         showSkipButton
-//         scrollToFirstStep
-//         styles={{ options: { zIndex: 10000 } }}
-//         callback={data => {
-//           const { index, type } = data;
-
-//           if (type === 'step:after') {
-//             if (index === 0) {
-//               // mark that we need to resume next step after navigation
-//               shouldResumeRef.current = true;
-//               setRun(false);
-//               navigate('/clusters');
-//               dispatch(AuthenticationActions.setRoute('clusters'));
-//               history.push('/clusters');
-//             }
-//           }
-//         }}
-//       />
-//     );
-
-// };
-
-// till step 1 working good but not working there after
-
-// import Joyride from 'react-joyride';
-// import { useEffect, useRef, useState } from 'react';
-// import { useNavigate, useLocation } from 'react-router-dom';
-// import { useDispatch } from 'react-redux';
-// import { history } from '../helpers/history';
-// import { AuthenticationActions } from '../store';
-
-// export const Tour = () => {
-//   const [run, setRun] = useState(false);
-//   const [stepIndex, setStepIndex] = useState(0);
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const dispatch = useDispatch();
-
-//   const shouldResumeRef = useRef(false);
-
-//   const steps = [
-//     {
-//       target: 'body', // Use 'body' to show modal in center
-//       content: 'Welcome to DFM!. Let’s have a small tour',
-//       placement: 'center', // Centers the tooltip
-//       disableBeacon: true,
-//     },
-//     {
-//       target: '.cluster',
-//       content: 'This is Cluster Module',
-//       disableBeacon: true,
-//     },
-//     {
-//       target: '.test-cluster', // Last step in center
-//       content: (
-//         <div>
-//           <p>End of tour!</p>
-//           <button
-//             onClick={() => {
-//               setRun(false); // Close the Joyride
-//             }}
-//             style={{
-//               marginTop: '10px',
-//               padding: '6px 12px',
-//               cursor: 'pointer',
-//             }}
-//           >
-//             Finish
-//           </button>
-//         </div>
-//       ),
-//       placement: 'center',
-//       disableBeacon: true,
-//     },
-//   ];
-
-//   // Start tour on mount
-//   useEffect(() => {
-//     const timer = setTimeout(() => setRun(true), 500);
-//     return () => clearTimeout(timer);
-//   }, []);
-
-//   // Resume only if navigation came from step 0
-//   useEffect(() => {
-//     if (shouldResumeRef.current && location.pathname === '/clusters') {
-//       const timer = setTimeout(() => {
-//         setRun(true);
-//         setStepIndex(1);
-//         shouldResumeRef.current = false;
-//       }, 500);
-//       return () => clearTimeout(timer);
-//     }
-//   }, [location.pathname]);
-
-//   return (
-//     <Joyride
-//       steps={steps}
-//       run={run}
-//       stepIndex={stepIndex}
-//       continuous
-//       showSkipButton
-//       scrollToFirstStep
-//       disableScrolling={true}
-//       disableBeacon={true}
-//       disableOverlayClose={true} // Prevent clicking on grey area to close
-//       spotlightClicks={false}
-//       showProgress
-//       styles={{
-//         options: {
-//           zIndex: 10000,
-//           overlayColor: 'rgba(0,0,0,0.7)', // Dim background
-//         },
-//         tooltip: {
-//           maxWidth: '400px',
-//           textAlign: 'center',
-//         },
-//       }}
-//       callback={data => {
-//         const { index, type } = data;
-//         if (type === 'step:after' && index === 0) {
-//           shouldResumeRef.current = true;
-//           //   setRun(false);
-//           navigate('/clusters');
-//           dispatch(AuthenticationActions.setRoute('clusters'));
-//           history.push('/clusters');
-//         }
-//         if (type === 'tour:end') {
-//           setRun(false); // Ensure modal closes
-//         }
-//       }}
-//     />
-//   );
-// };
-
-//   SELF MADE
-
 import Joyride from 'react-joyride';
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+// import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { history } from '../helpers/history';
+// import { history } from '../helpers/history';
 import {
   AuthenticationActions,
+  // AuthenticationActions,
   ClustersActions,
   ClustersSelectors,
 } from '../store';
 import { theme } from '../styles';
 
 export const Tour = () => {
-  const [run, setRun] = useState(false);
-  //   const [stepIndex, setStepIndex] = useState(0);
-  const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
 
   const stepIndex = useSelector(ClustersSelectors.getTourIndex);
-
-  const shouldResumeRef = useRef(false);
+  const run = useSelector(ClustersSelectors.getTourStart);
+  // const shouldResumeRef = useRef(false);
 
   const steps = [
     {
@@ -368,16 +29,16 @@ export const Tour = () => {
     {
       content: (
         <div style={{ width: '100%', textAlign: 'justify' }}>
-          This is cluster module, where you can see the clusters list which are
-          either registered or created in the DFM. You can also login any
-          cluster in the list to deploy/upgrade flow.
+          This module provides a list of all clusters within the NiFi instance,
+          including those previously registered or newly created in DFM. To
+          deploy or upgrade a flow, simply log in to the respective cluster.
           <br /> <br />
-          Click the module tab above to see cluster module!
+          <b> Click the cluster tab above!</b>
         </div>
       ),
       disableBeacon: true,
       disableOverlayClose: true,
-      hideCloseButton: true,
+      // hideCloseButton: true,
       hideFooter: true,
       placement: 'bottom',
       spotlightClicks: true,
@@ -394,69 +55,38 @@ export const Tour = () => {
       content: 'This is Cluster login icon',
       disableBeacon: true,
     },
-    // {
-    //   content: (
-    //     <div>
-    //       Click on this icon to login cluster
-    //       <br />
-    //       {/* Click the module tab above to see cluster login flow! */}
-    //     </div>
-    //   ),
-    //   disableBeacon: true,
-    //   disableOverlayClose: true,
-    //   hideCloseButton: true,
-    //   hideFooter: true,
-    //   placement: 'bottom',
-    //   spotlightClicks: true,
-    //   styles: {
-    //     options: {
-    //       zIndex: 10000,
-    //     },
-    //   },
-    //   target: '.test-cluster',
-    //   title: 'Cluster Login',
-    // },
-    // {
-    //   content: (
-    //     <div>
-    //       Click on this icon to login cluster
-    //       <br />
-    //       {/* Click the module tab above to see cluster login flow! */}
-    //     </div>
-    //   ),
-    //   disableBeacon: true,
-    //   disableOverlayClose: true,
-    //   hideCloseButton: true,
-    //   hideFooter: true,
-    //   placement: 'bottom',
-    //   spotlightClicks: true,
-    //   styles: {
-    //     options: {
-    //       zIndex: 10000,
-    //     },
-    //   },
-    //   target: '.login-modal-tour',
-    //   title: 'Cluster Login',
-    // },
-
     {
       target: '.test-cluster',
-      content: 'This is Cluster Login icon',
+      content:
+        'Click this icon to log in to the cluster and access all the process groups and configurations associated with it. ',
       disableBeacon: true,
+      spotlightClicks: true,
+      hideFooter: true,
       title: 'Cluster Login',
     },
     {
+      target: '.cluster-login-modal-111',
+      content:
+        'Select the cluster, enter the username and password, and click Submit.',
+      disableBeacon: true,
+      spotlightClicks: true,
+      hideFooter: true,
+      title: 'Cluster Login',
+    },
+
+    {
       content: (
         <div>
-          This is the Data Flow Inventory module, where pre-built flows are
-          available for you to use.
+          This module offers a library of pre-built, ready-to-deploy flows. You
+          can deploy them instantly or customize them to fit your specific use
+          case.
           <br /> <br />
-          Click the module tab above!
+          <b> Click the Inventory tab above!</b>
         </div>
       ),
       disableBeacon: true,
       disableOverlayClose: true,
-      hideCloseButton: true,
+      // hideCloseButton: true,
       hideFooter: true,
       placement: 'bottom',
       spotlightClicks: true,
@@ -469,46 +99,103 @@ export const Tour = () => {
       title: 'Data flow inventory Module',
     },
     {
-      target: 'body', // Last step in center
       content: (
         <div>
-          <p>End of tour!</p>
-          <button
-            onClick={() => {
-              setRun(false); // Close the Joyride
-            }}
-            style={{
-              marginTop: '10px',
-              padding: '6px 12px',
-              cursor: 'pointer',
-            }}
-          >
-            Finish
-          </button>
+          Either add this flow to the Registry for deployment or upgrade, or
+          download it in JSON format for local use and customization.
+        </div>
+      ),
+      disableBeacon: true,
+      disableOverlayClose: true,
+      // hideCloseButton: true,
+      hideFooter: true,
+      placement: 'bottom',
+      spotlightClicks: true,
+      styles: {
+        options: {
+          zIndex: 10000,
+        },
+      },
+      target: '.dfi-card-one',
+      title: 'Pre-Built Flow ',
+    },
+    {
+      target: 'body',
+      placement: 'center',
+      title: 'Tour Direction',
+      content: (
+        <div style={{ textAlign: 'justify' }}>
+          <p>
+            In next modal press <b>Continue</b> to get redirected to the Process
+            Group module.
+          </p>
+          <p>
+            Click <b>Next</b> to continue the tour.
+          </p>
+        </div>
+      ),
+      disableBeacon: true,
+      spotlightClicks: false,
+      hideFooter: false, // keep footer so user can click "Next"
+      disableOverlayClose: true,
+      styles: {
+        options: {
+          zIndex: 10000,
+        },
+      },
+    },
+    {
+      content: (
+        <div>
+          Click this button to get started with deploying the process group.
+        </div>
+      ),
+      disableBeacon: true,
+      disableOverlayClose: true,
+      // hideCloseButton: true,
+      hideFooter: true,
+      placement: 'bottom',
+      spotlightClicks: true,
+      styles: {
+        options: {
+          zIndex: 10000,
+        },
+      },
+      target: '.tour-process-group-deploy',
+      title: 'Process Group Deploy',
+    },
+    {
+      target: 'body',
+      content: (
+        <div>
+          <p>
+            Choose the Bucket and Flow Name from the respective dropdowns and
+            continue to deploy the flow.
+          </p>
         </div>
       ),
       placement: 'center',
       disableBeacon: true,
+      title: 'Deploy Process Group',
+      locale: {
+        // back: 'Previous',
+        // close: 'Done',
+        last: 'End the Tour', // 👈 changes the “Next” or “Close” button text for this step
+        // next: 'Continue',
+        // skip: 'Skip Tour',
+      },
+      customStepId: 'tour-end-last-step',
     },
   ];
 
   // Start tour on mount
   useEffect(() => {
-    const timer = setTimeout(() => setRun(true), 500);
+    const timer = setTimeout(
+      () => dispatch(ClustersActions.setTourStart(true)),
+      500
+    );
     return () => clearTimeout(timer);
   }, []);
-
-  // Resume only if navigation came from step 0
-  //   useEffect(() => {
-  //     if (shouldResumeRef.current && location.pathname === '/clusters') {
-  //       const timer = setTimeout(() => {
-  //         setRun(true);
-  //         setStepIndex(1);
-  //         shouldResumeRef.current = false;
-  //       }, 500);
-  //       return () => clearTimeout(timer);
-  //     }
-  //   }, [location.pathname]);
 
   return (
     <Joyride
@@ -522,7 +209,7 @@ export const Tour = () => {
       disableBeacon={true}
       disableOverlayClose={true} // Prevent clicking on grey area to close
       spotlightClicks={false}
-      showProgress
+      // showProgress
       styles={{
         options: {
           zIndex: 10000,
@@ -572,12 +259,45 @@ export const Tour = () => {
       }}
       callback={data => {
         const { index, type, action, status } = data;
+        console.log(data, 'data');
+
         if (action === 'close' || status === 'skipped') {
-          setRun(false);
+          dispatch(ClustersActions.setTourStart(false));
           dispatch(ClustersActions.setTourIndex(0));
+          dispatch(AuthenticationActions.setDfmTour(false));
+
           return;
         }
-        if (type === 'step:after' && index !== 3) {
+        if (type === 'step:after' && index === 3) {
+          setTimeout(() => {
+            dispatch(ClustersActions.setTourStart(false));
+          }, 4000);
+          return;
+        }
+        if (type === 'step:after' && index === 5) {
+          setTimeout(() => {
+            dispatch(ClustersActions.setTourStart(false));
+          }, 2000);
+          return;
+        }
+        if (index === 7 && action === 'next') {
+          dispatch(ClustersActions.setTourStart(false));
+
+          return;
+        }
+        if (type === 'spotlight:click' && index === 7) {
+          // Move to next step manually
+          dispatch(ClustersActions.setTourIndex(stepIndex + 1));
+        }
+
+        if (
+          type === 'step:after' &&
+          index !== 3 &&
+          index !== 4 &&
+          index !== 5 &&
+          index !== 6 &&
+          index !== 8
+        ) {
           //   setStepIndex(index + 1);
           dispatch(ClustersActions.setTourIndex(stepIndex + 1));
         }
@@ -586,9 +306,11 @@ export const Tour = () => {
         }
 
         // Tour ended
-        if (type === 'tour:end') {
-          setRun(false);
-          //   setStepIndex(0); // reset for next time
+        // if (type === 'tour:end') {
+        // }
+        if (type === 'tour:end' && status === 'finished' && action === 'next') {
+          dispatch(AuthenticationActions.setDfmTour(false));
+          dispatch(ClustersActions.setTourStart(false));
           dispatch(ClustersActions.setTourIndex(0));
         }
       }}

@@ -179,6 +179,7 @@ export const ClustersActions = {
   ),
   deleteClusterKube: createAction(`${prefix}deleteClusterKube`),
   setTourIndex: createAction(`${prefix}setTourIndex`),
+  setTourStart: createAction(`${prefix}setTourStart`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -242,6 +243,7 @@ export const CLUSTERS_INITIAL_STATE = {
   kubeClusterUpgradeData: {},
   isOpenDeleteKubeClusterModal: false,
   tourIndex: 0,
+  tourStart: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -320,6 +322,7 @@ export const ClustersSelectors = {
   getisOpenDeleteKubeClusterModal: state =>
     state.clusters.isOpenDeleteKubeClusterModal,
   getTourIndex: state => state.clusters.tourIndex,
+  getTourStart: state => state.clusters.tourStart,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -698,6 +701,12 @@ const setTourIndex = (state, { payload }) => {
     tourIndex: payload,
   };
 };
+const setTourStart = (state, { payload }) => {
+  return {
+    ...state,
+    tourStart: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -858,6 +867,7 @@ export const clustersReducer = createReducer(
         ClustersActions.setIsOpenDeleteKubeClusterModal,
         setIsOpenDeleteKubeClusterModal
       )
-      .addCase(ClustersActions.setTourIndex, setTourIndex);
+      .addCase(ClustersActions.setTourIndex, setTourIndex)
+      .addCase(ClustersActions.setTourStart, setTourStart);
   }
 );
