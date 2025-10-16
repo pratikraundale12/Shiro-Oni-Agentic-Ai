@@ -45,7 +45,7 @@ import { ClusterCustomProcessor } from './components/ClusterCustomProcessor';
 import { SSHDetailsTabSection } from './components/SSHDetailsTabSection';
 import { DriversCluster } from './components/DriversClusters';
 import { FlowGzTabSection } from './components/FlowGzSection';
-
+import { createRegistry } from '../../store/index1';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
@@ -243,6 +243,7 @@ export const Add = () => {
 
   const [registryData, setRegistryData] = useState({
     registryName: '',
+    is_registry_authenticated: true,
     registryUrl: '',
   });
 
@@ -359,13 +360,33 @@ export const Add = () => {
     }
   };
 
+  const handleAddRegistry = async data => {
+    const dataPayload = {
+      name: data.registryName,
+      is_registry_authenticated: data.is_registry_authenticated,
+      registry_url: data.registryUrl,
+    };
+
+    const reponse = await createRegistry(dataPayload);
+    if (reponse?.status === 201) {
+      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
+      setNewRegistry(false);
+      fetchRegistry();
+    }
+  };
+
   const onSubmit = data => {
+    if (!isEmpty(registries) && activeTab === CLUSTER_MODULE_TABS.REGISTRY) {
+      handleAddRegistry(data);
+      return;
+    }
     if (clusterId) {
       editClusterData();
       history.push('/clusters');
     } else {
       setRegistryData({
         registryName: data.registryName,
+        is_registry_authenticated: data.is_registry_authenticated,
         registryUrl: data.registryUrl,
       });
       setIsCertificateOpen(false);
@@ -394,6 +415,7 @@ export const Add = () => {
     'registryName',
     'registryUrl',
     'tags',
+    'is_registry_authenticated',
   ]);
 
   const checkDuplicate = filteredGridData?.some(
@@ -621,7 +643,11 @@ export const Add = () => {
         'nifi_url',
         registryData?.registryUrl || registryData.registry_url
       );
+      payload.append(
+        'is_registry_authenticated',
 
+        registryData?.is_registry_authenticated
+      );
       const response = await testRegistry(payload);
       if (response.status === 204) {
         setTestSuccess(true);
@@ -695,6 +721,9 @@ export const Add = () => {
     isFieldValuesUnchanged() && checkEditSave() && saveButtonEnable;
 
   const isDisabled = () => {
+    if (!watchedFields?.[7] && activeTab === 'registry') {
+      return false;
+    }
     if (hasValidationErrors()) return true;
     if (newRegistry) {
       return isTestInvalid();
@@ -819,6 +848,8 @@ export const Add = () => {
               successModal={successModal}
               activeTab={activeTab}
               clusterId={clusterId}
+              registryData={registryData}
+              watchedFields={watchedFields}
             />
           </FormContainer>
         )}
