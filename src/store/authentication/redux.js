@@ -32,6 +32,7 @@ export const AuthenticationActions = {
     `${prefix}fetchKeycloakConfigSuccess`
   ),
   ssoUserLogin: createAction(`${prefix}ssoUserLogin`),
+  setDfmTour: createAction(`${prefix}setDfmTour`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -49,6 +50,7 @@ export const AUTHENTICATION_INITIAL_STATE = {
   hasTermsAndPoliciesAccepted: false,
   data: {},
   keycloakConfig: {},
+  dfmTour: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -68,6 +70,7 @@ export const AuthenticationSelectors = {
   getSettingLogo: state => state.auth.data,
   getKeycloakConfig: state => state.auth.keycloakConfig,
   getLicenseInfo: state => state.auth.licenseData,
+  getDfmTour: state => state.auth.dfmTour,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -163,6 +166,12 @@ const fetchKeycloakConfigSuccess = (state, { payload }) => {
     keycloakConfig: payload,
   };
 };
+const setDfmTour = (state, { payload }) => {
+  return {
+    ...state,
+    dfmTour: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const authenticationReducer = createReducer(
@@ -195,6 +204,7 @@ export const authenticationReducer = createReducer(
       .addCase(
         AuthenticationActions.fetchKeycloakConfigSuccess,
         fetchKeycloakConfigSuccess
-      );
+      )
+      .addCase(AuthenticationActions.setDfmTour, setDfmTour);
   }
 );

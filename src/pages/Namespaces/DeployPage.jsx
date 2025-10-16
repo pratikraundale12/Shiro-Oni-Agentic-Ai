@@ -20,6 +20,8 @@ import {
 } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
+  AuthenticationSelectors,
+  ClustersActions,
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
@@ -453,6 +455,17 @@ function DeployPage() {
     dispatch(NamespacesActions.setVersionSelect(''));
     setSelectedVersion('');
   };
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+
+  if (enableTour) {
+    setTimeout(() => {
+      dispatch(ClustersActions.setTourStart(false));
+      setTimeout(() => {
+        dispatch(ClustersActions.setTourIndex(8));
+        dispatch(ClustersActions.setTourStart(true));
+      }, 50);
+    }, 300);
+  }
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryData')

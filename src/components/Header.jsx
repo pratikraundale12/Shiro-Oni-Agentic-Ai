@@ -44,6 +44,8 @@ import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';
 import { toast } from 'react-toastify';
 import DiscardFlowConfirmationModal from '../pages/AiFlowGenerator/DiscardFlowConfirmationModal';
+import Joyride from 'react-joyride';
+import { Tour } from './Apptour';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -351,7 +353,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     AiFlowGeneratorSelectors.getIsflowJsonSaved
   );
   const generatedFlow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
-
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
   const [isAiFlowWarningModalOpen, setIsAiFlowWarningModalOpen] =
     useState(false);
   useEffect(() => {
@@ -530,19 +532,37 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     return resultant?.label;
     // route?.replace(/-/g, ' ')
   };
-
+  const [run, setRun] = useState(true);
+  const steps = [
+    {
+      target: '.my-first-step',
+      content: 'This is the first step of your onboarding tour!',
+    },
+    {
+      target: '.my-second-step',
+      content: 'Here’s another feature worth highlighting!',
+    },
+  ];
+  <Joyride
+    steps={steps}
+    run={true}
+    continuous
+    scrollToFirstStep
+    showProgress
+    showSkipButton
+  />;
   return (
     <>
       <Container>
-        <Title isOpenSidebar={isOpenSidebar}>
+        <Title isOpenSidebar={isOpenSidebar} className="my-first-step">
           {isLoggedIn
             ? displayTitle(route)
             : currentRoute?.split('/')?.[2].replace(/-/g, ' ')}
         </Title>
-
+        {!location.pathname.includes('login') && enableTour && <Tour />}
         {isLoggedIn ? (
           <ButtonContainer>
-            <div className="d-none d-md-inline">
+            <div className="d-none d-md-inline ">
               <div className="d-flex">
                 {currentUser.role === 'superadmin' && (
                   <>

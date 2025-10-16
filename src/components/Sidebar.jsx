@@ -20,6 +20,8 @@ import {
   AiFlowGeneratorSelectors,
   AuthenticationActions,
   AuthenticationSelectors,
+  ClustersActions,
+  GridSelectors,
   LoadingSelectors,
   NamespacesActions,
 } from '../store';
@@ -28,6 +30,7 @@ import { theme } from '../styles';
 import { Loader } from './Loader';
 import DiscardFlowConfirmationModal from '../pages/AiFlowGenerator/DiscardFlowConfirmationModal';
 import { isEmpty } from 'lodash';
+import { FlowValidationSelectors } from '../store/flowValidation';
 
 export const Container = styled.div`
   height: 100%;
@@ -309,16 +312,41 @@ export const Sidebar = ({
     );
   };
 
+  const [clusterTabTour, setClusterTabTour] = useState(false);
+  const [inventoryTour, setInventoryTour] = useState(false);
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'clusters')
+  );
+  const DataflowInventroyFlows = useSelector(FlowValidationSelectors.getFlows);
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  useEffect(() => {
+    if (!isEmpty(gridData) && clusterTabTour && enableTour) {
+      setTimeout(() => {
+        dispatch(ClustersActions.setTourIndex(2));
+        setClusterTabTour(false);
+      }, 1000);
+    }
+  }, [gridData]);
+  useEffect(() => {
+    if (!isEmpty(DataflowInventroyFlows) && inventoryTour && enableTour) {
+      setTimeout(() => {
+        dispatch(ClustersActions.setTourIndex(5));
+        setInventoryTour(false);
+      }, 500);
+    }
+  }, [DataflowInventroyFlows]);
+
   return (
     <Container
       className={`${isOpenSidebar ? 'menuOpen' : ''} ${collapsed ? 'toggleSidebar' : ''}`}
     >
       <button
-        className="btn btn-hamburger d-lg-none"
+        className="btn btn-hamburger d-lg-none  dashboard-step "
         onClick={() => handleOpenSidebar()}
       >
         <img alt="menu" src="/img/Frame.png" />
       </button>
+
       <button
         className="btn btn-toggle d-none d-lg-block"
         onClick={toggleCollapse}
@@ -332,11 +360,27 @@ export const Sidebar = ({
           return (
             <>
               {currentUser.role === 'superadmin' ? (
-                <div key={item.path}>
+                <div
+                  key={item.path}
+                  className={
+                    item?.name === 'Clusters'
+                      ? 'cluster'
+                      : item?.name === 'Data Flow Inventory'
+                        ? 'data_flow_inventory'
+                        : ''
+                  }
+                >
                   <Item
                     key={item.path}
                     active={active}
-                    onClick={() => handleRoute(item.path)}
+                    onClick={() => {
+                      handleRoute(item.path);
+                      if (item?.name === 'Clusters') {
+                        setClusterTabTour(true);
+                      } else if (item?.name === 'Data Flow Inventory') {
+                        setInventoryTour(true);
+                      }
+                    }}
                     path={item.path}
                     data-tooltip-id={`tooltip-${item.path}`}
                   >
@@ -358,11 +402,27 @@ export const Sidebar = ({
                   )}
                 </div>
               ) : item?.name !== 'Setting' ? (
-                <div key={item.path}>
+                <div
+                  key={item.path}
+                  className={
+                    item?.name === 'Clusters'
+                      ? 'cluster'
+                      : item?.name === 'Data Flow Inventory'
+                        ? 'data_flow_inventory'
+                        : ''
+                  }
+                >
                   <Item
                     key={item.path}
                     active={active}
-                    onClick={() => handleRoute(item.path)}
+                    onClick={() => {
+                      handleRoute(item.path);
+                      if (item?.name === 'Clusters') {
+                        setClusterTabTour(true);
+                      } else if (item?.name === 'Data Flow Inventory') {
+                        setInventoryTour(true);
+                      }
+                    }}
                     path={item.path}
                     data-tooltip-id={`tooltip-${item.path}`}
                   >
@@ -388,7 +448,6 @@ export const Sidebar = ({
           );
         })}
       </List>
-
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
         <span className="version-content">{`V${collapsed ? '' : 'ersion'} 2.1.14`}</span>
