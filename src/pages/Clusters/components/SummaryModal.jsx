@@ -66,8 +66,6 @@ const Title = styled.h4`
 
 const Info = styled.div`
   width: ${props => (props.width ? props.width : '100%')};
-  display: flex;
-  gap: 5px;
 `;
 
 const ClusterName = styled.div`
@@ -343,30 +341,32 @@ export const SummaryModal = ({
                     {data?.elements?.map(ele => (
                       <Col key={ele?.id || ele?.name}>
                         <Info width="50%">
-                          <ClusterName>{ele?.name}</ClusterName>
-                          {ele?.isDefault && (
-                            <>
-                              <span data-tooltip-id={`default-registry`}>
-                                <LockIcon
-                                  color={theme.colors.primary}
-                                  width={20}
-                                  height={20}
+                          <ClusterName>
+                            {ele?.name} &nbsp;
+                            {ele?.isDefault && (
+                              <>
+                                <span data-tooltip-id={`default-registry`}>
+                                  <LockIcon
+                                    color={theme.colors.primary}
+                                    width={20}
+                                    height={20}
+                                  />
+                                </span>
+                                <ReactTooltip
+                                  id={`default-registry`}
+                                  place="right"
+                                  effect="solid"
+                                  content={'Default Registry'}
+                                  style={{
+                                    width: '140px',
+                                    whiteSpace: 'normal',
+                                    wordWrap: 'break-word',
+                                    zIndex: 10000,
+                                  }}
                                 />
-                              </span>
-                              <ReactTooltip
-                                id={`default-registry`}
-                                place="right"
-                                effect="solid"
-                                content={'Default Registry'}
-                                style={{
-                                  width: '140px',
-                                  whiteSpace: 'normal',
-                                  wordWrap: 'break-word',
-                                  zIndex: 10000,
-                                }}
-                              />
-                            </>
-                          )}
+                              </>
+                            )}
+                          </ClusterName>
                         </Info>
                         <Info width={data?.width || '40%'}>
                           <Flex className="d-flex align-items-center">
