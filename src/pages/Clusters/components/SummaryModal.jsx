@@ -21,6 +21,8 @@ import {
 } from '../../../store/index1';
 import { FullPageLoader } from '../../../components';
 import { isEmpty } from 'lodash';
+import { LockIcon } from '../../../assets';
+import { theme } from '../../../styles';
 
 const ClusterDetailsContainer = styled.div`
   background-color: #f5f7fa;
@@ -34,6 +36,7 @@ const Row = styled.div`
   display: flex;
   flex-wrap: wrap;
   width: 100%;
+  flex-direction: column;
 `;
 
 const Flex = styled.div`
@@ -63,6 +66,8 @@ const Title = styled.h4`
 
 const Info = styled.div`
   width: ${props => (props.width ? props.width : '100%')};
+  display: flex;
+  gap: 5px;
 `;
 
 const ClusterName = styled.div`
@@ -235,7 +240,10 @@ export const SummaryModal = ({
 
   const selectedRegistriesWithAllData = registries.reduce((acc, item) => {
     if (partialIds.includes(item.value)) {
-      acc.push(item);
+      acc.push({
+        ...item,
+        isDefault: item.value === default_registry_data,
+      });
     }
     return acc;
   }, []);
@@ -258,6 +266,7 @@ export const SummaryModal = ({
           )
             ? ele?.registryUrl || ele?.registry_url
             : `${ele?.registryUrl || ele?.registry_url}/nifi-registry`,
+          isDefault: ele.isDefault,
         }))) ||
       [],
   };
@@ -335,6 +344,29 @@ export const SummaryModal = ({
                       <Col key={ele?.id || ele?.name}>
                         <Info width="50%">
                           <ClusterName>{ele?.name}</ClusterName>
+                          {ele?.isDefault && (
+                            <>
+                              <span data-tooltip-id={`default-registry`}>
+                                <LockIcon
+                                  color={theme.colors.primary}
+                                  width={20}
+                                  height={20}
+                                />
+                              </span>
+                              <ReactTooltip
+                                id={`default-registry`}
+                                place="right"
+                                effect="solid"
+                                content={'Default Registry'}
+                                style={{
+                                  width: '140px',
+                                  whiteSpace: 'normal',
+                                  wordWrap: 'break-word',
+                                  zIndex: 10000,
+                                }}
+                              />
+                            </>
+                          )}
                         </Info>
                         <Info width={data?.width || '40%'}>
                           <Flex className="d-flex align-items-center">
