@@ -123,6 +123,8 @@ export const SummaryModal = ({
     ClustersSelectors.getTestCertificateNodes
   );
 
+  const clusterTestResponse = useSelector(ClustersSelectors.getClusterFormData);
+
   const addRegistry = async () => {
     const data = {
       name: registryData?.registryName,
@@ -151,6 +153,9 @@ export const SummaryModal = ({
       ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
       ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
       nodes: certificateNodesData || [],
+      ...(clusterTestResponse?.clusterType && {
+        clusterType: clusterTestResponse?.clusterType,
+      }),
     };
     const response = await createCluster(data);
 
