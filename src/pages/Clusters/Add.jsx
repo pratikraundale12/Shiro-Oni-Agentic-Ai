@@ -2,7 +2,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -42,6 +42,10 @@ import RegistryFormSection from './components/RegistryFormSection';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
+import { ClusterCustomProcessor } from './components/ClusterCustomProcessor';
+import { SSHDetailsTabSection } from './components/SSHDetailsTabSection';
+import { DriversCluster } from './components/DriversClusters';
+import { FlowGzTabSection } from './components/FlowGzSection';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -540,13 +544,15 @@ export const Add = () => {
   const checkDuplicateRegistry = registries?.some(
     reg => reg.registry_url === watchedFields?.[5]
   );
+
+  const clusterName = useWatch({ control, name: 'clusterName' });
+  const nifiUrl = useWatch({ control, name: 'nifiUrl' });
+  const metrics_url = useWatch({ control, name: 'metrics_url' });
+  const logs_url = useWatch({ control, name: 'logs_url' });
+  const registryName = useWatch({ control, name: 'registryName' });
+  const registryUrl = useWatch({ control, name: 'registryUrl' });
+
   useEffect(() => {
-    const clusterName = watchedFields?.[0];
-    const logs_url = watchedFields?.[3];
-    const nifiUrl = watchedFields?.[1];
-    const metrics_url = watchedFields?.[2];
-    const registryUrl = watchedFields?.[5];
-    const registryName = watchedFields?.[4];
     if (activeTab === 'cluster') {
       if (
         clusterName !== clusterData.clusterName ||
@@ -602,16 +608,23 @@ export const Add = () => {
       setTest(false);
     }
   }, [
-    watchedFields,
-    clusterData,
-    setClusterData,
-    setRegistryData,
-    setTest,
+    clusterName,
+    nifiUrl,
+    logs_url,
+    metrics_url,
+    registryName,
+    registryUrl,
     activeTab,
     testCertificateFile,
     testCertificatePassword,
-  ]);
   // Update the useEffect where you check for data
+    newRegistry,
+    isEditDetails,
+    data?.id,
+    clusterData,
+    registryData,
+  ]);
+
   useEffect(() => {
     if (data?.registry_id || data?.created_by_ansible) {
       reset({
@@ -653,12 +666,28 @@ export const Add = () => {
       console.error('Failed to fetch registry details:', error);
     }
   };
+
+  const noRegistryAPIcall = () => {
+    if (
+      activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR ||
+      activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS ||
+      activeTab === CLUSTER_MODULE_TABS.DRIVERS ||
+      activeTab === CLUSTER_MODULE_TABS.FLOW_GZ ||
+      activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  };
   useEffect(() => {
-    fetchRegistry();
+    if (noRegistryAPIcall()) {
+      fetchRegistry();
+    }
   }, [activeTab]);
 
   useEffect(() => {
-    if (selectedRegistryId) {
+    if (selectedRegistryId && noRegistryAPIcall()) {
       fetchRegistryDetails();
     }
   }, [registries, selectedRegistryId, activeTab, newRegistry]);
@@ -1054,6 +1083,33 @@ export const Add = () => {
         {isSuperAdmin && activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT && (
           <FormContainer>
             <ClusterServiceAccountModal
+              tags={tags}
+              hostToEdit={hostToEdit}
+              clusterData={clusterData}
+              clusterId={clusterId}
+              data={data}
+            />
+          </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR && (
+          <FormContainer>
+            {<ClusterCustomProcessor data={data} />}
+          </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS && (
+          <FormContainer>
+            <SSHDetailsTabSection data={data} />
+          </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.DRIVERS && (
+          <FormContainer>
+            <DriversCluster data={data} />
+          </FormContainer>
+        )}
+
+        {activeTab === CLUSTER_MODULE_TABS.FLOW_GZ && (
+          <FormContainer>
+            <FlowGzTabSection
               tags={tags}
               hostToEdit={hostToEdit}
               clusterData={clusterData}

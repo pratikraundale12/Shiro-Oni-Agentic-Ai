@@ -118,7 +118,7 @@ const Container = styled.div`
   .error-text {
     color: ${props => props.theme.colors.error};
     margin-top: 10px;
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 500;
   }
 

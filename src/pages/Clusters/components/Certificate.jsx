@@ -94,10 +94,16 @@ export const Certificate = ({
       setTestCertificatePasswordForRegistry('');
       const response = await testCluster(payload);
       if (response.status === 200) {
+<<<<<<< HEAD
         if (!isEmpty(data)) {
           setUploadFileatEditTime(true);
         }
 
+=======
+        dispatch(
+          ClustersActions.setTestCertificateNodes(response?.data?.nodes)
+        );
+>>>>>>> 41b240637ca9e8b49fb5364ae592007bdd328ac2
         setTestSuccess(true);
         setIsCertificateOpen(false);
         setSuccessModal(true);

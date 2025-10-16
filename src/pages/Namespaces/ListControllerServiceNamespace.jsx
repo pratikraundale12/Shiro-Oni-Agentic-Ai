@@ -690,6 +690,8 @@ export const ListControllerService = () => {
           setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
           setUpdatedData={setUpdatedData}
           updatedData={updatedData}
+          isFromControllerServiceTab={false}
+          setReferenceListPropertyTableData={setReferenceListPropertyTableData}
         />
         <PropertyDropdownModal
           selectedItemFromList={selectedItemFromList}

@@ -2,8 +2,8 @@
 import React from 'react';
 import { KDFM } from '../../../constants';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
-import { ClustersActions } from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { ClustersActions, ClustersSelectors } from '../../../store';
 import {
   ActivityHistoryIcon,
   ClusterDetailTabIcon,
@@ -38,6 +38,9 @@ const NavButton = styled.button`
 
 const ClusterSetupNavigationTab = ({ activeTab }) => {
   const dispatch = useDispatch();
+  const createClusterVisKubernetes = useSelector(
+    ClustersSelectors.getCreateClusterMethod
+  );
   return (
     <NavTabs id="nav-tab" role="tablist">
       <NavButton
@@ -60,7 +63,9 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
         <ManageHostIcon
           color={activeTab === 'manage_host' ? '#FF7A00' : '#444445'}
         />{' '}
-        {KDFM.MANAGE_HOST}
+        {createClusterVisKubernetes === 'VM'
+          ? KDFM.MANAGE_HOST
+          : 'Manage Kube Cluster'}
       </NavButton>
       <NavButton
         active={activeTab === 'manage_config'}

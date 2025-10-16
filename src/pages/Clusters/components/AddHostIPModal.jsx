@@ -90,6 +90,10 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
   const [addCertificate, setAddCertificate] = useState(false);
   const [formData, setFormData] = useState({});
   const isModalOpen = useSelector(ClustersSelectors.getIsAddHostIPModalOpen);
+  const createClusterVisKubernetes = useSelector(
+    ClustersSelectors.getCreateClusterMethod
+  );
+
   const isPrimaryBtnDisable = useSelector(
     ClustersSelectors.getAddHostBtnDisable
   );
@@ -257,6 +261,9 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
       payload.append('hasCertificate', formData?.isKeystoreCertificateAdd);
       payload.append('keyPassword', formData?.keyPassword);
     }
+    if (createClusterVisKubernetes !== 'VM') {
+      payload.append('isKubeMasterNode', 'true');
+    }
     if (isEmpty(hostToEdit)) {
       payload.append('hostIp', getIndividualHostData?.host_ip);
       dispatch(ClustersActions.addIndividualHost(payload));
@@ -264,6 +271,8 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
       const payloadData = {
         payload,
         hostId: hostToEdit?.id,
+        callForSSH: false,
+        clusterId: null,
       };
       dispatch(ClustersActions.updateIndividualHost(payloadData));
     }
@@ -438,27 +447,35 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
               </div>
             )}
           </div>
-          <div className=" d-flex justify-content-between ">
-            <div className="mt-3">
-              <InfoIcon color={theme.colors.primary} height={25} weight={25} />{' '}
-              &nbsp;
-              <span style={{ color: theme.colors.primary, fontWeight: '600' }}>
-                You can optionally upload your keystore and truststore
-                (.p12/.jks) files with passwords to enable secure SSL/TLS
-                communication.
-              </span>
+          {createClusterVisKubernetes === 'VM' && (
+            <div className=" d-flex justify-content-between ">
+              <div className="mt-3">
+                <InfoIcon
+                  color={theme.colors.primary}
+                  height={25}
+                  weight={25}
+                />{' '}
+                &nbsp;
+                <span
+                  style={{ color: theme.colors.primary, fontWeight: '600' }}
+                >
+                  You can optionally upload your keystore and truststore
+                  (.p12/.jks) files with passwords to enable secure SSL/TLS
+                  communication.
+                </span>
+              </div>
+              <div>
+                <RadioSelectField
+                  name="isKeystoreCertificateAdd"
+                  options={KEYSTORE_SELECTION_OPTIONS}
+                  register={register}
+                  defaultValue={'false'}
+                  disabled={!isPrimaryBtnDisable}
+                  label={'Add Certificates'}
+                />
+              </div>
             </div>
-            <div>
-              <RadioSelectField
-                name="isKeystoreCertificateAdd"
-                options={KEYSTORE_SELECTION_OPTIONS}
-                register={register}
-                defaultValue={'false'}
-                disabled={!isPrimaryBtnDisable}
-                label={'Add Certificates'}
-              />
-            </div>
-          </div>{' '}
+          )}{' '}
           {watchCertificateSelection === 'true' && (
             <>
               <div className="row mt-2">

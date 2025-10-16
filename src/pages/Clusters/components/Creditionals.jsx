@@ -62,6 +62,9 @@ export const Creditionals = ({
 
       const response = await testCluster(payload);
       if (response.status === 200) {
+        dispatch(
+          ClustersActions.setTestCertificateNodes(response?.data?.nodes)
+        );
         setTestSuccess(true);
         setIsCredOpen(false);
         setSuccessModal(true);

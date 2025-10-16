@@ -46,6 +46,7 @@ import { ClusterRegistryAssociationModal } from './components/ClusterRegistryAss
 import AnimatedProgressBar from '../../shared/AnimatedProgressBar';
 import { ClusterProcessDisplayModal } from './components/ClusterProcessDisplayModal';
 import { ClusterLoginWithOutCredModal } from './components/ClusterLoginWithoutCredModal';
+import EKSClusterDeleteModal from './components/EksClusterDeleteModal';
 
 const List = styled.div`
   width: 165px;
@@ -144,6 +145,7 @@ export const ListClusters = () => {
   const { state, setState } = useGlobalContext();
   const [deactiveId, setDeactiveId] = useState(null);
   const [deleteHardId, setDeleteHardId] = useState(null);
+  const [deleteKubeClusterData, setDeleteKubeClusterData] = useState({});
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
   const menuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -188,6 +190,9 @@ export const ListClusters = () => {
   });
 
   const handleEditAnsibleCluster = item => {
+    if (item?.is_kube_cluster) {
+      dispatch(ClustersActions.setCreateClusterMethod('Kubernetes'));
+    }
     dispatch(ClustersActions.setansibleClucterToEdit(item?.id));
     dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
 
@@ -206,6 +211,7 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setAnsibleClusterData({}));
     dispatch(ClustersActions.setAnsibleClusterNodeUpdate(''));
     dispatch(ClustersActions.fetchClusters());
+    dispatch(ClustersActions.setkubeClusterUpgradeData({}));
   }, [dispatch]);
 
   const handleHardDeleteAnsibleCluster = item => {
@@ -351,6 +357,7 @@ export const ListClusters = () => {
                   handleHardDeleteFailedAnsibleCluster
                 }
                 handleOpenProgressModal={handleOpenProgressModal}
+                handleClick={handleClick}
               >
                 {menuState.isVisible && item.id === menuState.row.id && (
                   <DropdownPortal>
@@ -378,14 +385,16 @@ export const ListClusters = () => {
                               <span>{KDFM.VIEW}</span>
                             </Item>
                           )}
-                          {item.edit_cluster && item?.created_by_ansible && (
-                            <Item
-                              onClick={() => handleEditAnsibleCluster(item)}
-                            >
-                              <PencilIcon width={16} height={16} />
-                              <span>Upgrade</span>
-                            </Item>
-                          )}
+                          {item.edit_cluster &&
+                            (item?.created_by_ansible ||
+                              item?.is_kube_cluster) && (
+                              <Item
+                                onClick={() => handleEditAnsibleCluster(item)}
+                              >
+                                <PencilIcon width={16} height={16} />
+                                <span>Upgrade</span>
+                              </Item>
+                            )}
                           {item.edit_cluster && item?.created_by_ansible && (
                             <Item
                               onClick={() =>
@@ -481,7 +490,20 @@ export const ListClusters = () => {
                                 </Item>
                               )}
                               {item.delete_cluster &&
-                                !item.created_by_ansible && (
+                                !item.created_by_ansible &&
+                                item?.is_kube_cluster && (
+                                  <Item
+                                    onClick={() =>
+                                      handleClick('deleteKube', item.id, item)
+                                    }
+                                  >
+                                    <DeleteSmallIcon width={18} height={18} />
+                                    <span> Delete</span>
+                                  </Item>
+                                )}
+                              {item.delete_cluster &&
+                                !item.created_by_ansible &&
+                                !item?.is_kube_cluster && (
                                   <Item
                                     onClick={() =>
                                       handleClick('deleteHard', item.id)
@@ -693,6 +715,10 @@ export const ListClusters = () => {
       setDeleteHardId(id);
       setSelectedCluster({});
     }
+    if (type === 'deleteKube') {
+      setDeleteKubeClusterData(item);
+      dispatch(ClustersActions.setIsOpenDeleteKubeClusterModal(true));
+    }
   };
 
   useEffect(() => {
@@ -715,6 +741,7 @@ export const ListClusters = () => {
     );
     dispatch(ClustersActions.setRegistryNodesData({}));
     dispatch(ClustersActions.setClusterSetupSelectedNiFiVersion(null));
+    dispatch(ClustersActions.setSshAddedStatus({}));
     return () => {
       dispatch(ClustersActions.setLastVisitedTab('cluster'));
     };
@@ -830,6 +857,7 @@ export const ListClusters = () => {
         setSortingState={setSortingState}
       />
       <ClusterSuccessModal />
+      <EKSClusterDeleteModal deleteKubeClusterData={deleteKubeClusterData} />
       <ClusterProcessDisplayModal
         isProcessModalOpen={isProcessModalOpen}
         setIsProcessModalOpen={setIsProcessModalOpen}

@@ -546,9 +546,9 @@ const Summary = () => {
     registryAllDetails?.variablesData,
     variblesReduxData
   );
-    const validationResult = useSelector(
-      FlowValidationSelectors.getDeploymentFlowValidation
-    );
+  const validationResult = useSelector(
+    FlowValidationSelectors.getDeploymentFlowValidation
+  );
 
   const orignalParameterData = [
     ...(registryAllDetails?.parameterContextData?.inherited || []),
@@ -959,9 +959,9 @@ const Summary = () => {
   const handleUpdateStatus = status => {
     const text =
       status === 'STOPPED'
-        ? 'stop'
+        ? 'stopped'
         : status === 'RUNNING'
-          ? 'start'
+          ? 'started'
           : status === 'ENABLED'
             ? 'enable'
             : status === 'DISABLED'
@@ -1382,7 +1382,7 @@ const Summary = () => {
   const providePrimaryTextForFlowConfirmationModal = () => {
     return checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy
       ? `Do you really want to ${confirmDialogue?.text}?`
-      : `Flow will be ${confirmDialogue?.text} after the ${isRegistryDeploy ? 'deploy' : 'upgrade'}?`;
+      : `Flow will be ${confirmDialogue?.text} after the ${isRegistryDeploy ? 'deployment' : 'upgrade'}?`;
   };
 
   const actionIcons = {

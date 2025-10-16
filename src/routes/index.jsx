@@ -82,6 +82,8 @@ import SummarySanityCheck from '../pages/Namespaces/SummarySanityCheck.jsx';
 import InvalidProcessorDetails from '../pages/Namespaces/InvalidProcessorDetails.jsx';
 import DownloadHistory from '../pages/ActivityHistory/DownloadHistory.jsx';
 // import DeploymentStatistics from '../pages/Dashboard/DeploymentStatistics.jsx';
+import ClusterSetupNewConfigKubernetes from '../pages/Clusters/components/ClusterconfigForKubernetes.jsx';
+// import ClusterSetupNewConfigKubernetes from '../pages/Clusters/components/ClusterSetupNewConfigKubernetes.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -115,6 +117,10 @@ export const ROUTES_MENU = [
       {
         path: ['new-config-details'],
         component: <ClusterSetupNewConfigDetailsPage />,
+      },
+      {
+        path: ['add-new-config'],
+        component: <ClusterSetupNewConfigKubernetes />,
       },
       {
         path: [':id'],

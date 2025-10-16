@@ -73,10 +73,12 @@ const ClusterControlButtons = () => {
   const [startInitiated, setStartInitiated] = useState(false);
   const [stopInitiated, setStopInitiated] = useState(false);
   const [restartInitiated, setRestartInitiated] = useState(false);
+  const [action, setAction] = useState(null);
 
   const runningStatusData = useSelector(ClustersSelectors.getRunningStatusData);
 
   const handleStartClick = () => {
+    setAction('start');
     setStartInitiated(true);
     dispatch(
       ClustersActions.changeClusterActionState({
@@ -87,6 +89,7 @@ const ClusterControlButtons = () => {
   };
 
   const handleStopClick = () => {
+    setAction('stop');
     setStopInitiated(true);
     dispatch(
       ClustersActions.changeClusterActionState({
@@ -97,6 +100,7 @@ const ClusterControlButtons = () => {
   };
 
   const handleRestartClick = () => {
+    setAction('restart');
     setRestartInitiated(true);
     dispatch(
       ClustersActions.changeClusterActionState({
@@ -127,18 +131,39 @@ const ClusterControlButtons = () => {
     if (runningStatusData?.status?.startInitiated) {
       setStartInitiated(true);
     } else {
-      setStartInitiated(false);
+      if (action === 'start') {
+        setTimeout(() => {
+          setStartInitiated(false);
+          setAction(null);
+        }, 25000);
+      } else {
+        setStartInitiated(false);
+      }
     }
 
     if (runningStatusData?.status?.stopInitiated) {
       setStopInitiated(true);
     } else {
-      setStopInitiated(false);
+      if (action === 'stop') {
+        setTimeout(() => {
+          setStopInitiated(false);
+          setAction(null);
+        }, 10000);
+      } else {
+        setStopInitiated(false);
+      }
     }
     if (runningStatusData?.status?.restartInitiated) {
       setRestartInitiated(true);
     } else {
-      setRestartInitiated(false);
+      if (action === 'restart') {
+        setTimeout(() => {
+          setRestartInitiated(false);
+          setAction(null);
+        }, 25000);
+      } else {
+        setRestartInitiated(false);
+      }
     }
   }, [runningStatusData]);
 
@@ -156,12 +181,22 @@ const ClusterControlButtons = () => {
                 hoverColor="#58e715"
                 activeTextColor="#fff"
                 onClick={
-                  !(startInitiated || stopInitiated || restartInitiated)
+                  !(
+                    startInitiated ||
+                    stopInitiated ||
+                    restartInitiated ||
+                    selectedMethod === 'start'
+                  )
                     ? handleStartClick
                     : null
                 }
                 data-tooltip-id="start"
-                disabled={startInitiated || stopInitiated || restartInitiated}
+                disabled={
+                  startInitiated ||
+                  stopInitiated ||
+                  restartInitiated ||
+                  selectedMethod === 'start'
+                }
               >
                 <TriangleIcons color="#B5BDC8" />
               </ActiveButtonDiv>
@@ -179,12 +214,22 @@ const ClusterControlButtons = () => {
                 hoverColor="#c52b2b"
                 activeTextColor="#fff"
                 onClick={
-                  !(startInitiated || stopInitiated || restartInitiated)
+                  !(
+                    startInitiated ||
+                    stopInitiated ||
+                    restartInitiated ||
+                    selectedMethod === 'stop'
+                  )
                     ? handleStopClick
                     : null
                 }
                 data-tooltip-id="stop"
-                disabled={startInitiated || stopInitiated || restartInitiated}
+                disabled={
+                  startInitiated ||
+                  stopInitiated ||
+                  restartInitiated ||
+                  selectedMethod === 'stop'
+                }
               >
                 <SquareBoxIcon color="#B5BDC8" />
               </ActiveButtonDiv>
@@ -236,8 +281,8 @@ const ClusterControlButtons = () => {
             </div>
           }
 
-          {/* <div
-            className="col-3 pe-2"
+          <div
+            className="col-2 pe-2 d-flex align-items-center"
             style={{
               backgroundColor: '#F5F7FA',
               borderRadius: '10px',
@@ -246,8 +291,45 @@ const ClusterControlButtons = () => {
               color: '#444445',
             }}
           >
-            
-          </div> */}
+            <div className="">Cluster State : </div> &nbsp;
+            {!(startInitiated || stopInitiated || restartInitiated) && (
+              <>
+                {selectedMethod === 'start' && (
+                  <div
+                    style={{
+                      color: 'green',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                    }}
+                  >
+                    Started
+                  </div>
+                )}
+                {selectedMethod === 'stop' && (
+                  <div
+                    style={{
+                      color: 'red',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                    }}
+                  >
+                    Stopped
+                  </div>
+                )}
+              </>
+            )}
+            {(startInitiated || stopInitiated || restartInitiated) && (
+              <div
+                style={{
+                  color: theme.colors.primary,
+                  fontSize: '16px',
+                  fontWeight: '600',
+                }}
+              >
+                Transition
+              </div>
+            )}
+          </div>
         </div>
       </DataWrapper>
     </>

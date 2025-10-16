@@ -55,6 +55,10 @@ const ActionTd = styled.div`
 const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   const dispatch = useDispatch();
   const congigListData = useSelector(ClustersSelectors.getConfigNameList);
+  const kubeConfigList = useSelector(
+    ClustersSelectors.getlistConfigListKubernetes
+  );
+  //
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [configToDelete, setConfigToDelete] = useState({});
   const loading = useSelector(state =>
@@ -65,7 +69,14 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
     dispatch(ClustersActions.getSingleConfigData(configItem?.id));
     history.push('/clusters/new-config-details');
   };
+  const handleEditKubeConfig = ({ configItem }) => {
+    dispatch(ClustersActions.setkubeCofigToEdit(configItem));
+    history.push('/clusters/add-new-config');
+  };
 
+  const createClusterVisKubernetes = useSelector(
+    ClustersSelectors.getCreateClusterMethod
+  );
   const COLUMNS = [
     {
       label: 'Name',
@@ -136,13 +147,97 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
       resize: true,
     },
   ];
+  const KUBE_COLUMNS = [
+    {
+      label: 'Name',
+      renderCell: item => <>{item.config_name}</>,
+      resize: true,
+      width: '50%',
+    },
+    {
+      label: 'Config Version',
+      renderCell: item => <>{item.config_version}</>,
+      resize: true,
+      width: '25%',
+    },
+    {
+      label: 'Actions',
+      renderCell: item => (
+        <ActionTd>
+          <IconButton
+            onClick={() => {
+              handleEditKubeConfig({ configItem: item });
+            }}
+            className="pencil-icon-schedule-list"
+            data-tooltip-id={'config-ansible-edit-option'}
+          >
+            <PencilIcon width={16} height={16} />
+          </IconButton>
+          <ReactTooltip
+            id={`config-ansible-edit-option`}
+            place="bottom"
+            effect="solid"
+            content={'Edit Config'}
+            style={{
+              width: '105px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
+          {!item?.is_part_of_cluster && (
+            <IconButton
+              onClick={() => {
+                setConfigToDelete(item);
+                setIsDeleteModalOpen(true);
+              }}
+              className="pencil-icon-schedule-list"
+              data-tooltip-id={'config-ansible-delete-option'}
+            >
+              <DeleteSmallIcon width={16} height={16} color="red" />
+            </IconButton>
+          )}
+          <ReactTooltip
+            id={`config-ansible-delete-option`}
+            place="bottom"
+            effect="solid"
+            content={'Delete Config'}
+            style={{
+              width: '125px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
+        </ActionTd>
+      ),
+      resize: true,
+      width: '25%',
+    },
+  ];
   useEffect(() => {
-    dispatch(ClustersActions.getConfigList());
+    if (createClusterVisKubernetes === 'VM') {
+      dispatch(ClustersActions.getConfigList());
+    } else {
+      dispatch(ClustersActions.fetchConfigListForKubernetes());
+    }
+
     dispatch(ClustersActions.setAllConfigPropertiesAndValue({}));
+    dispatch(ClustersActions.setkubeCofigToEdit({}));
+    //
+    dispatch(ClustersActions.setKubernetesConfigFields({}));
     return () => {
       dispatch(ClustersActions.setLastVisitedTab('manage_config'));
     };
   }, [dispatch]);
+  const handleAddConfig = () => {
+    if (createClusterVisKubernetes === 'VM') {
+      history.push('/clusters/new-config-details');
+    } else {
+      history.push('/clusters/add-new-config');
+    }
+  };
+  //
   return (
     <Wrapper>
       <FullPageLoader loading={loading} />
@@ -155,7 +250,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
               <Button
                 size="md"
                 onClick={() => {
-                  history.push('/clusters/new-config-details');
+                  handleAddConfig();
                 }}
                 className="w-auto px-3"
                 style={{ minWidth: 'auto' }}
@@ -172,8 +267,14 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
           </div>
 
           <Table
-            data={congigListData}
-            columns={COLUMNS}
+            data={
+              createClusterVisKubernetes === 'VM'
+                ? congigListData
+                : kubeConfigList
+            }
+            columns={
+              createClusterVisKubernetes === 'VM' ? COLUMNS : KUBE_COLUMNS
+            }
             customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
             tableWithFullHeight={true}
           />
@@ -185,9 +286,18 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
           icon={<DeleteDustbinIcon />}
           isOpen={isDeleteModalOpen}
           onSubmit={() => {
-            dispatch(
-              ClustersActions.deleteConfig({ configId: configToDelete?.id })
-            );
+            if (createClusterVisKubernetes === 'VM') {
+              dispatch(
+                ClustersActions.deleteConfig({ configId: configToDelete?.id })
+              );
+            } else {
+              dispatch(
+                ClustersActions.deleteKubeConfig({
+                  id: configToDelete?.id,
+                })
+              );
+            }
+
             setIsDeleteModalOpen(false);
           }}
           onRequestClose={() => {
