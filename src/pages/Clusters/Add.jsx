@@ -401,7 +401,7 @@ export const Add = () => {
         if (registryURLs?.data?.includes(new URL(data?.registryUrl)?.origin)) {
           setOpenSummary(true);
         } else {
-          toast.error('This registry do not  exist!');
+          handleAddRegistry(data);
         }
       }
     }
