@@ -8,6 +8,7 @@ import { LoginIcon, LogoutIcon } from '../../../assets';
 import { CLUSTERS_TOKEN, CLUSTER_STATUS } from '../../../constants';
 import {
   AuthenticationActions,
+  AuthenticationSelectors,
   ClustersActions,
   DashboardActions,
   GridActions,
@@ -38,6 +39,7 @@ const EnableClusterText = styled.div`
 export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
 
   const handleClusterAction = () => {
     if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
@@ -119,10 +121,20 @@ export const EnableClusterRender = ({ item }) => {
         <IconButton
           data-tooltip-id={`${item?.id}1`}
           disabled={item?.status === CLUSTER_STATUS.DEACTIVATED}
+          className="test-cluster"
+          onClick={() => {
+            if (enableTour) {
+              setTimeout(() => {
+                dispatch(ClustersActions.setTourIndex(3));
+              }, 500);
+            }
+          }}
         >
           {item?.status === CLUSTER_STATUS.DISCONNECTED ||
           item?.status === CLUSTER_STATUS.DEACTIVATED ? (
-            <LoginIcon />
+            <span>
+              <LoginIcon />
+            </span>
           ) : (
             <LogoutIcon color="#a51e1e" />
           )}

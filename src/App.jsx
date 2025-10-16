@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import React, { useEffect, useState } from 'react';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,7 +20,6 @@ function App() {
   const [isModal, setIsModal] = useState(false);
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-
   const updateNetworkStatus = () => {
     if (!navigator.onLine) {
       setIsModal(true);
@@ -66,6 +65,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
+
       <Provider store={store}>
         <GlobalProvider>
           <Routes />

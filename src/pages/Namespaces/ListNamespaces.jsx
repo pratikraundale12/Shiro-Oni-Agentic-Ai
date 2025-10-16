@@ -19,6 +19,7 @@ import { history } from '../../helpers/history';
 import { InputField, Modal } from '../../shared';
 import {
   AuthenticationSelectors,
+  ClustersActions,
   ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
@@ -232,6 +233,7 @@ export const ListNamespaces = () => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
   };
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
 
   useEffect(() => {
     dispatch(SchedularActions.setScheduleFromList(false));
@@ -630,6 +632,18 @@ export const ListNamespaces = () => {
       },
     });
   };
+  const gridPermissions = useSelector(state =>
+    GridSelectors.getGridDataPermissions(state, 'namespaces')
+  );
+
+  useEffect(() => {
+    if (gridPermissions?.canWrite && enableTour) {
+      setTimeout(() => {
+        dispatch(ClustersActions.setTourStart(true));
+        dispatch(ClustersActions.setTourIndex(7));
+      }, 300);
+    }
+  }, [gridPermissions]);
 
   const handleDeleteClick = (item, e) => {
     setRemoveSearch(false);

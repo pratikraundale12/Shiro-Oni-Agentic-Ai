@@ -125,6 +125,8 @@ export const SummaryModal = ({
     ClustersSelectors.getTestCertificateNodes
   );
 
+  const clusterTestResponse = useSelector(ClustersSelectors.getClusterFormData);
+
   const addRegistry = async () => {
     const data = {
       name: registryData?.registryName,
@@ -176,6 +178,18 @@ export const SummaryModal = ({
       formData.append(
         'service_account_certificate_password',
         clusterData.service_account_certificate_password
+      );
+    }
+
+    formData.append(
+      'nodes',
+      certificateNodesData && certificateNodesData.length > 0 ? certificateNodesData : []
+    );
+
+    if (clusterTestResponse?.clusterType) {
+      formData.append(
+        'clusterType',
+        clusterTestResponse?.clusterType
       );
     }
 

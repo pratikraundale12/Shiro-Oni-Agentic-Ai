@@ -183,6 +183,8 @@ export const ClustersActions = {
     `${prefix}setIsOpenDeleteKubeClusterModal`
   ),
   deleteClusterKube: createAction(`${prefix}deleteClusterKube`),
+  setTourIndex: createAction(`${prefix}setTourIndex`),
+  setTourStart: createAction(`${prefix}setTourStart`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -249,6 +251,8 @@ export const CLUSTERS_INITIAL_STATE = {
   kubeHostModalOpen: false,
   kubeClusterUpgradeData: {},
   isOpenDeleteKubeClusterModal: false,
+  tourIndex: 0,
+  tourStart: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -331,6 +335,8 @@ export const ClustersSelectors = {
   getkubeClusterUpgradeData: state => state.clusters.kubeClusterUpgradeData,
   getisOpenDeleteKubeClusterModal: state =>
     state.clusters.isOpenDeleteKubeClusterModal,
+  getTourIndex: state => state.clusters.tourIndex,
+  getTourStart: state => state.clusters.tourStart,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -720,6 +726,18 @@ const setIsOpenDeleteKubeClusterModal = (state, { payload }) => {
     isOpenDeleteKubeClusterModal: payload,
   };
 };
+const setTourIndex = (state, { payload }) => {
+  return {
+    ...state,
+    tourIndex: payload,
+  };
+};
+const setTourStart = (state, { payload }) => {
+  return {
+    ...state,
+    tourStart: payload,
+  };
+};
 
 const setclusterToLoginWithoutCred = (state, { payload }) => {
   return {
@@ -892,6 +910,8 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setIsOpenDeleteKubeClusterModal,
         setIsOpenDeleteKubeClusterModal
-      );
+      )
+      .addCase(ClustersActions.setTourIndex, setTourIndex)
+      .addCase(ClustersActions.setTourStart, setTourStart);
   }
 );

@@ -13,6 +13,7 @@ import { InputField, Modal, PasswordField, SelectField } from '../shared';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
+  ClustersActions,
   ClustersSelectors,
   DashboardActions,
   GridActions,
@@ -96,6 +97,7 @@ export const ClusterLoginModal = () => {
   }, [selectedClusterData, setValue]);
 
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
 
   const isFieldsDisabled = selectedClusterData?.status === 'Connected';
 
@@ -179,6 +181,10 @@ export const ClusterLoginModal = () => {
         if (window.location.pathname.includes('/flow-analysis')) {
           window.location.reload();
           history.push('/flow-analysis');
+        }
+        if (enableTour) {
+          dispatch(ClustersActions.setTourStart(true));
+          dispatch(ClustersActions.setTourIndex(4));
         }
       } else {
         toast.error(response.message || 'Error while getting data');
