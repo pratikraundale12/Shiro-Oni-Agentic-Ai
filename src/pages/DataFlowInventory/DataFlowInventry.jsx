@@ -15,11 +15,7 @@ import { AddsquareIcon } from '../../assets/Icons/AddSquareIcon';
 import { FullPageLoader } from '../../components';
 import { API_URL } from '../../constants';
 import { history } from '../../helpers/history';
-import {
-  AuthenticationSelectors,
-  ClustersActions,
-  LoadingSelectors,
-} from '../../store';
+import { AuthenticationSelectors, LoadingSelectors } from '../../store';
 import {
   AiFlowGeneratorActions,
   AiFlowGeneratorSelectors,
