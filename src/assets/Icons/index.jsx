@@ -186,3 +186,5 @@ export * from './FlowValidationIcon';
 export * from './ScheduleDetailsIcon';
 export * from './CircleCrossIcon';
 export * from './TermsOfUseIcon';
+export * from './ListIcon';
+export * from './TreeIcon';

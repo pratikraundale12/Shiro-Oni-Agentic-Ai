@@ -390,6 +390,13 @@ export const namespacesAPI = api => {
     return api.post(url, { properties });
   };
 
+  const fetchNamespacesDownload = ({ clusterId, namespaceId }) =>
+    api.get(`clusters/${clusterId}/download/${namespaceId}`);
+
+  const fetchNamespaceVersion = ({ clusterId, namespaceId }) => {
+    return api.get(`/versions/${clusterId}/namespace/${namespaceId}`);
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -435,5 +442,7 @@ export const namespacesAPI = api => {
     fetchLastSanityReport,
     refreshControllerService,
     getServiceDefinition,
+    fetchNamespacesDownload,
+    fetchNamespaceVersion,
   };
 };
