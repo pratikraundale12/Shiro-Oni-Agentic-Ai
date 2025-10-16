@@ -532,7 +532,6 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     return resultant?.label;
     // route?.replace(/-/g, ' ')
   };
-  const [run, setRun] = useState(true);
   const steps = [
     {
       target: '.my-first-step',
