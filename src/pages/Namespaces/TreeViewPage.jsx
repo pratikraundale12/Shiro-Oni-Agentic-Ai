@@ -90,7 +90,12 @@ const TreeViewPage = () => {
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
-      <TreeViewWrapper hideRootNode={false} />
+      <TreeViewWrapper
+        hideRootNode={false}
+        enableHoverApi={true}
+        enableSearch={true}
+        showPathInSuggestions={true}
+      />
     </div>
   );
 };

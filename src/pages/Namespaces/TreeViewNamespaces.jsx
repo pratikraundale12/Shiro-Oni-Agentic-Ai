@@ -46,7 +46,6 @@ const theme = {
   },
 };
 
-// shimmer animation and Skeleton components (minimal, same card size)
 const shimmer = keyframes`
   0% { background-position: -300px 0; }
   100% { background-position: 300px 0; }
@@ -224,10 +223,13 @@ function TooltipContent({ dataForBox }) {
 
 const TreeViewNamespaces = ({
   data = {},
+  flatData = [],
   width = 928,
   height = 600,
   hideRootNode = false,
   enableHoverApi = false,
+  enableSearch = false,
+  showPathInSuggestions = false,
 }) => {
   const svgRef = useRef(null);
   const tooltipRef = useRef(null);
@@ -248,7 +250,6 @@ const TreeViewNamespaces = ({
   );
 
   useEffect(() => {
-    // If API is in-progress, show the skeleton in tooltip (keeps your tooltip state shape unchanged)
     if (loadingNamespacesVersion) {
       setTooltip(prev => ({
         ...prev,
@@ -292,7 +293,7 @@ const TreeViewNamespaces = ({
       visible: enableHoverApi,
       content: <TooltipContent dataForBox={dataForBox} />,
     }));
-  }, [namespacesVersion, loadingNamespacesVersion]);
+  }, [namespacesVersion, loadingNamespacesVersion, enableHoverApi]);
 
   // Initialize zoom behavior
   const initializeZoom = useCallback(() => {
@@ -301,7 +302,7 @@ const TreeViewNamespaces = ({
     // Create zoom behavior
     const zoom = d3
       .zoom()
-      .scaleExtent([0.1, 10]) // Min and max zoom levels
+      .scaleExtent([0.1, 100]) // Min and max zoom levels
       .on('zoom', event => {
         d3.select(svgRef.current)
           .select('.zoom-group')
@@ -312,7 +313,6 @@ const TreeViewNamespaces = ({
     // Apply zoom to SVG
     d3.select(svgRef.current).call(zoom).on('dblclick.zoom', null); // Disable double-click zoom (we'll handle it separately)
 
-    // Store zoom instance for programmatic control
     zoomRef.current = zoom;
   }, []);
 
@@ -343,12 +343,6 @@ const TreeViewNamespaces = ({
         .transition()
         .duration(500)
         .call(zoomRef.current.scaleTo, 1); // Reset to original scale
-
-      // Also reset translation to center
-      // d3.select(svgRef.current)
-      //   .transition()
-      //   .duration(500)
-      //   .call(zoomRef.current.translateTo, width / 2, height / 2);
     }
   }, [width, height]);
 
@@ -361,7 +355,152 @@ const TreeViewNamespaces = ({
     [handleZoomIn]
   );
 
-  // ZZ
+  // search state & refs:
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+  const flatIndexRef = useRef([]); // use flatData prop, no API calls
+
+  // d3 refs to access nodes/links
+  const rootRef = useRef(null);
+  const gNodeRef = useRef(null);
+  const gLinkRef = useRef(null);
+  const svgGroupRef = useRef(null);
+  const searchInputRef = useRef(null); // for search input focus
+
+  useEffect(() => {
+    flatIndexRef.current = Array.isArray(flatData) ? flatData : [];
+  }, [flatData]);
+
+  //this mapping ensures default node colors remain consistent everywhere
+  const getNodeColor = useCallback(d => {
+    // If isProcessor === true -> '#bfdfdf', otherwise '#008080'
+    return d?.data?.isProcessor === true ? '#bfdfdf' : '#008080';
+  }, []);
+
+  // Clear previous highlights
+  const clearHighlights = useCallback(() => {
+    if (!gNodeRef.current || !gLinkRef.current) return;
+
+    gNodeRef.current
+      .selectAll('g')
+      .select('circle')
+      .attr('r', 5)
+      .attr('stroke', d => getNodeColor(d))
+      .attr('fill', d => getNodeColor(d))
+      .attr('stroke-width', 1)
+      .style('filter', null);
+
+    // reset links
+    gLinkRef.current
+      .selectAll('path')
+      .attr('stroke', '#004d4d')
+      .attr('stroke-width', 1)
+      .attr('stroke-opacity', 1);
+  }, [getNodeColor]);
+
+  /**
+   * highlightPathById
+   * idToMatch: instanceIdentifier or identifier
+   *
+   * Behavior tweak:
+   * - If hideRootNode === true, exclude depth 0 (root) from highlight path so path starts
+   *   at the child just after the root.
+   */
+  const highlightPathById = useCallback(
+    idToMatch => {
+      if (
+        !rootRef.current ||
+        !gNodeRef.current ||
+        !gLinkRef.current ||
+        !svgRef.current ||
+        !zoomRef.current
+      )
+        return;
+
+      // Reset previous highlights but preserve default colors via getNodeColor
+      clearHighlights();
+
+      const nodes = rootRef.current.descendants();
+      const match = nodes.find(
+        d =>
+          (d.data.instanceIdentifier &&
+            d.data.instanceIdentifier === idToMatch) ||
+          (d.data.identifier && d.data.identifier === idToMatch)
+      );
+      if (!match) return;
+
+      let ancestors = match.ancestors().reverse();
+
+      // If root is hidden, start from its immediate child (exclude depth 0)
+      if (hideRootNode) {
+        ancestors = ancestors.filter(a => a.depth !== 0);
+      }
+
+      // highlight node circles for ancestors
+      ancestors.forEach(anc => {
+        const instId = anc.data.instanceIdentifier || anc.data.identifier;
+        const nodeG = gNodeRef.current.selectAll('g').filter(d => {
+          const id = d.data.instanceIdentifier || d.data.identifier;
+          return id === instId;
+        });
+
+        nodeG
+          .select('circle')
+          .attr('r', 7)
+          .attr('stroke', '#ff7a18')
+          .attr('fill', '#fff')
+          .attr('stroke-width', 2)
+          .style('filter', 'drop-shadow(0px 2px 6px rgba(255,122,24,0.35))');
+      });
+
+      // highlight links between ancestors (only links whose source & target are part of the ancestor set)
+      const ancestorIds = new Set(
+        ancestors.map(a => a.data.instanceIdentifier || a.data.identifier)
+      );
+      gLinkRef.current
+        .selectAll('path')
+        .filter(d => {
+          const sId =
+            d.source.data.instanceIdentifier || d.source.data.identifier;
+          const tId =
+            d.target.data.instanceIdentifier || d.target.data.identifier;
+          return ancestorIds.has(sId) && ancestorIds.has(tId);
+        })
+        .attr('stroke', '#ff7a18')
+        .attr('stroke-width', 3)
+        .attr('stroke-opacity', 1);
+
+      // center/translate view to the matched node coordinates (in the layout's coordinates)
+      const tx = match.x;
+      const ty = match.y;
+
+      d3.select(svgRef.current)
+        .transition()
+        .duration(600)
+        .call(zoomRef.current.translateTo, tx, ty);
+    },
+    [clearHighlights, hideRootNode]
+  );
+
+  // Clear search helper
+  const clearSearch = useCallback(() => {
+    setSearchQuery('');
+    setSuggestions([]);
+    setShowSuggestions(false);
+    setSelectedSuggestionIndex(-1);
+    // clear highlights safely
+    clearHighlights();
+    // return focus to search input
+    if (searchInputRef.current) {
+      try {
+        searchInputRef.current.focus();
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [clearHighlights]);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -378,20 +517,23 @@ const TreeViewNamespaces = ({
     // Create the root hierarchy
     const root = d3.hierarchy(data);
 
-    // For vertical tree, we need more vertical spacing to prevent text overlap
-    const dx = 120; // Increased horizontal spacing between nodes
-    const dy = 150; // Fixed vertical spacing to prevent overlap
+    // store root so search/highlight can access it
+    rootRef.current = root;
 
-    // Define the tree layout for vertical orientation
+    // For vertical tree, we need more vertical spacing to prevent text overlap
+    const dx = 120; //horizontal spacing
+    const dy = 150; //vertical spacing
+
+    // tree layout for vertical orientation
     const tree = d3.tree().nodeSize([dx, dy]);
 
-    // Use vertical link generator
+    // vertical link generator
     const diagonal = d3
       .linkVertical()
       .x(d => d.x)
       .y(d => d.y);
 
-    // Create the SVG container
+    // SVG container
     const svg = d3
       .select(svgRef.current)
       .attr('width', width)
@@ -402,7 +544,7 @@ const TreeViewNamespaces = ({
         'max-width: 100%; max-height: 100%; font: 10px sans-serif; user-select: none;'
       )
       .style('background', 'rgb(249, 249, 249)')
-      .style('border', '1px solid rgb(229 230 232)')
+      .style('border', '1px solid rgb(229, 230, 232)')
       .style('background-color', '#f9fafb')
       .style('background-size', '14px 14px')
       .style('border-radius', '10px 10px 10px 10px')
@@ -411,32 +553,35 @@ const TreeViewNamespaces = ({
         'linear-gradient(to right, rgba(229, 235, 237, 1) 1px, transparent 1px), linear-gradient(to bottom, rgba(229, 235, 237, 1) 1px, transparent 1px)'
       )
       .style('cursor', 'grab')
-      .on('dblclick', handleDoubleClick); // Add double-click handler; ZZ
+      .on('dblclick', handleDoubleClick); // double-click handler
 
-    // Create zoom group that will be transformed
-    const zoomGroup = svg.append('g').attr('class', 'zoom-group'); // ZZ
+    // zoom group
+    const zoomGroup = svg.append('g').attr('class', 'zoom-group');
 
-    initializeZoom(); // ZZ
+    svgGroupRef.current = zoomGroup;
 
-    const gLink = zoomGroup //ZZ
+    initializeZoom();
+
+    const gLink = zoomGroup
       .append('g')
       .attr('fill', 'none')
-      .attr('stroke', '#003333')
+      .attr('stroke', '#004d4d')
       .attr('stroke-opacity', 1);
-    //   .attr('stroke-width', 1.5);
-    //   .attr('stroke-opacity', 0.4)
 
-    const gNode = zoomGroup // ZZ
+    const gNode = zoomGroup
       .append('g')
       .attr('cursor', 'pointer')
       .attr('pointer-events', 'all');
 
-    // NEW: constants for label background rect sizing and text placement
-    const TEXT_PADDING_H = 6; // horizontal padding inside the rect
-    const TEXT_PADDING_V = 3; // vertical padding inside the rect
-    const TEXT_DY = '3em'; // places text below the node
-    const TEXT_FONT_SIZE = 11; // px, keep in sync with .attr('font-size')
-    const TEXT_BG_FILL = '#f9fafb'; // should match svg background to hide link lines beneath text
+    // store refs so search/highlight can use them
+    gNodeRef.current = gNode;
+    gLinkRef.current = gLink;
+
+    const TEXT_PADDING_H = 6;
+    const TEXT_PADDING_V = 3;
+    const TEXT_DY = '3em';
+    const TEXT_FONT_SIZE = 11;
+    const TEXT_BG_FILL = '#f9fafb';
 
     function update(event, source) {
       const duration = event?.altKey ? 2500 : 250;
@@ -462,7 +607,7 @@ const TreeViewNamespaces = ({
         if (node.y > bottom.y) bottom = node;
       });
 
-      const treeWidth = right.x - left.x + marginLeft + marginRight + 100; // Extra width for text
+      const treeWidth = right.x - left.x + marginLeft + marginRight + 100;
       const treeHeight = bottom.y - top.y + marginTop + marginBottom + 50;
 
       const transition = svg
@@ -479,10 +624,8 @@ const TreeViewNamespaces = ({
           window.ResizeObserver ? null : () => () => svg.dispatch('toggle')
         );
 
-      // Update the nodes
       const node = gNode.selectAll('g').data(nodes, d => d.id);
 
-      // Enter any new nodes at the parent's previous position
       const nodeEnter = node
         .enter()
         .append('g')
@@ -538,20 +681,14 @@ const TreeViewNamespaces = ({
 
       nodeEnter
         .append('circle')
-        .attr('r', 2) // Slightly larger for better visibility
-        .attr('fill', d =>
-          d?.data?.isProcessor === true ? '#008080' : '#bfdfdf'
-        )
-        .attr('stroke', d => (d._children ? '#008080' : '#bfdfdf'))
-        // .attr('fill', d => (d._children ? '#2d3748' : '#818791'))
-        // .attr('stroke', d => (d._children ? '#2d3748' : '#818791'))
+        .attr('r', 2)
+        .attr('fill', d => getNodeColor(d))
+        .attr('stroke', d => getNodeColor(d))
         .attr('stroke-width', 10);
 
-      //   Text positioning
-      // REPLACED: original text placement -> NEW: center text below node and add a background rect that hides links beneath text
+      // Text positioning: center text below node
       nodeEnter
         .append('text')
-        // NEW: center horizontally below the node
         .attr('x', 0)
         .attr('text-anchor', 'middle')
         .attr('dy', TEXT_DY)
@@ -565,16 +702,12 @@ const TreeViewNamespaces = ({
         .attr('stroke', 'white')
         .attr('paint-order', 'stroke');
 
-      // NEW: Insert a background rect behind each text label for node groups that were just entered.
-      // We insert the rect before the text and size it based on the text's bbox so it hides links directly behind the label.
+      // Insert a background rect behind each text label
       nodeEnter.each(function () {
         const g = d3.select(this);
         const textEl = g.select('text').node();
         if (!textEl) return;
-        // getBBox() works because the element is already in the DOM
         const bbox = textEl.getBBox();
-
-        // Insert rect before the text so it is visually below the text but still above links (gNode is above gLink)
         g.insert('rect', 'text')
           .attr('x', bbox.x - TEXT_PADDING_H)
           .attr('y', bbox.y - TEXT_PADDING_V)
@@ -583,10 +716,8 @@ const TreeViewNamespaces = ({
           .attr('rx', 4)
           .attr('fill', TEXT_BG_FILL)
           .attr('stroke', 'none')
-          .attr('pointer-events', 'none'); // allow events to pass through to the group
+          .attr('pointer-events', 'none');
       });
-
-      // Transition nodes to their new position
       const nodeUpdate = node
         .merge(nodeEnter)
         .transition(transition)
@@ -594,10 +725,12 @@ const TreeViewNamespaces = ({
         .attr('fill-opacity', 1)
         .attr('stroke-opacity', 1);
 
-      nodeUpdate.select('circle').attr('r', 5);
+      nodeUpdate
+        .select('circle')
+        .attr('r', 5)
+        .attr('fill', d => getNodeColor(d))
+        .attr('stroke', d => getNodeColor(d));
 
-      // NEW: After nodes are merged/updated, ensure label background rects are correctly sized/positioned for all nodes.
-      // This keeps rects aligned when text, font-size, or node position changes.
       gNode.selectAll('g').each(function () {
         const g = d3.select(this);
         const textNode = g.select('text').node();
@@ -606,7 +739,6 @@ const TreeViewNamespaces = ({
 
         let rectSel = g.select('rect');
         if (rectSel.empty()) {
-          // If a rect doesn't exist for some reason (older nodes), insert it now before the text
           rectSel = g
             .insert('rect', 'text')
             .attr('pointer-events', 'none')
@@ -621,7 +753,6 @@ const TreeViewNamespaces = ({
           .attr('fill', TEXT_BG_FILL);
       });
 
-      // Transition exiting nodes to the parent's new position
       const nodeExit = node
         .exit()
         .transition(transition)
@@ -630,22 +761,25 @@ const TreeViewNamespaces = ({
         .attr('fill-opacity', 0)
         .attr('stroke-opacity', 0);
 
-      // Update the links
       const link = gLink.selectAll('path').data(links, d => d.target.id);
-
-      // Enter any new links at the parent's previous position
       const linkEnter = link
         .enter()
         .append('path')
         .attr('d', _d => {
           const o = { x: source.x0, y: source.y0 };
           return diagonal({ source: o, target: o });
-        });
+        })
+        .attr(
+          'data-source',
+          d => d.source.data.instanceIdentifier || d.source.data.identifier
+        )
+        .attr(
+          'data-target',
+          d => d.target.data.instanceIdentifier || d.target.data.identifier
+        )
+        .attr('class', 'link-path');
 
-      // Transition links to their new position
       link.merge(linkEnter).transition(transition).attr('d', diagonal);
-
-      // Transition exiting nodes to the parent's new position
       link
         .exit()
         .transition(transition)
@@ -654,22 +788,18 @@ const TreeViewNamespaces = ({
           const o = { x: source.x, y: source.y };
           return diagonal({ source: o, target: o });
         });
-
-      // Stash the old positions for transition
       root.eachBefore(d => {
         d.x0 = d.x;
         d.y0 = d.y;
       });
     }
 
-    // Initialize the tree - MATCH THE HORIZONTAL TREE BEHAVIOR
+    // Initialize the tree.
     root.x0 = 0;
     root.y0 = 0;
     root.descendants().forEach((d, i) => {
       d.id = i;
       d._children = d.children;
-      // Exactly like the horizontal tree: only root and nodes with 7-letter names are open initially
-      // if (d.depth && d.data.name.length !== 7) d.children = null; // commenting any condition that decides child will be collapse or not will open all children.
     });
 
     update(null, root);
@@ -689,7 +819,84 @@ const TreeViewNamespaces = ({
     initializeZoom,
     dispatch,
     enableHoverApi,
+    getNodeColor,
   ]);
+
+  useEffect(() => {
+    if (!enableSearch) return;
+    const q = (searchQuery || '').trim().toLowerCase();
+    if (!q) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    const list = (flatIndexRef.current || [])
+      .filter(item => {
+        const hay = `${item.name ?? ''} ${item.path ?? ''}`.toLowerCase();
+        return hay.includes(q);
+      })
+      .slice(0, 10); // limit suggestions
+    setSuggestions(list);
+    setShowSuggestions(list.length > 0);
+    setSelectedSuggestionIndex(-1);
+  }, [searchQuery, enableSearch]);
+
+  // If searchQuery emptied manually (or by clear), remove highlights and reset suggestion state
+  useEffect(() => {
+    if (!enableSearch) return;
+    const q = (searchQuery || '').trim();
+    if (q === '') {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setSelectedSuggestionIndex(-1);
+
+      clearHighlights();
+    }
+  }, [searchQuery, enableSearch, clearHighlights]);
+
+  const handleSuggestionClick = item => {
+    setSearchQuery(item.name || item.path || '');
+    setShowSuggestions(false);
+    const idToMatch = item.instanceIdentifier || item.identifier;
+    if (idToMatch) {
+      highlightPathById(idToMatch);
+    }
+  };
+
+  const handleKeyDownInSearch = e => {
+    if (!showSuggestions || suggestions.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedSuggestionIndex(i => Math.min(i + 1, suggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedSuggestionIndex(i => Math.max(i - 1, 0));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const idx = selectedSuggestionIndex >= 0 ? selectedSuggestionIndex : 0;
+      const item = suggestions[idx];
+      if (item) handleSuggestionClick(item);
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  };
+
+  // hide suggestion on outside click
+  useEffect(() => {
+    function onDocClick(e) {
+      if (!enableSearch) return;
+      const el = e.target;
+      if (
+        !el.closest ||
+        (!el.closest('.tree-search-box') &&
+          !el.closest('.tree-search-suggestions'))
+      ) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, [enableSearch]);
 
   return (
     <div style={{ position: 'relative', height: '100%' }}>
@@ -715,6 +922,114 @@ const TreeViewNamespaces = ({
         >
           {tooltip.content}
         </TreeTooltip>
+      )}
+
+      {enableSearch && (
+        <div style={{ position: 'fixed', top: 245, right: 50, zIndex: 3000 }}>
+          <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <input
+                ref={searchInputRef}
+                className="tree-search-box"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDownInSearch}
+                placeholder="Search nodes..."
+                onFocus={() => {
+                  if (suggestions.length) setShowSuggestions(true);
+                }}
+                style={{
+                  width: 260,
+                  padding: '8px 32px 8px 10px',
+                  borderRadius: 6,
+                  border: '1px solid #e5e7eb',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                  outline: 'none',
+                }}
+              />
+
+              {searchQuery ? (
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  onClick={clearSearch}
+                  style={{
+                    position: 'absolute',
+                    right: 6,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 20,
+                    height: 20,
+                    borderRadius: 10,
+                    border: 'none',
+                    background: '#e5e7eb',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0,
+                  }}
+                >
+                  <span
+                    style={{ lineHeight: 1, fontSize: 12, color: '#374151' }}
+                  >
+                    ✕
+                  </span>
+                </button>
+              ) : null}
+            </div>
+
+            {showSuggestions && suggestions.length > 0 && (
+              <div
+                className="tree-search-suggestions"
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: 'calc(100% + 6px)',
+                  width: 360,
+                  maxHeight: 240,
+                  overflowY: 'auto',
+                  background: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 6,
+                  boxShadow: '0 6px 20px rgba(0,0,0,0.08)',
+                  zIndex: 4000,
+                }}
+              >
+                {suggestions.map((s, i) => {
+                  const selected = i === selectedSuggestionIndex;
+                  return (
+                    <button
+                      key={`${s.instanceIdentifier || s.identifier || s.path}-${i}`}
+                      type="button"
+                      onClick={() => handleSuggestionClick(s)}
+                      onMouseEnter={() => setSelectedSuggestionIndex(i)}
+                      aria-label={`Select ${s.name}`}
+                      style={{
+                        display: 'block',
+                        textAlign: 'left',
+                        width: '100%',
+                        padding: '8px 10px',
+                        cursor: 'pointer',
+                        background: selected ? '#f8fafc' : 'white',
+                        border: 'none',
+                        borderBottom: '1px solid #f1f5f9',
+                        fontSize: 13,
+                      }}
+                    >
+                      <div style={{ fontWeight: 600 }}>{s.name}</div>
+                      {showPathInSuggestions ? (
+                        <div style={{ fontSize: 12, color: '#6b7280' }}>
+                          {s.path}
+                        </div>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Zoom Controls */}
@@ -844,8 +1159,11 @@ export default TreeViewNamespaces;
 
 TreeViewNamespaces.propTypes = {
   data: PropTypes.any,
+  flatData: PropTypes.array,
   width: PropTypes.number,
   height: PropTypes.number,
   hideRootNode: PropTypes.bool,
   enableHoverApi: PropTypes.bool,
+  enableSearch: PropTypes.bool,
+  showPathInSuggestions: PropTypes.bool,
 };

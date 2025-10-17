@@ -519,7 +519,12 @@ export const Grid = ({
 
       {module === 'namespaces' && viewMode === 'tree_view' ? (
         <>
-          <TreeViewWrapper hideRootNode={true} />
+          <TreeViewWrapper
+            hideRootNode={false}
+            enableHoverApi={true}
+            enableSearch={true}
+            showPathInSuggestions={true}
+          />
         </>
       ) : (
         <>

@@ -22,7 +22,12 @@ const LoadingText = styled.div`
   text-align: center;
 `;
 
-const TreeViewWrapper = ({ hideRootNode = false }) => {
+const TreeViewWrapper = ({
+  hideRootNode = false,
+  enableHoverApi = false,
+  enableSearch = false,
+  showPathInSuggestions = false,
+}) => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   useEffect(() => {
@@ -56,10 +61,13 @@ const TreeViewWrapper = ({ hideRootNode = false }) => {
           >
             <TreeViewNamespaces
               data={namespacesDownload?.tree}
+              flatData={namespacesDownload?.flat}
               width={1600}
               height={680}
               hideRootNode={hideRootNode}
-              enableHoverApi={true}
+              enableHoverApi={enableHoverApi}
+              enableSearch={enableSearch}
+              showPathInSuggestions={showPathInSuggestions}
             />
           </div>
         ) : (
@@ -77,4 +85,7 @@ export default TreeViewWrapper;
 
 TreeViewWrapper.propTypes = {
   hideRootNode: PropTypes.bool,
+  enableHoverApi: PropTypes.bool,
+  enableSearch: PropTypes.bool,
+  showPathInSuggestions: PropTypes.bool,
 };
