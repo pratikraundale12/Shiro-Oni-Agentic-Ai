@@ -32,6 +32,7 @@ import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from './ProcessGroupSorting';
+import { ErrorsSelectors } from '../../store/helpers/error_redux';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -164,11 +165,18 @@ export const ListNamespaces = () => {
   );
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const settingsAPIdata = useSelector(SettingsSelectors.getSettingsData);
+  const [settingsFetchStarted, setSettingsFetchStarted] = useState(false);
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
     dispatch(SettingsActions.fetchSettings());
-  }, []);
+    setSettingsFetchStarted(true);
+  }, [dispatch]);
+
+  const error = useSelector(state =>
+    ErrorsSelectors.getError(state, 'fetchSettings')
+  );
+
   const settingsAPIcall = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchSettings')
   );
@@ -187,18 +195,29 @@ export const ListNamespaces = () => {
   const parsedSelectedCluster = JSON.parse(selectedClusterString);
 
   useEffect(() => {
+    const isUnauthorized =
+      error &&
+      (error?.error?.raw?.status === 401 ||
+        error?.error?.code === 'invalid_token' ||
+        (error?.message &&
+          error?.message.toLowerCase().includes('user session expired.')));
+
+    if (!settingsFetchStarted) return;
+    if (isUnauthorized) return;
     if (
       (!isEmpty(settingsAPIdata) &&
         isEmpty(settingsAPIdata?.username) &&
         isEmpty(selectedClusterObj) &&
         isEmpty(parsedSelectedCluster?.value) &&
-        !settingsAPIcall) ||
+        !settingsAPIcall &&
+        !error) ||
       (!isEmpty(settingsAPIdata) &&
         isEmpty(settingsAPIdata?.username) &&
         !isEmpty(selectedClusterObj) &&
         !selectedClusterObj?.[0]?.has_custom_service_account &&
         !isEmpty(parsedSelectedCluster?.value) &&
-        !settingsAPIcall)
+        !settingsAPIcall &&
+        !error)
     ) {
       toast.info(
         isEmpty(selectedCluster?.value)
@@ -209,7 +228,9 @@ export const ListNamespaces = () => {
     } else if (
       !isEmpty(settingsAPIdata) &&
       !isEmpty(settingsAPIdata?.username) &&
-      isEmpty(parsedSelectedCluster?.value)
+      isEmpty(parsedSelectedCluster?.value) &&
+      !settingsAPIcall &&
+      !error
     ) {
       toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
         toastId: 'please-login-cluster-toast',
@@ -221,6 +242,10 @@ export const ListNamespaces = () => {
     selectedClusterObj,
     parsedSelectedCluster,
     settingsAPIcall,
+    selectedCluster?.value,
+    settingsAPIdata,
+    error,
+    settingsFetchStarted,
   ]);
 
   const handleScheduleClick = item => {
@@ -513,7 +538,7 @@ export const ListNamespaces = () => {
             data-tooltip-id={`tooltip-group-details`}
           >
             <IconButton>
-              <OpenEyeIcon width={14} height={14} />
+              <OpenEyeIcon width={18} height={18} />
             </IconButton>
           </button>
           <ReactTooltip
@@ -540,7 +565,7 @@ export const ListNamespaces = () => {
                 disabled={!item?.version}
               >
                 <IconButton>
-                  <CalenderIcon2 width={14} height={14} color="grey" />
+                  <CalenderIcon2 width={18} height={18} />
                 </IconButton>
               </button>
               <ReactTooltip
@@ -568,7 +593,7 @@ export const ListNamespaces = () => {
                 data-tooltip-id={`tooltip-delete-${item.id}`}
               >
                 <IconButton>
-                  <DeleteSmallIcon width={14} height={14} />
+                  <DeleteSmallIcon width={18} height={18} />
                 </IconButton>
               </button>
             )}
@@ -603,6 +628,7 @@ export const ListNamespaces = () => {
   ];
 
   const handleSelect = item => {
+    dispatch(NamespacesActions.setSelectedRegistryOnDeploy(item?.registryId));
     if (isEmpty(registryData)) {
       toast.error(
         'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
@@ -624,6 +650,7 @@ export const ListNamespaces = () => {
       NamespacesActions.fetchVersionData({
         bucketId: item.bucketId,
         flowId: item.flowId,
+        registryId: item?.registryId,
       })
     );
     history.push('/process-group/flow-details', {

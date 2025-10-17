@@ -7,6 +7,7 @@ import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { SchedularSelectors } from '../schedular/redux';
 import { GridActions } from './redux';
+import { ErrorsSelectors } from '../helpers/error_redux';
 
 export function* fetchGrid(
   api,
@@ -159,7 +160,23 @@ export function* fetchGrid(
   if (module === 'clusters') {
     yield* handleForClusterModule();
   }
+
+  const error = yield select(state =>
+    ErrorsSelectors.getError(state, 'fetchClusters')
+  );
+  const isUnauthorized =
+    error &&
+    (error?.error?.raw?.status === 401 ||
+      error?.error?.code === 'invalid_token' ||
+      (error?.message &&
+        error?.message.toLowerCase().includes('user session expired.')));
+
   const handleError = response => {
+    if (module === 'scheduler' || module === 'clusters') {
+      !isUnauthorized &&
+        toast.error(response?.message || response?.data?.message);
+      return;
+    }
     toast.error(response?.message || response?.data?.message);
   };
 

@@ -32,13 +32,16 @@ export function* fetchClusterList(api, { payload: { params } = {} }) {
 export function* fetchClusters(api, { params }) {
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
 
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'fetchClusters',
     loadingSection: 'fetchClusters',
     apiMethod: api.fetchClusters,
     apiParams: [{ params, payload: clusters }],
     successAction: ClustersActions.fetchClustersSuccess,
   });
+  if (!response?.ok) {
+    toast.error(response?.data?.message);
+  }
 }
 
 export function* fetchClusterNodes(api, { payload }) {

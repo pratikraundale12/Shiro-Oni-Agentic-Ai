@@ -3,18 +3,47 @@ import React from 'react';
 import styled from 'styled-components';
 import { Table, TextRender, UrlRender } from '../../../components';
 import { KDFM } from '../../../constants';
-
+import { LockIcon } from '../../../assets';
+import { theme } from '../../../styles';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 const Container = styled.div`
   .customTable {
     height: auto;
   }
 `;
-const RegistryDetail = ({ data }) => {
+const RegistryDetail = ({ data, displayFullWidth }) => {
   const REGISTRYCOLUMNS = [
     {
       label: KDFM.REGISTRY_NAME,
       renderCell: item => (
-        <TextRender text={item.name} tooltipPlacement="right" />
+        <>
+          <div className="d-flex">
+            <TextRender text={item.name} tooltipPlacement="right" /> &nbsp;
+            {item?.is_default && (
+              <>
+                <span data-tooltip-id={`default-registry`}>
+                  <LockIcon
+                    color={theme.colors.primary}
+                    width={20}
+                    height={20}
+                  />{' '}
+                </span>
+                <ReactTooltip
+                  id={`default-registry`}
+                  place="right"
+                  effect="solid"
+                  content={'Default Registry'}
+                  style={{
+                    width: '140px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                    zIndex: 10000,
+                  }}
+                />
+              </>
+            )}
+          </div>
+        </>
       ),
       width: '25%',
     },
@@ -39,9 +68,9 @@ const RegistryDetail = ({ data }) => {
   ];
 
   return (
-    <Container className="col-6">
+    <Container className={`${displayFullWidth ? 'col-12' : 'col-6'} mt-2`}>
       <Table
-        data={[data || {}]}
+        data={data || []}
         columns={REGISTRYCOLUMNS}
         className={'customTable'}
       />
@@ -51,6 +80,7 @@ const RegistryDetail = ({ data }) => {
 
 RegistryDetail.propTypes = {
   data: PropTypes.object.isRequired,
+  displayFullWidth: PropTypes.bool,
 };
 
 export default RegistryDetail;

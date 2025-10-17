@@ -13,7 +13,6 @@ import { history } from '../../helpers/history';
 import {
   Button,
   CheckboxField,
-  InputField,
   Modal,
   RadioField,
   SelectField,
@@ -91,14 +90,7 @@ const BottomButton = styled.div`
   align-items: center;
   justify-content: space-between !important;
 `;
-const StyledInputField = styled(InputField)`
-  input {
-    &:disabled {
-      background-color: #ebf0f7;
-      border-color: #ccc;
-    }
-  }
-`;
+
 const VersionDiv = styled.div`
   margin-bottom: 1rem;
   font-size: 14px;
@@ -177,6 +169,19 @@ function DeployPage() {
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
+  const registrySelectedId = useSelector(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
+  );
+  const registryDropdownOptions = registryData.map(item => ({
+    label: item?.name,
+    value: item?.nifiRegistryId,
+    default_registry_id: item?.is_default,
+  }));
+  const defaultRegistry = registryDropdownOptions.find(
+    item => item.default_registry_id === true
+  );
+  const defaultRegistryLabel = defaultRegistry?.label || '';
+  const defaultRegistryValue = defaultRegistry?.value || '';
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
   const [successTest, setSuccessTest] = useState(false);
   const [proceedWithDispatch, setProceedWithDispatch] = useState(false);
@@ -228,6 +233,9 @@ function DeployPage() {
     handleSubmit,
   } = useForm({
     resolver: yupResolver(registrySchema),
+    defaultValues: {
+      registry: defaultRegistryLabel || registryDropdownOptions?.[0]?.label,
+    },
   });
 
   const convertDate = dateString => {
@@ -384,11 +392,15 @@ function DeployPage() {
   }, [selectedValueFlowId]);
 
   useEffect(() => {
-    if (isEmpty(bucketListOptions)) {
-      dispatch(NamespacesActions.fetchRegistryData());
-    }
+    dispatch(
+      NamespacesActions.fetchRegistryData(
+        registrySelectedId ||
+          defaultRegistryValue ||
+          registryDropdownOptions?.[0]?.value
+      )
+    );
     dispatch(SettingsActions.setSettingsData({}));
-  }, [dispatch]);
+  }, [dispatch, registrySelectedId]);
 
   const hasRunOnce = useRef(false);
   useEffect(() => {
@@ -437,6 +449,11 @@ function DeployPage() {
     } else {
       toast.error('Please select the version');
     }
+  };
+
+  const onRegistryChange = value => {
+    dispatch(NamespacesActions.setBucketListDropDownData([]));
+    dispatch(NamespacesActions.setSelectedRegistryOnDeploy(value?.value));
   };
 
   const onBucketChange = value => {
@@ -511,16 +528,25 @@ function DeployPage() {
           <ScrollSetGrey className="scroll-set-grey pe-1">
             <RowConfig>
               <div className="col-6 p-3">
-                <StyledInputField
-                  name="registry"
-                  type="text"
-                  label="Registry"
-                  value={registryData?.name || ''}
-                  icon={<QRIcons />}
-                  placeholder="Registry Name"
-                  disabled
-                  className="mb-0"
-                />
+                <div>
+                  <BucketDiv className="justify-content-between align-items-center">
+                    <SelectField
+                      id="process-group-registry"
+                      label="Registry"
+                      name="registry"
+                      icon={<QRIcons />}
+                      options={registryDropdownOptions || []}
+                      errors={errors}
+                      control={control}
+                      placeholder="Select Registry"
+                      onChange={onRegistryChange}
+                      defaultValue={
+                        defaultRegistryLabel ||
+                        registryDropdownOptions?.[0]?.label
+                      }
+                    />
+                  </BucketDiv>
+                </div>
               </div>
               <div className="col-6 p-3">
                 <div>

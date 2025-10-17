@@ -1,58 +1,65 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export const FlowValidationIcon = () => {
-  return (
-    <div>
-      <svg
-        width="30"
-        height="31"
-        viewBox="0 0 30 31"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M29.3308 15.5C29.3308 23.5363 22.8635 30.0455 14.8927 30.0455C6.92178 30.0455 0.454545 23.5363 0.454545 15.5C0.454545 7.46368 6.92178 0.954545 14.8927 0.954545C22.8635 0.954545 29.3308 7.46368 29.3308 15.5Z"
-          fill="white"
-          stroke="#DDE4F0"
-          strokeWidth="0.909091"
-        />
-        <path
-          d="M19.667 18.1667V11.8333C19.667 11.1 19.067 10.5 18.3337 10.5H14.667"
-          stroke="#444445"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M16.333 8.83301L14.333 10.4997L16.333 12.1663"
-          stroke="#444445"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M19.667 22.167C20.7716 22.167 21.667 21.2716 21.667 20.167C21.667 19.0624 20.7716 18.167 19.667 18.167C18.5624 18.167 17.667 19.0624 17.667 20.167C17.667 21.2716 18.5624 22.167 19.667 22.167Z"
-          stroke="#444445"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M10.333 12.833V19.1663C10.333 19.8997 10.933 20.4997 11.6663 20.4997H15.333"
-          stroke="#444445"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M13.667 22.1663L15.667 20.4997L13.667 18.833"
-          stroke="#444445"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M10.333 12.833C11.4376 12.833 12.333 11.9376 12.333 10.833C12.333 9.72844 11.4376 8.83301 10.333 8.83301C9.22844 8.83301 8.33301 9.72844 8.33301 10.833C8.33301 11.9376 9.22844 12.833 10.333 12.833Z"
-          stroke="#444445"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </div>
-  );
+export const FlowValidationIcon = ({
+  width = 20,
+  height = 20,
+  color = '#444445',
+}) => (
+  <svg
+    width={width}
+    height={height}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M16.6667 11.6666C17.5871 11.6666 18.3333 10.9204 18.3333 9.99992C18.3333 9.07944 17.5871 8.33325 16.6667 8.33325C15.7462 8.33325 15 9.07944 15 9.99992C15 10.9204 15.7462 11.6666 16.6667 11.6666Z"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16.6667 5.00008C17.5871 5.00008 18.3333 4.25389 18.3333 3.33341C18.3333 2.41294 17.5871 1.66675 16.6667 1.66675C15.7462 1.66675 15 2.41294 15 3.33341C15 4.25389 15.7462 5.00008 16.6667 5.00008Z"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16.6667 18.3333C17.5871 18.3333 18.3333 17.5871 18.3333 16.6667C18.3333 15.7462 17.5871 15 16.6667 15C15.7462 15 15 15.7462 15 16.6667C15 17.5871 15.7462 18.3333 16.6667 18.3333Z"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.33268 11.6666C4.25316 11.6666 4.99935 10.9204 4.99935 9.99992C4.99935 9.07944 4.25316 8.33325 3.33268 8.33325C2.41221 8.33325 1.66602 9.07944 1.66602 9.99992C1.66602 10.9204 2.41221 11.6666 3.33268 11.6666Z"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5 10H15"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14.9993 3.33325H11.666C9.99935 3.33325 9.16602 4.16659 9.16602 5.83325V14.1666C9.16602 15.8333 9.99935 16.6666 11.666 16.6666H14.9993"
+      stroke={color}
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+FlowValidationIcon.propTypes = {
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  color: PropTypes.string,
 };

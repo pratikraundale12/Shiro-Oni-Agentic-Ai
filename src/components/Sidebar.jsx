@@ -350,8 +350,19 @@ export const Sidebar = ({
       <button
         className="btn btn-toggle d-none d-lg-block"
         onClick={toggleCollapse}
+        data-tooltip-id={`tooltip-open-close-sidebar`}
       >
         {collapsed ? <CollapseSidebarIconRight /> : <CollapseSidebarIconLeft />}
+        <ReactTooltip
+          id={`tooltip-open-close-sidebar`}
+          place="left"
+          content={collapsed ? 'Open sidebar' : 'Close sidebar'}
+          style={{
+            width: '120px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+          }}
+        />
       </button>
       {getImage()}
       <List className="sidebar-navigation">

@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { InvalidProcessorIcon, TodoIcon } from '../../assets';
+import {
+  ControllerServicesIcon,
+  InvalidProcessorIcon,
+  ParameterContextIcon,
+  ScheduleDetailsIcon,
+  TodoIcon,
+  VariablesIcon,
+} from '../../assets';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -100,8 +107,39 @@ const TabContent = styled.div`
   padding: 0px 0.5rem;
   border-radius: 0.25rem;
 `;
+
+const IconContentV2 = styled.div`
+  display: inline;
+  margin-right: 6px;
+
+  svg path {
+    transition: stroke 0.3s;
+  }
+
+  ${Tab}:hover & svg path {
+    stroke: rgba(255, 122, 0, 1);
+  }
+`;
+
+const TabLabelWithIcon = styled.div`
+  position: relative;
+  display: inline-block;
+  padding-right: 16px; /* give space for the icon */
+`;
+
+const TopRightIcon = styled.div`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+`;
+
 const ConfigDetailsPage = () => {
   const dispatch = useDispatch();
+
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+
   const breadcrumbDataOnDeploy = [
     {
       label: KDFM.NIFI_FLOW,
@@ -175,8 +213,6 @@ const ConfigDetailsPage = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    dispatch(NamespacesActions.setSelectedNamespace({}));
-    history.push('/process-group');
   };
   useEffect(() => {
     if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
@@ -373,6 +409,15 @@ const ConfigDetailsPage = () => {
               onClick={() => handleSetTab(KDFM.SCHEDULE_DETAILS)}
               className="nav-item"
             >
+              <IconContentV2 className="nav-item">
+                <ScheduleDetailsIcon
+                  color={
+                    activeTab === `${KDFM.SCHEDULE_DETAILS}`
+                      ? '#FF7A00'
+                      : '#444445'
+                  }
+                />
+              </IconContentV2>
               {KDFM.SCHEDULE_DETAILS}{' '}
             </Tab>
           )}
@@ -381,6 +426,15 @@ const ConfigDetailsPage = () => {
             onClick={() => handleSetTab(KDFM.PARAMETER_CONTEXT)}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <ParameterContextIcon
+                color={
+                  activeTab === `${KDFM.PARAMETER_CONTEXT}`
+                    ? '#FF7A00'
+                    : '#444445'
+                }
+              />
+            </IconContentV2>
             {KDFM.PARAMETER_CONTEXT}
           </Tab>
           <Tab
@@ -388,6 +442,13 @@ const ConfigDetailsPage = () => {
             onClick={() => handleSetTab(KDFM.VARIABLES)}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <VariablesIcon
+                color={
+                  activeTab === `${KDFM.VARIABLES}` ? '#FF7A00' : '#444445'
+                }
+              />
+            </IconContentV2>
             {KDFM.VARIABLES}{' '}
           </Tab>
           <Tab
@@ -395,7 +456,23 @@ const ConfigDetailsPage = () => {
             onClick={() => handleSetTab(KDFM.CONTROLLER_SERVICE)}
             className="nav-item"
           >
-            {KDFM.CONTROLLER_SERVICE}{' '}
+            <IconContentV2 className="nav-item">
+              <ControllerServicesIcon
+                color={
+                  activeTab === `${KDFM.CONTROLLER_SERVICE}`
+                    ? '#FF7A00'
+                    : '#444445'
+                }
+              />
+            </IconContentV2>
+            <TabLabelWithIcon>
+              {KDFM.CONTROLLER_SERVICE}
+              {registryDetailsData?.hasInvalidControllerService > 0 && (
+                <TopRightIcon>
+                  <InvalidProcessorIcon width={12} height={12} />
+                </TopRightIcon>
+              )}
+            </TabLabelWithIcon>
           </Tab>
         </TabWrapper>
         <TabContent>{renderContent()}</TabContent>

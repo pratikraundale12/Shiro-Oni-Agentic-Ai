@@ -622,11 +622,79 @@ export const Grid = ({
         setIsExportReportOpen={setIsExportReportOpen}
         setRemoveSearch={setRemoveSearch}
       />
-      {module === 'nodes' &&
-        !loading &&
-        !isEmpty(registryNodesData?.cluster?.name) && (
-          <>{getRegistryNodesData()}</>
-        )}
+      {module === 'nodes' && !loading && (
+        <>
+          <ClusterRegistryContainer className="row">
+            {!isEmpty(clusterSummary?.name) && (
+              <ClusterDetail
+                data={{
+                  name: clusterSummary?.name,
+                  nifi_url: clusterSummary?.nifi_url,
+                }}
+                displayFullWidth={clusterSummary?.registries?.length > 1}
+              />
+            )}
+            {!isEmpty(clusterSummary?.registries) && (
+              <RegistryDetail
+                data={clusterSummary?.registries}
+                displayFullWidth={clusterSummary?.registries?.length > 1}
+              />
+            )}
+          </ClusterRegistryContainer>
+          <ClusterRegistryContainer className="row">
+            <ClusterDetail
+              data={{
+                metrics_url: clusterSummary?.metrics_url,
+              }}
+              columns={METRICS_URL_COLUMN}
+            />
+            <ClusterDetail
+              data={{
+                logs_url: clusterSummary?.logs_url,
+              }}
+              columns={LOGS_URL_COLUMN}
+            />{' '}
+          </ClusterRegistryContainer>
+          <Modal
+            title="Event Log"
+            isOpen={eventModal}
+            onRequestClose={() =>
+              setState(prevState => ({ ...prevState, eventModal: false }))
+            }
+            size="md"
+            primaryButtonText={'Close'}
+            onSubmit={() =>
+              setState(prevState => ({ ...prevState, eventModal: false }))
+            }
+            contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
+          >
+            <FLexWrapper>
+              <InputField
+                label="Address"
+                disabled={true}
+                icon={<QRIcons />}
+                value={selectedNode?.address}
+              />
+              <InputField
+                label="Node ID"
+                disabled={true}
+                icon={<QRIcons />}
+                value={selectedNode?.nodeId}
+              />
+            </FLexWrapper>
+            <Table
+              data={
+                selectedNode?.events?.slice(0, 10).map(item => ({
+                  address: selectedNode?.address,
+                  nodeId: selectedNode?.nodeId,
+                  ...item,
+                })) || []
+              }
+              columns={EVENTCOLUMNS}
+            />
+          </Modal>
+        </>
+      )}
       <div className="mb-2 ps-1">
         <Breadcrumb module={module} setRemoveSearch={setRemoveSearch} />
       </div>

@@ -747,6 +747,10 @@ export const ListClusters = () => {
     };
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(GridActions.fetchGridSuccess({ module: 'nodes', data: {} }));
+  }, [dispatch]);
+
   return (
     <>
       {' '}

@@ -15,7 +15,13 @@ import {
   SmallSearchIcon,
   TriangleExclamationMarkIcon,
 } from '../../assets';
-import { FullPageLoader, Spinner, Table, TextRender } from '../../components';
+import {
+  FullPageLoader,
+  IconButton,
+  Spinner,
+  Table,
+  TextRender,
+} from '../../components';
 import { ModalWithIcon, FieldErrorMessage } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -371,8 +377,7 @@ export const ListControllerService = () => {
           {(!isEmpty(item?.referencingComponents?.controllerService) ||
             !isEmpty(item?.referencingComponents?.processors)) && (
             <>
-              <button
-                className="border-0 bg-white"
+              <IconButton
                 onClick={event => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
@@ -382,7 +387,7 @@ export const ListControllerService = () => {
                 aria-label="Referencing"
               >
                 <RefrenceIcon />
-              </button>
+              </IconButton>
               <ReactTooltip
                 id={`Referencing-${item?.id}`}
                 place="left"
@@ -409,11 +414,10 @@ export const ListControllerService = () => {
           item?.state === 'DISABLING' ||
           (item?.state === 'DISABLED' && item?.validationStatus === 'INVALID');
         return (
-          <div className="d-flex justify-content-center align-items-center">
+          <div className="d-flex justify-content-center align-items-center gap-1">
             {controllerPermissions.includes('edit_controller_services') && (
               <>
-                <button
-                  className="border-0 bg-white"
+                <IconButton
                   onClick={event => {
                     handleSettingClick(item);
                     event.currentTarget.blur();
@@ -442,13 +446,12 @@ export const ListControllerService = () => {
                   }}
                 >
                   <SettingSmallIcon />
-                </button>
+                </IconButton>
               </>
             )}
             {
               <>
-                <button
-                  className="border-0 bg-white ms-1"
+                <IconButton
                   onClick={event => {
                     handleEnableClick(item);
                     event.currentTarget.blur();
@@ -468,11 +471,11 @@ export const ListControllerService = () => {
                   }}
                 >
                   {item?.state !== 'DISABLED' ? (
-                    <FlashCutIcon />
+                    <FlashCutIcon height={20} width={20} />
                   ) : (
                     <FlashIcon />
                   )}
-                </button>
+                </IconButton>
               </>
             }
             {item?.state != 'ENABLED' &&
@@ -480,8 +483,7 @@ export const ListControllerService = () => {
               item?.state != 'DISABLING' &&
               controllerPermissions.includes('delete_controller_services') && (
                 <>
-                  <button
-                    className="border-0 bg-white ms-1"
+                  <IconButton
                     onClick={event => {
                       handleDeleteClick(item);
                       event.currentTarget.blur();
@@ -496,13 +498,13 @@ export const ListControllerService = () => {
                     }}
                   >
                     <DeleteSmallIcon color="black" height="28" />
-                  </button>
+                  </IconButton>
                 </>
               )}
             {(item?.state === 'ENABLING' || item?.state === 'DISABLING') && (
               <>
-                <button
-                  className={`border-0 bg-white ms-1 ${refreshingRowId === item?.id ? 'mt-2' : ''}`}
+                <IconButton
+                  className={`ms-1 ${refreshingRowId === item?.id ? 'mt-2' : ''}`}
                   onClick={event => {
                     handleRefreshClick(item);
                     event.currentTarget.blur();
@@ -515,7 +517,7 @@ export const ListControllerService = () => {
                   ) : (
                     <RefreshIcon color="black" height="28" />
                   )}
-                </button>
+                </IconButton>
                 <ReactTooltip
                   id={'Refresh'}
                   place="left"
@@ -690,7 +692,7 @@ export const ListControllerService = () => {
           setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
           setUpdatedData={setUpdatedData}
           updatedData={updatedData}
-          isFromControllerServiceTab={false}
+          isFromControllerServieTab={false}
           setReferenceListPropertyTableData={setReferenceListPropertyTableData}
         />
         <PropertyDropdownModal

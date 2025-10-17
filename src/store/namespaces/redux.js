@@ -268,6 +268,9 @@ export const NamespacesActions = {
   fetchServiceDefinitionFailure: createAction(
     `${prefix}fetchServiceDefinitionFailure`
   ),
+  setSelectedRegistryOnDeploy: createAction(
+    `${prefix}setSelectedRegistryOnDeploy`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -397,6 +400,7 @@ export const NAMESPACES_INITIAL_STATE = {
   serviceDefinition: null,
   serviceDefinitionLoading: false,
   serviceDefinitionError: null,
+  selectedRegistryOnDeploy: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -537,6 +541,9 @@ export const NamespacesSelectors = {
   getServiceDefinitionLoading: state =>
     state.namespaces.serviceDefinitionLoading,
   getServiceDefinitionError: state => state.namespaces.serviceDefinitionError,
+  getNamespacesAllData: state => state.namespaces.clusterNamespaces,
+  getSelectedRegistryOnDeploy: state =>
+    state.namespaces.selectedRegistryOnDeploy,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1270,6 +1277,13 @@ const fetchServiceDefinitionFailure = (state, { payload }) => {
   };
 };
 
+const setSelectedRegistryOnDeploy = (state, { payload }) => {
+  return {
+    ...state,
+    selectedRegistryOnDeploy: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1566,6 +1580,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.fetchServiceDefinitionSuccess,
         fetchServiceDefinitionSuccess
+      )
+      .addCase(
+        NamespacesActions.setSelectedRegistryOnDeploy,
+        setSelectedRegistryOnDeploy
       )
       .addCase(
         NamespacesActions.fetchServiceDefinitionFailure,

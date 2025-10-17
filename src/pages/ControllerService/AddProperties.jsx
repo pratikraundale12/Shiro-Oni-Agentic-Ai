@@ -26,7 +26,7 @@ const AddProperties = ({
   setIsAddpropertiesModalOpen,
   setUpdatedData,
   updatedData,
-  isFromControllerServiceTab = false,
+  isFromControllerServieTab = false,
   setReferenceListPropertyTableData,
 }) => {
   const { register, handleSubmit, control, reset, setValue, watch } = useForm();
@@ -79,7 +79,7 @@ const AddProperties = ({
             : item
         )
       );
-      if (!isFromControllerServiceTab) {
+      if (!isFromControllerServieTab) {
         setReferenceListPropertyTableData(prevData =>
           prevData.map(item =>
             item.name === selectedPropertyToEdit.name

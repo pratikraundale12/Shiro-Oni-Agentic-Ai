@@ -29,7 +29,6 @@ import {
   RefreshIcon,
   ScheduleDeploymentIcon,
   SmallSearchIcon,
-  TodoIcon,
 } from '../../assets';
 import {
   ACCESS_OPTIONS,
@@ -561,7 +560,7 @@ export const GridActions = ({
   };
 
   const handleChange = value => {
-     if (!value) {
+    if (!value) {
       dispatch(SchedularActions.setScheduleSelectRange([]));
       dispatch(
         GridSagsActions.fetchGrid({
@@ -791,9 +790,6 @@ export const GridActions = ({
       <Flex className="flex-wrap gap-2">
         <FullPageLoader loading={loading || loadingNamespaces} />
         <Flex>
-          <ImageContainer>
-            <TodoIcon width={22} height={24} />
-          </ImageContainer>
           <Title>
             <span>{title}</span>
             {module === 'namespaces' && Boolean(gridCount) && (
@@ -1184,7 +1180,7 @@ export const GridActions = ({
                   content={
                     selectedCluster?.value && !isEmpty(selectedCluster?.value)
                       ? 'Refresh'
-                      : 'Login to Cluster'
+                      : 'Login to the cluster'
                   }
                   style={{
                     width: 'auto',

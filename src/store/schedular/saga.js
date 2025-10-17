@@ -121,7 +121,7 @@ export function* editScheduleByRegistry(api, { payload }) {
     // yield put(SchedularActions.setScheduleSelectRange([]));
     toast.success(response?.data?.message);
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 
@@ -159,7 +159,7 @@ export function* rejectScheduleDeployment(api, { payload }) {
       })
     );
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 
@@ -173,7 +173,7 @@ export function* fetchDiffScheduleData(api, { payload }) {
   if (response.ok) {
     yield put(SchedularActions.setDiffAllData(response?.data));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* fetchGroupUserData(api, { payload }) {
@@ -200,7 +200,7 @@ export function* fetchScheduleDeploymentDetails(api, { payload }) {
   if (response.ok) {
     yield put(SchedularActions.setScheduleDeploymentDetails(response?.data));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 

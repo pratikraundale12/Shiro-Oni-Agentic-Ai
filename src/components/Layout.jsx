@@ -132,7 +132,8 @@ const Content = styled.div`
   min-height: 65vh;
   background-color: ${props => props.theme.colors.lightGrey};
   border: 1px solid ${props => props.theme.colors.border};
-  border-radius: 0 0 30px 30px;
+  border-radius: ${props =>
+    props.isLoginPage ? '0 0 30px 30px' : '30px 30px 30px 30px'};
   padding: 25px 32px 32px 32px;
   @media (max-width: 767.98px) {
     padding: 1rem;
@@ -152,6 +153,18 @@ const RedirectionSection = styled.div`
 `;
 
 const RedirectionText = styled.button`
+  border: none;
+  background-color: transparent;
+  font-family: Red Hat Display;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21.17px;
+  text-align: left;
+  color: ${props => (props.active ? '#FFFFFF' : '#ff7a00')};
+  cursor: pointer;
+  margin-left: 5px;
+`;
+const RedirectionTextLogin = styled.button`
   border: none;
   background-color: transparent;
   font-family: Red Hat Display;
@@ -205,7 +218,7 @@ const HeadingRightText = styled.h1`
   font-weight: 700;
   line-height: 1.5;
   text-align: center;
-  color: #333;
+  color: #444445;
   margin-bottom: 40px;
   margin-top: 0px;
   white-space: pre-line;
@@ -239,7 +252,7 @@ const LabelSelect = styled.div`
   font-size: 14px;
   font-weight: 600;
   line-height: 16px;
-  color: ${props => props.theme.colors.darker};
+  color: #757575;
 `;
 
 const RightWrapper = styled.div`
@@ -585,15 +598,15 @@ export const Layout = ({ children }) => {
                     active={isAdminLogin}
                   >
                     <RedirectionSection>
-                      <RedirectionText active={isAdminLogin}>
+                      <RedirectionTextLogin active={isAdminLogin}>
                         Administrator
-                      </RedirectionText>
+                      </RedirectionTextLogin>
                     </RedirectionSection>
                   </StyledLoginBox>
                 </LoginBtnContainer>
               )}
             </UserBtnContainer>
-            <Content>
+            <Content isLoginPage={isUserLogin || isAdminLogin}>
               {children}
               {isUserLogin &&
                 settingLogo?.selected_sso === 'azure' &&

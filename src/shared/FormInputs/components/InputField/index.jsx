@@ -88,7 +88,7 @@ const Container = styled.div`
 
   .icon {
     position: absolute;
-    top: 14px;
+    top: 17px;
     right: 10px;
     color: ${props => props.theme.colors.primary};
   }
