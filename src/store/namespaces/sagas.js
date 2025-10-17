@@ -8,6 +8,7 @@ import { GridActions, GridSelectors } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
+import { showErrorToast } from '../../utils/toastControl';
 
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -36,7 +37,10 @@ export function* fetchNamespaces(api) {
   });
 
   if (!response.ok) {
-    toast.error(response?.data?.message);
+    const message = response?.data?.message;
+    if(message){
+      showErrorToast(message);
+    }
   }
 }
 
@@ -788,7 +792,10 @@ export function* getControllerServiceList(api, action) {
   } else if (!response.ok) {
     yield put(NamespacesActions.getRootControllerServiceNamespace([]));
     yield put(NamespacesActions.setCsPermissions({}));
-    toast.error(response.data.message);
+    const message = response.data.message;
+    if(message){
+      showErrorToast(message);
+    }
   }
 }
 

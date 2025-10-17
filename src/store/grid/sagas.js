@@ -8,6 +8,7 @@ import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { SchedularSelectors } from '../schedular/redux';
 import { GridActions } from './redux';
 import { ErrorsSelectors } from '../helpers/error_redux';
+import { showErrorToast } from '../../utils/toastControl'
 
 export function* fetchGrid(
   api,
@@ -171,12 +172,10 @@ export function* fetchGrid(
         error?.message.toLowerCase().includes('user session expired.')));
 
   const handleError = response => {
-    if (module === 'scheduler' || module === 'clusters') {
-      !isUnauthorized &&
-        toast.error(response?.message || response?.data?.message);
-      return;
+    const message = response?.message || response?.data?.message;
+    if(message){
+      showErrorToast(message);
     }
-    toast.error(response?.message || response?.data?.message);
   };
 
   function* handleResponse(response, module) {
