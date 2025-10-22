@@ -181,9 +181,16 @@ export const Add = () => {
   const ClusterSchema = yup.object().shape({
     clusterName: yup
       .string()
-      .min(3, 'Cluster Name must be at least 3 characters long')
-      .max(50, 'Cluster Name must be at most 50 characters long')
-      .required('Cluster Name is required')
+      .required('Cluster name is required')
+      .test(
+        'no-only-spaces',
+        'Cluster name cannot be only spaces and must be 3-50 characters long',
+        function (value) {
+          if (typeof value !== 'string') return false;
+          const trimmed = value.trim().replace(/\s+/g, ' ');
+          return trimmed.length >= 3 && trimmed.length <= 50;
+        }
+      )
       .test(
         'unique-cluster-name',
         'Cluster name already exists',
@@ -367,7 +374,7 @@ export const Add = () => {
 
     try {
       const payload = {
-        name: clusterData?.clusterName,
+        name: (clusterData?.clusterName || '').trim(),
         nifi_url: clusterData?.nifiUrl,
         logs_url: isEmpty(clusterData?.logs_url) ? null : clusterData?.logs_url,
         metrics_url: isEmpty(clusterData?.metrics_url)
