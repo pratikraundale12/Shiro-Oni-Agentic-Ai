@@ -180,6 +180,8 @@ export const ClustersActions = {
   deleteClusterKube: createAction(`${prefix}deleteClusterKube`),
   setTourIndex: createAction(`${prefix}setTourIndex`),
   setTourStart: createAction(`${prefix}setTourStart`),
+  deleteClusterNarFile: createAction(`${prefix}deleteClusterNarFile`),
+  deleteClusterDriverFile: createAction(`${prefix}deleteClusterDriverFile`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -707,7 +709,6 @@ const setTourStart = (state, { payload }) => {
     tourStart: payload,
   };
 };
-
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
