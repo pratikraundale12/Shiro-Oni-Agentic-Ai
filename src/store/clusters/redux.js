@@ -1,4 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 
 const prefix = '@@KDFM-CLUSTERS/';
 
@@ -349,6 +350,9 @@ const fetchClustersSuccess = (state, { payload }) => {
   };
 };
 const fetchClusterNodesSuccess = (state, { payload }) => {
+  if (payload?.status === 201) {
+    toast.info(payload?.message);
+  }
   return {
     ...state,
     nodes: payload,
