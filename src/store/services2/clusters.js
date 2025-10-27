@@ -164,6 +164,12 @@ export const clustersAPI = api => {
       `clusters/delete-kube-cluster/${clusterIdToDelete}/${deleteType}`,
       payload
     );
+  const deleteClusterNarFile = ({ id, narId }) =>
+    api.delete(`/clusters/${id}/nars/${narId}`);
+
+  const deleteClusterDriverFile = ({ id, driverId }) =>
+    api.delete(`/clusters/${id}/drivers/${driverId}`);
+
   return {
     fetchClusters,
     fetchClusterList,
@@ -214,5 +220,7 @@ export const clustersAPI = api => {
     deleteMasterNodeConfig,
     fetchKubeClusterDataToUpgrade,
     deleteClusterKube,
+    deleteClusterNarFile,
+    deleteClusterDriverFile,
   };
 };

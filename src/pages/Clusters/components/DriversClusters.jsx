@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button } from '../../../shared';
+import { Button, ModalWithIcon } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { isEmpty } from 'lodash';
@@ -11,7 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
-import { DeleteSmallIcon } from '../../../assets';
+import { DeleteDustbinIcon, DeleteSmallIcon } from '../../../assets';
 import { LoadingSelectors } from '../../../store';
 
 const Container = styled.div``;
@@ -48,6 +48,8 @@ const FlexWrapper = styled.div`
 export const DriversCluster = ({ data }) => {
   const dispatch = useDispatch();
   const [fileInputKey, setFileInputKey] = useState(0);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedDriver, setSelectedDriver] = useState({});
   const schema = yup.object().shape({
     driver: yup.mixed().required('File is required'),
   });
@@ -57,6 +59,13 @@ export const DriversCluster = ({ data }) => {
   const loading2 = useSelector(state =>
     LoadingSelectors.getLoading(state, 'restartCluster')
   );
+  const loading3 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'deleteClusterDriverFile')
+  );
+  const loading4 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchDriversList')
+  );
+
   const driverList = useSelector(ClustersSelectors.getDriversList);
 
   const {
@@ -67,7 +76,21 @@ export const DriversCluster = ({ data }) => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+  const handleDeleteClick = item => {
+    setSelectedDriver(item);
+    setIsDeleteModalOpen(true);
+  };
 
+  const handleDeleteConfirm = () => {
+    dispatch(
+      ClustersActions.deleteClusterDriverFile({
+        id: selectedDriver?.clusterId,
+        driverId: selectedDriver?.id,
+      })
+    );
+    setSelectedDriver({});
+    setIsDeleteModalOpen(false);
+  };
   const COLUMNS = [
     {
       label: 'File Name',
@@ -87,8 +110,12 @@ export const DriversCluster = ({ data }) => {
       renderCell: item => (
         <>
           {
-            <span data-tooltip-id={`certificate-${item?.id}-detail`}>
-              {false && <DeleteSmallIcon color="red" />}
+            <span
+              data-tooltip-id={`delete-driver`}
+              onClick={() => handleDeleteClick(item)}
+              style={{ cursor: 'pointer' }}
+            >
+              {<DeleteSmallIcon color="red" />}
             </span>
           }{' '}
         </>
@@ -121,7 +148,7 @@ export const DriversCluster = ({ data }) => {
   };
   return (
     <>
-      <FullPageLoader loading={loading || loading2} />
+      <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
 
       <Container>
         <div className="row mb-3">
@@ -165,6 +192,16 @@ export const DriversCluster = ({ data }) => {
         <div className="mt-2">
           <Table data={driverList || []} columns={COLUMNS} />
         </div>
+        <ModalWithIcon
+          title={`Delete Driver`}
+          primaryButtonText={'Delete'}
+          secondaryButtonText="Cancel"
+          icon={<DeleteDustbinIcon />}
+          isOpen={isDeleteModalOpen}
+          onRequestClose={() => setIsDeleteModalOpen(false)}
+          primaryText={`Are you sure you want to delete?`}
+          onSubmit={handleDeleteConfirm}
+        />
       </Container>
     </>
   );
