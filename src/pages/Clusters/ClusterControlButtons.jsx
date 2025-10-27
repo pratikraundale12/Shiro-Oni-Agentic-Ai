@@ -74,12 +74,16 @@ const ClusterControlButtons = () => {
   const [stopInitiated, setStopInitiated] = useState(false);
   const [restartInitiated, setRestartInitiated] = useState(false);
   const [action, setAction] = useState(null);
+  const [runRestartSTO, setRunRestartSTO] = useState(true);
+  const [runStartSTO, setRunStartSTO] = useState(true);
+  const [runStopSTO, setRunStopSTO] = useState(true);
 
   const runningStatusData = useSelector(ClustersSelectors.getRunningStatusData);
 
   const handleStartClick = () => {
     setAction('start');
     setStartInitiated(true);
+    setRunStartSTO(true);
     dispatch(
       ClustersActions.changeClusterActionState({
         clusterId,
@@ -91,6 +95,7 @@ const ClusterControlButtons = () => {
   const handleStopClick = () => {
     setAction('stop');
     setStopInitiated(true);
+    setRunStopSTO(true);
     dispatch(
       ClustersActions.changeClusterActionState({
         clusterId,
@@ -102,6 +107,7 @@ const ClusterControlButtons = () => {
   const handleRestartClick = () => {
     setAction('restart');
     setRestartInitiated(true);
+    setRunRestartSTO(true);
     dispatch(
       ClustersActions.changeClusterActionState({
         clusterId,
@@ -132,10 +138,13 @@ const ClusterControlButtons = () => {
       setStartInitiated(true);
     } else {
       if (action === 'start') {
-        setTimeout(() => {
-          setStartInitiated(false);
-          setAction(null);
-        }, 25000);
+        setRunStartSTO(false);
+        if (runStartSTO) {
+          setTimeout(() => {
+            setStartInitiated(false);
+            setAction(null);
+          }, 55000);
+        }
       } else {
         setStartInitiated(false);
       }
@@ -145,10 +154,13 @@ const ClusterControlButtons = () => {
       setStopInitiated(true);
     } else {
       if (action === 'stop') {
-        setTimeout(() => {
-          setStopInitiated(false);
-          setAction(null);
-        }, 10000);
+        setRunStopSTO(false);
+        if (runStopSTO) {
+          setTimeout(() => {
+            setStopInitiated(false);
+            setAction(null);
+          }, 55000);
+        }
       } else {
         setStopInitiated(false);
       }
@@ -157,10 +169,13 @@ const ClusterControlButtons = () => {
       setRestartInitiated(true);
     } else {
       if (action === 'restart') {
-        setTimeout(() => {
-          setRestartInitiated(false);
-          setAction(null);
-        }, 25000);
+        setRunRestartSTO(false);
+        if (runRestartSTO) {
+          setTimeout(() => {
+            setRestartInitiated(false);
+            setAction(null);
+          }, 55000);
+        }
       } else {
         setRestartInitiated(false);
       }
