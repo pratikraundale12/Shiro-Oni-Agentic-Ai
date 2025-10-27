@@ -613,7 +613,7 @@ export function* testMultipleNodes(api, { payload }) {
     yield put(ClustersActions.setAddHostBtnDisable(false));
     yield put(ClustersActions.setMultiNodesTestResults(response?.data));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* fetchConfigFieldsForKubernetes(api) {
