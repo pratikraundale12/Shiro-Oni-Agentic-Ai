@@ -667,6 +667,11 @@ export const Add = () => {
     activeTab,
     testCertificateFile,
     testCertificatePassword,
+    newRegistry,
+    isEditDetails,
+    data?.id,
+    clusterData,
+    registryData,
   ]);
 
   const selectedOptions =
@@ -678,14 +683,6 @@ export const Add = () => {
         label: item.label,
         value: item.value,
       }));
-
-  // Update the useEffect where you check for data
-    newRegistry,
-    isEditDetails,
-    data?.id,
-    clusterData,
-    registryData,
-  ]);
 
   useEffect(() => {
     if ((data?.registry_ids && registries && selectedOptions) || data?.created_by_ansible) {
