@@ -428,8 +428,11 @@ export const GridActions = ({
       setCanWrite(gridPermissions?.canWrite);
     }
   }, [gridPermissions]);
-
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
   const handleClick = () => {
+    if (enableTour) {
+      dispatch(ClustersActions.setTourStart(false));
+    }
     history.push('/process-group/DeployPage');
     dispatch(NamespacesActions.setdeployRegistryFlow(true));
   };

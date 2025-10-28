@@ -22,6 +22,7 @@ import Breadcrumb from '../../shared/Breadcrumb';
 import {
   AuthenticationSelectors,
   ClustersActions,
+  ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
@@ -456,15 +457,16 @@ function DeployPage() {
     setSelectedVersion('');
   };
   const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
-
+  const stepIndex = useSelector(ClustersSelectors.getTourIndex);
   if (enableTour) {
-    setTimeout(() => {
-      dispatch(ClustersActions.setTourStart(false));
+    if (stepIndex != 8) {
       setTimeout(() => {
-        dispatch(ClustersActions.setTourIndex(8));
-        dispatch(ClustersActions.setTourStart(true));
-      }, 50);
-    }, 300);
+        setTimeout(() => {
+          dispatch(ClustersActions.setTourIndex(8));
+          dispatch(ClustersActions.setTourStart(true));
+        }, 50);
+      }, 300);
+    }
   }
 
   const loading = useSelector(state =>

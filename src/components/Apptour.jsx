@@ -156,17 +156,125 @@ export const Tour = () => {
     },
     {
       target: 'body',
+      placement: 'center',
+      title: 'Select the Details ',
       content: (
-        <div>
+        <div style={{ textAlign: 'justify' }}>
           <p>
-            Choose the Bucket and Flow Name from the respective dropdowns and
-            continue to deploy the flow.
+            Choose the Bucket and Flow Name from the respective dropdowns,
+            select the flow version, and click Continue.
+          </p>
+          <p>
+            Click <b>Next</b> to continue the tour.
+          </p>
+        </div>
+      ),
+      disableBeacon: true,
+      spotlightClicks: false,
+      hideFooter: false,
+      disableOverlayClose: true,
+      styles: {
+        options: {
+          zIndex: 10000,
+        },
+      },
+    },
+    {
+      target: 'body',
+      placement: 'center',
+      title: 'Flow Details and Position',
+      content: (
+        <div style={{ textAlign: 'justify' }}>
+          <p>
+            Verify all flow details, including the flow name, version, canvas
+            position, NiFi URL, and Registry URL.
+          </p>
+          <p>
+            The flow appears on the NiFi canvas, highlighted in orange. Drag and
+            drop it to where you want it on the canvas.
+          </p>
+          <p>
+            Click <b>Next</b> to continue the tour.
+          </p>
+        </div>
+      ),
+      disableBeacon: true,
+      spotlightClicks: false,
+      hideFooter: false,
+      disableOverlayClose: true,
+      styles: {
+        options: {
+          zIndex: 10000,
+        },
+      },
+    },
+    {
+      target: 'body',
+      placement: 'center',
+      title: 'Flow Configuration Details',
+      content: (
+        <div style={{ textAlign: 'justify' }}>
+          <p>
+            View all parameter contexts, variables, and controller services
+            linked to the flow and configure them to ensure proper flow
+            execution.
+          </p>
+          <p>
+            Click <b>Next</b> to continue the tour.
+          </p>
+        </div>
+      ),
+      disableBeacon: true,
+      spotlightClicks: false,
+      hideFooter: false,
+      disableOverlayClose: true,
+      styles: {
+        options: {
+          zIndex: 10000,
+        },
+      },
+    },
+    {
+      target: 'body',
+      placement: 'center',
+      title: 'Flow Validation ',
+      content: (
+        <div style={{ textAlign: 'justify' }}>
+          <p>
+            Select from the available validation rules to verify the flow for
+            any configuration issues or missing dependencies.
+          </p>
+          <p>
+            Click <b>Next</b> to continue the tour.
+          </p>
+        </div>
+      ),
+      disableBeacon: true,
+      spotlightClicks: false,
+      hideFooter: false,
+      disableOverlayClose: true,
+      styles: {
+        options: {
+          zIndex: 10000,
+        },
+      },
+    },
+    {
+      target: 'body',
+      content: (
+        <div style={{ textAlign: 'justify' }}>
+          <p>
+            Double-check the flow details, decide whether to start or keep the
+            flow stopped after deployment, and click Deploy to launch it.
+          </p>
+          <p>
+            <b>End the Tour</b>
           </p>
         </div>
       ),
       placement: 'center',
       disableBeacon: true,
-      title: 'Deploy Process Group',
+      title: 'Flow Details Summary ',
       locale: {
         last: 'End the Tour',
       },
@@ -268,6 +376,12 @@ export const Tour = () => {
       callback={data => {
         const { index, type, action, status, lifecycle } = data;
 
+        if (type === 'tour:status' && action === 'stop' && index === 12) {
+          dispatch(AuthenticationActions.setDfmTour(false));
+          dispatch(ClustersActions.setTourStart(false));
+          dispatch(ClustersActions.setTourIndex(0));
+        }
+
         if (action === 'close' || status === 'skipped') {
           dispatch(ClustersActions.setTourStart(false));
           dispatch(ClustersActions.setTourIndex(0));
@@ -295,19 +409,47 @@ export const Tour = () => {
         if (type === 'spotlight:click' && index === 6) {
           dispatch(ClustersActions.setTourIndex(stepIndex + 1));
         }
+        if (index === 8 && action === 'next') {
+          dispatch(ClustersActions.setTourStart(false));
+
+          return;
+        }
+        if (index === 9 && action === 'next') {
+          dispatch(ClustersActions.setTourStart(false));
+
+          return;
+        }
+        if (index === 10 && action === 'next') {
+          dispatch(ClustersActions.setTourStart(false));
+
+          return;
+        }
+        if (index === 11 && action === 'next') {
+          dispatch(ClustersActions.setTourStart(false));
+
+          return;
+        }
+        if (index === 12 && action === 'next') {
+          dispatch(ClustersActions.setTourStart(false));
+
+          return;
+        }
 
         if (
           type === 'step:after' &&
           index !== 2 &&
           index !== 3 &&
           index !== 4 &&
-          index !== 5
+          index !== 5 &&
+          stepIndex !== 2 &&
+          index !== 8
         ) {
           dispatch(ClustersActions.setTourIndex(stepIndex + 1));
         }
         if (type === 'step:after' && index === 2) {
           dispatch(ClustersActions.setTourIndex(3));
         }
+
         if (type === 'tour:end' && status === 'finished' && action === 'next') {
           dispatch(AuthenticationActions.setDfmTour(false));
           dispatch(ClustersActions.setTourStart(false));
