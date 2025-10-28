@@ -3,18 +3,13 @@ import React, { useEffect } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import styled from 'styled-components';
-<<<<<<< HEAD
-import { AuthenticationSelectors } from '../../../store';
-import { useSelector } from 'react-redux';
-import { isEmpty } from 'lodash';
-=======
 import {
   AuthenticationSelectors,
   ClustersActions,
   ClustersSelectors,
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
->>>>>>> 41b240637ca9e8b49fb5364ae592007bdd328ac2
+import { isEmpty } from 'lodash';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -102,25 +97,6 @@ const ClusterNavigationTab = ({
           />
         )}
       </>
-<<<<<<< HEAD
-      {data?.is_certificate_based_service_account === false && certificateOption === false &&
-        isSuperAdmin &&
-        data &&
-        location?.pathname === '/clusters/edit' && (
-          <NavButton
-            active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
-            onClick={() =>
-              Object.keys(data || {})?.length
-                ? setActiveTab(CLUSTER_MODULE_TABS.SERVICE_ACCOUNT)
-                : {}
-            }
-            disabled={isRegistryDetailDisable}
-            data-tooltip-id="navButtonTooltip"
-          >
-            {KDFM.SERVICE_ACCOUNT}
-          </NavButton>
-        )}
-=======
       {isSuperAdmin && data && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
@@ -237,7 +213,6 @@ const ClusterNavigationTab = ({
           eventOff="blur"
         />
       )}
->>>>>>> 41b240637ca9e8b49fb5364ae592007bdd328ac2
     </NavTabs>
   );
 };
