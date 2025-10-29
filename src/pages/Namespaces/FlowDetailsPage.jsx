@@ -199,13 +199,11 @@ const FlowDetailsPage = () => {
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  console.log(selectedNameSpace, 'selectedNameSpace');
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
-  console.log(registryData, 'registryData');
 
   const registryDropdownOptions = registryData.map(item => ({
     label: item?.name,
@@ -567,7 +565,6 @@ const FlowDetailsPage = () => {
       <FullPageLoader
         loading={loadingregistry || loadingVersion || loadingRevertChanges}
       />
-
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>

@@ -1872,6 +1872,63 @@ export function* fetchServiceDefinition(api, { payload }) {
   }
 }
 
+export function* fetchNamespacesDownload(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const params = {
+    clusterId: selectedCluster?.value || '',
+    namespaceId: selectedNamespace?.value || '',
+  };
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchNamespacesDownload',
+    loadingSection: 'fetchNamespacesDownload',
+    apiMethod: api.fetchNamespacesDownload,
+    apiParams: [{ ...params }],
+    successAction: NamespacesActions.fetchNamespacesDownloadSuccess,
+  });
+
+  if (!response.ok) {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* fetchNamespaceVersion(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const params = {
+    clusterId: selectedCluster?.value || '',
+    namespaceId: payload?.namespaceId || '',
+  };
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchNamespaceVersion',
+    loadingSection: 'fetchNamespaceVersion',
+    apiMethod: api.fetchNamespaceVersion,
+    apiParams: [{ ...params }],
+    successAction: NamespacesActions.fetchNamespaceVersionSuccess,
+  });
+
+  if (!response.ok) {
+    toast.error(response?.data?.message);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -2029,6 +2086,16 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.fetchServiceDefinition,
       fetchServiceDefinition,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchNamespacesDownload,
+      fetchNamespacesDownload,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchNamespaceVersion,
+      fetchNamespaceVersion,
       api
     ),
   ]);
