@@ -1,4 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 
 const prefix = '@@KDFM-CLUSTERS/';
 
@@ -185,6 +186,8 @@ export const ClustersActions = {
   deleteClusterKube: createAction(`${prefix}deleteClusterKube`),
   setTourIndex: createAction(`${prefix}setTourIndex`),
   setTourStart: createAction(`${prefix}setTourStart`),
+  deleteClusterNarFile: createAction(`${prefix}deleteClusterNarFile`),
+  deleteClusterDriverFile: createAction(`${prefix}deleteClusterDriverFile`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -363,6 +366,9 @@ const fetchClustersSuccess = (state, { payload }) => {
   };
 };
 const fetchClusterNodesSuccess = (state, { payload }) => {
+  if (payload?.status === 201) {
+    toast.info(payload?.message);
+  }
   return {
     ...state,
     nodes: payload,

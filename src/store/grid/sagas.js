@@ -8,6 +8,7 @@ import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { SchedularSelectors } from '../schedular/redux';
 import { GridActions } from './redux';
 import { ErrorsSelectors } from '../helpers/error_redux';
+import { ClustersActions } from '../clusters';
 
 export function* fetchGrid(
   api,
@@ -37,6 +38,9 @@ export function* fetchGrid(
     policiesRolesAccess: api.fetchPoliciesRolesAccess,
     scheduler: api.fetchSchedular,
     registry: api.fetchRegistry,
+  };
+  const successAction = {
+    nodes: ClustersActions.fetchClusterNodesSuccess,
   };
   let payload;
   if (module === 'clusters') {
@@ -100,6 +104,7 @@ export function* fetchGrid(
     ...(!refresh && { errorSection: 'fetchGrid', loadingSection: 'fetchGrid' }),
     apiMethod: API[module],
     apiParams: [{ params, queryParams, payload }],
+    successAction: successAction[module],
   });
   const handleForClusterModule = function* () {
     const provideClusterData = () => {

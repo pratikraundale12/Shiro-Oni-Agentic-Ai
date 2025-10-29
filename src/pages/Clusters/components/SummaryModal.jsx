@@ -237,6 +237,7 @@ export const SummaryModal = ({
     formdata.append('registry_ids', selectedRegistriesId);
     formdata.append('default_registry_id', default_registry_data?.value || default_registry_data || null);
 
+    formdata.append('registry_id', registryData.id);
 
     const id = clusterId;
     const response = await updateCluster(id, formdata);

@@ -45,6 +45,7 @@ const RegistryFormSection = ({
   registeryCertificateOption,
   setRegisteryCertificateOption,
 }) => {
+
   return (
     <>
       <RegistryFormInputs

@@ -613,7 +613,7 @@ export function* testMultipleNodes(api, { payload }) {
     yield put(ClustersActions.setAddHostBtnDisable(false));
     yield put(ClustersActions.setMultiNodesTestResults(response?.data));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* fetchConfigFieldsForKubernetes(api) {
@@ -793,7 +793,7 @@ export function* addNarFile(api, { payload }) {
     toast.success(response?.data?.message || 'Added Successfully');
     yield put(ClustersActions.fetchNarList(payload?.id));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 
@@ -890,6 +890,45 @@ export function* deleteClusterKube(api, { payload }) {
     toast.error(response?.message || response?.data?.message);
   }
 }
+
+export function* deleteClusterNarFile(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteClusterNarFile',
+    loadingSection: 'deleteClusterNarFile',
+    apiMethod: api.deleteClusterNarFile,
+    apiParams: [
+      {
+        id: payload?.id,
+        narId: payload?.narId,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.fetchNarList(payload?.id));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* deleteClusterDriverFile(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteClusterDriverFile',
+    loadingSection: 'deleteClusterDriverFile',
+    apiMethod: api.deleteClusterDriverFile,
+    apiParams: [
+      {
+        id: payload?.id,
+        driverId: payload?.driverId,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.fetchDriversList(payload?.id));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
 export function* clustersSagas(api) {
   yield all([
     takeLatest(
@@ -1056,5 +1095,11 @@ export function* clustersSagas(api) {
       api
     ),
     takeLatest(ClustersActions.deleteClusterKube, deleteClusterKube, api),
+    takeLatest(ClustersActions.deleteClusterNarFile, deleteClusterNarFile, api),
+    takeLatest(
+      ClustersActions.deleteClusterDriverFile,
+      deleteClusterDriverFile,
+      api
+    ),
   ]);
 }

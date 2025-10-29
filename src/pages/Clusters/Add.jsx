@@ -48,6 +48,7 @@ import { DriversCluster } from './components/DriversClusters';
 import { FlowGzTabSection } from './components/FlowGzSection';
 import RegistryMultiSelect from '../../shared/FormInputs/components/RegistryMultiSelectField';
 
+import { createRegistry } from '../../store/index1';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
@@ -504,7 +505,26 @@ export const Add = () => {
     }
   };
 
+  const handleAddRegistry = async data => {
+    const dataPayload = {
+      name: data.registryName,
+      is_registry_authenticated: data.is_registry_authenticated,
+      registry_url: data.registryUrl,
+    };
+
+    const reponse = await createRegistry(dataPayload);
+    if (reponse?.status === 201) {
+      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
+      setNewRegistry(false);
+      fetchRegistry();
+    }
+  };
+
   const onSubmit = data => {
+    if (!isEmpty(registries) && activeTab === CLUSTER_MODULE_TABS.REGISTRY) {
+      handleAddRegistry(data);
+      return;
+    }
     if (clusterId) {
       editClusterData();
       history.push('/clusters');
@@ -526,7 +546,7 @@ export const Add = () => {
         if (registryURLs?.data?.includes(new URL(data?.registryUrl)?.origin)) {
           setOpenSummary(true);
         } else {
-          toast.error('This registry does not  exist!');
+          handleAddRegistry(data);
         }
       }
     }
@@ -842,7 +862,11 @@ export const Add = () => {
         'nifi_url',
         registryData?.registryUrl || registryData.registry_url
       );
+      payload.append(
+        'is_registry_authenticated',
 
+        registryData?.is_registry_authenticated
+      );
       const response = await testRegistry(payload);
       if (response.status === 204) {
         setTestSuccess(true);

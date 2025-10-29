@@ -543,6 +543,7 @@ export const GridActions = ({
       return;
     }
     history.push('/process-group/DeployPage');
+    dispatch(NamespacesActions.setdeployRegistryFlow(true));
   };
   const loadingNamespaces = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchDashboard')

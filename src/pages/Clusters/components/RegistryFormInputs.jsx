@@ -38,6 +38,7 @@ const RegistryFormInputs = ({
         placeholder={KDFM.ENTER_REGISTRY_URL}
         errors={errors}
       />
+      {' '}
       <div className="mb-3 d-flex gap-2 align-items-center">
         <CheckboxField
           name="is_registry_authenticated"
