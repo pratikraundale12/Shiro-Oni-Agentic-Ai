@@ -26,6 +26,8 @@ import { Button, Modal, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
+  AuthenticationSelectors,
+  ClustersActions,
   ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
@@ -1087,7 +1089,18 @@ const Summary = () => {
     if (deployByRegistryFlow) return formDataRegistry?.selectedFlowName;
     return checkDestCluster?.name || formDataRegistry?.selectedFlowName;
   };
-
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  const stepIndex = useSelector(ClustersSelectors.getTourIndex);
+  if (enableTour) {
+    if (stepIndex != 12) {
+      setTimeout(() => {
+        setTimeout(() => {
+          dispatch(ClustersActions.setTourIndex(12));
+          dispatch(ClustersActions.setTourStart(true));
+        }, 50);
+      }, 300);
+    }
+  }
   const selectedFlowNameProvider = getSelectedFlowName();
   return (
     <>

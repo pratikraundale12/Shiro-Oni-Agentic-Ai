@@ -324,7 +324,7 @@ export const Sidebar = ({
       setTimeout(() => {
         dispatch(ClustersActions.setTourIndex(2));
         setClusterTabTour(false);
-      }, 1000);
+      }, 2500);
     }
   }, [gridData]);
   useEffect(() => {

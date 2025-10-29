@@ -12,6 +12,9 @@ import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
 import {
+  AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
@@ -240,7 +243,18 @@ const FlowValidationPage = () => {
   const selectedFlowName = flowListData?.flowsList?.filter(
     ele => ele?.flowId === versionSelected?.flowId
   );
-
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  const stepIndex = useSelector(ClustersSelectors.getTourIndex);
+  if (enableTour) {
+    if (stepIndex != 11) {
+      setTimeout(() => {
+        setTimeout(() => {
+          dispatch(ClustersActions.setTourIndex(11));
+          dispatch(ClustersActions.setTourStart(true));
+        }, 50);
+      }, 300);
+    }
+  }
   const handleValidateFlow = () => {
     dispatch(FlowValidationActions.validateRulesSuccess(null));
     dispatch(

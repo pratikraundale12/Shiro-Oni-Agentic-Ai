@@ -22,6 +22,9 @@ import { history } from '../../helpers/history';
 import { Button, InputField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
+  AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
@@ -425,7 +428,18 @@ const FlowDetailsPage = () => {
   const loadingVersion = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchVersionData')
   );
-
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  const stepIndex = useSelector(ClustersSelectors.getTourIndex);
+  if (enableTour) {
+    if (stepIndex != 9) {
+      setTimeout(() => {
+        setTimeout(() => {
+          dispatch(ClustersActions.setTourIndex(9));
+          dispatch(ClustersActions.setTourStart(true));
+        }, 50);
+      }, 300);
+    }
+  }
   const getIconForState = state => {
     switch (state) {
       case 'LOCALLY_MODIFIED_AND_STALE':
