@@ -261,32 +261,50 @@ export const SummaryModal = ({
   };
 
   const editClusterData = async () => {
-    const formdata = new FormData();
-    formdata.append('name', clusterData.clusterName);
-    formdata.append('nifi_url', clusterData.nifiUrl);
-    formdata.append('tag', tags);
-    formdata.append('notification_enable', notificationEnable);
-    formdata.append('approver_enable', approverEnable);
-    formdata.append('change_request_enable', changeRequestEnable);
-    formdata.append('has_custom_service_account', false);
-    formdata.append(
-      'start_stop_requires_approval',
-      approverEnableForStartAndStop
-    );
-    formdata.append('is_certificate_based_service_account', certificateOption);
+    // const formdata = new FormData();
+    // formdata.append('name', clusterData.clusterName);
+    // formdata.append('nifi_url', clusterData.nifiUrl);
+    // formdata.append('tag', tags);
+    // formdata.append('notification_enable', notificationEnable);
+    // formdata.append('approver_enable', approverEnable);
+    // formdata.append('change_request_enable', changeRequestEnable);
+    // formdata.append('has_custom_service_account', false);
+    // formdata.append(
+    //   'start_stop_requires_approval',
+    //   approverEnableForStartAndStop
+    // );
+    // formdata.append('is_certificate_based_service_account', certificateOption);
+    // formdata.append('registry_ids', selectedRegistriesId);
+    // formdata.append(
+    //   'default_registry_id',
+    //   default_registry_data?.value || default_registry_data || null
+    // );
+
+    // formdata.append('registry_id', registryData.id);
+
+    // const id = clusterId;
+    // const response = await updateCluster(id, formdata);
+
     const selectedRegistriesId = selectedRegistriesArray?.map(
       item => item?.value
     );
-    formdata.append('registry_ids', selectedRegistriesId);
-    formdata.append(
-      'default_registry_id',
-      default_registry_data?.value || default_registry_data || null
-    );
-
-    formdata.append('registry_id', registryData.id);
-
+    const payload = {
+      name: clusterData?.clusterName,
+      nifi_url: clusterData?.nifiUrl,
+      tag: tags,
+      notification_enable: notificationEnable,
+      approver_enable: approverEnable,
+      start_stop_requires_approval: approverEnableForStartAndStop,
+      change_request_enable: changeRequestEnable,
+      registry_ids: selectedRegistriesId,
+      default_registry_id:
+        default_registry_data?.value || default_registry_data || null,
+      has_custom_service_account: false,
+      is_certificate_based_service_account: certificateOption,
+      registry_id: registryData?.id,
+    };
     const id = clusterId;
-    const response = await updateCluster(id, formdata);
+    const response = await updateCluster(id, payload);
     if (response?.id) {
       const cluster = localStorage.getItem('selected_cluster');
 
