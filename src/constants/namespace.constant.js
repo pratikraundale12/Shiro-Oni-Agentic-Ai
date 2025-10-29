@@ -1,6 +1,8 @@
 export const NAMESPACE_CONSTANTS = {
   NAMESPACE: 'Process Group', // TODO: change it to Process Group
   NAMESPACE_LIST: 'Process Group List',
+  NAMESPACE_TREE_VIEW: 'Process Group Tree View',
+  NO_PROCESS_GROUP: 'No Process Group Available',
   DEPLOY_NAMESPACE: 'Deploy Process Group',
   UPGRADE_NAMESPACE: 'Upgrade Process Group',
   NAMESPACE_ID: 'Process Group ID',

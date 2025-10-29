@@ -2,7 +2,6 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-// import { useForm } from 'react-hook-form';
 import {
   addHours,
   addMinutes,
@@ -25,10 +24,12 @@ import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
+  ListIcon,
   PlusCircleIcon,
   RefreshIcon,
   ScheduleDeploymentIcon,
   SmallSearchIcon,
+  TreeIcon,
 } from '../../assets';
 import {
   ACCESS_OPTIONS,
@@ -96,6 +97,7 @@ const Title = styled.h3`
 
 const SearchContainer = styled.div`
   position: relative;
+  flex: 1 1 auto;
 
   svg {
     position: absolute;
@@ -204,12 +206,28 @@ const SpanEle = styled.span`
   }
 `;
 
-// const checkIfPropertyExists = (data, key) => {
-//   if (Object.prototype.hasOwnProperty.call(data, key)) {
-//     return data[key];
-//   }
-//   return false;
-// };
+const ViewToggleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+  .active {
+    fill: ${props => props.theme.colors.primary};
+  }
+`;
+
+const IconContainer = styled.div`
+  width: 50px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  border: ${props =>
+    props.active ? '1px solid #FF7A00' : '1px solid #dde4f0'};
+  background-color: ${props => (props.active ? '#FF7A00' : '#fff')};
+`;
 
 export const GridActions = ({
   title,
@@ -243,6 +261,8 @@ export const GridActions = ({
   setSelectStatus,
   removeSearch = false,
   setIsExportReportOpen,
+  viewMode = 'list_view',
+  setViewMode = () => {},
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -340,6 +360,14 @@ export const GridActions = ({
     inputRef.current.value = '';
     setCurrentPage(1);
     onItemsPerPageChange(10);
+
+    if (module === 'namespaces' && viewMode === 'tree_view') {
+      if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
+        return;
+      }
+      dispatch(NamespacesActions.fetchNamespacesDownload());
+      return;
+    }
 
     if (module === 'namespaces') {
       if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
@@ -760,9 +788,15 @@ export const GridActions = ({
         <FullPageLoader loading={loading} />
         <Flex>
           <Title>
-            <span>{title}</span>
-            {module === 'namespaces' && Boolean(gridCount) && (
-              <span>({gridCount})</span>
+            {viewMode === 'tree_view' ? (
+              <span>{KDFM.NAMESPACE_TREE_VIEW}</span>
+            ) : (
+              <>
+                <span>{title}</span>
+                {module === 'namespaces' && Boolean(gridCount) && (
+                  <span>({gridCount})</span>
+                )}
+              </>
             )}
           </Title>
         </Flex>
@@ -1097,43 +1131,95 @@ export const GridActions = ({
           </ButtonsContainer>
         )}
       </Flex>
-      <SearchContainer
-        topPosition={Object.keys(searchErrorMsg).length ? '39%' : '50%'}
-      >
-        <SmallSearchIcon
-          width={18}
-          height={18}
-          color={theme.colors.darkGrey1}
-        />
-        <Search
-          type="search"
-          value={searchValue}
-          ref={inputRef}
-          placeholder={placeholder}
-          onChange={e => {
-            const value = e.target.value;
-            setSearchValue(value);
-            if (value.length < 2) {
-              setSearchErrorMsg({
-                search: {
-                  message: SEARCH_INPUT_ERROR,
-                },
-              });
-            }
-            if (
-              value.length <= 100 &&
-              (value.length >= 2 || value?.length === 0)
-            ) {
-              setSearchErrorMsg({});
-              setState(prev => ({
-                ...prev,
-                search: value.trim().replace(/\s+/g, ' '),
-              }));
-            }
-          }}
-        />
-        <FieldErrorMessage name="search" errors={searchErrorMsg} />
-      </SearchContainer>
+
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <SearchContainer
+          topPosition={Object.keys(searchErrorMsg).length ? '39%' : '50%'}
+        >
+          <SmallSearchIcon
+            width={18}
+            height={18}
+            color={theme.colors.darkGrey1}
+          />
+          <Search
+            type="search"
+            value={searchValue}
+            ref={inputRef}
+            placeholder={placeholder}
+            onChange={e => {
+              const value = e.target.value;
+              setSearchValue(value);
+              if (value.length < 2) {
+                setSearchErrorMsg({
+                  search: {
+                    message: SEARCH_INPUT_ERROR,
+                  },
+                });
+              }
+              if (
+                value.length <= 100 &&
+                (value.length >= 2 || value?.length === 0)
+              ) {
+                setSearchErrorMsg({});
+                setState(prev => ({
+                  ...prev,
+                  search: value.trim().replace(/\s+/g, ' '),
+                }));
+              }
+            }}
+          />
+          <FieldErrorMessage name="search" errors={searchErrorMsg} />
+        </SearchContainer>
+        {module === 'namespaces' && (
+          <ViewToggleContainer>
+            <IconContainer
+              active={viewMode === 'list_view'}
+              onClick={() => setViewMode('list_view')}
+              data-tooltip-id={'tooltip-id-list-view'}
+            >
+              <ListIcon
+                stroke={viewMode === 'list_view' ? '#fff' : '#444445'}
+              />
+            </IconContainer>
+            <ReactTooltip
+              id={'tooltip-id-list-view'}
+              place="bottom"
+              effect="solid"
+              content="List view"
+              style={{
+                width: 'auto',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+                zIndex: 9999,
+              }}
+            />
+            <IconContainer
+              active={viewMode === 'tree_view'}
+              onClick={() => {
+                setViewMode('tree_view');
+                dispatch(NamespacesActions.setSelectedNamespace({}));
+              }}
+              data-tooltip-id={'tooltip-id-tree-view'}
+            >
+              <TreeIcon
+                stroke={viewMode === 'tree_view' ? '#fff' : '#444445'}
+              />
+            </IconContainer>
+            <ReactTooltip
+              id={'tooltip-id-tree-view'}
+              place="bottom"
+              effect="solid"
+              content="Tree View"
+              style={{
+                width: 'auto',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+                zIndex: 9999,
+              }}
+            />
+          </ViewToggleContainer>
+        )}
+      </div>
     </>
   );
 };
