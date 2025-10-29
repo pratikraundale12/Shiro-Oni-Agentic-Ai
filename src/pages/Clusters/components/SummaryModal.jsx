@@ -146,65 +146,108 @@ export const SummaryModal = ({
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const addCluster = async ({ registry_id }) => {
     const selectedRegistriesId = selectedRegistriesArray?.map(
       item => item?.value
     );
-    const formData = new FormData();
+    // const formData = new FormData();
 
-    formData.append('name', clusterData?.clusterName || '');
-    formData.append('nifi_url', clusterData?.nifiUrl || '');
-    formData.append('registry_ids', selectedRegistriesId);
-    formData.append('tag', tags);
-    formData.append('notification_enable', notificationEnable);
-    formData.append('approver_enable', approverEnable);
-    formData.append(
-      'start_stop_requires_approval',
-      approverEnableForStartAndStop
-    );
-    formData.append('is_certificate_based_service_account', certificateOption);
-    formData.append('change_request_enable', changeRequestEnable);
+    // formData.append('name', clusterData?.clusterName || '');
+    // formData.append('nifi_url', clusterData?.nifiUrl || '');
+    // // formData.append('registry_ids', selectedRegistriesId || []);
+    // selectedRegistriesId.forEach(id => {
+    //   formData.append('registry_ids[]', id);
+    // });
+    // formData.append('tag', tags);
+    // formData.append('notification_enable', notificationEnable);
+    // formData.append('approver_enable', approverEnable);
+    // formData.append(
+    //   'start_stop_requires_approval',
+    //   approverEnableForStartAndStop
+    // );
+    // formData.append('is_certificate_based_service_account', certificateOption);
+    // formData.append('change_request_enable', changeRequestEnable);
 
-    if (clusterData?.logs_url) {
-      formData.append('logs_url', clusterData.logs_url);
-    }
+    // if (clusterData?.logs_url) {
+    //   formData.append('logs_url', clusterData.logs_url);
+    // }
 
-    if (clusterData?.metrics_url) {
-      formData.append('metrics_url', clusterData.metrics_url);
-    }
+    // if (clusterData?.metrics_url) {
+    //   formData.append('metrics_url', clusterData.metrics_url);
+    // }
 
-    if (clusterData?.service_account_certificate) {
-      formData.append(
-        'service_account_certificate',
-        clusterData.service_account_certificate
-      );
-    }
+    // if (clusterData?.service_account_certificate) {
+    //   formData.append(
+    //     'service_account_certificate',
+    //     clusterData.service_account_certificate
+    //   );
+    // }
 
-    if (clusterData?.service_account_certificate_password) {
-      formData.append(
-        'service_account_certificate_password',
-        clusterData.service_account_certificate_password
-      );
-    }
+    // if (clusterData?.service_account_certificate_password) {
+    //   formData.append(
+    //     'service_account_certificate_password',
+    //     clusterData.service_account_certificate_password
+    //   );
+    // }
 
-    formData.append(
-      'nodes',
-      certificateNodesData && certificateNodesData.length > 0 ? certificateNodesData : []
-    );
+    // formData.append(
+    //   'nodes',
+    //   certificateNodesData && certificateNodesData.length > 0
+    //     ? certificateNodesData
+    //     : []
+    // );
+    // if (certificateNodesData && certificateNodesData.length > 0) {
+    //   certificateNodesData.forEach((node, index) => {
+    //     for (const key in node) {
+    //       formData.append(`nodes[${index}][${key}]`, node[key]);
+    //     }
+    //   });
+    // }
 
-    if (clusterTestResponse?.clusterType) {
-      formData.append(
-        'clusterType',
-        clusterTestResponse?.clusterType
-      );
-    }
+    // if (clusterTestResponse?.clusterType) {
+    //   formData.append('clusterType', clusterTestResponse?.clusterType);
+    // }
 
-    formData.append(
-      'default_registry_id',
-      default_registry_id ? default_registry_id : null
-    );
+    // formData.append(
+    //   'default_registry_id',
+    //   default_registry_data?.value || default_registry_data || null
+    // );
 
-    const response = await createCluster(formData); // createCluster must handle FormData
+    const data = {
+      name: clusterData?.clusterName,
+      nifi_url: clusterData?.nifiUrl,
+      registry_ids: selectedRegistriesId,
+      tag: tags,
+      notification_enable: notificationEnable,
+      approver_enable: approverEnable,
+      start_stop_requires_approval: approverEnableForStartAndStop,
+      change_request_enable: changeRequestEnable,
+      default_registry_id:
+        default_registry_data?.value || default_registry_data || null,
+      ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
+      ...(clusterData?.metrics_url && {
+        metrics_url: clusterData.metrics_url,
+      }),
+      ...(clusterTestResponse?.clusterType && {
+        clusterType: clusterTestResponse?.clusterType,
+      }),
+      nodes:
+        certificateNodesData && certificateNodesData.length > 0
+          ? certificateNodesData
+          : [],
+      ...(clusterData?.service_account_certificate_password && {
+        service_account_certificate_password:
+          clusterData.service_account_certificate_password,
+      }),
+      ...(clusterData?.service_account_certificate && {
+        service_account_certificate: clusterData.service_account_certificate,
+      }),
+      is_certificate_based_service_account: certificateOption,
+    };
+
+    // const response = await createCluster(formData); // createCluster must handle FormData
+    const response = await createCluster(data);
 
     if (response?.status === 201) {
       setLoading(false);
@@ -235,7 +278,10 @@ export const SummaryModal = ({
       item => item?.value
     );
     formdata.append('registry_ids', selectedRegistriesId);
-    formdata.append('default_registry_id', default_registry_data?.value || default_registry_data || null);
+    formdata.append(
+      'default_registry_id',
+      default_registry_data?.value || default_registry_data || null
+    );
 
     formdata.append('registry_id', registryData.id);
 
