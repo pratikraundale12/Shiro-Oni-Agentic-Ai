@@ -500,7 +500,11 @@ export const Add = () => {
   ]);
 
   useEffect(() => {
-    if (data?.registry_id || data?.created_by_ansible) {
+    if (
+      data?.registry_id ||
+      data?.created_by_ansible ||
+      data?.is_kube_cluster
+    ) {
       reset({
         registry: data?.registry_id || '',
         clusterName: clusterData?.clusterName,
