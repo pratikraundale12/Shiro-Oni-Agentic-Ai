@@ -334,7 +334,11 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           </div>
         </TableContainer>
         <ModalWithIcon
-          title={'Delete Host IP'}
+          title={
+            createClusterVisKubernetes === 'VM'
+              ? 'Delete Host IP'
+              : 'Delete Kubernetes Cluster'
+          }
           primaryButtonText={'Delete'}
           secondaryButtonText={'Cancel'}
           icon={<DeleteDustbinIcon />}
@@ -358,7 +362,11 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           onRequestClose={() => {
             setIsDeleteModalOpen(false);
           }}
-          primaryText={`Are you sure you want to delete Host IP`}
+          primaryText={
+            createClusterVisKubernetes === 'VM'
+              ? `Are you sure you want to delete Host IP`
+              : `Are you sure you want to delete kubernetes cluster`
+          }
         />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">
