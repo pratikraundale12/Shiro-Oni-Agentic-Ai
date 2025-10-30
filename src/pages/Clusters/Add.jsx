@@ -705,7 +705,7 @@ export const Add = () => {
       }));
 
   useEffect(() => {
-    if ((data?.registry_ids && registries && selectedOptions) || data?.created_by_ansible) {
+    if ((data?.registry_ids && registries && selectedOptions) || data?.created_by_ansible || data?.is_kube_cluster) {
       reset({
         registry: selectedOptions || data?.registry_ids || [],
         clusterName: clusterData?.clusterName || data?.name,
