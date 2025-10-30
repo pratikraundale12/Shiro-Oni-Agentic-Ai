@@ -38,7 +38,7 @@ export function* fetchNamespaces(api) {
 
   if (!response.ok) {
     const message = response?.data?.message;
-    if(message){
+    if (message) {
       showErrorToast(message);
     }
   }
@@ -793,7 +793,7 @@ export function* getControllerServiceList(api, action) {
     yield put(NamespacesActions.getRootControllerServiceNamespace([]));
     yield put(NamespacesActions.setCsPermissions({}));
     const message = response.data.message;
-    if(message){
+    if (message) {
       showErrorToast(message);
     }
   }
