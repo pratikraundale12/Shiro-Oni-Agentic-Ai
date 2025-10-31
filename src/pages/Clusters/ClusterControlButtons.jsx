@@ -143,7 +143,7 @@ const ClusterControlButtons = () => {
           setTimeout(() => {
             setStartInitiated(false);
             setAction(null);
-          }, 55000);
+          }, 200000);
         }
       } else {
         setStartInitiated(false);
@@ -159,7 +159,7 @@ const ClusterControlButtons = () => {
           setTimeout(() => {
             setStopInitiated(false);
             setAction(null);
-          }, 55000);
+          }, 200000);
         }
       } else {
         setStopInitiated(false);
@@ -174,7 +174,7 @@ const ClusterControlButtons = () => {
           setTimeout(() => {
             setRestartInitiated(false);
             setAction(null);
-          }, 55000);
+          }, 200000);
         }
       } else {
         setRestartInitiated(false);
