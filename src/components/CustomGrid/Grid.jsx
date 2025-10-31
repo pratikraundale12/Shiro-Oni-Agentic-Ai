@@ -14,11 +14,7 @@ import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
 import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { InputField, Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import {
-  ClustersSelectors,
-  LoadingSelectors,
-  NamespacesSelectors,
-} from '../../store';
+import { LoadingSelectors, NamespacesSelectors } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { GridActions, GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
@@ -29,7 +25,6 @@ import { UrlRender } from './CellRenders';
 import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
 import { Table } from './Table';
-import ClusterControlButtons from '../../pages/Clusters/ClusterControlButtons';
 import TreeViewWrapper from '../../pages/Namespaces/TreeViewWrapper';
 
 const Container = styled.div`
@@ -124,7 +119,7 @@ export const Grid = ({
   setCurrentPage = () => {},
   sortingState,
   setSortingState,
-  createdByAnsible = false,
+  // createdByAnsible = false,
   setDownloadModalOpen,
   isDownloadModalOpen,
   removeSearch,
@@ -170,7 +165,7 @@ export const Grid = ({
   const [clusterSelectedValue, setClusterSelectedValue] = useState(null);
   // const [selectEvent, setSelectEvent] = useState(null);
   // const [selectEntity, setSelectEntity] = useState(null);
-  const registryNodesData = useSelector(ClustersSelectors.getRegistryNodesData);
+  // const registryNodesData = useSelector(ClustersSelectors.getRegistryNodesData);
   const [scheduleType, setScheduleType] = useState(null);
   const [viewMode, setViewMode] = useState('list_view'); // 'list_view' | 'tree_view'
 
@@ -501,89 +496,89 @@ export const Grid = ({
     },
   ];
 
-  const getRegistryNodesData = () => {
-    return (
-      <>
-        <ClusterRegistryContainer className="row">
-          {createdByAnsible && <ClusterControlButtons />}
-          <ClusterDetail
-            data={{
-              name: registryNodesData?.cluster?.name,
-              nifi_url: registryNodesData?.cluster?.nifi_url,
-            }}
-            displayInFullWidth={isEmpty(
-              registryNodesData?.cluster?.registry?.registry_url
-            )}
-          />
-          {registryNodesData?.cluster?.registry?.registry_url && (
-            <RegistryDetail
-              data={{
-                name: registryNodesData?.cluster?.registry?.name,
-                registry_url:
-                  registryNodesData?.cluster?.registry?.registry_url,
-              }}
-            />
-          )}
-        </ClusterRegistryContainer>
-        <ClusterRegistryContainer className="row">
-          {registryNodesData?.cluster?.metrics_url && (
-            <ClusterDetail
-              data={{
-                metrics_url: registryNodesData?.cluster?.metrics_url,
-              }}
-              columns={METRICS_URL_COLUMN}
-            />
-          )}
-          {registryNodesData?.cluster?.logs_url && (
-            <ClusterDetail
-              data={{
-                logs_url: registryNodesData?.cluster?.logs_url,
-              }}
-              columns={LOGS_URL_COLUMN}
-            />
-          )}
-        </ClusterRegistryContainer>
-        <Modal
-          title="Event Log"
-          isOpen={eventModal}
-          onRequestClose={() =>
-            setState(prevState => ({ ...prevState, eventModal: false }))
-          }
-          size="md"
-          primaryButtonText={KDFM.CONTINUE}
-          onSubmit={() =>
-            setState(prevState => ({ ...prevState, eventModal: false }))
-          }
-          contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
-        >
-          <FLexWrapper>
-            <InputField
-              label="Address"
-              disabled={true}
-              icon={<QRIcons />}
-              value={selectedNode?.address}
-            />
-            <InputField
-              label="Node ID"
-              disabled={true}
-              icon={<QRIcons />}
-              value={selectedNode?.nodeId}
-            />
-          </FLexWrapper>
-          <Table
-            data={
-              selectedNode?.events?.slice(0, 10).map(item => ({
-                address: selectedNode?.address,
-                nodeId: selectedNode?.nodeId,
-                ...item,
-              })) || []
-            }
-            columns={EVENTCOLUMNS}
-          />
-        </Modal>
-      </>
-    );
-  };
+  // const getRegistryNodesData = () => {
+  //   return (
+  //     <>
+  //       <ClusterRegistryContainer className="row">
+  //         {createdByAnsible && <ClusterControlButtons />}
+  //         <ClusterDetail
+  //           data={{
+  //             name: registryNodesData?.cluster?.name,
+  //             nifi_url: registryNodesData?.cluster?.nifi_url,
+  //           }}
+  //           displayInFullWidth={isEmpty(
+  //             registryNodesData?.cluster?.registry?.registry_url
+  //           )}
+  //         />
+  //         {registryNodesData?.cluster?.registry?.registry_url && (
+  //           <RegistryDetail
+  //             data={{
+  //               name: registryNodesData?.cluster?.registry?.name,
+  //               registry_url:
+  //                 registryNodesData?.cluster?.registry?.registry_url,
+  //             }}
+  //           />
+  //         )}
+  //       </ClusterRegistryContainer>
+  //       <ClusterRegistryContainer className="row">
+  //         {registryNodesData?.cluster?.metrics_url && (
+  //           <ClusterDetail
+  //             data={{
+  //               metrics_url: registryNodesData?.cluster?.metrics_url,
+  //             }}
+  //             columns={METRICS_URL_COLUMN}
+  //           />
+  //         )}
+  //         {registryNodesData?.cluster?.logs_url && (
+  //           <ClusterDetail
+  //             data={{
+  //               logs_url: registryNodesData?.cluster?.logs_url,
+  //             }}
+  //             columns={LOGS_URL_COLUMN}
+  //           />
+  //         )}
+  //       </ClusterRegistryContainer>
+  //       <Modal
+  //         title="Event Log"
+  //         isOpen={eventModal}
+  //         onRequestClose={() =>
+  //           setState(prevState => ({ ...prevState, eventModal: false }))
+  //         }
+  //         size="md"
+  //         primaryButtonText={KDFM.CONTINUE}
+  //         onSubmit={() =>
+  //           setState(prevState => ({ ...prevState, eventModal: false }))
+  //         }
+  //         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
+  //       >
+  //         <FLexWrapper>
+  //           <InputField
+  //             label="Address"
+  //             disabled={true}
+  //             icon={<QRIcons />}
+  //             value={selectedNode?.address}
+  //           />
+  //           <InputField
+  //             label="Node ID"
+  //             disabled={true}
+  //             icon={<QRIcons />}
+  //             value={selectedNode?.nodeId}
+  //           />
+  //         </FLexWrapper>
+  //         <Table
+  //           data={
+  //             selectedNode?.events?.slice(0, 10).map(item => ({
+  //               address: selectedNode?.address,
+  //               nodeId: selectedNode?.nodeId,
+  //               ...item,
+  //             })) || []
+  //           }
+  //           columns={EVENTCOLUMNS}
+  //         />
+  //       </Modal>
+  //     </>
+  //   );
+  // };
   return (
     <Container>
       <GridActionsComponent

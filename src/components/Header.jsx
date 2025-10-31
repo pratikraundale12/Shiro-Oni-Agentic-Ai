@@ -224,9 +224,9 @@ const ProfileDropdown = () => {
   const [showMenu, setShowMenu] = useState(false);
   const { setState } = useGlobalContext();
   const menuRef = useRef(null);
-  const flowGenrating = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'generateFlowAPI')
-  );
+  // const flowGenrating = useSelector(state =>
+  //   LoadingSelectors.getLoading(state, 'generateFlowAPI')
+  // );
   const logoutFromKeycloak = async () => {
     const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
     const idToken = localStorage.getItem('keycloak_id_token');
@@ -298,17 +298,17 @@ const ProfileDropdown = () => {
     };
   }, []);
 
-  const onProfileClick = () => {
-    if (flowGenrating) {
-      if (!toast.isActive('generating-flow')) {
-        toast.warning('Flow is generating please wait', {
-          toastId: 'generating-flow',
-        });
-      }
-      return;
-    }
-    setShowMenu(prev => !prev);
-  };
+  // const onProfileClick = () => {
+  //   if (flowGenrating) {
+  //     if (!toast.isActive('generating-flow')) {
+  //       toast.warning('Flow is generating please wait', {
+  //         toastId: 'generating-flow',
+  //       });
+  //     }
+  //     return;
+  //   }
+  //   setShowMenu(prev => !prev);
+  // };
 
   return (
     <ProfileContainer ref={menuRef}>
