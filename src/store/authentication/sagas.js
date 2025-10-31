@@ -91,7 +91,7 @@ export function* login(api, { payload: { type, token, ...payload } }) {
   if (response.ok) {
     toast.success('Welcome! You’ve successfully logged in. ');
     localStorage.setItem(ACCESS_TOKEN, response.data.token);
-    localStorage.setItem(CLUSTERS_TOKEN, []);
+    localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify([]));
     localStorage.setItem(
       'selected_cluster',
       JSON.stringify({
@@ -105,26 +105,32 @@ export function* login(api, { payload: { type, token, ...payload } }) {
         value: '',
       })
     );
-    const cluster = {
-      id: response.data.cluster_id,
-      name: response.data.cluster_name,
-      token: response.data.cluster_token,
-    };
-    localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify([cluster]));
-    if (!type) {
+    if (response?.data?.cluster_token) {
+      const cluster = {
+        id: response?.data?.cluster_id,
+        name: response?.data?.cluster_name,
+        token: response?.data?.cluster_token,
+      };
+      localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify([cluster]));
       localStorage.setItem(
         'selected_cluster',
         JSON.stringify({
-          label: '',
-          value: '',
+          label: response?.data?.cluster_name,
+          value: response?.data?.cluster_id,
         })
       );
       yield put(
         NamespacesActions.setSelectedCluster({
-          label: '',
-          value: '',
+          label: response?.data?.cluster_name,
+          value: response?.data?.cluster_id,
         })
       );
+    } else if (!type) {
+      localStorage.setItem(
+        'selected_cluster',
+        JSON.stringify({ label: '', value: '' })
+      );
+      yield put(NamespacesActions.setSelectedCluster({ label: '', value: '' }));
     }
     const scheduledId = window.localStorage.getItem('scheduleTokenid');
     yield call(fetchCurrentUser, api);
