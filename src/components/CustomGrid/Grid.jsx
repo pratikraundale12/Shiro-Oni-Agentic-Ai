@@ -30,6 +30,7 @@ import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
 import { Table } from './Table';
 import ClusterControlButtons from '../../pages/Clusters/ClusterControlButtons';
+import TreeViewWrapper from '../../pages/Namespaces/TreeViewWrapper';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -171,6 +172,7 @@ export const Grid = ({
   // const [selectEntity, setSelectEntity] = useState(null);
   const registryNodesData = useSelector(ClustersSelectors.getRegistryNodesData);
   const [scheduleType, setScheduleType] = useState(null);
+  const [viewMode, setViewMode] = useState('list_view'); // 'list_view' | 'tree_view'
 
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
@@ -621,116 +623,130 @@ export const Grid = ({
         removeSearch={removeSearch}
         setIsExportReportOpen={setIsExportReportOpen}
         setRemoveSearch={setRemoveSearch}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
       />
-      {module === 'nodes' && !loading && (
-        <>
-          <ClusterRegistryContainer className="row">
-            {!isEmpty(clusterSummary?.name) && (
-              <ClusterDetail
-                data={{
-                  name: clusterSummary?.name,
-                  nifi_url: clusterSummary?.nifi_url,
-                }}
-                displayFullWidth={clusterSummary?.registries?.length > 1}
-              />
-            )}
-            {!isEmpty(clusterSummary?.registries) && (
-              <RegistryDetail
-                data={clusterSummary?.registries}
-                displayFullWidth={clusterSummary?.registries?.length > 1}
-              />
-            )}
-          </ClusterRegistryContainer>
-          <ClusterRegistryContainer className="row">
-            <ClusterDetail
-              data={{
-                metrics_url: clusterSummary?.metrics_url,
-              }}
-              columns={METRICS_URL_COLUMN}
-            />
-            <ClusterDetail
-              data={{
-                logs_url: clusterSummary?.logs_url,
-              }}
-              columns={LOGS_URL_COLUMN}
-            />{' '}
-          </ClusterRegistryContainer>
-          <Modal
-            title="Event Log"
-            isOpen={eventModal}
-            onRequestClose={() =>
-              setState(prevState => ({ ...prevState, eventModal: false }))
-            }
-            size="md"
-            primaryButtonText={'Close'}
-            onSubmit={() =>
-              setState(prevState => ({ ...prevState, eventModal: false }))
-            }
-            contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
-          >
-            <FLexWrapper>
-              <InputField
-                label="Address"
-                disabled={true}
-                icon={<QRIcons />}
-                value={selectedNode?.address}
-              />
-              <InputField
-                label="Node ID"
-                disabled={true}
-                icon={<QRIcons />}
-                value={selectedNode?.nodeId}
-              />
-            </FLexWrapper>
-            <Table
-              data={
-                selectedNode?.events?.slice(0, 10).map(item => ({
-                  address: selectedNode?.address,
-                  nodeId: selectedNode?.nodeId,
-                  ...item,
-                })) || []
-              }
-              columns={EVENTCOLUMNS}
-            />
-          </Modal>
-        </>
-      )}
-      <div className="mb-2 ps-1">
-        <Breadcrumb module={module} setRemoveSearch={setRemoveSearch} />
-      </div>
 
-      <TableContainer
-        module={module}
-        fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
-      >
-        {loading || isEmpty(TABLE_DATA?.nodes) ? (
-          getLoader()
-        ) : (
-          <CompactTable
-            data={TABLE_DATA}
-            columns={columns}
-            theme={tableTheme}
-            layout={{ custom: true }}
-            // sort={sort}
+      {module === 'namespaces' && viewMode === 'tree_view' ? (
+        <>
+          <TreeViewWrapper
+            hideRootNode={false}
+            enableHoverApi={true}
+            enableSearch={true}
+            showPathInSuggestions={true}
           />
-        )}
-      </TableContainer>
-      {gridCount >= 10 && (
-        <Pagination
-          page={currentPage}
-          setCurrentPage={setCurrentPage}
-          count={gridCount ?? 0}
-          prev={prev}
-          next={next}
-          itemsPerPage={itemsPerPage}
-          onItemsPerPageChange={setItemsPerPage}
-          selectEntity={selectEntity}
-          setSelectEntity={setSelectEntity}
-          setSelectStatus={setSelectStatus}
-          selectStatus={selectStatus}
-          selectEvent={selectEvent}
-          setSelectEvent={setSelectEvent}
-        />
+        </>
+      ) : (
+        <>
+          {module === 'nodes' && !loading && (
+            <>
+              <ClusterRegistryContainer className="row">
+                {!isEmpty(clusterSummary?.name) && (
+                  <ClusterDetail
+                    data={{
+                      name: clusterSummary?.name,
+                      nifi_url: clusterSummary?.nifi_url,
+                    }}
+                    displayFullWidth={clusterSummary?.registries?.length > 1}
+                  />
+                )}
+                {!isEmpty(clusterSummary?.registries) && (
+                  <RegistryDetail
+                    data={clusterSummary?.registries}
+                    displayFullWidth={clusterSummary?.registries?.length > 1}
+                  />
+                )}
+              </ClusterRegistryContainer>
+              <ClusterRegistryContainer className="row">
+                <ClusterDetail
+                  data={{
+                    metrics_url: clusterSummary?.metrics_url,
+                  }}
+                  columns={METRICS_URL_COLUMN}
+                />
+                <ClusterDetail
+                  data={{
+                    logs_url: clusterSummary?.logs_url,
+                  }}
+                  columns={LOGS_URL_COLUMN}
+                />
+              </ClusterRegistryContainer>
+              <Modal
+                title="Event Log"
+                isOpen={eventModal}
+                onRequestClose={() =>
+                  setState(prevState => ({ ...prevState, eventModal: false }))
+                }
+                size="md"
+                primaryButtonText={'Close'}
+                onSubmit={() =>
+                  setState(prevState => ({ ...prevState, eventModal: false }))
+                }
+                contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
+              >
+                <FLexWrapper>
+                  <InputField
+                    label="Address"
+                    disabled={true}
+                    icon={<QRIcons />}
+                    value={selectedNode?.address}
+                  />
+                  <InputField
+                    label="Node ID"
+                    disabled={true}
+                    icon={<QRIcons />}
+                    value={selectedNode?.nodeId}
+                  />
+                </FLexWrapper>
+                <Table
+                  data={
+                    selectedNode?.events?.slice(0, 10).map(item => ({
+                      address: selectedNode?.address,
+                      nodeId: selectedNode?.nodeId,
+                      ...item,
+                    })) || []
+                  }
+                  columns={EVENTCOLUMNS}
+                />
+              </Modal>
+            </>
+          )}
+
+          <div className="mb-2 ps-1">
+            <Breadcrumb module={module} setRemoveSearch={setRemoveSearch} />
+          </div>
+
+          <TableContainer module={module}>
+            {loading || isEmpty(TABLE_DATA?.nodes) ? (
+              getLoader()
+            ) : (
+              <CompactTable
+                data={TABLE_DATA}
+                columns={columns}
+                theme={tableTheme}
+                layout={{ custom: true }}
+              />
+            )}
+          </TableContainer>
+
+          {gridCount >= 10 && (
+            <Pagination
+              page={currentPage}
+              setCurrentPage={setCurrentPage}
+              count={gridCount ?? 0}
+              prev={prev}
+              next={next}
+              itemsPerPage={itemsPerPage}
+              onItemsPerPageChange={setItemsPerPage}
+              selectEntity={selectEntity}
+              setSelectEntity={setSelectEntity}
+              setSelectStatus={setSelectStatus}
+              selectStatus={selectStatus}
+              selectEvent={selectEvent}
+              setSelectEvent={setSelectEvent}
+            />
+          )}
+        </>
       )}
     </Container>
   );

@@ -271,6 +271,14 @@ export const NamespacesActions = {
   setSelectedRegistryOnDeploy: createAction(
     `${prefix}setSelectedRegistryOnDeploy`
   ),
+  fetchNamespacesDownload: createAction(`${prefix}fetchNamespacesDownload`),
+  fetchNamespacesDownloadSuccess: createAction(
+    `${prefix}fetchNamespacesDownloadSuccess`
+  ),
+  fetchNamespaceVersion: createAction(`${prefix}fetchNamespaceVersion`),
+  fetchNamespaceVersionSuccess: createAction(
+    `${prefix}fetchNamespaceVersionSuccess`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -401,6 +409,8 @@ export const NAMESPACES_INITIAL_STATE = {
   serviceDefinitionLoading: false,
   serviceDefinitionError: null,
   selectedRegistryOnDeploy: null,
+  clusterNamespacesDownload: {},
+  clusterNamespacesVersion: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -544,6 +554,8 @@ export const NamespacesSelectors = {
   getNamespacesAllData: state => state.namespaces.clusterNamespaces,
   getSelectedRegistryOnDeploy: state =>
     state.namespaces.selectedRegistryOnDeploy,
+  getNamespacesDownload: state => state.namespaces.clusterNamespacesDownload,
+  getNamespacesVersion: state => state.namespaces.clusterNamespacesVersion,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1284,6 +1296,20 @@ const setSelectedRegistryOnDeploy = (state, { payload }) => {
   };
 };
 
+const fetchNamespacesDownloadSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    clusterNamespacesDownload: payload,
+  };
+};
+
+const fetchNamespaceVersionSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    clusterNamespacesVersion: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1588,6 +1614,14 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.fetchServiceDefinitionFailure,
         fetchServiceDefinitionFailure
+      )
+      .addCase(
+        NamespacesActions.fetchNamespacesDownloadSuccess,
+        fetchNamespacesDownloadSuccess
+      )
+      .addCase(
+        NamespacesActions.fetchNamespaceVersionSuccess,
+        fetchNamespaceVersionSuccess
       );
   }
 );

@@ -7,6 +7,7 @@ import {
   ParameterContextIcon,
   ScheduleDetailsIcon,
   TodoIcon,
+  TreeIcon,
   VariablesIcon,
 } from '../../assets';
 import { FullPageLoader } from '../../components';
@@ -30,6 +31,7 @@ import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import ParameterContextTab from './ParameterContextTab';
 import ScheduleDeploymentTab from './ScheduleDetailsPage.jsx';
 import VariableTab from './VariableTab';
+import TreeViewNamespaces from './TreeViewNamespaces.jsx';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -214,6 +216,10 @@ const ConfigDetailsPage = () => {
   const formattedType =
     type.charAt(0).toUpperCase() + type.slice(1) + ' Process Group';
 
+  const registryAllDetails = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -316,6 +322,16 @@ const ConfigDetailsPage = () => {
             setScheduleDeployTime={setScheduleDeployTime}
             activeButton={activeButton}
             setActiveButton={setActiveButton}
+          />
+        );
+      case KDFM.TREE_VIEW:
+        return (
+          <TreeViewNamespaces
+            data={registryAllDetails?.treeData?.tree || {}}
+            width={1600}
+            height={610}
+            // hideRootNode={true}
+            enableHoverApi={false}
           />
         );
       default:
@@ -487,6 +503,22 @@ const ConfigDetailsPage = () => {
                 </TopRightIcon>
               )}
             </TabLabelWithIcon>
+          </Tab>
+          <Tab
+            active={activeTab === KDFM.TREE_VIEW}
+            onClick={() => handleSetTab(KDFM.TREE_VIEW)}
+            className="nav-item"
+          >
+            <IconContentV2 className="nav-item">
+              <TreeIcon
+                width={20}
+                height={20}
+                stroke={
+                  activeTab === `${KDFM.TREE_VIEW}` ? '#FF7A00' : '#444445'
+                }
+              />
+            </IconContentV2>
+            {KDFM.TREE_VIEW}
           </Tab>
         </TabWrapper>
         <TabContent>{renderContent()}</TabContent>
