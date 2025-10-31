@@ -127,15 +127,29 @@ const PropertyDropdownModal = ({
       id: element?.id,
     }));
 
-    setPropertyOptionsDeploy(prevArray => {
-      const mergedArray = [...prevArray, ...options];
-      const uniqueArray = Array.from(
-        new Map(mergedArray.map(item => [item.id, item])).values()
-      );
+    const updatedOptions =
+      selectedPropertyToEdit?.allowableValues?.map(element => ({
+        value: element?.allowableValue?.value,
+        label: element?.allowableValue?.displayName,
+        id: element?.allowableValue?.value,
+      })) ?? [];
 
-      return uniqueArray;
-    });
-  }, [propertyOptionOnDeploy]);
+    if (options.length > 0) {
+      setPropertyOptionsDeploy(prevArray => {
+        const mergedArray = [...prevArray, ...options];
+        const uniqueArray = Array.from(
+          new Map(mergedArray.map(item => [item.id, item])).values()
+        );
+
+        return uniqueArray;
+      });
+    } else {
+      setPropertyOptionsDeploy([
+        { value: '', label: 'No value set' },
+        ...updatedOptions,
+      ]);
+    }
+  }, [propertyOptionOnDeploy, selectedPropertyToEdit?.allowableValues]);
 
   useEffect(() => {
     setPropertyOptionsDeploy([{ value: '', label: 'No value set' }]);
@@ -161,9 +175,9 @@ const PropertyDropdownModal = ({
     const selectedNameOnNewAddService = propertyOptionsDeploy.find(
       element => element.id === data.value
     )?.name;
-    const selectedId = proprtyOptionsArray.find(
-      element => element.value === data.value
-    )?.id;
+    const selectedId =
+      proprtyOptionsArray.find(element => element.value === data.value)?.id ||
+      propertyOptionsDeploy.find(element => element.value === data.value)?.id;
     setUpdatedData(() => [
       ...filterData,
       {

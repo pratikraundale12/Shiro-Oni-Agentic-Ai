@@ -1,4 +1,3 @@
-// sagas.js
 import { toast } from 'react-toastify';
 import { all, call, takeLatest, put } from 'redux-saga/effects';
 import { changeFavicon } from '../../helpers';
@@ -6,7 +5,7 @@ import { fetchDashboard } from '../dashboard';
 import { fetchGrid } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SettingsActions } from './redux';
-import { showErrorToast } from '../../utils/toastControl'
+import { showErrorToast } from '../../utils/toastControl';
 
 export function* createSettings(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -38,8 +37,8 @@ export function* fetchSettings(api) {
   if (response.ok && response.data) {
     yield put(SettingsActions.setSettingsData(response.data));
   } else {
-     const message = response?.message || response?.data?.message;
-    if(message){
+    const message = response?.message || response?.data?.message;
+    if (message) {
       showErrorToast(message);
     }
   }
