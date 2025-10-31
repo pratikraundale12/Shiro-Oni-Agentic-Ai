@@ -149,6 +149,7 @@ export const SummaryModal = ({
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const addCluster = async ({ registry_id }) => {
     const selectedRegistriesId = selectedRegistriesArray?.map(
       item => item?.value
@@ -192,19 +193,18 @@ export const SummaryModal = ({
 
     formData.append(
       'nodes',
-      certificateNodesData && certificateNodesData.length > 0 ? certificateNodesData : []
+      certificateNodesData && certificateNodesData.length > 0
+        ? certificateNodesData
+        : []
     );
 
     if (clusterTestResponse?.clusterType) {
-      formData.append(
-        'clusterType',
-        clusterTestResponse?.clusterType
-      );
+      formData.append('clusterType', clusterTestResponse?.clusterType);
     }
 
     formData.append(
       'default_registry_id',
-      default_registry_id ? default_registry_id : null
+      default_registry_data?.value || default_registry_data || null
     );
 
     const response = await createCluster(formData); // createCluster must handle FormData
@@ -238,7 +238,10 @@ export const SummaryModal = ({
       item => item?.value
     );
     formdata.append('registry_ids', selectedRegistriesId);
-    formdata.append('default_registry_id', default_registry_data?.value || default_registry_data || null);
+    formdata.append(
+      'default_registry_id',
+      default_registry_data?.value || default_registry_data || null
+    );
 
     formdata.append('registry_id', registryData.id);
 

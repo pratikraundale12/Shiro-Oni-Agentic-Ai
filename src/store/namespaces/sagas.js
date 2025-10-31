@@ -38,7 +38,7 @@ export function* fetchNamespaces(api) {
 
   if (!response.ok) {
     const message = response?.data?.message;
-    if(message){
+    if (message) {
       showErrorToast(message);
     }
   }
@@ -793,7 +793,7 @@ export function* getControllerServiceList(api, action) {
     yield put(NamespacesActions.getRootControllerServiceNamespace([]));
     yield put(NamespacesActions.setCsPermissions({}));
     const message = response.data.message;
-    if(message){
+    if (message) {
       showErrorToast(message);
     }
   }
@@ -1174,6 +1174,10 @@ export function* fetchRegistryData(api, { payload }) {
   );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const gridData = yield select(
+    GridSelectors.getNamespaceGridRegistry,
+    'namespaces'
+  );
   const response = yield call(requestSaga, {
     errorSection: 'fetchRegistryData',
     loadingSection: 'fetchRegistryData',

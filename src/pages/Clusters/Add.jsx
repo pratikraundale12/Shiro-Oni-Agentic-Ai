@@ -48,7 +48,6 @@ import { DriversCluster } from './components/DriversClusters';
 import { FlowGzTabSection } from './components/FlowGzSection';
 import RegistryMultiSelect from '../../shared/FormInputs/components/RegistryMultiSelectField';
 
-import { createRegistry } from '../../store/index1';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
@@ -712,7 +711,11 @@ export const Add = () => {
       }));
 
   useEffect(() => {
-    if ((data?.registry_ids && registries && selectedOptions) || data?.created_by_ansible || data?.is_kube_cluster) {
+    if (
+      (data?.registry_ids && registries && selectedOptions) ||
+      data?.created_by_ansible ||
+      data?.is_kube_cluster
+    ) {
       reset({
         registry: selectedOptions || data?.registry_ids || [],
         clusterName: clusterData?.clusterName || data?.name,

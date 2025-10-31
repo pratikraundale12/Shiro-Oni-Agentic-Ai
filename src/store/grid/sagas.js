@@ -1,5 +1,4 @@
 import { isEmpty } from 'lodash';
-import { toast } from 'react-toastify';
 import { all, call, debounce, put, select } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, DEBOUNCE_DELAY } from '../../constants';
 import { DashboardActions } from '../dashboard';
@@ -7,9 +6,8 @@ import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { SchedularSelectors } from '../schedular/redux';
 import { GridActions } from './redux';
-import { ErrorsSelectors } from '../helpers/error_redux';
 import { ClustersActions } from '../clusters';
-import { showErrorToast } from '../../utils/toastControl'
+import { showErrorToast } from '../../utils/toastControl';
 
 export function* fetchGrid(
   api,
@@ -167,19 +165,9 @@ export function* fetchGrid(
     yield* handleForClusterModule();
   }
 
-  const error = yield select(state =>
-    ErrorsSelectors.getError(state, 'fetchClusters')
-  );
-  const isUnauthorized =
-    error &&
-    (error?.error?.raw?.status === 401 ||
-      error?.error?.code === 'invalid_token' ||
-      (error?.message &&
-        error?.message.toLowerCase().includes('user session expired.')));
-
   const handleError = response => {
     const message = response?.message || response?.data?.message;
-    if(message){
+    if (message) {
       showErrorToast(message);
     }
   };
