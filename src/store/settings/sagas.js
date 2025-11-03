@@ -8,7 +8,7 @@ import { requestSaga } from '../helpers/request_sagas';
 import { SettingsActions } from './redux';
 import { history } from '../../helpers/history';
 import { UsersActions, UsersSelectors } from '../users';
-import { showErrorToast } from '../../utils/toastControl'
+import { showErrorToast } from '../../utils/toastControl';
 
 export function* createSettings(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -40,8 +40,8 @@ export function* fetchSettings(api) {
   if (response.ok && response.data) {
     yield put(SettingsActions.setSettingsData(response.data));
   } else {
-     const message = response?.message || response?.data?.message;
-    if(message){
+    const message = response?.message || response?.data?.message;
+    if (message) {
       showErrorToast(message);
     }
   }
