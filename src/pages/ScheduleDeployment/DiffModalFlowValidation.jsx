@@ -127,7 +127,7 @@ const DiffModalFlowValidation = () => {
 
   const currentData = validationResult?.data;
   const reportvalidationDetails =
-    details?.FlowAnalysisReport[0]?.report_json || {};
+    details?.FlowAnalysisReport?.[0]?.report_json || {};
 
   // Effects
   useEffect(() => {
@@ -190,7 +190,7 @@ const DiffModalFlowValidation = () => {
     if (selectedValidation === 'admin validation') {
       return validationResult?.data?.tableBody || [];
     }
-    return details?.FlowAnalysisReport[0]?.report_json?.tableBody || [];
+    return details?.FlowAnalysisReport?.[0]?.report_json?.tableBody || [];
   };
 
   const tableBody = getTableBody();
