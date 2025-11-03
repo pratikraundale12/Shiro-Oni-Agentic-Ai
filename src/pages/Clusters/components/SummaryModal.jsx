@@ -17,7 +17,6 @@ import {
   createCluster,
   createRegistry,
   updateCluster,
-  // updateRegistry,
 } from '../../../store/index1';
 import { FullPageLoader } from '../../../components';
 import { isEmpty } from 'lodash';
@@ -154,68 +153,6 @@ export const SummaryModal = ({
     const selectedRegistriesId = selectedRegistriesArray?.map(
       item => item?.value
     );
-    // const formData = new FormData();
-
-    // formData.append('name', clusterData?.clusterName || '');
-    // formData.append('nifi_url', clusterData?.nifiUrl || '');
-    // // formData.append('registry_ids', selectedRegistriesId || []);
-    // selectedRegistriesId.forEach(id => {
-    //   formData.append('registry_ids[]', id);
-    // });
-    // formData.append('tag', tags);
-    // formData.append('notification_enable', notificationEnable);
-    // formData.append('approver_enable', approverEnable);
-    // formData.append(
-    //   'start_stop_requires_approval',
-    //   approverEnableForStartAndStop
-    // );
-    // formData.append('is_certificate_based_service_account', certificateOption);
-    // formData.append('change_request_enable', changeRequestEnable);
-
-    // if (clusterData?.logs_url) {
-    //   formData.append('logs_url', clusterData.logs_url);
-    // }
-
-    // if (clusterData?.metrics_url) {
-    //   formData.append('metrics_url', clusterData.metrics_url);
-    // }
-
-    // if (clusterData?.service_account_certificate) {
-    //   formData.append(
-    //     'service_account_certificate',
-    //     clusterData.service_account_certificate
-    //   );
-    // }
-
-    // if (clusterData?.service_account_certificate_password) {
-    //   formData.append(
-    //     'service_account_certificate_password',
-    //     clusterData.service_account_certificate_password
-    //   );
-    // }
-
-    // formData.append(
-    //   'nodes',
-    //   certificateNodesData && certificateNodesData.length > 0
-    //     ? certificateNodesData
-    //     : []
-    // );
-    // if (certificateNodesData && certificateNodesData.length > 0) {
-    //   certificateNodesData.forEach((node, index) => {
-    //     for (const key in node) {
-    //       formData.append(`nodes[${index}][${key}]`, node[key]);
-    //     }
-    //   });
-    // }
-
-    // if (clusterTestResponse?.clusterType) {
-    //   formData.append('clusterType', clusterTestResponse?.clusterType);
-    // }
-
-    // formData.append(
-    //   'default_registry_id',
-    //   default_registry_data?.value || default_registry_data || null
-    // );
 
     const data = {
       name: clusterData?.clusterName,
@@ -264,30 +201,6 @@ export const SummaryModal = ({
   };
 
   const editClusterData = async () => {
-    // const formdata = new FormData();
-    // formdata.append('name', clusterData.clusterName);
-    // formdata.append('nifi_url', clusterData.nifiUrl);
-    // formdata.append('tag', tags);
-    // formdata.append('notification_enable', notificationEnable);
-    // formdata.append('approver_enable', approverEnable);
-    // formdata.append('change_request_enable', changeRequestEnable);
-    // formdata.append('has_custom_service_account', false);
-    // formdata.append(
-    //   'start_stop_requires_approval',
-    //   approverEnableForStartAndStop
-    // );
-    // formdata.append('is_certificate_based_service_account', certificateOption);
-    // formdata.append('registry_ids', selectedRegistriesId);
-    // formdata.append(
-    //   'default_registry_id',
-    //   default_registry_data?.value || default_registry_data || null
-    // );
-
-    // formdata.append('registry_id', registryData.id);
-
-    // const id = clusterId;
-    // const response = await updateCluster(id, formdata);
-
     const selectedRegistriesId = selectedRegistriesArray?.map(
       item => item?.value
     );
