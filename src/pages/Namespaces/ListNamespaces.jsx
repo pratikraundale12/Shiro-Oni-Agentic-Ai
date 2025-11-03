@@ -10,6 +10,7 @@ import {
   OpenEyeIcon,
   SmallNotThunderIcon,
   SquareBoxIcon,
+  TreeIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
@@ -355,7 +356,6 @@ export const ListNamespaces = () => {
       width: '22%',
       resize: true,
     },
-
     {
       label: (
         <>
@@ -519,38 +519,74 @@ export const ListNamespaces = () => {
       width: '18%',
       resize: true,
     },
-
     {
       label: KDFM.ACTIONS,
       renderCell: item => (
         <div className="d-flex align-self-end gap-2">
-          <button
-            onClick={() => {
-              history.push(`/process-group/${item.id}`);
-              dispatch(NamespacesActions.setSelectedNamespace(item));
-            }}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-            }}
-            data-tooltip-id={`tooltip-group-details`}
-          >
-            <IconButton>
-              <OpenEyeIcon width={18} height={18} />
-            </IconButton>
-          </button>
-          <ReactTooltip
-            id={`tooltip-group-details`}
-            place="left"
-            content={'Process Group Details'}
-            style={{
-              width: '175px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
+          <>
+            <button
+              onClick={() => {
+                history.push(`/process-group/${item.id}`);
+                dispatch(NamespacesActions.setSelectedNamespace(item));
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+              }}
+              data-tooltip-id={`tooltip-group-details`}
+            >
+              <IconButton>
+                <OpenEyeIcon width={18} height={18} />
+              </IconButton>
+            </button>
+            <ReactTooltip
+              id={`tooltip-group-details`}
+              place="left"
+              content={'Process Group Details'}
+              style={{
+                width: '175px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+          </>
+          <>
+            <button
+              onClick={() => {
+                history.push(`/process-group/${item.id}/tree-view`);
+                dispatch(
+                  NamespacesActions.setSelectedNamespace({
+                    label: item.name,
+                    value: item.id,
+                    ...item,
+                  })
+                );
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+              }}
+              data-tooltip-id={`tooltip-tree-view`}
+            >
+              <IconButton>
+                <TreeIcon width={18} height={18} />
+              </IconButton>
+            </button>
+            <ReactTooltip
+              id={`tooltip-tree-view`}
+              place="left"
+              content={'Tree View'}
+              style={{
+                width: 'auto',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+          </>
           {item?.version && (
             <>
               <button
@@ -570,10 +606,10 @@ export const ListNamespaces = () => {
               </button>
               <ReactTooltip
                 id={`tooltip-schedule-deployment-list`}
-                place="right"
+                place="left"
                 content={'Schedule Upgrade'}
                 style={{
-                  width: '180px',
+                  width: 'auto',
                   whiteSpace: 'normal',
                   wordWrap: 'break-word',
                 }}

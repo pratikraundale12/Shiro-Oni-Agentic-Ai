@@ -201,7 +201,7 @@ const RectangleGraph = ({
          
               <div style="height:120px; width:360px; border : 1px solid ${theme.colors.darkGrey};border-radius:10px;">
                <div style="background-color:${theme.colors.darkGrey3}; padding:6px; border-radius:10px 10px 0px 0px;  font-size: 13px; display:flex; justify-content:space-between; font-weight: 500;"> <div style="color:${theme.colors.primary};">${dataForBox?.name}</div>     
-               ${dataForBox?.version !== undefined ? ` <div style="margin-right:5px">V ${dataForBox?.version}</div>` : <div></div>}</div>
+               ${dataForBox?.version !== undefined ? ` <div style="margin-right:5px">V ${dataForBox?.version}</div>` : `<div></div>`}</div>
           
 
            <div style="padding:10px;">

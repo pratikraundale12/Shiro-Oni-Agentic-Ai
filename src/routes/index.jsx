@@ -82,6 +82,7 @@ import SummarySanityCheck from '../pages/Namespaces/SummarySanityCheck.jsx';
 import InvalidProcessorDetails from '../pages/Namespaces/InvalidProcessorDetails.jsx';
 import DownloadHistory from '../pages/ActivityHistory/DownloadHistory.jsx';
 import AccessManagementTypes from '../pages/Role&Permission/AccessManagementTypes.jsx';
+import TreeViewPage from '../pages/Namespaces/TreeViewPage.jsx';
 // import DeploymentStatistics from '../pages/Dashboard/DeploymentStatistics.jsx';
 import ClusterSetupNewConfigKubernetes from '../pages/Clusters/components/ClusterconfigForKubernetes.jsx';
 // import ClusterSetupNewConfigKubernetes from '../pages/Clusters/components/ClusterSetupNewConfigKubernetes.jsx';
@@ -154,6 +155,10 @@ export const ROUTES_MENU = [
       {
         path: [':id'],
         component: <ProcessGroupSummary />,
+      },
+      {
+        path: [':id/tree-view'],
+        component: <TreeViewPage />,
       },
       {
         path: [':id/invalid-processors'],
