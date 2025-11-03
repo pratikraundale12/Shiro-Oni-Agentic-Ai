@@ -385,7 +385,7 @@ export const GridActions = ({
       );
       setSortingState('name');
     }
-    
+
     if (module === 'namespaces' && viewMode === 'tree_view') {
       if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
         return;
@@ -572,6 +572,7 @@ export const GridActions = ({
     history.push('/process-group/DeployPage');
     dispatch(NamespacesActions.setdeployRegistryFlow(true));
   };
+
   const loadingNamespaces = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchDashboard')
   );
@@ -1129,33 +1130,33 @@ export const GridActions = ({
                     disabled={isButtonDisabled}
                     onClick={() => handleScheduleClick()}
                   >
-                      <div
-                        className="d-flex "
-                        style={{ fontSize: '14px', fontWeight: '750' }}
-                      >
-                        <ScheduleDeploymentIcon
-                          height={19}
-                          width={19}
-                          color={'#fff'}
-                        />
-                        Schedule Deployment
-                      </div>
-                    </Button>
-                  )}
-                  {canWrite && (
-                    <Button
-                      id="process-group-deploy"
-                      disabled={!canWrite}
-                      size="md"
-                      style={{ width: '84px' }}
-                      onClick={handleClick}
-                      className="tour-process-group-deploy"
+                    <div
+                      className="d-flex "
+                      style={{ fontSize: '14px', fontWeight: '750' }}
                     >
-                      {KDFM.DEPLOY}
-                    </Button>
-                  )}
-                </>
-              )}
+                      <ScheduleDeploymentIcon
+                        height={19}
+                        width={19}
+                        color={'#fff'}
+                      />
+                      Schedule Deployment
+                    </div>
+                  </Button>
+                )}
+                {canWrite && (
+                  <Button
+                    id="process-group-deploy"
+                    disabled={!canWrite}
+                    size="md"
+                    style={{ width: '84px' }}
+                    onClick={handleClick}
+                    className="tour-process-group-deploy"
+                  >
+                    {KDFM.DEPLOY}
+                  </Button>
+                )}
+              </>
+            )}
             {module === 'namespaces' &&
               location.pathname === '/flow-analysis' &&
               selectedCluster?.value && (

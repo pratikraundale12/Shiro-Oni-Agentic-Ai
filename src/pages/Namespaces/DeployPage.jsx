@@ -394,11 +394,12 @@ function DeployPage() {
 
   useEffect(() => {
     dispatch(
-      NamespacesActions.fetchRegistryData(
-        registrySelectedId ||
+      NamespacesActions.fetchRegistryData({
+        registriesId:
+          registrySelectedId ||
           defaultRegistryValue ||
-          registryDropdownOptions?.[0]?.value
-      )
+          registryDropdownOptions?.[0]?.value,
+      })
     );
     dispatch(SettingsActions.setSettingsData({}));
   }, [dispatch, registrySelectedId]);
