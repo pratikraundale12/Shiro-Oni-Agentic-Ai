@@ -611,7 +611,11 @@ export const ClusterProcessDisplayModal = ({
   useEffect(() => {
     const extractedTime = extractNumberFromTimeString('1 mins');
     if (extractedTime !== null && !isNaN(extractedTime)) {
-      setInitialisingTime(180 * 1000);
+      if (processData?.isKubeCluster) {
+        setInitialisingTime(60 * 1000);
+      } else {
+        setInitialisingTime(180 * 1000);
+      }
     }
   }, [processData]);
 
