@@ -722,16 +722,16 @@ export const Add = () => {
     }
   };
 
-  const fetchRegistryDetails = async () => {
-    try {
-      const response = await getOneRegistry(
-        selectedRegistryId?.[0]?.value || ''
-      );
-      setRegistryData(response);
-    } catch (error) {
-      console.error('Failed to fetch registry details:', error);
-    }
-  };
+  // const fetchRegistryDetails = async () => {
+  //   try {
+  //     const response = await getOneRegistry(
+  //       selectedRegistryId?.[0]?.value || ''
+  //     );
+  //     setRegistryData(response);
+  //   } catch (error) {
+  //     console.error('Failed to fetch registry details:', error);
+  //   }
+  // };
 
   const noRegistryAPIcall = () => {
     if (
@@ -752,11 +752,11 @@ export const Add = () => {
     }
   }, [activeTab]);
 
-  useEffect(() => {
-    if (selectedRegistryId && noRegistryAPIcall()) {
-      fetchRegistryDetails();
-    }
-  }, [registries, selectedRegistryId, activeTab, newRegistry]);
+  // useEffect(() => {
+  //   if (selectedRegistryId && noRegistryAPIcall()) {
+  //     fetchRegistryDetails();
+  //   }
+  // }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const handleRegistry = () => {
     // Check form validation errors for default_registry
@@ -1178,7 +1178,7 @@ export const Add = () => {
             />
           </FormContainer>
         )}
-        {isSuperAdmin && activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT && (
+        {/* {isSuperAdmin && activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT && (
           <FormContainer>
             <ClusterServiceAccountModal
               tags={tags}
@@ -1188,7 +1188,7 @@ export const Add = () => {
               data={data}
             />
           </FormContainer>
-        )}
+        )} */}
         {activeTab === CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR && (
           <FormContainer>
             {<ClusterCustomProcessor data={data} />}

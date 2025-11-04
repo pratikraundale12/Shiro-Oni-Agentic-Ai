@@ -7,6 +7,7 @@ import { Button, SwitchButton } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { InputField, PasswordField } from '../../../shared';
+import { KDFM } from '../../../constants';
 import {
   CurvedLockIcon,
   CurvedProfileIcon,
@@ -16,11 +17,36 @@ import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
+import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
+import { updateCluster } from '../../../store/index1';
 import { theme } from '../../../styles';
 
 const Container = styled.div``;
-
+const ModalContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 0;
+`;
+const UploadWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #ff7a00;
+  margin-bottom: 12px;
+  padding: 5px 12px;
+  background: white;
+  font-weight: bold;
+  border: 1px solid #ff7a00;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  &:hover {
+    background: #fdfaf5;
+  }
+`;
 const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -39,7 +65,7 @@ export const ClusterServiceAccountModal = ({
   const navigate = useNavigate();
 
   const [method, setMethod] = useState(
-    data?.is_certificate_based_service_account ? 'p12' : 'username_password'
+    data?.service_account_type || 'username_password'
   );
   const [changeRequestEnabled, setChangeRequestEnabled] = useState(
     data?.has_custom_service_account || false
@@ -64,6 +90,7 @@ export const ClusterServiceAccountModal = ({
     watch,
     setValue,
     reset,
+    control,
     formState: { errors },
     handleSubmit,
   } = useForm({
@@ -88,8 +115,7 @@ export const ClusterServiceAccountModal = ({
       })
     ),
     defaultValues: {
-      is_certificate_based_service_account:
-        data?.is_certificate_based_service_account || false,
+      service_account_type: data?.service_account_type || 'username_password',
       service_username: data?.service_username || '',
       service_password: data?.service_password || '',
       service_account_certificate: data?.service_account_certificate || '',
@@ -127,10 +153,7 @@ export const ClusterServiceAccountModal = ({
       setHasChanges(certificateChanged || certificatePasswordChanged);
     }
 
-    if (
-      method !==
-      (data?.is_certificate_based_service_account ? 'p12' : 'username_password')
-    ) {
+    if (method !== (data?.service_account_type || 'username_password')) {
       setHasChanges(true);
     }
   };
@@ -138,11 +161,12 @@ export const ClusterServiceAccountModal = ({
   useEffect(() => {
     if (!changeRequestEnabled) {
       setValue(
-        'is_certificate_based_service_account',
-        data?.is_certificate_based_service_account ? true : false
+        'service_account_type',
+        data?.service_account_type === 'p12' ? 'p12' : 'username_password'
       );
     }
   }, [changeRequestEnabled]);
+
   const handleChangeRequestToggle = () => {
     const newState = !changeRequestEnabled;
     setChangeRequestEnabled(newState);
@@ -151,7 +175,7 @@ export const ClusterServiceAccountModal = ({
 
     if (!newState) {
       reset({
-        is_certificate_based_service_account: 'username_password',
+        service_account_type: 'username_password',
         service_username: data?.service_username || '',
         service_password: data?.service_password || '',
         service_account_certificate: data?.service_account_certificate || '',
@@ -161,11 +185,10 @@ export const ClusterServiceAccountModal = ({
         has_custom_service_account: false,
       });
       setMethod('username_password');
-      setValue('is_certificate_based_service_account', false);
+      setValue('service_account_type', 'username_password');
     } else {
       reset({
-        is_certificate_based_service_account:
-          data?.is_certificate_based_service_account || 'username_password',
+        service_account_type: data?.service_account_type || 'username_password',
         service_username: data?.service_username || '',
         service_password: data?.service_password || '',
         service_account_certificate: data?.service_account_certificate || '',
@@ -174,11 +197,9 @@ export const ClusterServiceAccountModal = ({
         change_request_enable: data?.change_request_enable || false,
         has_custom_service_account: true,
       });
-      const updatedMethod = data?.is_certificate_based_service_account
-        ? 'p12'
-        : 'username_password';
+      const updatedMethod = data?.service_account_type || 'username_password';
       setMethod(updatedMethod);
-      setValue('is_certificate_based_service_account', updatedMethod);
+      setValue('service_account_type', updatedMethod);
     }
   };
 
@@ -198,13 +219,11 @@ export const ClusterServiceAccountModal = ({
     }
   }, [method, data, setValue]);
 
-  const watchedMethod = watch('is_certificate_based_service_account');
+  const watchedMethod = watch('service_account_type');
 
   useEffect(() => {
     if (watchedMethod) {
-      setMethod('p12');
-    } else {
-      setMethod('username_password');
+      setMethod(watchedMethod);
     }
   }, [watchedMethod]);
 
@@ -215,20 +234,21 @@ export const ClusterServiceAccountModal = ({
 
   const handleSave = async () => {
     const formData = new FormData();
-    // const payloadData = {
-    //   name: clusterData.clusterName,
-    //   nifi_url: clusterData.nifiUrl,
-    //   ...(clusterData.registryId && { registry_id: clusterDa ta.registryId }),
-    //   ...(clusterData.logs_url && { logs_url: clusterData.logs_url }),
-    //   ...(clusterData.metrics_url && { metrics_url: clusterData.metrics_url }),
-    //   tag: tags,
-    //   notification_enable: clusterData.notification_enable || false,
-    //   has_custom_service_account: changeRequestEnabled ? true : false,
-    //   service_account_type: 'username_password',
-    //   service_username: watch('service_username'),
-    //   service_password: watch('service_password'),
-    // };
+    const payloadData = {
+      name: clusterData.clusterName,
+      nifi_url: clusterData.nifiUrl,
+      ...(clusterData.registryId && { registry_id: clusterData.registryId }),
+      ...(clusterData.logs_url && { logs_url: clusterData.logs_url }),
+      ...(clusterData.metrics_url && { metrics_url: clusterData.metrics_url }),
+      tag: tags,
+      notification_enable: clusterData.notification_enable || false,
+      has_custom_service_account: changeRequestEnabled ? true : false,
+      service_account_type: 'username_password',
+      service_username: watch('service_username'),
+      service_password: watch('service_password'),
+    };
 
+    await updateCluster(clusterId, payloadData);
     formData.append('name', clusterData.clusterName);
     formData.append('nifi_url', clusterData.nifiUrl);
 
@@ -256,6 +276,10 @@ export const ClusterServiceAccountModal = ({
     );
 
     if (changeRequestEnabled) {
+      const saType =
+        method === 'username_password' ? 'username_password' : 'p12';
+      formData.append('service_account_type', saType);
+
       if (method === 'username_password') {
         formData.append('service_username', watch('service_username'));
         formData.append('service_password', watch('service_password'));
@@ -277,6 +301,7 @@ export const ClusterServiceAccountModal = ({
       }
     } else {
       formData.append('has_custom_service_account', 'false');
+      formData.append('service_account_type', 'username_password');
       formData.append('service_username', '');
       formData.append('service_password', '');
       formData.append('service_account_certificate_password', '');
@@ -284,9 +309,6 @@ export const ClusterServiceAccountModal = ({
     }
 
     if (!clusterId || !formData) {
-      console.error(
-        'ClusterServiceAccountModal: Missing clusterId or formData'
-      );
       toast.error('Failed to save: Missing required data');
       return;
     }
@@ -355,35 +377,71 @@ export const ClusterServiceAccountModal = ({
         </div>
 
         <div className="row mb-3 mt-3">
-          <>
-            <div className="col-4">
-              <InputField
-                name="service_username"
-                type="text"
-                label="Username"
-                placeholder="Enter Your User Name"
-                required
-                register={register}
-                errors={errors}
-                icon={<CurvedProfileIcon />}
-                disabled={!changeRequestEnabled || loading}
-              />
-            </div>
-            <div className="col-4">
-              <PasswordField
-                name="service_password"
-                register={register}
-                watch={watch}
-                label="Password"
-                required
-                icon={<CurvedLockIcon />}
-                placeholder="Enter Your Password"
-                disableToggle={false}
-                errors={errors}
-                disabled={!changeRequestEnabled || loading}
-              />
-            </div>
-          </>
+          {method === 'username_password' && (
+            <>
+              <div className="col-4">
+                <InputField
+                  name="service_username"
+                  type="text"
+                  label="Username"
+                  placeholder="Enter Your User Name"
+                  required
+                  register={register}
+                  errors={errors}
+                  icon={<CurvedProfileIcon />}
+                  disabled={!changeRequestEnabled || loading}
+                />
+              </div>
+              <div className="col-4">
+                <PasswordField
+                  name="service_password"
+                  register={register}
+                  watch={watch}
+                  label="Password"
+                  required
+                  icon={<CurvedLockIcon />}
+                  placeholder="Enter Your Password"
+                  disableToggle={false}
+                  errors={errors}
+                  disabled={!changeRequestEnabled || loading}
+                />
+              </div>
+            </>
+          )}
+          {method === 'p12' && (
+            <>
+              <div className="col-4">
+                <ModalContainer>
+                  <PemUploadField
+                    name="service_account_certificate"
+                    label="P12 File"
+                    watch={watch}
+                    control={control}
+                    required
+                    rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                    placeholder={KDFM.UPLOAD_P12_FILE}
+                    errors={errors}
+                    fileLable="P12 file"
+                    disabled={!changeRequestEnabled || loading}
+                  />
+                </ModalContainer>
+              </div>
+              <div className="col-4">
+                <PasswordField
+                  name="service_account_certificate_password"
+                  register={register}
+                  watch={watch}
+                  label="Password"
+                  required
+                  icon={<CurvedLockIcon />}
+                  placeholder="Enter Your Password"
+                  disableToggle={false}
+                  errors={errors}
+                  disabled={!changeRequestEnabled || loading}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         <FlexWrapper>
@@ -420,6 +478,7 @@ ClusterServiceAccountModal.propTypes = {
     notification_enable: PropTypes.bool,
     approver_enable: PropTypes.bool,
     change_request_enable: PropTypes.bool,
+    service_account_type: PropTypes.oneOf(['username_password', 'p12']),
     service_username: PropTypes.string,
     service_password: PropTypes.string,
     service_account_certificate: PropTypes.string,
@@ -447,6 +506,7 @@ ClusterServiceAccountModal.propTypes = {
     notification_enable: PropTypes.bool,
     approver_enable: PropTypes.bool,
     change_request_enable: PropTypes.bool,
+    service_account_type: PropTypes.oneOf(['username_password', 'p12']),
     service_username: PropTypes.string,
     service_password: PropTypes.string,
     service_account_certificate: PropTypes.string,
@@ -455,6 +515,5 @@ ClusterServiceAccountModal.propTypes = {
       PropTypes.string,
       PropTypes.bool,
     ]),
-    is_certificate_based_service_account: PropTypes.bool,
   }),
 };
