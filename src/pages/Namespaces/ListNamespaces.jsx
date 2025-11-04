@@ -259,7 +259,6 @@ export const ListNamespaces = () => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
   };
-  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
 
   useEffect(() => {
     dispatch(SchedularActions.setScheduleFromList(false));
@@ -695,18 +694,22 @@ export const ListNamespaces = () => {
       },
     });
   };
-  const gridPermissions = useSelector(state =>
-    GridSelectors.getGridDataPermissions(state, 'namespaces')
+
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  const gridPermissionsCanWrite = useSelector(
+    state => GridSelectors.getGridDataPermissions(state, 'namespaces')?.canWrite
   );
 
   useEffect(() => {
-    if (gridPermissions?.canWrite && enableTour) {
-      setTimeout(() => {
+    if (gridPermissionsCanWrite && enableTour) {
+      const timer = setTimeout(() => {
         dispatch(ClustersActions.setTourStart(true));
         dispatch(ClustersActions.setTourIndex(7));
       }, 300);
+
+      return () => clearTimeout(timer);
     }
-  }, [gridPermissions]);
+  }, [gridPermissionsCanWrite, enableTour, dispatch]);
 
   const handleDeleteClick = (item, e) => {
     setRemoveSearch(false);

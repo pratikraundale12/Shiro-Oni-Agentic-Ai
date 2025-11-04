@@ -135,7 +135,9 @@ export const Grid = ({
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
   const ClusterActivated = localStorage.getItem('clusters');
-  const parsedClusterActivated = JSON.parse(ClusterActivated);
+  const parsedClusterActivated = ClusterActivated
+    ? JSON.parse(ClusterActivated)
+    : [];
   const isClusterLoggedIn =
     clusterId &&
     Array.isArray(parsedClusterActivated) &&

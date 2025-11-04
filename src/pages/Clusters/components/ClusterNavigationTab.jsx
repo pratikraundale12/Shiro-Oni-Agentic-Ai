@@ -49,10 +49,10 @@ const ClusterNavigationTab = ({
   const sshDataAdded = useSelector(ClustersSelectors.getsshAddedStatus);
   const isSuperAdmin = currentUserData?.role === 'superadmin';
   useEffect(() => {
-    if (data?.id) {
+    if (data?.id && activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS) {
       dispatch(ClustersActions.fetchSSHstatus(data?.id));
     }
-  }, [data?.id]);
+  }, [data?.id, activeTab]);
 
   return (
     <NavTabs id="nav-tab" role="tablist">
