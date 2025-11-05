@@ -331,7 +331,7 @@ const ConfigDetailsPage = () => {
             width={1600}
             height={610}
             // hideRootNode={true}
-            enableHoverApi={false}
+            enableHoverApi={!isUpgrade ? true : false}
           />
         );
       default:
