@@ -47,13 +47,15 @@ const ClusterTestSection = ({
             <Button
               onClick={() => setIsCertificateOpen(true)}
               disabled={
-                isEmpty(data)
+                (isEmpty(data)
                   ? testSuccess ||
                     !dataFill ||
                     checkDuplicate ||
                     checkDuplicateName ||
                     watchedFields?.[1] === data?.nifi_url
-                  : false
+                  : false) ||
+                !watchedFields?.[0] ||
+                !watchedFields?.[1]
               }
             >
               {KDFM.ADD_CERTIFICATE}
@@ -67,13 +69,15 @@ const ClusterTestSection = ({
                 <Button
                   onClick={() => setIsCredOpen(true)}
                   disabled={
-                    isEmpty(data)
+                    (isEmpty(data)
                       ? testSuccess ||
                         !dataFill ||
                         checkDuplicate ||
                         checkDuplicateName ||
                         watchedFields?.[1] === data?.nifi_url
-                      : false
+                      : false) ||
+                    !watchedFields?.[0] ||
+                    !watchedFields?.[1]
                   }
                 >
                   {KDFM.ENTER_CREDENTIALS}
