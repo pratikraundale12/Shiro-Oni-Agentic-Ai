@@ -277,7 +277,10 @@ const TreeViewNamespaces = ({
     if (!namespacesVersion) return;
     const dataForBox = {
       name: namespacesVersion?.name ?? '',
-      version: namespacesVersion?.version ?? '',
+      version:
+        namespacesVersion?.versionControlInformation?.version ||
+        namespacesVersion?.version ||
+        '',
       bucketName:
         namespacesVersion?.versionControlInformation?.bucketName ?? '',
       id: namespacesVersion?.id ?? '',
