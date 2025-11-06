@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { PropertyIcon } from '../../assets';
@@ -8,11 +8,12 @@ import { CompareValidationIcon } from '../../assets/Icons/CompareValidationIcon'
 import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { NamespacesActions } from '../../store';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { FlowValidationActions } from '../../store/flowValidation';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from '../Namespaces/ProcessGroupSorting';
 import AnalyzeNewFlow from './AnalyzeNewFlow';
+import { toast } from 'react-toastify';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -56,6 +57,14 @@ const FlowAnalysis = () => {
     setState,
   } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
+
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
+  useEffect(() => {
+    if (!selectedCluster?.value) {
+      toast.info('Please login to the cluster.');
+    }
+  }, [selectedCluster]);
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
