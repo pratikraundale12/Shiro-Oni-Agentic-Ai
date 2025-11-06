@@ -28,6 +28,7 @@ const RegistryFormInputs = ({
         label={KDFM.REGISTRY_NAME}
         placeholder={KDFM.ENTER_REGISTRY_NAME}
         errors={errors}
+        required
       />
       <InputField
         name="registryUrl"
@@ -37,6 +38,7 @@ const RegistryFormInputs = ({
         disabled={testSuccess}
         placeholder={KDFM.ENTER_REGISTRY_URL}
         errors={errors}
+        required
       />
       {' '}
       <div className="mb-3 d-flex gap-2 align-items-center">

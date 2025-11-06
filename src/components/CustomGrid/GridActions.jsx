@@ -228,11 +228,12 @@ const IconContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   border-radius: 4px;
   border: ${props =>
     props.active ? '1px solid #FF7A00' : '1px solid #dde4f0'};
   background-color: ${props => (props.active ? '#FF7A00' : '#fff')};
+  ${props => props.disabled && 'pointer-events: none;'}
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 `;
 
 export const GridActions = ({
@@ -1301,6 +1302,9 @@ export const GridActions = ({
                 dispatch(NamespacesActions.setSelectedNamespace({}));
               }}
               data-tooltip-id={'tooltip-id-tree-view'}
+              disabled={
+                isEmpty(selectedCluster) || isEmpty(selectedCluster?.value)
+              }
             >
               <TreeIcon
                 stroke={viewMode === 'tree_view' ? '#fff' : '#444445'}

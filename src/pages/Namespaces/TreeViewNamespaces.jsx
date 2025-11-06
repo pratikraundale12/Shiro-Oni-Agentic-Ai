@@ -937,7 +937,7 @@ const TreeViewNamespaces = ({
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDownInSearch}
-                placeholder="Search nodes..."
+                placeholder="Search..."
                 onFocus={() => {
                   if (suggestions.length) setShowSuggestions(true);
                 }}
