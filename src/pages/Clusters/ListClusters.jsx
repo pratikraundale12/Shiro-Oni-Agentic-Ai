@@ -662,6 +662,7 @@ export const ListClusters = () => {
         ...state,
         nodeClusterId: menuState.row.id,
         created_by_ansible: item?.created_by_ansible,
+        is_kube_cluster: item?.is_kube_cluster,
       });
       history.push(`/clusters/${menuState.row.id}`, {
         clusterSummaryPage: true,
