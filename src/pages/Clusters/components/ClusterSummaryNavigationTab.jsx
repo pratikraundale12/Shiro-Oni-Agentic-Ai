@@ -58,7 +58,7 @@ const ClusterSummaryNavigationTab = ({
           {KDFM.CLUSTER_SUMMARY}
         </div>
       </NavButton>
-      {state?.is_kube_cluster && (
+      {state?.is_kube_cluster && state?.isRegistrySecured && (
         <NavButton
           active={activeTab === 'registry_cert'}
           onClick={() => {
