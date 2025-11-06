@@ -103,7 +103,6 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const newlySelectedNodesIds = newlySelectedNodes.map(ele => ele?.id);
 
   const handleCreateCluster = data => {
-    setLoadingFullPage(true);
     if (!isEmpty(nodesUpdateAnsbibleClusterId)) {
       if (isEmpty(deselectedNodesIds) && isEmpty(newlySelectedNodesIds)) {
         toast.error('Please update any nodes first');
@@ -141,6 +140,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
       if (isEmpty(hosts)) {
         toast.error('Select Host IP');
       } else {
+        setLoadingFullPage(true);
         dispatch(ClustersActions.createCluster(payload));
       }
     }
