@@ -13,6 +13,7 @@ const ClusterFieldsForm = ({ register, errors,testSuccess }) => {
         label={KDFM.CLUSTER_NAME}
         placeholder={KDFM.ENTER_CLUSTER_NAME}
         errors={errors}
+        required
       />
       <InputField
         name="nifiUrl"
@@ -22,6 +23,7 @@ const ClusterFieldsForm = ({ register, errors,testSuccess }) => {
         disabled={testSuccess}
         placeholder={KDFM.ENTER_NIFI_URL}
         errors={errors}
+        required
       />
       <InputField
         name="metrics_url"

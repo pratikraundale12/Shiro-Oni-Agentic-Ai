@@ -147,6 +147,7 @@ export const Creditionals = ({
             label={KDFM.USERNAME}
             placeholder={KDFM.ENTER_USERNAME}
             errors={errors}
+            required
           />
           <PasswordField
             name="password"
@@ -155,6 +156,7 @@ export const Creditionals = ({
             label={KDFM.PASSWORD}
             placeholder={KDFM.ENTER_PASSWORD}
             errors={errors}
+            required
           />
         </form>
       </Modal>

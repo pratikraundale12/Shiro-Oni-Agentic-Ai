@@ -88,6 +88,7 @@ const NoDataText = styled.div`
 `;
 
 const RadioContainer = styled.div`
+  word-break: break-word;
   > div {
     margin: 0px;
   }

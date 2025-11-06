@@ -605,7 +605,10 @@ const ClusterDetailTab = ({
       <div className="row mt-3 ms-2 me-2">
         {' '}
         <div className="col-6">
-          <LabelSelect className="mb-3">{KDFM.CLUSTER_NAME}</LabelSelect>
+          <LabelSelect className="mb-3">
+            {KDFM.CLUSTER_NAME}
+            <span style={{ color: 'red' }}>&nbsp;*</span>
+          </LabelSelect>
           <InputField
             name="clusterName"
             type="text"
@@ -623,7 +626,10 @@ const ClusterDetailTab = ({
       </div>
       <div className="row mt-1 ms-2 me-2 mb-2">
         <div className="col-4">
-          <LabelSelect className="mb-3">{KDFM.NIFI_VERSION}</LabelSelect>
+          <LabelSelect className="mb-3">
+            {KDFM.NIFI_VERSION}
+            <span style={{ color: 'red' }}>&nbsp;*</span>
+          </LabelSelect>
           <SelectField
             name="nifiVersion"
             icon={<QRIcons />}
@@ -637,7 +643,10 @@ const ClusterDetailTab = ({
           />
         </div>
         <div className="col-4">
-          <LabelSelect className="mb-3">{KDFM.CONFIG_NAME}</LabelSelect>
+          <LabelSelect className="mb-3">
+            {KDFM.CONFIG_NAME}
+            <span style={{ color: 'red' }}>&nbsp;*</span>
+          </LabelSelect>
           <SelectField
             name="configName"
             icon={<QRIcons />}
@@ -650,7 +659,10 @@ const ClusterDetailTab = ({
           />
         </div>
         <div className="col-4">
-          <LabelSelect className="mb-3">{KDFM.CONFIG_VERSION}</LabelSelect>
+          <LabelSelect className="mb-3">
+            {KDFM.CONFIG_VERSION}
+            <span style={{ color: 'red' }}>&nbsp;*</span>
+          </LabelSelect>
           <SelectField
             name="configVersion"
             icon={<QRIcons />}
