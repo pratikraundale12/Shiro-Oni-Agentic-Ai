@@ -149,7 +149,7 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
                     fileLable="File"
                     validExtensionsArray={['.txt', '.yaml', '.yml']}
                     acceptString={'.txt,.yaml,.yml'}
-                    errorText={'YAML or PFX'}
+                    errorText={'YAML, YML or TXT'}
                     label="Kubernetes config file"
                   />
                 </ModalContainer>
