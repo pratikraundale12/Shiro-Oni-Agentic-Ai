@@ -7,6 +7,7 @@ import { ClustersActions, ClustersSelectors } from './redux';
 import { toast } from 'react-toastify';
 import { history } from '../../helpers/history';
 import { GridActions } from '../grid';
+import { showErrorToast } from '../../utils/toastControl';
 
 export function* fetchClusterList(api, { payload: { params } = {} }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -40,7 +41,10 @@ export function* fetchClusters(api, { params }) {
     successAction: ClustersActions.fetchClustersSuccess,
   });
   if (!response?.ok) {
-    toast.error(response?.data?.message);
+    const message = response?.data?.message;
+    if (message) {
+      showErrorToast(message);
+    }
   }
 }
 
