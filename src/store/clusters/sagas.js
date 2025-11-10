@@ -1030,16 +1030,6 @@ export function* clustersSagas(api) {
       checkServiceAccountCredentials,
       api
     ),
-    takeLatest(
-      ClustersActions.addServiceAccountHostRequest,
-      addServiceAccountHost,
-      api
-    ),
-    takeLatest(
-      ClustersActions.updateServiceAccountHostRequest,
-      updateServiceAccountHost,
-      api
-    ),
     takeLatest(ClustersActions.testMultipleNodes, testMultipleNodes, api),
     takeLatest(
       ClustersActions.updateMultipleNodeswithSSH,
