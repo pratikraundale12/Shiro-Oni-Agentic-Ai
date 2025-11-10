@@ -47,13 +47,11 @@ const ClusterTestSection = ({
             <Button
               onClick={() => setIsCertificateOpen(true)}
               disabled={
-                (isEmpty(data)
-                  ? testSuccess ||
-                    !dataFill ||
-                    checkDuplicate ||
-                    checkDuplicateName ||
-                    watchedFields?.[1] === data?.nifi_url
-                  : false) ||
+                testSuccess ||
+                !dataFill ||
+                checkDuplicate ||
+                checkDuplicateName ||
+                watchedFields?.[1] === data?.nifi_url ||
                 !watchedFields?.[0] ||
                 !watchedFields?.[1]
               }
@@ -69,13 +67,11 @@ const ClusterTestSection = ({
                 <Button
                   onClick={() => setIsCredOpen(true)}
                   disabled={
-                    (isEmpty(data)
-                      ? testSuccess ||
-                        !dataFill ||
-                        checkDuplicate ||
-                        checkDuplicateName ||
-                        watchedFields?.[1] === data?.nifi_url
-                      : false) ||
+                    testSuccess ||
+                    !dataFill ||
+                    checkDuplicate ||
+                    checkDuplicateName ||
+                    watchedFields?.[1] === data?.nifi_url ||
                     !watchedFields?.[0] ||
                     !watchedFields?.[1]
                   }

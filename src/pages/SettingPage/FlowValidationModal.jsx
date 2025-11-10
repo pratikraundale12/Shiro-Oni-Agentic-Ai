@@ -851,7 +851,7 @@ const FlowValidationModal = () => {
 
   return (
     <Modal
-      title={selectedItem?.header || ''}
+      title={`Validation Rule: ${selectedItem?.header}` || ''}
       isOpen={isFlowValidationModalOpen}
       onRequestClose={handleCloseModal}
       size="md"
