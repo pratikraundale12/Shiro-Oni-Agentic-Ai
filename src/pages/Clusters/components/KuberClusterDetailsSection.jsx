@@ -165,6 +165,9 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   });
   const configNameValue = watch('configName');
   const clusterType = watch('cluster_type');
+  const kubeClusterConfig = watch('host');
+  const clusterNameValue = watch('clusterName');
+  const configVersionValue = watch('configVersion');
 
   const schemaCluster = useMemo(() => clusterType, [clusterType]);
 
@@ -233,7 +236,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     if (isEmpty(errors)) {
       handleSubmit(handleCreateCluster)();
     } else {
-      setOpenAddConfigModal(true);
+      setOpenAddConfigModal(false);
     }
   };
   return (
@@ -357,7 +360,18 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
 
           <Button
             type="submit"
-            onClick={handleSubmit(handleCreateCluster, onError)}
+            // onClick={handleSubmit(handleCreateCluster, onError)}
+            disabled={
+              isEmpty(clusterNameValue?.trim()) ||
+              isEmpty(kubeClusterConfig) ||
+              isEmpty(configNameValue) ||
+              !(
+                configVersionValue !== null &&
+                configVersionValue !== undefined &&
+                !isNaN(configVersionValue)
+              )
+            }
+            onClick={() => setOpenAddConfigModal(true)}
           >
             {!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
           </Button>
@@ -375,6 +389,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
         handleSubmit={handleSubmit}
         reset={reset}
         kubeClusterIDEdit={kubeClusterIDEdit}
+        onError={onError}
       />
     </>
   );
