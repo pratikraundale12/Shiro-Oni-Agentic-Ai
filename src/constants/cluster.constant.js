@@ -54,7 +54,7 @@ export const CLUSTER_CONSTANTS = {
   DELETE_CLUSTER: 'Delete Cluster',
   SELECTED_CLUSTER: 'Selected Cluster',
   DEACTIVATE_CLUSTER: 'Deactivate Cluster',
-  SEARCH_CLUSTER_NAME_URL: 'Search Cluster Name, URL, Tag',
+  SEARCH_CLUSTER_NAME_URL: 'Search Cluster Name, URL',
   ENTER_EMAIL: 'Enter your Email',
   ENTER_SMTP_SERVICE: 'Enter SMTP Service',
   ENTER_SMTP_HOST: 'Enter SMTP Host',

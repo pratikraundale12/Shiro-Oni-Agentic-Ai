@@ -6,9 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ClustersActions, ClustersSelectors } from '../../../store';
 import {
   ActivityHistoryIcon,
+  ClusterDetailsIcon,
   ClusterDetailTabIcon,
   CubeIcon,
+  ManageConfigIcon,
   ManageHostIcon,
+  ManageKubeClusterIcon,
   SettingSmallIcon,
 } from '../../../assets';
 
@@ -60,9 +63,7 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
         }}
       >
-        <ManageHostIcon
-          color={activeTab === 'manage_host' ? '#FF7A00' : '#444445'}
-        />{' '}
+        <ManageKubeClusterIcon height="25" width="25" color={'black'} />
         {createClusterVisKubernetes === 'VM'
           ? KDFM.MANAGE_HOST
           : 'Manage Kube Cluster'}
@@ -73,11 +74,7 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('manage_config'));
         }}
       >
-        <SettingSmallIcon
-          color={activeTab === 'manage_config' ? '#FF7A00' : '#444445'}
-          height={18}
-          width={18}
-        />{' '}
+        <ManageConfigIcon height="25" width="25" color={'black'} />
         {KDFM.MANAGE_CONFIG}
       </NavButton>
       <NavButton
@@ -86,9 +83,8 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
         }}
       >
-        <ClusterDetailTabIcon
-          color={activeTab === 'cluster_details' ? '#FF7A00' : '#444445'}
-        />{' '}
+        <ClusterDetailsIcon height="25" width="25" color={'black'} />
+
         {KDFM.CLUSTER_DETAILS}
       </NavButton>
     </NavTabs>

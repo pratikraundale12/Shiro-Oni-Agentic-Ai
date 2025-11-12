@@ -149,7 +149,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   ];
   const KUBE_COLUMNS = [
     {
-      label: 'Name',
+      label: 'Config Name',
       renderCell: item => <>{item.config_name}</>,
       resize: true,
       width: '50%',

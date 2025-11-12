@@ -127,6 +127,7 @@ export const ClusterSummary = () => {
         setActiveTab={setActiveTab}
         createdByAnsible={state?.created_by_ansible}
       />
+
       {activeTab === 'summary' && (
         <Grid
           module="nodes"
@@ -135,6 +136,7 @@ export const ClusterSummary = () => {
           columns={COLUMNS}
           refreshOptions={REFRESH_OPTIONS}
           createdByAnsible={state?.created_by_ansible}
+          is_kube_cluster={state?.is_kube_cluster}
         />
       )}
       {activeTab === 'registry_cert' && (
@@ -147,6 +149,7 @@ export const ClusterSummary = () => {
           <ClusterStatusTab />
         </div>
       )}
+
       <div style={{ width: '74px', marginTop: 'auto', paddingTop: '10px' }}>
         <Button variant="secondary" type="button" onClick={handleBackAction}>
           {KDFM.BACK}

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import {
-  ManageClusterIcon,
-  ManageConfigGearIcon,
-  SSHCredentialsPaperIcon,
+  ClusterDetailsIcon,
+  ManageConfigIcon,
+  ManageKubeClusterIcon,
 } from '../../../assets';
 import { useDispatch, useSelector } from 'react-redux';
 import { ClustersActions, ClustersSelectors } from '../../../store';
@@ -65,7 +65,7 @@ const ClusterSetupGettingStartedTab = () => {
         <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
-              <SSHCredentialsPaperIcon height="60" width="60" color={'black'} />
+              <ManageKubeClusterIcon height="75" width="75" color={'black'} />
             </LeftHolder>
             <RightHolder className="col h-100 row">
               <div className="col-10 h-100">
@@ -105,7 +105,7 @@ const ClusterSetupGettingStartedTab = () => {
         <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
-              <ManageConfigGearIcon height="60" width="60" color={'black'} />
+              <ManageConfigIcon height="75" width="75" color={'black'} />
             </LeftHolder>
             <RightHolder className="col h-100 row">
               <div className="col-10 h-100">
@@ -141,7 +141,7 @@ const ClusterSetupGettingStartedTab = () => {
         <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
-              <ManageClusterIcon height="60" width="60" color={'black'} />
+              <ClusterDetailsIcon height="75" width="75" color={'black'} />
             </LeftHolder>
             <RightHolder className="col h-100 row">
               <div className="col-10 h-100">

@@ -71,7 +71,7 @@ const ClusterSummaryNavigationTab = ({
               width={22}
               height={22}
             />
-            Registry Cert
+            Registry
           </div>
         </NavButton>
       )}
