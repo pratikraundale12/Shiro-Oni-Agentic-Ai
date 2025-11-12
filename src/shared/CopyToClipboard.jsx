@@ -15,7 +15,7 @@ export const StyledButton = styled.button`
   justify-content: center;
   border-radius: 100%;
   background-color: ${props => props.theme.colors.white};
-  border: 1px solid ${props => props.theme.colors.border};
+  // border: 1px solid ${props => props.theme.colors.border};
 
   &:disabled {
     opacity: 0.4;

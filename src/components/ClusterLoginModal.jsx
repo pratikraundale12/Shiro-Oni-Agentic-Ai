@@ -159,7 +159,7 @@ export const ClusterLoginModal = () => {
           );
           dispatch(NamespacesActions.checkDestCluster());
         }
-        dispatch(AuthenticationActions.setClusterLogin());
+        dispatch(AuthenticationActions.setClusterLogin(false));
         toast.success('The cluster is now enabled successfully');
 
         reset(DEFAULT_VALUES);
@@ -249,7 +249,7 @@ export const ClusterLoginModal = () => {
       cluster => cluster?.id == getValues()?.cluster_id
     )?.name;
 
-    dispatch(AuthenticationActions.setClusterLogin());
+    dispatch(AuthenticationActions.setClusterLogin(false));
     toast.success('Cluster Enabled Successfully');
     dispatch(
       NamespacesActions.setSelectedCluster({
@@ -275,7 +275,9 @@ export const ClusterLoginModal = () => {
       <Modal
         title="Enable Cluster"
         isOpen={isObject(clusterLogin) || clusterLogin}
-        onRequestClose={() => dispatch(AuthenticationActions.setClusterLogin())}
+        onRequestClose={() =>
+          dispatch(AuthenticationActions.setClusterLogin(false))
+        }
         size="sm"
         loading={loading}
         secondaryButtonText="Back"
