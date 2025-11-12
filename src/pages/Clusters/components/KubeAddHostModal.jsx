@@ -60,10 +60,10 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
   const schemaPasswrdwithCertificate = yup.object().shape({
     kubeClusterName: yup
       .string()
-      .required('Kubernetes Cluster Name is required')
+      .required('Kubernetes Cluster Configuration is required')
       .test(
         'no-leading-trailing-spaces',
-        'Kubernetes Cluster Name must not have leading or trailing spaces',
+        'Kubernetes Cluster Configuration must not have leading or trailing spaces',
         value => value === value?.trim()
       ),
     kubeConfigFile: yup.mixed().required('File is required'),
@@ -125,8 +125,8 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
               <InputField
                 name="kubeClusterName"
                 type="text"
-                label="Kubernetes Cluster Name"
-                placeholder="Enter Kubernetes Cluster Name"
+                label="Kubernetes Cluster Configuration"
+                placeholder="Enter Kubernetes Cluster Configuration"
                 required
                 register={register}
                 errors={errors}
@@ -144,13 +144,13 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
                     control={control}
                     required
                     rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                    placeholder="Upload kubernetes config file"
+                    placeholder="Upload kubernetes Configuration file"
                     errors={errors}
                     fileLable="File"
                     validExtensionsArray={['.txt', '.yaml', '.yml']}
                     acceptString={'.txt,.yaml,.yml'}
                     errorText={'YAML, YML or TXT'}
-                    label="Kubernetes config file"
+                    label="Kubernetes Configuration file"
                   />
                 </ModalContainer>
               </span>

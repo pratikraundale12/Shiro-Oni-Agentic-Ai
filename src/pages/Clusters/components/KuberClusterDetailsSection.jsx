@@ -266,7 +266,8 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
           <div className="row">
             <div className="col-6">
               <LabelSelect className="mb-3">
-                Kubernetes Cluster Name <span style={{ color: 'red' }}>*</span>
+                Kubernetes Cluster Configuration{' '}
+                <span style={{ color: 'red' }}>*</span>
               </LabelSelect>
               <SelectField
                 name="host"
@@ -279,14 +280,14 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                     ? hostOptionsOnUpgrade || []
                     : hostOptions || []
                 }
-                placeholder={'Select Kubernetes Cluster Name'}
+                placeholder={'Select Kubernetes Cluster Configuration'}
                 required={true}
                 disabled={!isEmpty(kubeClusterIDEdit)}
               />
             </div>
             <div className="col-6">
               <LabelSelect className="mb-3">
-                {KDFM.CONFIG_NAME} <span style={{ color: 'red' }}>*</span>
+                NiFi Configuration <span style={{ color: 'red' }}>*</span>
               </LabelSelect>
               <SelectField
                 name="configName"
@@ -299,7 +300,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                     ? configOptionsOnUpgrade || []
                     : configOptions || []
                 }
-                placeholder={KDFM.SELECT_CONFIG_NAME}
+                placeholder="Select NiFi Configuration"
                 required={true}
               />
             </div>
@@ -307,7 +308,8 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
           <div className="row mt-3">
             <div className="col-6">
               <LabelSelect className="mb-3">
-                {KDFM.CONFIG_VERSION} <span style={{ color: 'red' }}>*</span>
+                NiFi Configuration Version
+                <span style={{ color: 'red' }}>*</span>
               </LabelSelect>
               <SelectField
                 name="configVersion"
@@ -316,7 +318,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                 errors={errors}
                 control={control}
                 options={configVersionOption || []}
-                placeholder={KDFM.SELECT_CONFIG_VERSION}
+                placeholder={'Select NiFi Configuration Version'}
                 required={true}
               />
             </div>

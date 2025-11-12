@@ -73,7 +73,7 @@ const ClusterSetupGettingStartedTab = () => {
                   <HighLightText>
                     {createClusterVisKubernetes === 'VM'
                       ? KDFM.GETTING_STARTED_MANAGE_HOST_TITLE
-                      : 'Manage Kube Cluster'}
+                      : 'Kubernetes Configuration'}
                   </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
@@ -95,7 +95,7 @@ const ClusterSetupGettingStartedTab = () => {
                   >
                     {createClusterVisKubernetes === 'VM'
                       ? KDFM.MANAGE_HOST
-                      : 'Manage Kube Cluster'}
+                      : 'Kubernetes Configuration'}
                   </BottomText>
                 </div>
               </div>
@@ -111,7 +111,10 @@ const ClusterSetupGettingStartedTab = () => {
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <HighLightText>
-                    {KDFM.GETTING_STARTED_MANAGE_CONFIG_TITLE}
+                    {' '}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.GETTING_STARTED_MANAGE_CONFIG_TITLE
+                      : 'NiFi Configuration'}
                   </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
@@ -147,12 +150,16 @@ const ClusterSetupGettingStartedTab = () => {
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <HighLightText>
-                    {KDFM.GETTING_STARTED_CLUSTER_DETAILS_TITLE}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.GETTING_STARTED_CLUSTER_DETAILS_TITLE
+                      : 'Cluster Details'}
                   </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <BottomText>
-                    {KDFM.GETTING_STARTED_CLUSTER_DETAILS_DESCRIPTION}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.GETTING_STARTED_CLUSTER_DETAILS_DESCRIPTION
+                      : 'Add Cluster Details'}
                   </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">

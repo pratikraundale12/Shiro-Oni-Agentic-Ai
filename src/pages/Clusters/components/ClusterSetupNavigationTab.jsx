@@ -66,7 +66,7 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
         <ManageKubeClusterIcon height="25" width="25" color={'black'} />
         {createClusterVisKubernetes === 'VM'
           ? KDFM.MANAGE_HOST
-          : 'Manage Kube Cluster'}
+          : 'Kubernetes Configuration'}
       </NavButton>
       <NavButton
         active={activeTab === 'manage_config'}
@@ -75,7 +75,9 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
         }}
       >
         <ManageConfigIcon height="25" width="25" color={'black'} />
-        {KDFM.MANAGE_CONFIG}
+        {createClusterVisKubernetes === 'VM'
+          ? KDFM.MANAGE_CONFIG
+          : 'NiFi Configuration'}
       </NavButton>
       <NavButton
         active={activeTab === 'cluster_details'}
