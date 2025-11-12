@@ -929,6 +929,24 @@ export function* deleteClusterDriverFile(api, { payload }) {
   }
 }
 
+export function* fetchKubePodStatus(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchKubePodStatus',
+    loadingSection: 'fetchKubePodStatus',
+    apiMethod: api.fetchKubePodStatus,
+    apiParams: [
+      {
+        id: payload,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setKubePods(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
 export function* clustersSagas(api) {
   yield all([
     takeLatest(
@@ -1086,5 +1104,6 @@ export function* clustersSagas(api) {
       deleteClusterDriverFile,
       api
     ),
+    takeLatest(ClustersActions.fetchKubePodStatus, fetchKubePodStatus, api),
   ]);
 }

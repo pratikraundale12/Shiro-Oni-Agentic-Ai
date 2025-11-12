@@ -51,7 +51,7 @@ const KubeClusterConfigDetailsModal = ({
       <Modal
         isOpen={openAddConfigModal}
         title={`${clusterType === 'ec2' ? 'Self-Managed Kubernetes' : 'Amazon EKS'} Details`}
-        secondaryButtonText="Back"
+        secondaryButtonText="Close"
         primaryButtonText={
           !isEmpty(kubeClusterIDEdit)
             ? 'Initiate Cluster Edit'

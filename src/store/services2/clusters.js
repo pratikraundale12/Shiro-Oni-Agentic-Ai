@@ -169,6 +169,9 @@ export const clustersAPI = api => {
 
   const deleteClusterDriverFile = ({ id, driverId }) =>
     api.delete(`/clusters/${id}/drivers/${driverId}`);
+  const fetchKubePodStatus = ({ id }) => {
+    return api.get(`/clusters/${id}/pods-status`);
+  };
 
   return {
     fetchClusters,
@@ -222,5 +225,6 @@ export const clustersAPI = api => {
     deleteClusterKube,
     deleteClusterNarFile,
     deleteClusterDriverFile,
+    fetchKubePodStatus,
   };
 };

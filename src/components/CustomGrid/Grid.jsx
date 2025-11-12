@@ -30,6 +30,7 @@ import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
 import { Table } from './Table';
 import ClusterControlButtons from '../../pages/Clusters/ClusterControlButtons';
+import KubeClusterPodsAndMetrics from '../../pages/Clusters/components/ClusterKubePodsAndMetrics';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -124,6 +125,7 @@ export const Grid = ({
   sortingState,
   setSortingState,
   createdByAnsible = false,
+  is_kube_cluster = false,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -275,7 +277,10 @@ export const Grid = ({
   };
 
   const getNamespacesListData = () => {
-    if (module === 'nodes' && !isClusterLoggedIn) {
+    if (
+      (module === 'nodes' && !isClusterLoggedIn) ||
+      (module === 'nodes' && is_kube_cluster)
+    ) {
       return;
     }
     if (module === 'namespaces' && selectedCluster?.value) {
@@ -503,6 +508,7 @@ export const Grid = ({
             />
           )}
         </ClusterRegistryContainer>
+        {is_kube_cluster && <KubeClusterPodsAndMetrics />}
         <Modal
           title="Event Log"
           isOpen={eventModal}
@@ -546,34 +552,38 @@ export const Grid = ({
   };
   return (
     <Container>
-      <GridActionsComponent
-        title={title}
-        module={module}
-        refreshOptions={refreshOptions}
-        statusOptions={statusOptions}
-        search={search}
-        placeholder={placeholder}
-        buttonText={buttonText}
-        gridCount={gridCount}
-        addModal={addModal}
-        clusterId={clusterId}
-        watchStatus={watchStatus}
-        watch={watch}
-        control={control}
-        setSelectedRole={setSelectedRole}
-        selectedRole={selectedRole}
-        sortingState={sortingState}
-        setValue={setValue}
-        setClusterSelectedValue={setClusterSelectedValue}
-        clusterSelectedValue={clusterSelectedValue}
-        setSelectEvent={setSelectEvent}
-        selectEvent={selectEvent}
-        selectEntity={selectEntity}
-        setSelectEntity={setSelectEntity}
-        setSortingState={setSortingState}
-        setCurrentPage={setCurrentPage}
-        isClusterLoggedIn={isClusterLoggedIn}
-      />
+      {!is_kube_cluster && (
+        <GridActionsComponent
+          title={title}
+          module={module}
+          refreshOptions={refreshOptions}
+          statusOptions={statusOptions}
+          search={search}
+          placeholder={placeholder}
+          buttonText={buttonText}
+          gridCount={gridCount}
+          addModal={addModal}
+          clusterId={clusterId}
+          watchStatus={watchStatus}
+          watch={watch}
+          control={control}
+          setSelectedRole={setSelectedRole}
+          selectedRole={selectedRole}
+          sortingState={sortingState}
+          setValue={setValue}
+          setClusterSelectedValue={setClusterSelectedValue}
+          clusterSelectedValue={clusterSelectedValue}
+          setSelectEvent={setSelectEvent}
+          selectEvent={selectEvent}
+          selectEntity={selectEntity}
+          setSelectEntity={setSelectEntity}
+          setSortingState={setSortingState}
+          setCurrentPage={setCurrentPage}
+          isClusterLoggedIn={isClusterLoggedIn}
+          is_kube_cluster={is_kube_cluster}
+        />
+      )}
+      {is_kube_cluster && <div className="mt-4"></div>}
       {module === 'nodes' &&
         !loading &&
         !isEmpty(registryNodesData?.cluster?.name) && (
@@ -582,23 +592,25 @@ export const Grid = ({
       <div className="mb-2 ps-1">
         <Breadcrumb module={module} />
       </div>
+      {!is_kube_cluster && (
+        <TableContainer
+          module={module}
+          fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
+        >
+          {loading || isEmpty(TABLE_DATA?.nodes) ? (
+            getLoader()
+          ) : (
+            <CompactTable
+              data={TABLE_DATA}
+              columns={columns}
+              theme={tableTheme}
+              layout={{ custom: true }}
+              // sort={sort}
+            />
+          )}
+        </TableContainer>
+      )}
 
-      <TableContainer
-        module={module}
-        fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
-      >
-        {loading || isEmpty(TABLE_DATA?.nodes) ? (
-          getLoader()
-        ) : (
-          <CompactTable
-            data={TABLE_DATA}
-            columns={columns}
-            theme={tableTheme}
-            layout={{ custom: true }}
-            // sort={sort}
-          />
-        )}
-      </TableContainer>
       {gridCount >= 10 && (
         <Pagination
           page={currentPage}
@@ -642,4 +654,5 @@ Grid.propTypes = {
   sortingState: PropTypes.string,
   setSortingState: PropTypes.func,
   createdByAnsible: PropTypes.bool,
+  is_kube_cluster: PropTypes.bool,
 };

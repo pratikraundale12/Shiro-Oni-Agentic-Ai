@@ -63,7 +63,7 @@ const ClusterNavigationTab = ({
         {KDFM.CLUSTER_DETAILS}
       </NavButton>
       <>
-        {!data?.created_by_ansible && (
+        {!data?.created_by_ansible && !data?.is_kube_cluster && (
           <NavButton
             active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
             onClick={() =>
