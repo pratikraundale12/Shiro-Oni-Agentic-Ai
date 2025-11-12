@@ -116,13 +116,13 @@ const KubeClusterPodsAndMetrics = () => {
     },
     {
       label: 'CPU Usage',
-      renderCell: item => item?.cpu_millicores,
+      renderCell: item => item?.cpu_usage,
       width: '10%',
       resize: true,
     },
     {
       label: 'Memory Usage',
-      renderCell: item => item?.memory_bytes,
+      renderCell: item => item?.memory_usage,
       width: '10%',
       resize: true,
     },
