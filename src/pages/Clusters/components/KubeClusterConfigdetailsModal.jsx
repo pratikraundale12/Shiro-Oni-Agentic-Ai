@@ -42,6 +42,7 @@ const KubeClusterConfigDetailsModal = ({
   handleSubmit,
   kubeClusterIDEdit,
   reset,
+  onError,
 }) => {
   const onRequestClose = () => {
     setOpenAddConfigModal(false);
@@ -59,7 +60,7 @@ const KubeClusterConfigDetailsModal = ({
         }
         primaryButtonDisabled={false}
         onRequestClose={onRequestClose}
-        onSubmit={handleSubmit(handleCreateCluster)}
+        onSubmit={handleSubmit(handleCreateCluster, onError)}
         onSecondarySubmit={onRequestClose}
         footerAlign="center"
         contentStyles={{ minWidth: '60%', maxHeight: '60%' }}
