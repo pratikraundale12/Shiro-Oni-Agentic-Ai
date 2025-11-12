@@ -185,7 +185,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
               zIndex: 10000,
             }}
           />
-          {!item?.is_part_of_cluster && (
+          {
             <IconButton
               onClick={() => {
                 setConfigToDelete(item);
@@ -193,10 +193,11 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
               }}
               className="pencil-icon-schedule-list"
               data-tooltip-id={'config-ansible-delete-option'}
+              disabled={item?.is_part_of_cluster}
             >
               <DeleteSmallIcon width={16} height={16} color="red" />
             </IconButton>
-          )}
+          }
           <ReactTooltip
             id={`config-ansible-delete-option`}
             place="bottom"
