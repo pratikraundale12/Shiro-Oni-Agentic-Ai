@@ -207,7 +207,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
   ];
   const COLUMNS_KUBERNETSTES_FLOW = [
     {
-      label: 'Kubernetes Cluster Name',
+      label: 'Kubernetes Cluster Configuration',
       renderCell: item => (
         <div className="d-flex gap-2">{item?.kube_cluster_name || 'N/A'}</div>
       ),

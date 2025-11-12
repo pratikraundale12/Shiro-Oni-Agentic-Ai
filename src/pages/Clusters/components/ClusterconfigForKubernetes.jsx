@@ -84,6 +84,7 @@ const BottomButton = styled.div`
 const ClusterSetupNewConfigKubernetes = () => {
   const dispatch = useDispatch();
   const [errorsInEditor, setErrorsInEditor] = useState([]);
+  const [initialYamlValue, setInitialYamlValue] = useState('');
   const [yamlValue, setYamlValue] = useState('');
   const configDefaultValue = useSelector(
     ClustersSelectors.getKubernetesConfigFields
@@ -139,13 +140,18 @@ const ClusterSetupNewConfigKubernetes = () => {
   useEffect(() => {
     if (!isEmpty(configToEdit)) {
       setYamlValue(configToEdit?.config_json);
+      setInitialYamlValue(configToEdit?.config_json);
       setValue('configName', configToEdit?.config_name);
+    } else {
+      setYamlValue(configDefaultValue?.valuesYaml || '');
+      setInitialYamlValue(configDefaultValue?.valuesYaml || '');
     }
-  }, [configToEdit]);
+  }, [configToEdit, configDefaultValue, setValue]);
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchConfigFieldsForKubernetes')
   );
+  const hasYamlChanged = yamlValue.trim() !== initialYamlValue.trim();
 
   return (
     <Wrapper>
@@ -218,7 +224,10 @@ const ClusterSetupNewConfigKubernetes = () => {
           <Button
             type="submit"
             onClick={handleSubmit(handleAddConfig)}
-            disabled={!isEmpty(errorsInEditor)}
+            disabled={
+              !isEmpty(errorsInEditor) ||
+              (!isEmpty(configToEdit) && !hasYamlChanged)
+            }
           >
             {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
           </Button>
