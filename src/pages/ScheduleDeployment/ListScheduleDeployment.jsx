@@ -35,7 +35,6 @@ import {
   GridActions,
   LoadingSelectors,
   NamespacesActions,
-  NamespacesSelectors,
 } from '../../store';
 import {
   SchedularActions,
@@ -51,7 +50,6 @@ import ScheduleSanityCheckModal from './ScheduleSanityCheckModal';
 import { StatusText } from './StatusText';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
 import { UserStoryModal } from './UserStoryModal';
-import { toast } from 'react-toastify';
 
 const ActionTd = styled.div`
   display: flex;
@@ -162,7 +160,6 @@ export const ListScheduleDeployment = () => {
   const selctedCluster = useSelector(
     SchedularSelectors.getSelectedClusterState
   );
-  const cluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const selctedStatus = useSelector(SchedularSelectors.getSelectedStatusState);
   const isSanityCheckModalOpen = useSelector(
     SchedularSelectors.getIsSanityCheckModalOpen
@@ -189,12 +186,6 @@ export const ListScheduleDeployment = () => {
   useEffect(() => {
     history.push('/schedule-deployment');
   }, []);
-
-    useEffect(() => {
-    if (!cluster?.value) {
-      toast.info('Please login to the cluster.');
-    }
-  }, [cluster]);
 
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
