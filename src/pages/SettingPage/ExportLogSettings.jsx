@@ -46,7 +46,7 @@ const ButtonText = styled.div`
 
 const StyledSaveButton = styled(Button)`
   padding-top: 10px;
-  margin-top: 30px;
+  margin-top: 11px;
   padding-bottom: 10px;
   height: 50px;
   width: 150px;

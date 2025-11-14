@@ -216,14 +216,12 @@ export const ActionRender = ({
 
                 {!clusterLogin && <EnableClusterRender item={item} />}
 
-                {item?.edit_cluster && (
-                  <div className="position-relative">
-                    <IconButton onClick={event => handleMenuClick(event, item)}>
-                      <ThreedotsIcon />
-                    </IconButton>
-                    {children}
-                  </div>
-                )}
+                <div className="position-relative">
+                  <IconButton onClick={event => handleMenuClick(event, item)}>
+                    <ThreedotsIcon />
+                  </IconButton>
+                  {children}
+                </div>
                 {item.status !== CLUSTER_STATUS.DISCONNECTED &&
                   item.is_active && (
                     <Tooltip
