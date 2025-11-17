@@ -9,7 +9,7 @@ const Container = styled.div`
     height: auto;
   }
 `;
-const RegistryDetail = ({ data }) => {
+const RegistryDetail = ({ data, handleCert }) => {
   const REGISTRYCOLUMNS = [
     {
       label: KDFM.REGISTRY_NAME,
@@ -32,6 +32,9 @@ const RegistryDetail = ({ data }) => {
           tooltipPlacement="top"
           type="Registry"
           copy_btn_tooltip={'Copy Registry URL'}
+          displayCert={true}
+          handleCert={handleCert}
+          certTitle="Download Certificate"
         />
       ),
       width: '75%',
@@ -51,6 +54,7 @@ const RegistryDetail = ({ data }) => {
 
 RegistryDetail.propTypes = {
   data: PropTypes.object.isRequired,
+  handleCert: PropTypes.func.isRequired,
 };
 
 export default RegistryDetail;

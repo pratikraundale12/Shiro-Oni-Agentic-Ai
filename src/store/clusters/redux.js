@@ -185,6 +185,11 @@ export const ClustersActions = {
   deleteClusterDriverFile: createAction(`${prefix}deleteClusterDriverFile`),
   fetchKubePodStatus: createAction(`${prefix}fetchKubePodStatus`),
   setKubePods: createAction(`${prefix}setKubePods`),
+  fetchKubeHealth: createAction(`${prefix}fetchKubeHealth`),
+  setKubePodHealth: createAction(`${prefix}setKubePodHealth`),
+  setIsDownloadRegistryCertOpen: createAction(
+    `${prefix}setIsDownloadRegistryCertOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -251,6 +256,7 @@ export const CLUSTERS_INITIAL_STATE = {
   tourStart: false,
   kubePods: [],
   kubePodHealth: {},
+  isDownloadRegistryCertOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -331,6 +337,9 @@ export const ClustersSelectors = {
   getTourIndex: state => state.clusters.tourIndex,
   getTourStart: state => state.clusters.tourStart,
   getKubePods: state => state.clusters.kubePods,
+  getKubePodHealth: state => state.clusters.kubePodHealth,
+  getIsDownloadRegistryCertOpen: state =>
+    state.clusters.isDownloadRegistryCertOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -724,6 +733,18 @@ const setKubePods = (state, { payload }) => {
     kubePods: payload,
   };
 };
+const setKubePodHealth = (state, { payload }) => {
+  return {
+    ...state,
+    kubePodHealth: payload,
+  };
+};
+const setIsDownloadRegistryCertOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isDownloadRegistryCertOpen: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -886,6 +907,11 @@ export const clustersReducer = createReducer(
       )
       .addCase(ClustersActions.setTourIndex, setTourIndex)
       .addCase(ClustersActions.setTourStart, setTourStart)
-      .addCase(ClustersActions.setKubePods, setKubePods);
+      .addCase(ClustersActions.setKubePods, setKubePods)
+      .addCase(ClustersActions.setKubePodHealth, setKubePodHealth)
+      .addCase(
+        ClustersActions.setIsDownloadRegistryCertOpen,
+        setIsDownloadRegistryCertOpen
+      );
   }
 );

@@ -24,51 +24,6 @@ const RowConfig = styled.div`
   margin-left: -1rem;
 `;
 
-const UseColXl = styled.div`
-  &.col-6 {
-    flex: 0 0 auto;
-    width: 50%;
-  }
-  @media screen and (min-width: 1200px) {
-    &.col-xl-4 {
-      flex: 0 0 auto;
-      width: 33.33333333%;
-    }
-  }
-
-  padding-right: 1rem;
-  padding-left: 1rem;
-`;
-
-const SummaryDetailsHFourTag = styled.h4`
-  font-family: ${props => props.theme.fontRedHat};
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 18.52px;
-  letter-spacing: -0.005em;
-  text-align: left;
-  color: #2d343f;
-`;
-
-const SummaryDetailsPtag = styled.h4`
-  font-family: ${props => props.theme.fontRedHat};
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 18.52px;
-  letter-spacing: -0.005em;
-  text-align: left;
-  color: #7a7a7a;
-
-  & > div {
-    display: flex;
-    gap: 0.5rem;
-
-    & .summary-clipboard {
-      margin-top: -0.5rem;
-    }
-  }
-`;
-
 const DataWrapper = styled.div`
   width: 100%;
   height: 596px;
@@ -291,26 +246,26 @@ const ClusterStatusTab = () => {
   const availableNodes = healthMetricData?.data?.map(data => {
     return {
       label: data?.name,
-      value: data?.name
+      value: data?.name,
     };
   });
-  
+
   const [selectedNode, setSelectedNode] = useState({});
   const selectedNodeData = healthMetricData?.data?.find(
-  ele => ele?.name === selectedNode?.value
-)
+    ele => ele?.name === selectedNode?.value
+  );
   useEffect(() => {
-    if(!isEmpty(healthMetricData?.data)){
+    if (!isEmpty(healthMetricData?.data)) {
       setSelectedNode({
         label: healthMetricData?.data[0]?.name,
-        value: healthMetricData?.data[0]?.name
+        value: healthMetricData?.data[0]?.name,
       });
     }
-  },[healthMetricData]);
-  
-  const handleNodeChange = (node) => {
-    setSelectedNode(node)
-  }
+  }, [healthMetricData]);
+
+  const handleNodeChange = node => {
+    setSelectedNode(node);
+  };
   const RadialChart = ({
     title,
     value,
@@ -491,97 +446,105 @@ const ClusterStatusTab = () => {
         />
       </div>
       <ScrollSetGrey className="pt-4 scroll-set-grey pe-1">
-        {healthMetricData &&
-          !isEmpty(healthMetricData) &&
-          selectedNodeData && (
-            <NodeCard key={selectedNodeData?.name} className="mb-4">
-              <TitleText className="mt-4 ms-3 mb-3">
-                <span style={{ color: `${theme.colors.primary}` }}>Node</span>:{' '}
-                {selectedNodeData?.name}
-              </TitleText>
+        {healthMetricData && !isEmpty(healthMetricData) && selectedNodeData && (
+          <NodeCard key={selectedNodeData?.name} className="mb-4">
+            <TitleText className="mt-4 ms-3 mb-3">
+              <span style={{ color: `${theme.colors.primary}` }}>Node</span>:{' '}
+              {selectedNodeData?.name}
+            </TitleText>
 
-              <NodeCardContent>
-                <RowConfig className="row">
-                  <RadialChart
-                    title="Total Disk"
-                    value={
-                      getPercentageValue(selectedNodeData?.data?.disk?.utilization).toFixed(
-                        2
-                      ) + '%' || '0.00%'
-                    }
-                    unit={selectedNodeData?.data?.disk?.used}
-                    percentage={selectedNodeData?.data?.disk?.utilization}
-                    showPercentageSign={true}
-                    contentTotal={selectedNodeData?.data?.disk?.total}
-                    contentUsed={selectedNodeData?.data?.disk?.used}
-                    contentUsedPercentage={selectedNodeData?.data?.disk?.utilization}
-                  />
-                  <RadialChart
-                    title="Total Memory"
-                    value={
+            <NodeCardContent>
+              <RowConfig className="row">
+                <RadialChart
+                  title="Total Disk"
+                  value={
+                    getPercentageValue(
+                      selectedNodeData?.data?.disk?.utilization
+                    ).toFixed(2) + '%' || '0.00%'
+                  }
+                  unit={selectedNodeData?.data?.disk?.used}
+                  percentage={selectedNodeData?.data?.disk?.utilization}
+                  showPercentageSign={true}
+                  contentTotal={selectedNodeData?.data?.disk?.total}
+                  contentUsed={selectedNodeData?.data?.disk?.used}
+                  contentUsedPercentage={
+                    selectedNodeData?.data?.disk?.utilization
+                  }
+                />
+                <RadialChart
+                  title="Total Memory"
+                  value={
+                    getPercentageValue(
+                      selectedNodeData?.data?.memory?.utilization
+                    ).toFixed(2) + '%' || '0.00%'
+                  }
+                  unit={selectedNodeData?.data?.memory?.used}
+                  percentage={selectedNodeData?.data?.memory?.utilization}
+                  showPercentageSign={true}
+                  contentTotal={selectedNodeData?.data?.memory?.total}
+                  contentUsed={selectedNodeData?.data?.memory?.used}
+                  contentUsedPercentage={
+                    selectedNodeData?.data?.memory?.utilization
+                  }
+                />
+                <RadialChart
+                  title="NiFi Heap "
+                  value={
+                    (getPercentageValue(
+                      selectedNodeData?.data?.nifi?.heap_used
+                    ) /
                       getPercentageValue(
-                        selectedNodeData?.data?.memory?.utilization
-                      ).toFixed(2) + '%' || '0.00%'
-                    }
-                    unit={selectedNodeData?.data?.memory?.used}
-                    percentage={selectedNodeData?.data?.memory?.utilization}
-                    showPercentageSign={true}
-                    contentTotal={selectedNodeData?.data?.memory?.total}
-                    contentUsed={selectedNodeData?.data?.memory?.used}
-                    contentUsedPercentage={selectedNodeData?.data?.memory?.utilization}
-                  />
-                  <RadialChart
-                    title="NiFi Heap "
-                    value={
-                      (getPercentageValue(selectedNodeData?.data?.nifi?.heap_used) /
-                        getPercentageValue(
-                          selectedNodeData?.data?.nifi?.total_heap_memory
-                        )) *
-                        100 || '0%'
-                    }
-                    unit={selectedNodeData?.data?.nifi?.heap_used}
-                    percentage={
-                      (getPercentageValue(selectedNodeData?.data?.nifi?.heap_used) /
+                        selectedNodeData?.data?.nifi?.total_heap_memory
+                      )) *
+                      100 || '0%'
+                  }
+                  unit={selectedNodeData?.data?.nifi?.heap_used}
+                  percentage={
+                    (getPercentageValue(
+                      selectedNodeData?.data?.nifi?.heap_used
+                    ) /
+                      getPercentageValue(
+                        selectedNodeData?.data?.nifi?.total_heap_memory
+                      )) *
+                    100
+                  }
+                  showPercentageSign={true}
+                  contentTotal={selectedNodeData?.data?.nifi?.total_heap_memory}
+                  contentUsed={selectedNodeData?.data?.nifi?.heap_used}
+                  contentUsedPercentage={
+                    (
+                      (getPercentageValue(
+                        selectedNodeData?.data?.nifi?.heap_used
+                      ) /
                         getPercentageValue(
                           selectedNodeData?.data?.nifi?.total_heap_memory
                         )) *
                       100
-                    }
-                    showPercentageSign={true}
-                    contentTotal={selectedNodeData?.data?.nifi?.total_heap_memory}
-                    contentUsed={selectedNodeData?.data?.nifi?.heap_used}
-                    contentUsedPercentage={
-                      (
-                        (getPercentageValue(selectedNodeData?.data?.nifi?.heap_used) /
-                          getPercentageValue(
-                            selectedNodeData?.data?.nifi?.total_heap_memory
-                          )) *
-                        100
-                      ).toFixed(2) + '%' || '0%'
-                    }
-                  />
-                  <RadialChart
-                    title="CPU Utilisation"
-                    value={
-                      getPercentageValue(selectedNodeData?.data?.cpu?.utilization).toFixed(
-                        2
-                      ) + '%' || '0.00%'
-                    }
-                    unit={selectedNodeData?.data?.cpu?.used}
-                    percentage={selectedNodeData?.data?.cpu?.utilization}
-                    showPercentageSign={true}
-                    contentTotal={selectedNodeData?.data?.cpu?.total}
-                    contentUsed={selectedNodeData?.data?.cpu?.used}
-                    contentUsedPercentage={
-                      getPercentageValue(selectedNodeData?.data?.cpu?.utilization).toFixed(
-                        2
-                      ) + '%' || '0.00%'
-                    }
-                  />
-                </RowConfig>
-              </NodeCardContent>
-            </NodeCard>
-          )}
+                    ).toFixed(2) + '%' || '0%'
+                  }
+                />
+                <RadialChart
+                  title="CPU Utilisation"
+                  value={
+                    getPercentageValue(
+                      selectedNodeData?.data?.cpu?.utilization
+                    ).toFixed(2) + '%' || '0.00%'
+                  }
+                  unit={selectedNodeData?.data?.cpu?.used}
+                  percentage={selectedNodeData?.data?.cpu?.utilization}
+                  showPercentageSign={true}
+                  contentTotal={selectedNodeData?.data?.cpu?.total}
+                  contentUsed={selectedNodeData?.data?.cpu?.used}
+                  contentUsedPercentage={
+                    getPercentageValue(
+                      selectedNodeData?.data?.cpu?.utilization
+                    ).toFixed(2) + '%' || '0.00%'
+                  }
+                />
+              </RowConfig>
+            </NodeCardContent>
+          </NodeCard>
+        )}
         {(isEmpty(healthMetricData) || !healthMetricData) && (
           <LoaderContainer>
             <NoDataIcon width={140} />

@@ -15,6 +15,7 @@ import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { InputField, Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
+  ClustersActions,
   ClustersSelectors,
   LoadingSelectors,
   NamespacesSelectors,
@@ -487,6 +488,9 @@ export const Grid = ({
                 registry_url:
                   registryNodesData?.cluster?.registry?.registry_url,
               }}
+              handleCert={() =>
+                dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true))
+              }
             />
           )}
         </ClusterRegistryContainer>
