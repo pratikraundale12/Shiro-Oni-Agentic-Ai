@@ -177,6 +177,9 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   useEffect(() => {
     dispatch(ClustersActions.fetchConfigListForKubernetes());
     dispatch(ClustersActions.fetchMasterHostNodesList());
+    return () => {
+      dispatch(ClustersActions.setkubConfigVersion({}));
+    };
   }, [dispatch]);
   useEffect(() => {
     if (!isEmpty(configNameValue)) {
@@ -239,6 +242,38 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       setOpenAddConfigModal(false);
     }
   };
+  useEffect(() => {
+    if (
+      !isEmpty(configOptions) &&
+      configOptions.length === 1 &&
+      isEmpty(kubeClusterIDEdit) &&
+      isEmpty(configNameValue)
+    ) {
+      setValue('configName', configOptions?.[0]?.value);
+    }
+  }, [configOptions]);
+  useEffect(() => {
+    if (
+      !isEmpty(configVersionOption) &&
+      configVersionOption.length === 1 &&
+      isEmpty(kubeClusterIDEdit) &&
+      !configVersionValue
+    ) {
+      setValue('configVersion', configVersionOption?.[0]?.value);
+    }
+  }, [configVersionOption]);
+
+  useEffect(() => {
+    if (
+      !isEmpty(hostOptions) &&
+      hostOptions.length === 1 &&
+      isEmpty(kubeClusterIDEdit) &&
+      !kubeClusterConfig
+    ) {
+      setValue('host', hostOptions?.[0]?.value);
+    }
+  }, [hostOptions]);
+
   return (
     <>
       <Title

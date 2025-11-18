@@ -185,6 +185,8 @@ export const ClustersActions = {
   deleteClusterDriverFile: createAction(`${prefix}deleteClusterDriverFile`),
   fetchKubePodStatus: createAction(`${prefix}fetchKubePodStatus`),
   setKubePods: createAction(`${prefix}setKubePods`),
+  updateKubeConfigQuickEdit: createAction(`${prefix}updateKubeConfigQuickEdit`),
+  setUpdatedKubeConfig: createAction(`${prefix}setUpdatedKubeConfig`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -251,6 +253,7 @@ export const CLUSTERS_INITIAL_STATE = {
   tourStart: false,
   kubePods: [],
   kubePodHealth: {},
+  updatedKubeConfig: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -331,6 +334,7 @@ export const ClustersSelectors = {
   getTourIndex: state => state.clusters.tourIndex,
   getTourStart: state => state.clusters.tourStart,
   getKubePods: state => state.clusters.kubePods,
+  getUpdatedKubeConfig: state => state.clusters.updatedKubeConfig,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -724,6 +728,12 @@ const setKubePods = (state, { payload }) => {
     kubePods: payload,
   };
 };
+const setUpdatedKubeConfig = (state, { payload }) => {
+  return {
+    ...state,
+    updatedKubeConfig: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -886,6 +896,7 @@ export const clustersReducer = createReducer(
       )
       .addCase(ClustersActions.setTourIndex, setTourIndex)
       .addCase(ClustersActions.setTourStart, setTourStart)
-      .addCase(ClustersActions.setKubePods, setKubePods);
+      .addCase(ClustersActions.setKubePods, setKubePods)
+      .addCase(ClustersActions.setUpdatedKubeConfig, setUpdatedKubeConfig);
   }
 );

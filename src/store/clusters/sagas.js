@@ -640,7 +640,7 @@ export function* createConfigForKubernetesCluster(api, { payload }) {
     toast.success(response?.data?.message);
     yield call(history.push, '/clusters/setup-cluster');
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* fetchConfigListForKubernetes(api) {
@@ -946,6 +946,19 @@ export function* fetchKubePodStatus(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
+export function* updateKubeConfigQuickEdit(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'updateKubeConfigQuickEdit',
+    loadingSection: 'updateKubeConfigQuickEdit',
+    apiMethod: api.updateKubeConfigQuickEdit,
+    apiParams: [{ payload: payload }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setUpdatedKubeConfig(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
 
 export function* clustersSagas(api) {
   yield all([
@@ -1105,5 +1118,10 @@ export function* clustersSagas(api) {
       api
     ),
     takeLatest(ClustersActions.fetchKubePodStatus, fetchKubePodStatus, api),
+    takeLatest(
+      ClustersActions.updateKubeConfigQuickEdit,
+      updateKubeConfigQuickEdit,
+      api
+    ),
   ]);
 }
