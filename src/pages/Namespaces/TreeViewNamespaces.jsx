@@ -126,8 +126,8 @@ function TooltipContent({ dataForBox }) {
         }}
       >
         <div style={{ color: theme.colors.primary }}>{d.name ?? 'Name'}</div>
-        {d.version !== undefined ? (
-          <div style={{ marginRight: 5, color: '#111827' }}>V {d.version}</div>
+        {d?.version !== undefined ? (
+          <div style={{ marginRight: 5, color: '#111827' }}>V {d?.version}</div>
         ) : (
           <div />
         )}
@@ -277,7 +277,10 @@ const TreeViewNamespaces = ({
     if (!namespacesVersion) return;
     const dataForBox = {
       name: namespacesVersion?.name ?? '',
-      version: namespacesVersion?.version ?? '',
+      version:
+        namespacesVersion?.versionControlInformation?.version ||
+        namespacesVersion?.version ||
+        '',
       bucketName:
         namespacesVersion?.versionControlInformation?.bucketName ?? '',
       id: namespacesVersion?.id ?? '',
