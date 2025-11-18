@@ -31,6 +31,7 @@ import { CLUSTER_STATUS, Cluster_STATUS_OPTIONS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { CheckboxField, Modal, ModalWithIcon } from '../../shared';
 import {
+  AuthenticationSelectors,
   ClustersActions,
   ClustersSelectors,
   DashboardActions,
@@ -245,6 +246,9 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setProgressTrackingModalOpen(true));
     setSelectedCluster(item);
   };
+
+  const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
+
   const COLUMNS = [
     {
       label: (
@@ -377,7 +381,7 @@ export const ListClusters = () => {
                             </Item>
                           )}
 
-                          {item?.edit_cluster && (
+                          {userPermissions.includes('add_cluster') && (
                             <Item onClick={handleCopyClusterClick}>
                               <CopyIcon width={16} height={16} />
                               <span>Copy Cluster</span>

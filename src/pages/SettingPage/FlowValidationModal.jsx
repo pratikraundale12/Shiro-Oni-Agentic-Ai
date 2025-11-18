@@ -299,7 +299,12 @@ const ConditionRow = React.memo(
         {selectedItem?.deletable && (
           <div className="d-flex align-items-center ms-2">
             <button
-              onClick={() => handleDeleteCondition(index)}
+              type="button"
+              onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleDeleteCondition(index);
+              }}
               className="btn btn-link p-0"
               style={{ lineHeight: 1 }}
             >
@@ -1093,7 +1098,7 @@ const FlowValidationModal = () => {
                     />
                     {item?.name}
                   </RadioContainer>
-                  <button onClick={() => handleDelete(item?.id)}>
+                  <button type="button" onClick={() => handleDelete(item?.id)}>
                     {selectedItem?.deletable === true && (
                       <DeleteSmallIcon color="#FF7A00" />
                     )}
