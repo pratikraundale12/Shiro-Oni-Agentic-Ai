@@ -14,6 +14,7 @@ import { dispatch } from 'd3';
 import { useDispatch } from 'react-redux';
 import { ClustersActions } from '../../store';
 import { useParams } from 'react-router-dom';
+import RegistryCertificateDownloadTab from './components/ClusterRegistryCert';
 
 const Container = styled.div`
   display: flex;
@@ -82,9 +83,7 @@ export const ClusterSummary = () => {
   const COLUMNS = [
     {
       label: 'Address',
-      renderCell: item => (
-       <TextRender text={item.address} />
-      ),
+      renderCell: item => <TextRender text={item.address} />,
       width: '20%',
       resize: true,
     },
@@ -136,7 +135,13 @@ export const ClusterSummary = () => {
           columns={COLUMNS}
           refreshOptions={REFRESH_OPTIONS}
           createdByAnsible={state?.created_by_ansible}
+          is_kube_cluster={state?.is_kube_cluster}
         />
+      )}
+      {activeTab === 'registry_cert' && (
+        <div style={{ height: '100%' }}>
+          <RegistryCertificateDownloadTab clusterId={clusterId} />
+        </div>
       )}
       {activeTab === 'status' && (
         <div style={{ height: '100%' }}>
