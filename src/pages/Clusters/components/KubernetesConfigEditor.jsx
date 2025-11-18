@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import yaml from 'js-yaml';
 import { useSelector } from 'react-redux';
@@ -11,13 +11,20 @@ const EditorKubernetesConfig = ({
   setErrorsInEditor,
   setYamlValue,
   yamlValue,
+  parsedJson,
+  setParsedJson,
+  yamlEditorValue,
+  setYamlEditorValue,
 }) => {
-  const configDefaultValue = useSelector(
-    ClustersSelectors.getKubernetesConfigFields
-  );
+  const updatedConfigKube = useSelector(ClustersSelectors.getUpdatedKubeConfig);
+  useEffect(() => {
+    if (updatedConfigKube?.updatedYaml) {
+      setYamlEditorValue(updatedConfigKube?.updatedYaml);
+    }
+  }, [updatedConfigKube?.updatedYaml]);
 
   const handleYamlChange = value => {
-    setYamlValue?.(value || '');
+    setYamlEditorValue?.(value || '');
     try {
       const docs = [];
       yaml.loadAll(String(value || ''), doc => {
@@ -47,7 +54,7 @@ const EditorKubernetesConfig = ({
         <Editor
           width="100%"
           language="yaml"
-          value={yamlValue || configDefaultValue?.valuesYaml || ''}
+          value={yamlEditorValue || ''}
           onChange={handleYamlChange}
           options={{
             minimap: { enabled: false },
@@ -63,7 +70,15 @@ const EditorKubernetesConfig = ({
               arrowSize: 4,
             },
           }}
-          onValidate={() => {}}
+          // onValidate={() => {}}
+          onMount={editor => {
+            editor.onKeyDown(e => {
+              if (e.keyCode === 3) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            });
+          }}
         />
       </div>
     </>

@@ -305,7 +305,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
             setIsDeleteModalOpen(false);
             setConfigToDelete({});
           }}
-          primaryText={`Are you sure you want to delete config !`}
+          primaryText={`Are you sure you want to delete config!`}
         />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">

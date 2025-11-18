@@ -360,7 +360,11 @@ export const ListClusters = () => {
                       {item.is_active ? (
                         <>
                           {item.edit_cluster && (
-                            <Item onClick={() => handleClick('edit')}>
+                            <Item
+                              onClick={() =>
+                                handleClick('edit', item?.id, item)
+                              }
+                            >
                               <PencilIcon width={16} height={16} />
                               <span>{KDFM.EDIT}</span>
                             </Item>
@@ -656,6 +660,13 @@ export const ListClusters = () => {
     handleCloseMenu();
     if (type === 'edit') {
       history.push('/clusters/edit', { state: menuState.row });
+      setState({
+        ...state,
+        nodeClusterId: menuState.row.id,
+        created_by_ansible: item?.created_by_ansible,
+        is_kube_cluster: item?.is_kube_cluster,
+        isRegistrySecured: item?.isRegistrySecured,
+      });
     }
     if (type === 'view') {
       setState({
