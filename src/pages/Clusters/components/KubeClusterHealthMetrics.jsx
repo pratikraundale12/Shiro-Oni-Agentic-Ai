@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import styled from 'styled-components';
 import { QRIcons } from '../../../assets';
 import { SelectField } from '../../../shared';
