@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { AddIcon, CurvedFolderIcon, PencilIcon } from '../../../assets';
 import { theme } from '../../../styles';
 import { AddSSHModal } from './AddSSHModal';
+import { LoadingSelectors } from '../../../store';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -225,9 +226,17 @@ export const SSHDetailsTabSection = ({ data }) => {
       width: '7%',
     },
   ];
+  useEffect(() => {
+    return () => {
+      dispatch(ClustersActions.setHostIpList([]));
+    };
+  }, []);
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchHostNodesList')
+  );
   return (
     <>
-      {/* <FullPageLoader loading={loading} /> */}
+      <FullPageLoader loading={loading} />
 
       <Container>
         {' '}
