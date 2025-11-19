@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { NotePadIcon } from '../../../assets';
 import { Title } from './Title';
 import { history } from '../../../helpers/history';
-import { Button, InputField } from '../../../shared';
+import { Button, InputField, Modal } from '../../../shared';
 import { KDFM } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,6 +19,8 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import EditorKubernetesConfig from './KubernetesConfigEditor';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
+import yaml from 'js-yaml';
+import { toast } from 'react-toastify';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
@@ -32,7 +34,7 @@ const OuterContainer = styled.div`
 `;
 
 const DisplaySection = styled.div`
-  height: calc(100% - 120px) !important;
+  height: 450px !important;
   border-radius: 10px;
 `;
 const RightDisplaySection = styled.div`
@@ -84,11 +86,13 @@ const BottomButton = styled.div`
 const ClusterSetupNewConfigKubernetes = () => {
   const dispatch = useDispatch();
   const [errorsInEditor, setErrorsInEditor] = useState([]);
-  const [initialYamlValue, setInitialYamlValue] = useState('');
   const [yamlValue, setYamlValue] = useState('');
+  const [parsedJson, setParsedJson] = useState(null);
   const configDefaultValue = useSelector(
     ClustersSelectors.getKubernetesConfigFields
   );
+  const [editorModal, setEditorModal] = useState(false);
+  const [yamlEditorValue, setYamlEditorValue] = useState('');
   const configToEdit = useSelector(ClustersSelectors.getkubeCofigToEdit);
   const schema = yup.object().shape({
     configName: yup
@@ -99,14 +103,43 @@ const ClusterSetupNewConfigKubernetes = () => {
         'Config name must not start or end with a space',
         value => value === value?.trim()
       ),
+    replicaCount: yup
+      .number()
+      .typeError('Replica count must be a number')
+      .required('Replica count is required')
+      .min(1, 'Replica count must be at least 1'),
+    image_tag: yup.string().required('Image tag is required'),
+    auth_singleUser_username: yup.string().required('Username is required'),
+    auth_singleUser_password: yup
+      .string()
+      .required('Password is required')
+      .min(12, 'Password must be at least 12 characters long'),
+
+    auth_admin: yup.string().required('Admin auth is required'),
+    persistence_enabled: yup
+      .string()
+      .required('Persistence enabled is required'),
+    dataStorage_size: yup.string().required('Data storage size is required'),
+    jvmMemory: yup.string().required('jvmMemory value is required'),
+    properties_webProxyHost: yup
+      .string()
+      .required('Web proxy host is required'),
+    ingress_hosts: yup
+      .string()
+      .transform(value => {
+        if (Array.isArray(value)) {
+          return value[0]?.replace(/"/g, '');
+        }
+        return value?.replace(/"/g, '');
+      })
+      .required('Ingress host is required'),
   });
+
   const {
     register,
     handleSubmit,
-    // watch,
+    watch,
     setValue,
-    // reset,
-    // control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -117,7 +150,7 @@ const ClusterSetupNewConfigKubernetes = () => {
       const payload = {
         configName: data?.configName,
         configVersion: configToEdit?.config_version + 1,
-        valuesYaml: isEmpty(yamlValue) ? configToEdit?.config_json : yamlValue,
+        valuesYaml: yamlEditorValue || '',
       };
       dispatch(ClustersActions.createConfigForKubernetesCluster(payload));
       return;
@@ -125,10 +158,35 @@ const ClusterSetupNewConfigKubernetes = () => {
     const payload = {
       configName: data?.configName,
       configVersion: 1,
-      valuesYaml: isEmpty(yamlValue)
-        ? configDefaultValue?.valuesYaml
-        : yamlValue,
+      valuesYaml: yamlEditorValue || '',
     };
+    dispatch(ClustersActions.createConfigForKubernetesCluster(payload));
+  };
+
+  const handleAddConfigByQuickEdits = data => {
+    const payload = {
+      configName: data?.configName,
+      configVersion: !isEmpty(configToEdit)
+        ? configToEdit?.config_version + 1
+        : 1,
+      isQuickEdit: true,
+      quickEditJson: {
+        replicaCount: data?.replicaCount,
+        image_tag: data?.image_tag,
+        jvmMemory: data?.jvmMemory,
+        auth_singleUser_username: data?.auth_singleUser_username,
+        auth_singleUser_password: data?.auth_singleUser_password,
+        auth_admin: data?.auth_admin,
+        persistence_enabled: data?.persistence_enabled,
+        persistence_dataStorage_size: data?.dataStorage_size,
+        properties_webProxyHost: data?.properties_webProxyHost,
+        ingress_hosts: data?.ingress_hosts,
+      },
+      valuesYaml: !isEmpty(configToEdit)
+        ? configToEdit?.config_json
+        : configDefaultValue?.valuesYaml,
+    };
+
     dispatch(ClustersActions.createConfigForKubernetesCluster(payload));
   };
 
@@ -140,18 +198,134 @@ const ClusterSetupNewConfigKubernetes = () => {
   useEffect(() => {
     if (!isEmpty(configToEdit)) {
       setYamlValue(configToEdit?.config_json);
-      setInitialYamlValue(configToEdit?.config_json);
       setValue('configName', configToEdit?.config_name);
     } else {
       setYamlValue(configDefaultValue?.valuesYaml || '');
-      setInitialYamlValue(configDefaultValue?.valuesYaml || '');
     }
   }, [configToEdit, configDefaultValue, setValue]);
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchConfigFieldsForKubernetes')
   );
-  const hasYamlChanged = yamlValue.trim() !== initialYamlValue.trim();
+  const updatedConfigKube = useSelector(ClustersSelectors.getUpdatedKubeConfig);
+  const hasYamlChanged =
+    yamlEditorValue &&
+    updatedConfigKube?.updatedYaml &&
+    yamlEditorValue.trim() !== updatedConfigKube?.updatedYaml.trim();
+  useEffect(() => {
+    if (!isEmpty(yamlValue)) {
+      const value = yamlValue || configDefaultValue?.valuesYaml;
+      if (!value) return;
+      try {
+        const docs = [];
+        yaml.loadAll(value, doc => docs.push(doc));
+        setParsedJson?.(docs.length === 1 ? docs[0] : docs);
+        setErrorsInEditor([]);
+      } catch (err) {
+        setErrorsInEditor([err.message]);
+        setParsedJson?.(null);
+      }
+    }
+  }, [yamlValue, configDefaultValue?.valuesYaml]);
+
+  useEffect(() => {
+    if (!isEmpty(parsedJson)) {
+      setValue('replicaCount', parsedJson?.replicaCount);
+      setValue('image_tag', parsedJson?.image?.tag);
+      setValue(
+        'auth_singleUser_username',
+        parsedJson?.auth?.singleUser?.username
+      );
+      setValue(
+        'auth_singleUser_password',
+        parsedJson?.auth?.singleUser?.password
+      );
+      setValue('auth_admin', parsedJson?.auth?.admin);
+      setValue('persistence_enabled', parsedJson?.persistence?.enabled);
+      setValue('dataStorage_size', parsedJson?.persistence?.dataStorage?.size);
+      setValue('jvmMemory', parsedJson?.jvmMemory || parsedJson?.jvmMemory);
+      setValue('properties_webProxyHost', parsedJson?.properties?.webProxyHost);
+      setValue('ingress_hosts', parsedJson?.ingress?.hosts);
+    }
+  }, [parsedJson]);
+
+  const onError = errors => {
+    if (isEmpty(errors)) {
+      handleOpenEditor();
+    }
+  };
+  const quickFieldChanged =
+    parsedJson?.replicaCount == watch('replicaCount') &&
+    parsedJson?.image?.tag == watch('image_tag') &&
+    parsedJson?.auth?.singleUser?.username ==
+      watch('auth_singleUser_username') &&
+    parsedJson?.auth?.singleUser?.password ==
+      watch('auth_singleUser_password') &&
+    parsedJson?.auth?.admin == watch('auth_admin') &&
+    parsedJson?.persistence?.enabled == watch('persistence_enabled') &&
+    parsedJson?.jvmMemory == watch('jvmMemory') &&
+    parsedJson?.properties?.webProxyHost == watch('properties_webProxyHost');
+
+  const handleOpenEditor = () => {
+    const fieldValues = {
+      replicaCount: watch('replicaCount'),
+      image_tag: watch('image_tag'),
+      jvmMemory: watch('jvmMemory'),
+      auth_singleUser_username: watch('auth_singleUser_username'),
+      auth_singleUser_password: watch('auth_singleUser_password'),
+      auth_admin: watch('auth_admin'),
+      persistence_enabled: watch('persistence_enabled'),
+      persistence_dataStorage_size: watch('dataStorage_size'),
+      properties_webProxyHost: watch('properties_webProxyHost'),
+      ingress_hosts: watch('ingress_hosts'),
+    };
+    const payload = { values: fieldValues, valuesYaml: yamlValue };
+    setEditorModal(true);
+    dispatch(ClustersActions.updateKubeConfigQuickEdit(payload));
+  };
+  const handleBack = () => {
+    if (!isEmpty(errorsInEditor)) {
+      toast.error('Please clear editor error');
+      return;
+    }
+    const value = yamlEditorValue;
+    let yamlParsedValue = {};
+    if (!value) return;
+    try {
+      const docs = [];
+      yaml.loadAll(value, doc => docs.push(doc));
+      yamlParsedValue = docs.length === 1 ? docs[0] : docs;
+      setErrorsInEditor([]);
+    } catch (err) {
+      setErrorsInEditor([err.message]);
+      setParsedJson?.(null);
+    }
+
+    setValue('replicaCount', yamlParsedValue?.replicaCount);
+    setValue('image_tag', yamlParsedValue?.image?.tag);
+    setValue(
+      'auth_singleUser_username',
+      yamlParsedValue?.auth?.singleUser?.username
+    );
+    setValue(
+      'auth_singleUser_password',
+      yamlParsedValue?.auth?.singleUser?.password
+    );
+    setValue('auth_admin', yamlParsedValue?.auth?.admin);
+    setValue('persistence_enabled', yamlParsedValue?.persistence?.enabled);
+    setValue(
+      'dataStorage_size',
+      yamlParsedValue?.persistence?.dataStorage?.size
+    );
+    setValue('jvmMemory', yamlParsedValue?.jvmMemory);
+    setValue(
+      'properties_webProxyHost',
+      yamlParsedValue?.properties?.webProxyHost
+    );
+    setValue('ingress_hosts', yamlParsedValue?.ingress?.hosts);
+
+    setEditorModal(false);
+  };
 
   return (
     <Wrapper>
@@ -171,7 +345,7 @@ const ClusterSetupNewConfigKubernetes = () => {
       />
       <OuterContainer>
         <div className="row px-3">
-          <div className="col-4">
+          <div className="col-8">
             <InputField
               label={KDFM.CONFIG_NAME}
               name="configName"
@@ -185,16 +359,156 @@ const ClusterSetupNewConfigKubernetes = () => {
             />
           </div>
         </div>
-        <DisplaySection className="px-3 row">
-          <RightDisplaySection className="col-12 h-100">
-            <EditorKubernetesConfig
-              errorsInEditor={errorsInEditor}
-              setErrorsInEditor={setErrorsInEditor}
-              setYamlValue={setYamlValue}
-              yamlValue={yamlValue}
+        <div className="row px-3">
+          <div className="col-4">
+            <InputField
+              label={'replicaCount'}
+              name="replicaCount"
+              type="text"
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
             />
-          </RightDisplaySection>
-        </DisplaySection>
+          </div>
+          <div className="col-4">
+            <InputField
+              label={'image.tag'}
+              name="image_tag"
+              type="text"
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+            />
+          </div>
+          <div className="col-4">
+            <InputField
+              label={'auth.singleUser.username'}
+              name="auth_singleUser_username"
+              type="text"
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+            />
+          </div>
+          <div className="col-4">
+            <InputField
+              label={'auth.singleUser.password'}
+              name="auth_singleUser_password"
+              type="text"
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+            />
+          </div>
+          <div className="col-4">
+            <InputField
+              label={'auth.admin'}
+              name="auth_admin"
+              type="text"
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+            />
+          </div>
+          <div className="col-4">
+            <InputField
+              label={'persistence.enabled'}
+              name="persistence_enabled"
+              type="text"
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+            />
+          </div>
+          <div className="col-4">
+            <InputField
+              label={'dataStorage.size'}
+              name="dataStorage_size"
+              type="text"
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+            />
+          </div>
+          <div className="col-4">
+            <InputField
+              label={'jvmMemory'}
+              name="jvmMemory"
+              type="text"
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+            />
+          </div>
+          <div className="col-4">
+            <InputField
+              label={'properties.webProxyHost'}
+              name="properties_webProxyHost"
+              type="text"
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+            />
+          </div>
+          <div className="col-4">
+            <InputField
+              label={'ingress.hosts'}
+              name="ingress_hosts"
+              type="text"
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+            />
+          </div>{' '}
+          <div className="col-3 d-flex align-items-center">
+            <Button
+              variant="secondary"
+              onClick={handleSubmit(handleOpenEditor, onError)}
+            >
+              Open in YAML editor
+            </Button>
+          </div>
+        </div>
+        <Modal
+          title="Configuration Editor"
+          primaryButtonText={
+            !isEmpty(configToEdit) ? 'Update Config' : 'Add Config'
+          }
+          secondaryButtonText="Back"
+          isOpen={editorModal}
+          onRequestClose={handleBack}
+          onSubmit={handleSubmit(handleAddConfig)}
+          contentStyles={{ minWidth: '80%' }}
+          primaryButtonDisabled={
+            !isEmpty(errorsInEditor) ||
+            (!isEmpty(configToEdit) && !hasYamlChanged)
+          }
+        >
+          <DisplaySection className="px-3 row">
+            <RightDisplaySection className="col-12 h-100">
+              <EditorKubernetesConfig
+                errorsInEditor={errorsInEditor}
+                setErrorsInEditor={setErrorsInEditor}
+                setYamlValue={setYamlValue}
+                yamlValue={yamlValue}
+                parsedJson={parsedJson}
+                setParsedJson={setParsedJson}
+                yamlEditorValue={yamlEditorValue}
+                setYamlEditorValue={setYamlEditorValue}
+              />
+            </RightDisplaySection>
+          </DisplaySection>
+        </Modal>
       </OuterContainer>
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
@@ -223,10 +537,10 @@ const ClusterSetupNewConfigKubernetes = () => {
 
           <Button
             type="submit"
-            onClick={handleSubmit(handleAddConfig)}
+            onClick={handleSubmit(handleAddConfigByQuickEdits)}
             disabled={
               !isEmpty(errorsInEditor) ||
-              (!isEmpty(configToEdit) && !hasYamlChanged)
+              (!isEmpty(configToEdit) && quickFieldChanged)
             }
           >
             {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}

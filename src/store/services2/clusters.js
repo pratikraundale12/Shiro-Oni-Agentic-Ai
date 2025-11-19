@@ -175,6 +175,10 @@ export const clustersAPI = api => {
   const fetchKubeHealth = ({ id, pod }) => {
     return api.get(`/clusters/${id}/pods-metrics/${pod}`);
   };
+  const updateKubeConfigQuickEdit = ({ payload }) => {
+    return api.post(`/update-config`, payload);
+  };
+
   return {
     fetchClusters,
     fetchClusterList,
@@ -229,5 +233,6 @@ export const clustersAPI = api => {
     deleteClusterDriverFile,
     fetchKubePodStatus,
     fetchKubeHealth,
+    updateKubeConfigQuickEdit,
   };
 };

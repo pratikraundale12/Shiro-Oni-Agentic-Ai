@@ -9,6 +9,7 @@ import {
   ClustersSelectors,
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
+import { useGlobalContext } from '../../../utils';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -45,8 +46,10 @@ const ClusterNavigationTab = ({
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
   const sshDataAdded = useSelector(ClustersSelectors.getsshAddedStatus);
   const isSuperAdmin = currentUserData?.role === 'superadmin';
+  const { state } = useGlobalContext();
+
   useEffect(() => {
-    if (data?.id && activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS) {
+    if (data?.id && !state?.is_kube_cluster) {
       dispatch(ClustersActions.fetchSSHstatus(data?.id));
     }
   }, [data?.id, activeTab]);
@@ -107,7 +110,7 @@ const ClusterNavigationTab = ({
           {KDFM.SERVICE_ACCOUNT}
         </NavButton>
       )}
-      {data && (
+      {data && !state?.is_kube_cluster && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS}
           onClick={() =>
@@ -130,7 +133,9 @@ const ClusterNavigationTab = ({
                 ? setActiveTab(CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR)
                 : {}
             }
-            disabled={!sshDataAdded?.sshCredsAvailable}
+            disabled={
+              state?.is_kube_cluster ? false : !sshDataAdded?.sshCredsAvailable
+            }
             data-tooltip-id="custom_processor"
           >
             {CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
@@ -160,7 +165,9 @@ const ClusterNavigationTab = ({
               ? setActiveTab(CLUSTER_MODULE_TABS.DRIVERS)
               : {}
           }
-          disabled={!sshDataAdded?.sshCredsAvailable}
+          disabled={
+            state?.is_kube_cluster ? false : !sshDataAdded?.sshCredsAvailable
+          }
           data-tooltip-id="drivers"
         >
           {CLUSTER_MODULE_TABS.DRIVERS}
