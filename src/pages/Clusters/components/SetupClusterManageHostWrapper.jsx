@@ -260,7 +260,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
     }
 
     return () => {
-      ClustersActions.setHostIpList([]);
+      dispatch(ClustersActions.setHostIpList([]));
       dispatch(ClustersActions.setLastVisitedTab('manage_host'));
     };
   }, [dispatch]);

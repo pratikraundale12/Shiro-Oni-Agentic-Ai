@@ -202,15 +202,15 @@ export const ClusterCustomProcessor = ({ data }) => {
             </Button>
           </div>
         </FlexWrapper>
-        <div className="ms-3 mt-2 d-flex justify-content-end">
+        <div className="ms-1 mt-2 d-flex justify-content-start">
           <div>
-            <div style={{ fontSize: '14px', fontWeight: '600' }}>Legend</div>
+            <div style={{ fontSize: '16px', fontWeight: '550' }}>Legend</div>
             <NotePadIcon
               height="21"
               width="21"
               color={theme.colors.primary}
             />{' '}
-            : Added by DFM &nbsp;&nbsp;
+            : &nbsp;Added by DFM &nbsp;&nbsp;
           </div>
         </div>
         <div className="mt-2">
