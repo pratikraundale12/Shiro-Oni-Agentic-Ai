@@ -133,7 +133,9 @@ const ClusterNavigationTab = ({
                 ? setActiveTab(CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR)
                 : {}
             }
-            disabled={!sshDataAdded?.sshCredsAvailable}
+            disabled={
+              state?.is_kube_cluster ? false : !sshDataAdded?.sshCredsAvailable
+            }
             data-tooltip-id="custom_processor"
           >
             {CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
@@ -163,7 +165,9 @@ const ClusterNavigationTab = ({
               ? setActiveTab(CLUSTER_MODULE_TABS.DRIVERS)
               : {}
           }
-          disabled={!sshDataAdded?.sshCredsAvailable}
+          disabled={
+            state?.is_kube_cluster ? false : !sshDataAdded?.sshCredsAvailable
+          }
           data-tooltip-id="drivers"
         >
           {CLUSTER_MODULE_TABS.DRIVERS}
