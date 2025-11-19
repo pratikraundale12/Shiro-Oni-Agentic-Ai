@@ -23,8 +23,6 @@ const LabelSelect = styled.div`
   color: ${props => props.theme.colors.darker};
 `;
 
-/////////
-
 const RowConfig = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -132,7 +130,6 @@ const NodeCardContent = styled.div`
   padding: 1rem;
 `;
 
-/////////////
 const KubeClusterHealthMetrics = ({ podsList, clusterId }) => {
   const dispatch = useDispatch();
   const { watch, control, setValue, register } = useForm();
@@ -348,48 +345,49 @@ const KubeClusterHealthMetrics = ({ podsList, clusterId }) => {
                   title="Total CPU"
                   value={
                     getPercentageValue(
-                      100
-                      // selectedNodeData?.data?.disk?.utilization
+                      podHealth?.data?.data?.[0]?.data?.cpu?.utilization
                     ).toFixed(2) + '%' || '0.00%'
                   }
-                  unit={'Core'}
+                  unit={'cores'}
                   percentage={podHealth?.data?.pods?.total?.cpu_percentage}
                   showPercentageSign={true}
-                  contentTotal={100}
-                  contentUsed={podHealth?.data?.pods?.total?.cpu_usage || 100}
+                  contentTotal={podHealth?.data?.data?.[0]?.data?.cpu?.total}
+                  contentUsed={podHealth?.data?.data?.[0]?.data?.cpu?.used}
                   contentUsedPercentage={
-                    podHealth?.data?.pods?.total?.cpu_percentage
+                    podHealth?.data?.data?.[0]?.data?.cpu?.utilization
                   }
                 />
                 <RadialChart
                   title="Total Memory"
                   value={
                     getPercentageValue(
-                      100
-                      // selectedNodeData?.data?.disk?.utilization
+                      podHealth?.data?.data?.[0]?.data?.memory?.utilization
                     ).toFixed(2) + '%' || '0.00%'
                   }
-                  unit={100}
+                  unit={'MB/GB'}
                   percentage={100}
                   showPercentageSign={true}
-                  contentTotal={100}
-                  contentUsed={100}
-                  contentUsedPercentage={100}
+                  contentTotal={podHealth?.data?.data?.[0]?.data?.memory?.total}
+                  contentUsed={podHealth?.data?.data?.[0]?.data?.memory?.used}
+                  contentUsedPercentage={
+                    podHealth?.data?.data?.[0]?.data?.memory?.utilization
+                  }
                 />
                 <RadialChart
-                  title="Total Storage"
+                  title="Total Disk"
                   value={
                     getPercentageValue(
-                      100
-                      // selectedNodeData?.data?.disk?.utilization
+                      podHealth?.data?.data?.[0]?.data?.disk?.utilization
                     ).toFixed(2) + '%' || '0.00%'
                   }
-                  unit={100}
+                  unit={'MB/GB'}
                   percentage={100}
                   showPercentageSign={true}
-                  contentTotal={100}
-                  contentUsed={100}
-                  contentUsedPercentage={100}
+                  contentTotal={podHealth?.data?.data?.[0]?.data?.disk?.total}
+                  contentUsed={podHealth?.data?.data?.[0]?.data?.disk?.used}
+                  contentUsedPercentage={
+                    podHealth?.data?.data?.[0]?.data?.disk?.utilization
+                  }
                 />
               </RowConfig>
             </NodeCardContent>
