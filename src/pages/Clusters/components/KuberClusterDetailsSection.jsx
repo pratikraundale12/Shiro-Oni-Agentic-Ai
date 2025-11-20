@@ -237,6 +237,14 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     LoadingSelectors.getLoading(state, 'fetchKubeClusterDataToUpgrade')
   );
   const onError = errors => {
+    if (
+      errors?.ec2_bastion_host ||
+      errors?.ec2_local_forward_port ||
+      errors?.ec2_ssh_username
+    ) {
+      return;
+    }
+
     if (isEmpty(errors)) {
       handleSubmit(handleCreateCluster)();
     } else {

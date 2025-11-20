@@ -138,14 +138,7 @@ export const DriversCluster = ({ data }) => {
       dispatch(ClustersActions.fetchDriversList(data?.id));
     }
   }, [data?.id]);
-  const handleRestart = () => {
-    dispatch(
-      ClustersActions.restartCluster({
-        id: data?.id,
-        payload: {},
-      })
-    );
-  };
+
   return (
     <>
       <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
@@ -183,9 +176,6 @@ export const DriversCluster = ({ data }) => {
               onClick={handleSubmit(handleUpload)}
             >
               Upload
-            </Button>
-            <Button type="button" variant="primary" onClick={handleRestart}>
-              Restart
             </Button>
           </div>
         </FlexWrapper>
