@@ -603,7 +603,7 @@ export const ClusterProcessDisplayModal = ({
             : {}),
         };
         dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
-      }, 2000);
+      }, 5500);
     }
 
     return () => {
