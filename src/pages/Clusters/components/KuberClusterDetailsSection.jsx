@@ -126,7 +126,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     ec2_bastion_host: yup.string().required('Host is required'),
     ec2_ssh_username: yup.string().required('Username is required'),
     ec2_local_forward_port: yup.string().required('Post is required'),
-    ec2_ssh_pem_file: yup.mixed().required('File is required'),
+    // ec2_ssh_pem_file: yup.mixed().required('File is required'),
   });
   const schemaUpgradeEC2 = yup.object().shape({
     clusterName: yup
@@ -207,11 +207,12 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       payload.append('aws_secret_access_key', data?.aws_secret_access_key);
       payload.append('aws_session_token', data?.aws_session_token);
     }
-    if (formSchemaCluster === 'ec2' && isEmpty(kubeUpgradeData)) {
+    if (formSchemaCluster === 'ec2' && isEmpty(kubeUpgradeData)) {  
       payload.append('ec2_bastion_host', data?.ec2_bastion_host);
       payload.append('ec2_ssh_username', data?.ec2_ssh_username);
       payload.append('ec2_local_forward_port', data?.ec2_local_forward_port);
-      payload.append('ec2_ssh_pem_file', data?.ec2_ssh_pem_file);
+      data?.ec2_ssh_pem_file &&
+        payload.append('ec2_ssh_pem_file', data?.ec2_ssh_pem_file);
     }
 
     dispatch(ClustersActions.createKubernetesCluster(payload));
