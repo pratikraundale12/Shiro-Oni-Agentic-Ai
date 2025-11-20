@@ -525,10 +525,10 @@ export const Grid = ({
           />
         </ClusterRegistryContainer>
         <ClusterRegistryContainer className="row">
-          {registryNodesData?.cluster?.registries?.length > 0 && (
+          {registryNodesData?.cluster?.registry?.length > 0 && (
             <RegistryDetail
               displayFullWidth
-              data={registryNodesData?.cluster?.registries}
+              data={registryNodesData?.cluster?.registry}
             />
           )}
         </ClusterRegistryContainer>

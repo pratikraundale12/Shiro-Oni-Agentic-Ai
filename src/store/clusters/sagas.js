@@ -414,17 +414,6 @@ export function* changeClusterActionState(api, { payload }) {
 }
 
 export function* fetchClusterRegistryNodes(api, { payload }) {
-  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const clustersToken = JSON.parse(
-    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
-  );
-  const selectedClusterToken = clustersToken.find(
-    item => item.id === selectedCluster?.value
-  );
-
-  api.headers['x-cluster-id'] = selectedClusterToken?.id;
-  api.headers['x-cluster-token'] = selectedClusterToken?.token;
-
   const response = yield call(requestSaga, {
     errorSection: 'fetchClusterRegistryNodes',
     loadingSection: 'fetchClusterRegistryNodes',
