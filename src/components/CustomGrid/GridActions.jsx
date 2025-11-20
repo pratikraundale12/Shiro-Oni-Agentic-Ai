@@ -262,6 +262,7 @@ export const GridActions = ({
   setSortingState,
   setCurrentPage,
   isClusterLoggedIn = true,
+  is_kube_cluster = false,
   onItemsPerPageChange,
   scheduleType,
   setScheduleType,
@@ -462,7 +463,10 @@ export const GridActions = ({
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
 
   useEffect(() => {
-    if (module === 'nodes' && !isClusterLoggedIn) {
+    if (
+      (module === 'nodes' && !isClusterLoggedIn) ||
+      (module === 'nodes' && is_kube_cluster)
+    ) {
       return;
     }
     if (

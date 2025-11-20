@@ -388,7 +388,7 @@ export const ListClusters = () => {
                             </Item>
                           )}
 
-                          {item.status !== CLUSTER_STATUS.DISCONNECTED && (
+                          {item.edit_cluster && (
                             <Item
                               onClick={() =>
                                 handleClick('view', item?.id, item)
