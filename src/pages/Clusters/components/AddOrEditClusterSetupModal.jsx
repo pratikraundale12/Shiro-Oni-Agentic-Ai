@@ -25,6 +25,7 @@ const Container = styled.div`
 
 const BulletContainer = styled.div`
   width: 100%;
+  min-width: 260px;
   max-width: 280px;
   height: 280px;
   border: 2px solid
@@ -94,6 +95,15 @@ const TickIconStyle = styled.div`
   position: absolute;
   top: 10px;
   right: 10px;
+`;
+const HighLightHeadingText = styled.span`
+  white-space: nowrap;
+  font-family: Noto Sans;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 27.24px;
+  letter-spacing: 0%;
+  color: #444445;
 `;
 
 export const AddOrEditClusterModal = () => {
@@ -167,7 +177,9 @@ export const AddOrEditClusterModal = () => {
                     <BottomText>
                       via <br />
                     </BottomText>
-                    <HighLightText>Virtual Machine / Instances</HighLightText>
+                    <HighLightHeadingText>
+                      Virtual Machine / Instances
+                    </HighLightHeadingText>
                   </div>
                 </div>
                 {createNewClusterMethod === 'VM' &&
@@ -213,7 +225,7 @@ export const AddOrEditClusterModal = () => {
                     <BottomText>
                       via <br />
                     </BottomText>
-                    <HighLightText>Kubernetes</HighLightText>
+                    <HighLightHeadingText>Kubernetes</HighLightHeadingText>
                   </div>
                 </div>
                 {selectedFlow === KDFM.CREATE_CLUSTER_FLOW &&

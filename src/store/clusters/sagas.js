@@ -685,7 +685,7 @@ export function* createKubernetesCluster(api, { payload }) {
       ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
     );
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* fetchConfigVersionsPerConfig(api, { payload }) {
@@ -946,6 +946,24 @@ export function* fetchKubePodStatus(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
+export function* fetchKubeHealth(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchKubeHealth',
+    loadingSection: 'fetchKubeHealth',
+    apiMethod: api.fetchKubeHealth,
+    apiParams: [
+      {
+        id: payload?.id,
+        pod: payload?.pod,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setKubePodHealth(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
 export function* updateKubeConfigQuickEdit(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'updateKubeConfigQuickEdit',
@@ -1118,6 +1136,7 @@ export function* clustersSagas(api) {
       api
     ),
     takeLatest(ClustersActions.fetchKubePodStatus, fetchKubePodStatus, api),
+    takeLatest(ClustersActions.fetchKubeHealth, fetchKubeHealth, api),
     takeLatest(
       ClustersActions.updateKubeConfigQuickEdit,
       updateKubeConfigQuickEdit,

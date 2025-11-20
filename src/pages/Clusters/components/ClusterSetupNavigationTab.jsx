@@ -5,14 +5,10 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { ClustersActions, ClustersSelectors } from '../../../store';
 import {
-  ActivityHistoryIcon,
   ClusterDetailsIcon,
-  ClusterDetailTabIcon,
-  CubeIcon,
+  GettingStartedIcon,
   ManageConfigIcon,
-  ManageHostIcon,
   ManageKubeClusterIcon,
-  SettingSmallIcon,
 } from '../../../assets';
 
 const NavTabs = styled.div`
@@ -52,9 +48,8 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('getting_started'));
         }}
       >
-        <CubeIcon
-          color={activeTab === 'getting_started' ? '#FF7A00' : '#444445'}
-        />{' '}
+        <GettingStartedIcon height="25" width="25" />
+
         {KDFM.GETTING_STARTED}
       </NavButton>
       <NavButton

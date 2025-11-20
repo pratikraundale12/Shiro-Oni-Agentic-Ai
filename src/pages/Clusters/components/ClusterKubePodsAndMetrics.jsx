@@ -7,10 +7,12 @@ import {
 } from '../../../store';
 import { FullPageLoader, Table } from '../../../components';
 import { useGlobalContext } from '../../../utils';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { NotePadIcon } from '../../../assets';
+import { BookIcon, NotePadIcon } from '../../../assets';
 import { theme } from '../../../styles';
+import KubeClusterHealthMetrics from './KubeClusterHealthMetrics';
+import { isEmpty } from 'lodash';
 const ActiveTd = styled.div`
   font-weight: var(--fw-500);
   line-height: 19.36px;
@@ -91,6 +93,7 @@ const renderStatus = status => {
   return <RedInactive redColor={theme.colors.primary}>{status}</RedInactive>;
 };
 const KubeClusterPodsAndMetrics = () => {
+  const [activeTab, setActiveTab] = useState('status');
   const dispatch = useDispatch();
   const podsList = useSelector(ClustersSelectors.getKubePods);
   const { state } = useGlobalContext();
@@ -158,36 +161,80 @@ const KubeClusterPodsAndMetrics = () => {
       resize: true,
     },
   ];
+
   useEffect(() => {
-    if (state?.nodeClusterId) {
-      dispatch(ClustersActions.fetchKubePodStatus(state?.nodeClusterId));
-    }
-  }, [dispatch, state?.nodeClusterId]);
+    if (activeTab !== 'status') return;
+    if (!state?.nodeClusterId) return;
+    dispatch(ClustersActions.fetchKubePodStatus(state.nodeClusterId));
+    const interval = setInterval(() => {
+      dispatch(ClustersActions.fetchKubePodStatus(state.nodeClusterId));
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [activeTab, state?.nodeClusterId, dispatch]);
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchKubePodStatus')
   );
   return (
     <>
-      <FullPageLoader loading={loading} />{' '}
+      <FullPageLoader loading={loading && isEmpty(podsList)} />{' '}
       <NavTabs id="nav-tab" role="tablist" className="mb-4">
         <NavButton
-          active={true}
-          // onClick={() => {
-          //   setActiveTab('summary');
-          // }}
+          active={activeTab === 'status'}
+          onClick={() => {
+            setActiveTab('status');
+          }}
         >
           <div className="d-flex align-items-center gap-2">
-            <NotePadIcon color={'#FF7A00'} width={22} height={22} />
-            Pods Status
+            <NotePadIcon
+              color={activeTab === 'status' ? '#FF7A00' : '#444445'}
+              width={22}
+              height={22}
+            />
+            Pods
+          </div>
+        </NavButton>{' '}
+        <NavButton
+          active={activeTab === 'healthMetices'}
+          onClick={() => {
+            setActiveTab('healthMetices');
+          }}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <BookIcon
+              color={activeTab === 'healthMetices' ? '#FF7A00' : '#444445'}
+              width={22}
+              height={22}
+            />
+            Health Metrics
           </div>
         </NavButton>
       </NavTabs>
-      <Table
-        showPagination={true}
-        data={podsList}
-        columns={COLUMNS}
-        tableWithFullHeight={false}
-      />{' '}
+      {activeTab === 'status' && (
+        <div
+          style={{
+            overflow: 'auto',
+            maxHeight: 'calc(100vh - 250px)',
+            minHeight: 'calc(100vh - 600px)',
+            width: '100%',
+            overflowX: 'hidden',
+          }}
+        >
+          <Table
+            showPagination={true}
+            data={podsList}
+            columns={COLUMNS}
+            tableWithFullHeight={false}
+          />
+        </div>
+      )}
+      {activeTab === 'healthMetices' && (
+        <KubeClusterHealthMetrics
+          activeTab={activeTab}
+          podsList={podsList}
+          clusterId={state?.nodeClusterId}
+        />
+      )}
     </>
   );
 };

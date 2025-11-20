@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import {
   ClusterDetailsIcon,
+  GettingStartedIcon,
   ManageConfigIcon,
   ManageKubeClusterIcon,
 } from '../../../assets';
@@ -56,6 +57,7 @@ const ClusterSetupGettingStartedTab = () => {
       <div className="d-flex justify-content-center w-100 mb-3">
         <div className="col-md-8 d-flex flex-column justify-content-center text-center">
           <div>
+            <GettingStartedIcon /> <br />
             <HighlightTextTop>{KDFM.GETTING_STARTED}</HighlightTextTop>
           </div>
         </div>

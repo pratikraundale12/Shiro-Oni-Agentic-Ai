@@ -185,6 +185,11 @@ export const ClustersActions = {
   deleteClusterDriverFile: createAction(`${prefix}deleteClusterDriverFile`),
   fetchKubePodStatus: createAction(`${prefix}fetchKubePodStatus`),
   setKubePods: createAction(`${prefix}setKubePods`),
+  fetchKubeHealth: createAction(`${prefix}fetchKubeHealth`),
+  setKubePodHealth: createAction(`${prefix}setKubePodHealth`),
+  setIsDownloadRegistryCertOpen: createAction(
+    `${prefix}setIsDownloadRegistryCertOpen`
+  ),
   updateKubeConfigQuickEdit: createAction(`${prefix}updateKubeConfigQuickEdit`),
   setUpdatedKubeConfig: createAction(`${prefix}setUpdatedKubeConfig`),
 };
@@ -253,6 +258,7 @@ export const CLUSTERS_INITIAL_STATE = {
   tourStart: false,
   kubePods: [],
   kubePodHealth: {},
+  isDownloadRegistryCertOpen: false,
   updatedKubeConfig: {},
 };
 
@@ -334,6 +340,9 @@ export const ClustersSelectors = {
   getTourIndex: state => state.clusters.tourIndex,
   getTourStart: state => state.clusters.tourStart,
   getKubePods: state => state.clusters.kubePods,
+  getKubePodHealth: state => state.clusters.kubePodHealth,
+  getIsDownloadRegistryCertOpen: state =>
+    state.clusters.isDownloadRegistryCertOpen,
   getUpdatedKubeConfig: state => state.clusters.updatedKubeConfig,
 };
 
@@ -728,6 +737,18 @@ const setKubePods = (state, { payload }) => {
     kubePods: payload,
   };
 };
+const setKubePodHealth = (state, { payload }) => {
+  return {
+    ...state,
+    kubePodHealth: payload,
+  };
+};
+const setIsDownloadRegistryCertOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isDownloadRegistryCertOpen: payload,
+  };
+};
 const setUpdatedKubeConfig = (state, { payload }) => {
   return {
     ...state,
@@ -897,6 +918,11 @@ export const clustersReducer = createReducer(
       .addCase(ClustersActions.setTourIndex, setTourIndex)
       .addCase(ClustersActions.setTourStart, setTourStart)
       .addCase(ClustersActions.setKubePods, setKubePods)
+      .addCase(ClustersActions.setKubePodHealth, setKubePodHealth)
+      .addCase(
+        ClustersActions.setIsDownloadRegistryCertOpen,
+        setIsDownloadRegistryCertOpen
+      )
       .addCase(ClustersActions.setUpdatedKubeConfig, setUpdatedKubeConfig);
   }
 );

@@ -304,8 +304,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
           <div className="row">
             <div className="col-6">
               <LabelSelect className="mb-3">
-                Kubernetes Cluster Configuration{' '}
-                <span style={{ color: 'red' }}>*</span>
+                Kubernetes Cluster <span style={{ color: 'red' }}>*</span>
               </LabelSelect>
               <SelectField
                 name="host"
@@ -318,7 +317,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                     ? hostOptionsOnUpgrade || []
                     : hostOptions || []
                 }
-                placeholder={'Select Kubernetes Cluster Configuration'}
+                placeholder={'Select Kubernetes Cluster'}
                 required={true}
                 disabled={!isEmpty(kubeClusterIDEdit)}
               />

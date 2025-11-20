@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { OpenLinkIcon } from '../../../assets';
+import { ActivityHistoryIcon, OpenLinkIcon } from '../../../assets';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
 import { TextRender } from './TextRender';
 import { isEmpty } from 'lodash';
+import { IconButton } from './AtionRender';
 
 const Container = styled.div`
   display: flex;
@@ -34,6 +35,9 @@ export const UrlRender = ({
   tooltipPlacement = 'bottom',
   copy_btn_tooltip,
   tooltipId,
+  displayCert = false,
+  handleCert = () => {},
+  certTitle,
 }) => {
   return (
     <Container>
@@ -58,6 +62,17 @@ export const UrlRender = ({
           >
             <CopyToClipboard copyItem={url} />
           </StyledLink>
+          {displayCert && (
+            <IconButton
+              onClick={e => {
+                handleCert();
+                e.currentTarget.blur();
+              }}
+              data-tooltip-id={`download-cert`}
+            >
+              <ActivityHistoryIcon width={18} height={18} />
+            </IconButton>
+          )}
         </Container>
       )}
       <ReactTooltip
@@ -85,6 +100,20 @@ export const UrlRender = ({
           zIndex: 10000,
         }}
       />
+      {displayCert && (
+        <ReactTooltip
+          id={`download-cert`}
+          place="bottom"
+          effect="solid"
+          content={certTitle}
+          style={{
+            width: '180px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+            zIndex: 10000,
+          }}
+        />
+      )}
     </Container>
   );
 };
@@ -95,4 +124,7 @@ UrlRender.propTypes = {
   type: PropTypes.string,
   copy_btn_tooltip: PropTypes.string,
   tooltipId: PropTypes.string,
+  displayCert: PropTypes.bool,
+  handleCert: PropTypes.func,
+  certTitle: PropTypes.string,
 };

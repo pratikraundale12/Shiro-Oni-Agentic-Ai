@@ -186,3 +186,4 @@ export * from './RegisterClusterIcon';
 export * from './ManageKubeClusterIcon';
 export * from './ManageConfigIcon';
 export * from './ClusterDetailsIcon';
+export * from './GettingStartedIcon';
