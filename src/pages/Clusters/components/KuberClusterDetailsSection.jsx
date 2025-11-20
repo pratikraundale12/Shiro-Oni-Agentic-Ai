@@ -440,7 +440,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
             </div>
           </div>
           <div className="mt-3">
-            {clusterType === 'ec2' && (
+            {clusterType === 'ec2' && isEmpty(kubeUpgradeData) && (
               <CheckboxField
                 name="check"
                 label="Do you want to add SSH details?"
