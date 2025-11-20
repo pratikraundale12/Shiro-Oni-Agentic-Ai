@@ -181,7 +181,7 @@ const ClusterSetupNewConfigKubernetes = () => {
         persistence_dataStorage_size: data?.dataStorage_size,
         properties_webProxyHost: data?.properties_webProxyHost,
         ingress_hosts: data?.ingress_hosts.trim(),
-        ingress_tls_secretName_hosts: data?.ingress_hosts.trim(),
+        ingress_tls_hosts: data?.ingress_hosts.trim(),
         certManager_additionalIpsAddresses: data?.ingress_hosts.trim(),
         zookeeper_url: data?.ingress_hosts.trim(),
         registry_url: data?.ingress_hosts.trim(),
