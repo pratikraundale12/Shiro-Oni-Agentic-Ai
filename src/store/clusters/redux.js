@@ -192,6 +192,10 @@ export const ClustersActions = {
   ),
   updateKubeConfigQuickEdit: createAction(`${prefix}updateKubeConfigQuickEdit`),
   setUpdatedKubeConfig: createAction(`${prefix}setUpdatedKubeConfig`),
+  addScript: createAction(`${prefix}addScript`),
+  fetchScriptList: createAction(`${prefix}fetchScriptList`),
+  deleteClusterScript: createAction(`${prefix}deleteClusterScript`),
+  setScriptList: createAction(`${prefix}setScriptList`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -260,6 +264,7 @@ export const CLUSTERS_INITIAL_STATE = {
   kubePodHealth: {},
   isDownloadRegistryCertOpen: false,
   updatedKubeConfig: {},
+  scriptList: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -756,6 +761,13 @@ const setUpdatedKubeConfig = (state, { payload }) => {
   };
 };
 
+const setScriptList = (state, { payload }) => {
+  return {
+    ...state,
+    scriptList: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -923,6 +935,7 @@ export const clustersReducer = createReducer(
         ClustersActions.setIsDownloadRegistryCertOpen,
         setIsDownloadRegistryCertOpen
       )
-      .addCase(ClustersActions.setUpdatedKubeConfig, setUpdatedKubeConfig);
+      .addCase(ClustersActions.setUpdatedKubeConfig, setUpdatedKubeConfig)
+      .addCase(ClustersActions.setScriptList, setScriptList);
   }
 );

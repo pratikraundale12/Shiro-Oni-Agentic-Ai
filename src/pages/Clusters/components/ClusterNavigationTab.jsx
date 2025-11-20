@@ -145,7 +145,39 @@ const ClusterNavigationTab = ({
               id="custom_processor"
               place="right"
               effect="solid"
-              content="Add SSH details"
+              content="Add Processor details"
+              style={{
+                whiteSpace: 'normal',
+                zIndex: 9999,
+              }}
+              event="focus"
+              eventOff="blur"
+            />
+          )}
+        </>
+      }
+      {
+        <>
+          <NavButton
+            active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS}
+            onClick={() =>
+              Object.keys(data || {})?.length
+                ? setActiveTab(CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS)
+                : {}
+            }
+            disabled={
+              state?.is_kube_cluster ? false : !sshDataAdded?.sshCredsAvailable
+            }
+            data-tooltip-id="custom_scripts"
+          >
+            {CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS}
+          </NavButton>
+          {!sshDataAdded?.sshCredsAvailable && (
+            <ReactTooltip
+              id="custom_scripts"
+              place="right"
+              effect="solid"
+              content="Add Scripts"
               style={{
                 whiteSpace: 'normal',
                 zIndex: 9999,
