@@ -3,7 +3,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
 import styled from 'styled-components';
-import { Button, InputField, SelectField } from '../../../shared';
+import {
+  Button,
+  CheckboxField,
+  InputField,
+  SelectField,
+} from '../../../shared';
 import { KDFM } from '../../../constants';
 import { QRIcons } from '../../../assets';
 import { useForm } from 'react-hook-form';
@@ -44,6 +49,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const dispatch = useDispatch();
   const [formSchemaCluster, setFormSchemaCluster] = useState('eks');
   const [openAddConfigModal, setOpenAddConfigModal] = useState(false);
+  const [sshAdd, setShhAdd] = useState(false);
   const kubeConfigList = useSelector(
     ClustersSelectors.getlistConfigListKubernetes
   );
@@ -126,7 +132,24 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     ec2_bastion_host: yup.string().required('Host is required'),
     ec2_ssh_username: yup.string().required('Username is required'),
     ec2_local_forward_port: yup.string().required('Post is required'),
-    // ec2_ssh_pem_file: yup.mixed().required('File is required'),
+    ec2_ssh_pem_file: yup.mixed().required('File is required'),
+  });
+  const schemaEC2withoutSSH = yup.object().shape({
+    clusterName: yup
+      .string()
+      .required('Cluster name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Cluster name must not start or end with a space.',
+        value => value === value?.trim()
+      )
+      .matches(
+        /^[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*$/,
+        'Cluster name must contain only letters, numbers, underscores, or hyphens.'
+      ),
+    host: yup.string().required('Master Node is required'),
+    configName: yup.string().required('Config name is required'),
+    configVersion: yup.string().required('Config version is required'),
   });
   const schemaUpgradeEC2 = yup.object().shape({
     clusterName: yup
@@ -148,9 +171,11 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   let schemaForm =
     formSchemaCluster === 'eks'
       ? schemaEKS
-      : isEmpty(kubeUpgradeData)
-        ? schemaEC2
-        : schemaUpgradeEC2;
+      : isEmpty(kubeUpgradeData) && !sshAdd
+        ? schemaEC2withoutSSH
+        : isEmpty(kubeUpgradeData) && sshAdd
+          ? schemaEC2
+          : schemaUpgradeEC2;
   const {
     register,
     control,
@@ -207,12 +232,16 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       payload.append('aws_secret_access_key', data?.aws_secret_access_key);
       payload.append('aws_session_token', data?.aws_session_token);
     }
-    if (formSchemaCluster === 'ec2' && isEmpty(kubeUpgradeData)) {  
+    if (formSchemaCluster === 'ec2' && isEmpty(kubeUpgradeData) && sshAdd) {
       payload.append('ec2_bastion_host', data?.ec2_bastion_host);
       payload.append('ec2_ssh_username', data?.ec2_ssh_username);
       payload.append('ec2_local_forward_port', data?.ec2_local_forward_port);
-      data?.ec2_ssh_pem_file &&
-        payload.append('ec2_ssh_pem_file', data?.ec2_ssh_pem_file);
+
+      payload.append('ec2_ssh_pem_file', data?.ec2_ssh_pem_file);
+      payload.append('isSshLess', true);
+    }
+    if (formSchemaCluster === 'ec2' && isEmpty(kubeUpgradeData) && !sshAdd) {
+      payload.append('isSshLess', false);
     }
 
     dispatch(ClustersActions.createKubernetesCluster(payload));
@@ -240,7 +269,12 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     if (
       errors?.ec2_bastion_host ||
       errors?.ec2_local_forward_port ||
-      errors?.ec2_ssh_username
+      errors?.ec2_ssh_username ||
+      errors?.aws_access_key_id ||
+      errors?.aws_region ||
+      errors?.aws_secret_access_key ||
+      errors?.aws_session_token ||
+      errors?.ec2_ssh_pem_file
     ) {
       return;
     }
@@ -282,6 +316,18 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       setValue('host', hostOptions?.[0]?.value);
     }
   }, [hostOptions]);
+
+  const handleSubmitClick = () => {
+    if (clusterType === 'eks') {
+      setOpenAddConfigModal(true);
+    } else {
+      if (sshAdd) {
+        setOpenAddConfigModal(true);
+      } else {
+        handleSubmit(handleCreateCluster)();
+      }
+    }
+  };
 
   return (
     <>
@@ -393,6 +439,16 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
               />
             </div>
           </div>
+          <div className="mt-3">
+            {clusterType === 'ec2' && (
+              <CheckboxField
+                name="check"
+                label="Do you want to add SSH details?"
+                checked={sshAdd}
+                onChange={e => setShhAdd(e.target.checked)}
+              />
+            )}
+          </div>
         </div>
       </Container>
       <BottomButton className="bottom-button-divs d-flex">
@@ -414,7 +470,9 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                 !isNaN(configVersionValue)
               )
             }
-            onClick={() => setOpenAddConfigModal(true)}
+            // onClick={() => setOpenAddConfigModal(true)}
+            // onClick={handleSubmit(handleCreateCluster)}
+            onClick={handleSubmitClick}
           >
             {!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
           </Button>
