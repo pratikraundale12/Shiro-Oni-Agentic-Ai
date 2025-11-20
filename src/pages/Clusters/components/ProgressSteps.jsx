@@ -206,6 +206,13 @@ const StepProgress = () => {
           </>
         )}
       </>
+      {!isEmpty(processData?.data?.steps) &&
+        processData?.data?.status === 'in-progress' && (
+          <div className="mt-2">
+            {' '}
+            <Loader size="md" />
+          </div>
+        )}
     </Container>
   );
 };
