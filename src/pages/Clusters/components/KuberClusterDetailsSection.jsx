@@ -238,10 +238,10 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       payload.append('ec2_local_forward_port', data?.ec2_local_forward_port);
 
       payload.append('ec2_ssh_pem_file', data?.ec2_ssh_pem_file);
-      payload.append('isSshLess', true);
+      payload.append('useSsh', true);
     }
     if (formSchemaCluster === 'ec2' && isEmpty(kubeUpgradeData) && !sshAdd) {
-      payload.append('isSshLess', false);
+      payload.append('useSsh', false);
     }
 
     dispatch(ClustersActions.createKubernetesCluster(payload));
