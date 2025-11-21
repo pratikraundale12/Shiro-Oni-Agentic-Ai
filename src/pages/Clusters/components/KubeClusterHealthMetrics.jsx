@@ -365,7 +365,9 @@ const KubeClusterHealthMetrics = ({ podsList, clusterId }) => {
                     ).toFixed(2) + '%' || '0.00%'
                   }
                   unit={'MB/GB'}
-                  percentage={100}
+                  percentage={
+                    podHealth?.data?.data?.[0]?.data?.memory?.utilization
+                  }
                   showPercentageSign={true}
                   contentTotal={podHealth?.data?.data?.[0]?.data?.memory?.total}
                   contentUsed={podHealth?.data?.data?.[0]?.data?.memory?.used}
@@ -381,7 +383,9 @@ const KubeClusterHealthMetrics = ({ podsList, clusterId }) => {
                     ).toFixed(2) + '%' || '0.00%'
                   }
                   unit={'MB/GB'}
-                  percentage={100}
+                  percentage={
+                    podHealth?.data?.data?.[0]?.data?.disk?.utilization
+                  }
                   showPercentageSign={true}
                   contentTotal={podHealth?.data?.data?.[0]?.data?.disk?.total}
                   contentUsed={podHealth?.data?.data?.[0]?.data?.disk?.used}
