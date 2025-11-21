@@ -226,7 +226,6 @@ export const ListClusters = () => {
       })
     );
     setSelectedCluster({});
-    setUninstallNiFi(false);
   };
 
   const handleOpenProgressModal = item => {
@@ -561,7 +560,6 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
     dispatch(ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false));
     dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
-    setUninstallNiFi(false);
   };
 
   const updateClusterStatus = async id => {
