@@ -780,7 +780,7 @@ export const ClusterProcessDisplayModal = ({
                   <FlexRow>
                     <StepHeaderText>Progress</StepHeaderText>
                     <PercentageHeaderText>
-                      {progress}% Complete
+                      {Number(progress) || 0}% Complete
                     </PercentageHeaderText>
                   </FlexRow>
                   <div className="progress">
