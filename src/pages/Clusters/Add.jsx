@@ -46,6 +46,7 @@ import { SSHDetailsTabSection } from './components/SSHDetailsTabSection';
 import { DriversCluster } from './components/DriversClusters';
 import { FlowGzTabSection } from './components/FlowGzSection';
 import { createRegistry } from '../../store/index1';
+import { ClusterCustomScript } from './components/ClusterCustomScript';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
