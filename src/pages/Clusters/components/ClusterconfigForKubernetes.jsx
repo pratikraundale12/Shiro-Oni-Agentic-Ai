@@ -187,7 +187,9 @@ const ClusterSetupNewConfigKubernetes = () => {
         registry_url: data?.ingress_hosts.trim(),
         registry_ingress_hosts_host: data?.ingress_hosts.trim(),
         registry_ingress_tls_hosts: data?.ingress_hosts.trim(),
-        registry_certManager_additionalIpAddresses: data?.ingress_hosts.trim(),
+        registry_certManager_additionalIpAddresses: [
+          data?.ingress_hosts.trim(),
+        ],
         certManager_additionalDnsNames: [
           ...parsedJson?.certManager?.additionalDnsNames.slice(0, 2),
           data?.ingress_hosts.trim(),
