@@ -121,6 +121,7 @@ export const clustersAPI = api => {
   const fetchNarList = ({ clusterId }) => {
     return api.get(`/clusters/${clusterId}/nars-list`);
   };
+
   const restartCluster = ({ clusterId, payload }) => {
     return api.post(`/clusters/${clusterId}/restart`, payload);
   };
@@ -179,6 +180,17 @@ export const clustersAPI = api => {
     return api.post(`/update-config`, payload);
   };
 
+  const addScript = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/upload-custom-scripts`, payload);
+  };
+
+  const fetchScriptList = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/scripts-list`);
+  };
+
+  const deleteClusterScript = ({ id, narId }) =>
+    api.delete(`/clusters/${id}/scripts/${narId}`);
+
   return {
     fetchClusters,
     fetchClusterList,
@@ -234,5 +246,8 @@ export const clustersAPI = api => {
     fetchKubePodStatus,
     fetchKubeHealth,
     updateKubeConfigQuickEdit,
+    addScript,
+    fetchScriptList,
+    deleteClusterScript,
   };
 };

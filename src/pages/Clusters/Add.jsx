@@ -46,6 +46,7 @@ import { SSHDetailsTabSection } from './components/SSHDetailsTabSection';
 import { DriversCluster } from './components/DriversClusters';
 import { FlowGzTabSection } from './components/FlowGzSection';
 import { createRegistry } from '../../store/index1';
+import { ClusterCustomScript } from './components/ClusterCustomScript';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
@@ -546,7 +547,8 @@ export const Add = () => {
       activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS ||
       activeTab === CLUSTER_MODULE_TABS.DRIVERS ||
       activeTab === CLUSTER_MODULE_TABS.FLOW_GZ ||
-      activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT
+      activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT ||
+      activeTab === CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS
     ) {
       return false;
     } else {
@@ -872,6 +874,9 @@ export const Add = () => {
           <FormContainer>
             {<ClusterCustomProcessor data={data} />}
           </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS && (
+          <FormContainer>{<ClusterCustomScript data={data} />}</FormContainer>
         )}
         {activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS && (
           <FormContainer>

@@ -978,6 +978,58 @@ export function* updateKubeConfigQuickEdit(api, { payload }) {
   }
 }
 
+export function* addScript(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'addScript',
+    loadingSection: 'addScript',
+    apiMethod: api.addScript,
+    apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message || 'Added Successfully');
+    yield put(ClustersActions.fetchScriptList(payload?.id));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* fetchScriptList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchScriptList',
+    loadingSection: 'fetchScriptList',
+    apiMethod: api.fetchScriptList,
+    apiParams: [
+      {
+        clusterId: payload,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setScriptList(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* deleteClusterScript(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteClusterScript',
+    loadingSection: 'deleteClusterScript',
+    apiMethod: api.deleteClusterScript,
+    apiParams: [
+      {
+        id: payload?.id,
+        narId: payload?.narId,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.fetchScriptList(payload?.id));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
 export function* clustersSagas(api) {
   yield all([
     takeLatest(
@@ -1142,5 +1194,8 @@ export function* clustersSagas(api) {
       updateKubeConfigQuickEdit,
       api
     ),
+    takeLatest(ClustersActions.addScript, addScript, api),
+    takeLatest(ClustersActions.fetchScriptList, fetchScriptList, api),
+    takeLatest(ClustersActions.deleteClusterScript, deleteClusterScript, api),
   ]);
 }
