@@ -349,6 +349,7 @@ export const ClustersSelectors = {
   getIsDownloadRegistryCertOpen: state =>
     state.clusters.isDownloadRegistryCertOpen,
   getUpdatedKubeConfig: state => state.clusters.updatedKubeConfig,
+  getScriptList: state => state.clusters.scriptList,
 };
 
 /* ------------- REDUCERS ------------------- */

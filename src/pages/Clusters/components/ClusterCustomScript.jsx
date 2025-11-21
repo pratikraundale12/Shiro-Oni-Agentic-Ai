@@ -51,10 +51,10 @@ const FlexWrapper = styled.div`
 `;
 export const ClusterCustomScript = ({ data }) => {
   const dispatch = useDispatch();
-  const narList = useSelector(ClustersSelectors.getnarList);
+  const scriptList = useSelector(ClustersSelectors.getScriptList);
   const [fileInputKey, setFileInputKey] = useState(0);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [narSelected, setNarSelected] = useState({});
+  const [scriptSelected, setScriptSelected] = useState({});
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'addScript')
   );
@@ -81,17 +81,17 @@ export const ClusterCustomScript = ({ data }) => {
     resolver: yupResolver(schema),
   });
   const handleDeleteClick = item => {
-    setNarSelected(item);
+    setScriptSelected(item);
     setIsDeleteModalOpen(true);
   };
   const handleNarDeleteConfirm = () => {
     dispatch(
       ClustersActions.deleteClusterScript({
-        id: narSelected?.clusterId,
-        narId: narSelected?.id,
+        id: scriptSelected?.clusterId,
+        narId: scriptSelected?.id,
       })
     );
-    setNarSelected({});
+    setScriptSelected({});
     setIsDeleteModalOpen(false);
   };
 
@@ -138,7 +138,7 @@ export const ClusterCustomScript = ({ data }) => {
 
   const handleUpload = formdata => {
     const payloadFile = new FormData();
-    payloadFile.append('narFile', formdata?.script_file);
+    payloadFile.append('scriptFile', formdata?.script_file);
     let payload = { payload: payloadFile, id: data?.id };
     dispatch(ClustersActions.addScript(payload));
     setFileInputKey(prev => prev + 1);
@@ -214,7 +214,7 @@ export const ClusterCustomScript = ({ data }) => {
           </div>
         </div>
         <div className="mt-2">
-          <Table data={narList || []} columns={COLUMNS} />
+          <Table data={scriptList || []} columns={COLUMNS} />
         </div>
         <ModalWithIcon
           title={`Delete Script`}
