@@ -58,9 +58,6 @@ export const ClusterCustomScript = ({ data }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'addScript')
   );
-  //   const loading2 = useSelector(state =>
-  //     LoadingSelectors.getLoading(state, 'restartCluster')
-  //   );
 
   const loading3 = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchScriptList')
@@ -150,15 +147,6 @@ export const ClusterCustomScript = ({ data }) => {
     }
   }, [data?.id]);
 
-  //   const handleRestart = () => {
-  //     dispatch(
-  //       ClustersActions.restartCluster({
-  //         id: data?.id,
-  //         payload: {},
-  //       })
-  //     );
-  //   };
-
   return (
     <>
       <FullPageLoader loading={loading || loading3 || loading4} />
@@ -178,8 +166,8 @@ export const ClusterCustomScript = ({ data }) => {
                   placeholder={'Upload Script'}
                   errors={errors}
                   fileLable="Custom Script"
-                  validExtensionsArray={['.nar']} // TODO
-                  acceptString={'.nar'} // TODO
+                  validExtensionsArray={['.groovy', '.py']}
+                  acceptString={'.groovy,.py'}
                   errorText={'Script'}
                   key={fileInputKey}
                 />
@@ -197,20 +185,12 @@ export const ClusterCustomScript = ({ data }) => {
             >
               Upload
             </Button>
-            {/* <Button type="button" variant="primary" onClick={handleRestart}>
-              Restart
-            </Button> */}
           </div>
         </FlexWrapper>
-        <div className="ms-1 mt-2 d-flex justify-content-start">
+        <div className="ms-1 mt-2 d-flex justify-content-end">
           <div>
-            <div style={{ fontSize: '16px', fontWeight: '550' }}>Legend</div>
-            <NotePadIcon
-              height="21"
-              width="21"
-              color={theme.colors.primary}
-            />{' '}
-            : &nbsp;Added by DFM &nbsp;&nbsp;
+            <NotePadIcon height="21" width="21" color={theme.colors.primary} />{' '}
+            : &nbsp;Uploaded by DFM &nbsp;&nbsp;
           </div>
         </div>
         <div className="mt-2">
