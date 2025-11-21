@@ -76,6 +76,7 @@ export const CLUSTER_MODULE_TABS = {
   SSH_DETAILS: 'SSH Details',
   DRIVERS: 'Drivers',
   FLOW_GZ: 'Flow Migration',
+  CUSTOM_SCRIPTS: 'Custom Scripts',
 };
 
 export const CLUSTER_STATUS = {
@@ -276,6 +277,7 @@ export const KDFM = {
   ITEMS_PER_PAGE: 20,
   USER_STORY: 'User Story',
   CHANGE_REQUEST: 'Change Request',
+  SUBMIT: 'Submit',
 
   // License constants
   TRIAL: 'Trial',
