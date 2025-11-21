@@ -369,11 +369,16 @@ const ClusterSetupNewConfigKubernetes = () => {
               disabled={!isEmpty(configToEdit)}
             />
           </div>
+          <div className="col-2 d-flex align-items-center">
+            <Button onClick={handleSubmit(handleOpenEditor, onError)}>
+              Open in YAML editor
+            </Button>
+          </div>
         </div>
         <div className="row px-3">
           <div className="col-4">
             <InputField
-              label={'replicaCount'}
+              label={'Instnace Count/Cluster Size'}
               name="replicaCount"
               type="text"
               required
@@ -384,7 +389,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           </div>
           <div className="col-4">
             <InputField
-              label={'image.tag'}
+              label={'NiFi Version'}
               name="image_tag"
               type="text"
               required
@@ -395,7 +400,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           </div>
           <div className="col-4">
             <InputField
-              label={'auth.singleUser.username'}
+              label={'Administrator Username'}
               name="auth_singleUser_username"
               type="text"
               required
@@ -406,7 +411,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           </div>
           <div className="col-4">
             <InputField
-              label={'auth.singleUser.password'}
+              label={'Administrator Password'}
               name="auth_singleUser_password"
               type="text"
               required
@@ -417,7 +422,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           </div>
           <div className="col-4">
             <InputField
-              label={'auth.admin'}
+              label={'Admin Authentication'}
               name="auth_admin"
               type="text"
               required
@@ -428,7 +433,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           </div>
           <div className="col-4">
             <InputField
-              label={'persistence.enabled'}
+              label={'Enable Persistent Storage'}
               name="persistence_enabled"
               type="text"
               required
@@ -439,7 +444,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           </div>
           <div className="col-4">
             <InputField
-              label={'dataStorage.size'}
+              label={'Allocated Storage/Storage Allocation'}
               name="dataStorage_size"
               type="text"
               required
@@ -450,7 +455,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           </div>
           <div className="col-4">
             <InputField
-              label={'jvmMemory'}
+              label={'JVM Heap Memory/JVM Resource Limit'}
               name="jvmMemory"
               type="text"
               required
@@ -461,7 +466,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           </div>
           <div className="col-4">
             <InputField
-              label={'properties.webProxyHost'}
+              label={'Web Proxy Hostname/External Access URL'}
               name="properties_webProxyHost"
               type="text"
               required
@@ -472,7 +477,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           </div>
           <div className="col-4">
             <InputField
-              label={'ingress.hosts'}
+              label={'Service URL/External Hostname'}
               name="ingress_hosts"
               type="text"
               required
@@ -481,14 +486,6 @@ const ClusterSetupNewConfigKubernetes = () => {
               icon={<NotePadIcon />}
             />
           </div>{' '}
-          <div className="col-3 d-flex align-items-center">
-            <Button
-              variant="secondary"
-              onClick={handleSubmit(handleOpenEditor, onError)}
-            >
-              Open in YAML editor
-            </Button>
-          </div>
         </div>
         <Modal
           title="Configuration Editor"
