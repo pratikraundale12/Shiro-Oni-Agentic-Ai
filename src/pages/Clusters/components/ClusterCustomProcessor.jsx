@@ -101,9 +101,13 @@ export const ClusterCustomProcessor = ({ data }) => {
       renderCell: item => (
         <>
           {' '}
-          {item?.addedViaDFM && (
-            <NotePadIcon height="21" width="21" color={theme.colors.primary} />
-          )}{' '}
+          {
+            <NotePadIcon
+              height="21"
+              width="21"
+              color={item?.addedViaDFM ? theme.colors.primary : '#444445'}
+            />
+          }{' '}
           &nbsp;
           {item?.name || 'N/A'}
         </>
@@ -202,15 +206,12 @@ export const ClusterCustomProcessor = ({ data }) => {
             </Button>
           </div>
         </FlexWrapper>
-        <div className="ms-1 mt-2 d-flex justify-content-start">
+        <div className="ms-1 mt-2 d-flex justify-content-end">
           <div>
-            <div style={{ fontSize: '16px', fontWeight: '550' }}>Legend</div>
-            <NotePadIcon
-              height="21"
-              width="21"
-              color={theme.colors.primary}
-            />{' '}
-            : &nbsp;Added by DFM &nbsp;&nbsp;
+            <NotePadIcon height="21" width="21" color={theme.colors.primary} />{' '}
+            : &nbsp;Uploaded by DFM &nbsp;&nbsp; <br />
+            <NotePadIcon height="21" width="21" /> : &nbsp;Uploaded on NiFi
+            &nbsp;&nbsp;
           </div>
         </div>
         <div className="mt-2">

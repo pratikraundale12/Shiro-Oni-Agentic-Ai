@@ -378,7 +378,7 @@ const ClusterSetupNewConfigKubernetes = () => {
         <div className="row px-3">
           <div className="col-4">
             <InputField
-              label={'Instnace Count/Cluster Size'}
+              label={'Pods count'}
               name="replicaCount"
               type="text"
               required
