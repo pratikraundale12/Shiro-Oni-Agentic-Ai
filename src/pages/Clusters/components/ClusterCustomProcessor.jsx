@@ -182,11 +182,12 @@ export const ClusterCustomProcessor = ({ data }) => {
                   placeholder={'Upload nar file'}
                   errors={errors}
                   fileLable="Custom Nar file"
-                  validExtensionsArray={['.nar']}
-                  acceptString={'.nar'}
-                  errorText={'Nar'}
+                  validExtensionsArray={['.nar', '.py']}
+                  acceptString={'.nar,.py'}
+                  errorText={'Nar or py'}
                   key={fileInputKey}
                 />
+                //
               </ModalContainer>
             </div>
           </>
