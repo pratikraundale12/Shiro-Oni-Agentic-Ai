@@ -187,7 +187,6 @@ export const ClusterCustomProcessor = ({ data }) => {
                   errorText={'Nar or py'}
                   key={fileInputKey}
                 />
-                //
               </ModalContainer>
             </div>
           </>
