@@ -21,6 +21,7 @@ import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
 import yaml from 'js-yaml';
 import { toast } from 'react-toastify';
+import { theme } from '../../../styles';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
@@ -128,9 +129,9 @@ const ClusterSetupNewConfigKubernetes = () => {
       .string()
       .transform(value => {
         if (Array.isArray(value)) {
-          return value[0]?.replace(/"/g, '');
+          return value?.[0]?.[0]?.replace(/["']/g, '');
         }
-        return value?.replace(/"/g, '');
+        return value?.replace(/["']/g, '');
       })
       .required('Ingress host is required'),
   });
@@ -180,7 +181,7 @@ const ClusterSetupNewConfigKubernetes = () => {
         persistence_enabled: data?.persistence_enabled,
         persistence_dataStorage_size: data?.dataStorage_size,
         properties_webProxyHost: data?.properties_webProxyHost,
-        ingress_hosts: data?.ingress_hosts.trim(),
+        ingress_hosts: [data?.ingress_hosts.trim()],
         ingress_tls_hosts: data?.ingress_hosts.trim(),
         certManager_additionalIpsAddresses: data?.ingress_hosts.trim(),
         zookeeper_url: data?.ingress_hosts.trim(),
@@ -276,8 +277,10 @@ const ClusterSetupNewConfigKubernetes = () => {
       watch('auth_singleUser_password') &&
     parsedJson?.auth?.admin == watch('auth_admin') &&
     parsedJson?.persistence?.enabled == watch('persistence_enabled') &&
+    parsedJson?.persistence?.dataStorage?.size == watch('dataStorage_size') &&
     parsedJson?.jvmMemory == watch('jvmMemory') &&
-    parsedJson?.properties?.webProxyHost == watch('properties_webProxyHost');
+    parsedJson?.properties?.webProxyHost == watch('properties_webProxyHost') &&
+    parsedJson?.ingress?.hosts?.[0] == watch('ingress_hosts');
 
   const handleOpenEditor = () => {
     const fieldValues = {
@@ -290,7 +293,14 @@ const ClusterSetupNewConfigKubernetes = () => {
       persistence_enabled: watch('persistence_enabled'),
       persistence_dataStorage_size: watch('dataStorage_size'),
       properties_webProxyHost: watch('properties_webProxyHost'),
-      ingress_hosts: watch('ingress_hosts'),
+      ingress_hosts: [watch('ingress_hosts')],
+      ingress_tls_hosts: watch('ingress_hosts'),
+      certManager_additionalIpsAddresses: watch('ingress_hosts'),
+      zookeeper_url: watch('ingress_hosts'),
+      registry_url: watch('ingress_hosts'),
+      registry_ingress_hosts_host: watch('ingress_hosts'),
+      registry_ingress_tls_hosts: watch('ingress_hosts'),
+      registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
     };
     const payload = { values: fieldValues, valuesYaml: yamlValue };
     setEditorModal(true);
@@ -371,139 +381,156 @@ const ClusterSetupNewConfigKubernetes = () => {
               disabled={!isEmpty(configToEdit)}
             />
           </div>
-          <div className="col-2 d-flex align-items-center">
-            <Button onClick={handleSubmit(handleOpenEditor, onError)}>
-              Open in YAML editor
-            </Button>
+          <div className="col-4 d-flex align-items-end justify-content-end">
+            <div className="pb-2">
+              {!editorModal && (
+                <span
+                  style={{
+                    color: `${theme.colors.primary}`,
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                  }}
+                  onClick={handleOpenEditor}
+                >
+                  View YAML Editor
+                </span>
+              )}
+              {editorModal && (
+                <span
+                  style={{
+                    color: `${theme.colors.primary}`,
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => {
+                    setEditorModal(false);
+                    handleBack();
+                  }}
+                >
+                  View Quick Editor
+                </span>
+              )}
+            </div>
           </div>
         </div>
-        <div className="row px-3">
-          <div className="col-4">
-            <InputField
-              label={'Pods count'}
-              name="replicaCount"
-              type="text"
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-            />
+        {!editorModal && (
+          <div className="row px-3">
+            <div className="col-4">
+              <InputField
+                label={'Pods count'}
+                name="replicaCount"
+                type="text"
+                required
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+              />
+            </div>
+            <div className="col-4">
+              <InputField
+                label={'NiFi Version'}
+                name="image_tag"
+                type="text"
+                required
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+              />
+            </div>
+            <div className="col-4">
+              <InputField
+                label={'Administrator Username'}
+                name="auth_singleUser_username"
+                type="text"
+                required
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+              />
+            </div>
+            <div className="col-4">
+              <InputField
+                label={'Administrator Password'}
+                name="auth_singleUser_password"
+                type="text"
+                required
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+              />
+            </div>
+            <div className="col-4">
+              <InputField
+                label={'Admin Authentication'}
+                name="auth_admin"
+                type="text"
+                required
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+              />
+            </div>
+            <div className="col-4">
+              <InputField
+                label={'Enable Persistent Storage'}
+                name="persistence_enabled"
+                type="text"
+                required
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+              />
+            </div>
+            <div className="col-4">
+              <InputField
+                label={'Allocated Storage/Storage Allocation'}
+                name="dataStorage_size"
+                type="text"
+                required
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+              />
+            </div>
+            <div className="col-4">
+              <InputField
+                label={'JVM Heap Memory/JVM Resource Limit'}
+                name="jvmMemory"
+                type="text"
+                required
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+              />
+            </div>
+            <div className="col-4">
+              <InputField
+                label={'Web Proxy Hostname/External Access URL'}
+                name="properties_webProxyHost"
+                type="text"
+                required
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+              />
+            </div>
+            <div className="col-4">
+              <InputField
+                label={'Service URL/External Hostname'}
+                name="ingress_hosts"
+                type="text"
+                required
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+              />
+            </div>{' '}
           </div>
-          <div className="col-4">
-            <InputField
-              label={'NiFi Version'}
-              name="image_tag"
-              type="text"
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-            />
-          </div>
-          <div className="col-4">
-            <InputField
-              label={'Administrator Username'}
-              name="auth_singleUser_username"
-              type="text"
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-            />
-          </div>
-          <div className="col-4">
-            <InputField
-              label={'Administrator Password'}
-              name="auth_singleUser_password"
-              type="text"
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-            />
-          </div>
-          <div className="col-4">
-            <InputField
-              label={'Admin Authentication'}
-              name="auth_admin"
-              type="text"
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-            />
-          </div>
-          <div className="col-4">
-            <InputField
-              label={'Enable Persistent Storage'}
-              name="persistence_enabled"
-              type="text"
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-            />
-          </div>
-          <div className="col-4">
-            <InputField
-              label={'Allocated Storage/Storage Allocation'}
-              name="dataStorage_size"
-              type="text"
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-            />
-          </div>
-          <div className="col-4">
-            <InputField
-              label={'JVM Heap Memory/JVM Resource Limit'}
-              name="jvmMemory"
-              type="text"
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-            />
-          </div>
-          <div className="col-4">
-            <InputField
-              label={'Web Proxy Hostname/External Access URL'}
-              name="properties_webProxyHost"
-              type="text"
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-            />
-          </div>
-          <div className="col-4">
-            <InputField
-              label={'Service URL/External Hostname'}
-              name="ingress_hosts"
-              type="text"
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-            />
-          </div>{' '}
-        </div>
-        <Modal
-          title="Configuration Editor"
-          primaryButtonText={
-            !isEmpty(configToEdit) ? 'Update Config' : 'Add Config'
-          }
-          secondaryButtonText="Back"
-          isOpen={editorModal}
-          onRequestClose={handleBack}
-          onSubmit={handleSubmit(handleAddConfig)}
-          contentStyles={{ minWidth: '80%' }}
-          primaryButtonDisabled={
-            !isEmpty(errorsInEditor) ||
-            (!isEmpty(configToEdit) && !hasYamlChanged)
-          }
-        >
+        )}
+
+        {editorModal && (
           <DisplaySection className="px-3 row">
             <RightDisplaySection className="col-12 h-100">
               <EditorKubernetesConfig
@@ -518,7 +545,7 @@ const ClusterSetupNewConfigKubernetes = () => {
               />
             </RightDisplaySection>
           </DisplaySection>
-        </Modal>
+        )}
       </OuterContainer>
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
@@ -545,16 +572,30 @@ const ClusterSetupNewConfigKubernetes = () => {
             }}
           />
 
-          <Button
-            type="submit"
-            onClick={handleSubmit(handleAddConfigByQuickEdits)}
-            disabled={
-              !isEmpty(errorsInEditor) ||
-              (!isEmpty(configToEdit) && quickFieldChanged)
-            }
-          >
-            {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
-          </Button>
+          {!editorModal && (
+            <Button
+              type="submit"
+              onClick={handleSubmit(handleAddConfigByQuickEdits)}
+              disabled={
+                !isEmpty(errorsInEditor) ||
+                (!isEmpty(configToEdit) && quickFieldChanged)
+              }
+            >
+              {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
+            </Button>
+          )}
+          {editorModal && (
+            <Button
+              type="submit"
+              onClick={handleSubmit(handleAddConfig)}
+              disabled={
+                !isEmpty(errorsInEditor) ||
+                (!isEmpty(configToEdit) && !hasYamlChanged)
+              }
+            >
+              {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
+            </Button>
+          )}
         </BottomButtonDiv>
       </BottomButton>
     </Wrapper>
