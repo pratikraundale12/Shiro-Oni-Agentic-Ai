@@ -443,7 +443,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
             {clusterType === 'ec2' && isEmpty(kubeUpgradeData) && (
               <CheckboxField
                 name="check"
-                label="Do you want to add SSH details?"
+                label="Do you want to add Kubernetes Admin Jumpbox?"
                 checked={sshAdd}
                 onChange={e => setShhAdd(e.target.checked)}
               />
