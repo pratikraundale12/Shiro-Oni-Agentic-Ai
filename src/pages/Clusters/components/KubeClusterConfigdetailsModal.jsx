@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { useState } from 'react';
-import { InputField, Modal } from '../../../shared';
+import { CheckboxField, InputField, Modal } from '../../../shared';
 import { QRIcons } from '../../../assets';
 import styled from 'styled-components';
 import PemUploadField from '../PEMUploadFile';
@@ -51,7 +51,7 @@ const KubeClusterConfigDetailsModal = ({
     <>
       <Modal
         isOpen={openAddConfigModal}
-        title={`${clusterType === 'ec2' ? 'Self-Managed Kubernetes' : 'Amazon EKS'} Details`}
+        title={`${clusterType === 'ec2' ? 'Self-Managed Kubernetes' : clusterType === 'aks' ? 'Azure' : 'Amazon EKS'} Details`}
         secondaryButtonText="Close"
         primaryButtonText={
           !isEmpty(kubeClusterIDEdit)
@@ -67,7 +67,7 @@ const KubeClusterConfigDetailsModal = ({
       >
         <div className=" row d-flex justify-content-center">
           <div className="">
-            {clusterType !== 'ec2' && (
+            {clusterType === 'eks' && (
               <>
                 {' '}
                 <div className="row mt-3">
@@ -200,6 +200,91 @@ const KubeClusterConfigDetailsModal = ({
                     </div>
                   </div>
                 </>
+              </>
+            )}
+            {clusterType === 'aks' && (
+              <>
+                {' '}
+                <div className="row mt-3">
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Tenant ID <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="tenantId"
+                      type="text"
+                      placeholder={'Enter Tenant ID'}
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Client ID <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="clientId"
+                      type="text"
+                      placeholder="Enter Client ID"
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Client Secret <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="clientSecret"
+                      type="text"
+                      placeholder="Enter Client Secret"
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Subscription ID <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="subscriptionId"
+                      type="text"
+                      placeholder={'Enter Subscription ID'}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                      required={true}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Resource Group <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="resourceGroup"
+                      type="text"
+                      placeholder={'Enter Resource Group'}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                      required={true}
+                    />
+                  </div>
+                  <CheckboxField
+                    name="check"
+                    label="Do you want to save AKS data?"
+                    // checked={sshAdd}
+                    // onChange={e => setShhAdd(e.target.checked)}
+                  />
+                </div>
               </>
             )}
           </div>

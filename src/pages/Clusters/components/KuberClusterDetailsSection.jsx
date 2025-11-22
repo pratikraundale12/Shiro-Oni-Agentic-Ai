@@ -318,7 +318,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   }, [hostOptions]);
 
   const handleSubmitClick = () => {
-    if (clusterType === 'eks') {
+    if (clusterType === 'eks' || clusterType === 'aks') {
       setOpenAddConfigModal(true);
     } else {
       if (sshAdd) {
@@ -430,6 +430,10 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                     {
                       label: 'Self-Managed Kubernetes',
                       value: 'ec2',
+                    },
+                    {
+                      label: 'Azure',
+                      value: 'aks',
                     },
                   ] || []
                 }
