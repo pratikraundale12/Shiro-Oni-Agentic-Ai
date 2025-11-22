@@ -129,9 +129,9 @@ const ClusterSetupNewConfigKubernetes = () => {
       .string()
       .transform(value => {
         if (Array.isArray(value)) {
-          return value[0]?.replace(/"/g, '');
+          return value?.[0]?.[0]?.replace(/["']/g, '');
         }
-        return value?.replace(/"/g, '');
+        return value?.replace(/["']/g, '');
       })
       .required('Ingress host is required'),
   });
@@ -181,7 +181,7 @@ const ClusterSetupNewConfigKubernetes = () => {
         persistence_enabled: data?.persistence_enabled,
         persistence_dataStorage_size: data?.dataStorage_size,
         properties_webProxyHost: data?.properties_webProxyHost,
-        ingress_hosts: data?.ingress_hosts.trim(),
+        ingress_hosts: [data?.ingress_hosts.trim()],
         ingress_tls_hosts: data?.ingress_hosts.trim(),
         certManager_additionalIpsAddresses: data?.ingress_hosts.trim(),
         zookeeper_url: data?.ingress_hosts.trim(),
@@ -277,8 +277,10 @@ const ClusterSetupNewConfigKubernetes = () => {
       watch('auth_singleUser_password') &&
     parsedJson?.auth?.admin == watch('auth_admin') &&
     parsedJson?.persistence?.enabled == watch('persistence_enabled') &&
+    parsedJson?.persistence?.dataStorage?.size == watch('dataStorage_size') &&
     parsedJson?.jvmMemory == watch('jvmMemory') &&
-    parsedJson?.properties?.webProxyHost == watch('properties_webProxyHost');
+    parsedJson?.properties?.webProxyHost == watch('properties_webProxyHost') &&
+    parsedJson?.ingress?.hosts?.[0] == watch('ingress_hosts');
 
   const handleOpenEditor = () => {
     const fieldValues = {
@@ -291,7 +293,14 @@ const ClusterSetupNewConfigKubernetes = () => {
       persistence_enabled: watch('persistence_enabled'),
       persistence_dataStorage_size: watch('dataStorage_size'),
       properties_webProxyHost: watch('properties_webProxyHost'),
-      ingress_hosts: watch('ingress_hosts'),
+      ingress_hosts: [watch('ingress_hosts')],
+      ingress_tls_hosts: watch('ingress_hosts'),
+      certManager_additionalIpsAddresses: watch('ingress_hosts'),
+      zookeeper_url: watch('ingress_hosts'),
+      registry_url: watch('ingress_hosts'),
+      registry_ingress_hosts_host: watch('ingress_hosts'),
+      registry_ingress_tls_hosts: watch('ingress_hosts'),
+      registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
     };
     const payload = { values: fieldValues, valuesYaml: yamlValue };
     setEditorModal(true);
@@ -395,7 +404,10 @@ const ClusterSetupNewConfigKubernetes = () => {
                     fontWeight: '700',
                     cursor: 'pointer',
                   }}
-                  onClick={() => setEditorModal(false)}
+                  onClick={() => {
+                    setEditorModal(false);
+                    handleBack();
+                  }}
                 >
                   View Quick Editor
                 </span>
