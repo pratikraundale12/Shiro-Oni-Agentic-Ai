@@ -43,6 +43,8 @@ const KubeClusterConfigDetailsModal = ({
   kubeClusterIDEdit,
   reset,
   onError,
+  aksSaveDb,
+  setAksSaveDb,
 }) => {
   const onRequestClose = () => {
     setOpenAddConfigModal(false);
@@ -52,7 +54,7 @@ const KubeClusterConfigDetailsModal = ({
       <Modal
         isOpen={openAddConfigModal}
         title={`${clusterType === 'ec2' ? 'Self-Managed Kubernetes' : clusterType === 'aks' ? 'Azure' : 'Amazon EKS'} Details`}
-        secondaryButtonText="Close"
+        secondaryButtonText="Back"
         primaryButtonText={
           !isEmpty(kubeClusterIDEdit)
             ? 'Initiate Cluster Edit'
@@ -277,13 +279,15 @@ const KubeClusterConfigDetailsModal = ({
                       icon={<QRIcons />}
                       required={true}
                     />
+                  </div>{' '}
+                  <div className="col-6 d-flex align-items-center">
+                    <CheckboxField
+                      name="check"
+                      label="Do you want to store AKS data?"
+                      checked={aksSaveDb}
+                      onChange={e => setAksSaveDb(e.target.checked)}
+                    />
                   </div>
-                  <CheckboxField
-                    name="check"
-                    label="Do you want to save AKS data?"
-                    // checked={sshAdd}
-                    // onChange={e => setShhAdd(e.target.checked)}
-                  />
                 </div>
               </>
             )}
