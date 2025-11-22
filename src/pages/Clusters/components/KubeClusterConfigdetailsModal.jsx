@@ -188,7 +188,6 @@ const KubeClusterConfigDetailsModal = ({
                         name="ec2_ssh_pem_file"
                         watch={watch}
                         control={control}
-                        required
                         rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
                         placeholder="Upload SSH Key File"
                         errors={errors}
