@@ -301,6 +301,10 @@ const ClusterSetupNewConfigKubernetes = () => {
       registry_ingress_hosts_host: watch('ingress_hosts'),
       registry_ingress_tls_hosts: watch('ingress_hosts'),
       registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
+      certManager_additionalDnsNames: [
+        ...parsedJson?.certManager?.additionalDnsNames.slice(0, 2),
+        watch('ingress_hosts'),
+      ],
     };
     const payload = { values: fieldValues, valuesYaml: yamlValue };
     setEditorModal(true);
