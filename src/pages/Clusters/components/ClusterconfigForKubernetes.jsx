@@ -371,22 +371,10 @@ const ClusterSetupNewConfigKubernetes = () => {
         displayBackButton={true}
       />
       <OuterContainer>
-        <div className="row px-3">
-          <div className="col-8">
-            <InputField
-              label={KDFM.CONFIG_NAME}
-              name="configName"
-              type="text"
-              placeholder={KDFM.ENTER_CONFIG_NAME}
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-              disabled={!isEmpty(configToEdit)}
-            />
-          </div>
-          <div className="col-4 d-flex align-items-end justify-content-end">
-            <div className="pb-2">
+        <div className="row">
+          {' '}
+          <div className=" d-flex align-items-end justify-content-end">
+            <div className="pb-2 me-2">
               {!editorModal && (
                 <span
                   style={{
@@ -397,7 +385,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                   }}
                   onClick={handleOpenEditor}
                 >
-                  View YAML Editor
+                  Edit YAML
                 </span>
               )}
               {editorModal && (
@@ -413,10 +401,25 @@ const ClusterSetupNewConfigKubernetes = () => {
                     handleBack();
                   }}
                 >
-                  View Quick Editor
+                  Edit in Quick Editor
                 </span>
               )}
             </div>
+          </div>
+        </div>
+        <div className="row px-3">
+          <div className="col-8">
+            <InputField
+              label={KDFM.CONFIG_NAME}
+              name="configName"
+              type="text"
+              placeholder={KDFM.ENTER_CONFIG_NAME}
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+              disabled={!isEmpty(configToEdit)}
+            />
           </div>
         </div>
         {!editorModal && (
