@@ -840,7 +840,7 @@ export function* uploadClusterDriver(api, { payload }) {
     toast.success(response?.data?.message || 'Added Successfully');
     yield put(ClustersActions.fetchDriversList(payload?.id));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* fetchDriversList(api, { payload }) {
