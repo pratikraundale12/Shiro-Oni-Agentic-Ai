@@ -25,6 +25,8 @@ import { theme } from '../../../styles';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
+  display: flex;
+  flex-direction: column;
 `;
 const OuterContainer = styled.div`
   background-color: ${props => props.theme.colors.lightGrey};
@@ -32,15 +34,30 @@ const OuterContainer = styled.div`
   padding-top: 10px;
   margin-bottom: 2rem;
   height: 88%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
 `;
 
 const DisplaySection = styled.div`
-  height: 450px !important;
+  flex-grow: 1;
+  min-height: 0;
   border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
 `;
 const RightDisplaySection = styled.div`
   overflow: auto;
   left: 20%;
+
+  .monaco-editor .find-widget.visible {
+    position: absolute;
+    top: 24px !important;
+    right: 40px !important;
+  }
 `;
 
 export const List = styled.ul`
