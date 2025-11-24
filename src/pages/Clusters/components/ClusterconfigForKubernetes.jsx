@@ -158,7 +158,7 @@ const ClusterSetupNewConfigKubernetes = () => {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -300,6 +300,14 @@ const ClusterSetupNewConfigKubernetes = () => {
     parsedJson?.ingress?.hosts?.[0] == watch('ingress_hosts');
 
   const handleOpenEditor = () => {
+    let createValue = dirtyFields.ingress_hosts
+      ? watch('ingress_hosts')
+      : watch('ingress_hosts')?.[0];
+    const commonValueIngress = isEmpty(configToEdit)
+      ? createValue
+      : Array.isArray(watch('ingress_hosts'))
+        ? watch('ingress_hosts')?.[0]
+        : watch('ingress_hosts');
     const fieldValues = {
       replicaCount: watch('replicaCount'),
       image_tag: watch('image_tag'),
@@ -310,17 +318,17 @@ const ClusterSetupNewConfigKubernetes = () => {
       persistence_enabled: watch('persistence_enabled'),
       persistence_dataStorage_size: watch('dataStorage_size'),
       properties_webProxyHost: watch('properties_webProxyHost'),
-      ingress_hosts: watch('ingress_hosts')?.[0],
-      ingress_tls_hosts: watch('ingress_hosts')?.[0],
-      certManager_additionalIpsAddresses: watch('ingress_hosts'),
-      zookeeper_url: watch('ingress_hosts')?.[0],
-      registry_url: watch('ingress_hosts')?.[0],
-      registry_ingress_hosts_host: watch('ingress_hosts')?.[0],
-      registry_ingress_tls_hosts: watch('ingress_hosts')?.[0],
-      registry_certManager_additionalIpAddresses: watch('ingress_hosts'),
+      ingress_hosts: commonValueIngress,
+      ingress_tls_hosts: commonValueIngress,
+      certManager_additionalIpsAddresses: [commonValueIngress],
+      zookeeper_url: commonValueIngress,
+      registry_url: commonValueIngress,
+      registry_ingress_hosts_host: commonValueIngress,
+      registry_ingress_tls_hosts: commonValueIngress,
+      registry_certManager_additionalIpAddresses: [commonValueIngress],
       certManager_additionalDnsNames: [
         ...parsedJson?.certManager?.additionalDnsNames.slice(0, 2),
-        watch('ingress_hosts')?.[0],
+        commonValueIngress,
       ],
     };
     const payload = { values: fieldValues, valuesYaml: yamlValue };
