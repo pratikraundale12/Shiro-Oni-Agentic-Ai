@@ -349,7 +349,9 @@ const KubeClusterHealthMetrics = ({ podsList, clusterId }) => {
                     ).toFixed(2) + '%' || '0.00%'
                   }
                   unit={'cores'}
-                  percentage={podHealth?.data?.pods?.total?.cpu_percentage}
+                  percentage={
+                    podHealth?.data?.data?.[0]?.data?.cpu?.utilization
+                  }
                   showPercentageSign={true}
                   contentTotal={podHealth?.data?.data?.[0]?.data?.cpu?.total}
                   contentUsed={podHealth?.data?.data?.[0]?.data?.cpu?.used}
