@@ -158,7 +158,7 @@ const ClusterSetupNewConfigKubernetes = () => {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -199,17 +199,13 @@ const ClusterSetupNewConfigKubernetes = () => {
         persistence_dataStorage_size: data?.dataStorage_size,
         properties_webProxyHost: data?.properties_webProxyHost,
         ingress_hosts: [data?.ingress_hosts.trim()],
-        ingress_tls_hosts: data?.ingress_hosts.trim(),
-        certManager_additionalIpsAddresses: [data?.ingress_hosts.trim()],
+        ingress_tls_hosts: [data?.ingress_hosts.trim()],
+        certManager_additionalIpAddresses: [data?.ingress_hosts.trim()],
         zookeeper_url: data?.ingress_hosts.trim(),
         registry_url: data?.ingress_hosts.trim(),
-        registry_ingress_hosts_host: data?.ingress_hosts.trim(),
-        registry_ingress_tls_hosts: data?.ingress_hosts.trim(),
+        registry_ingress_hosts_host: [data?.ingress_hosts.trim()],
+        registry_ingress_tls_hosts: [data?.ingress_hosts.trim()],
         registry_certManager_additionalIpAddresses: [
-          data?.ingress_hosts.trim(),
-        ],
-        certManager_additionalDnsNames: [
-          ...parsedJson?.certManager?.additionalDnsNames.slice(0, 2),
           data?.ingress_hosts.trim(),
         ],
       },
@@ -276,7 +272,7 @@ const ClusterSetupNewConfigKubernetes = () => {
       setValue('dataStorage_size', parsedJson?.persistence?.dataStorage?.size);
       setValue('jvmMemory', parsedJson?.jvmMemory || parsedJson?.jvmMemory);
       setValue('properties_webProxyHost', parsedJson?.properties?.webProxyHost);
-      setValue('ingress_hosts', parsedJson?.ingress?.hosts);
+      setValue('ingress_hosts', parsedJson?.ingress?.hosts?.[0]);
     }
   }, [parsedJson]);
 
@@ -300,6 +296,14 @@ const ClusterSetupNewConfigKubernetes = () => {
     parsedJson?.ingress?.hosts?.[0] == watch('ingress_hosts');
 
   const handleOpenEditor = () => {
+    let createValue = dirtyFields.ingress_hosts
+      ? watch('ingress_hosts')
+      : watch('ingress_hosts');
+    const commonValueIngress = isEmpty(configToEdit)
+      ? createValue
+      : Array.isArray(watch('ingress_hosts'))
+        ? watch('ingress_hosts')?.[0]
+        : watch('ingress_hosts');
     const fieldValues = {
       replicaCount: watch('replicaCount'),
       image_tag: watch('image_tag'),
@@ -310,18 +314,14 @@ const ClusterSetupNewConfigKubernetes = () => {
       persistence_enabled: watch('persistence_enabled'),
       persistence_dataStorage_size: watch('dataStorage_size'),
       properties_webProxyHost: watch('properties_webProxyHost'),
-      ingress_hosts: watch('ingress_hosts')?.[0],
-      ingress_tls_hosts: watch('ingress_hosts')?.[0],
-      certManager_additionalIpsAddresses: watch('ingress_hosts'),
-      zookeeper_url: watch('ingress_hosts')?.[0],
-      registry_url: watch('ingress_hosts')?.[0],
-      registry_ingress_hosts_host: watch('ingress_hosts')?.[0],
-      registry_ingress_tls_hosts: watch('ingress_hosts')?.[0],
-      registry_certManager_additionalIpAddresses: watch('ingress_hosts'),
-      certManager_additionalDnsNames: [
-        ...parsedJson?.certManager?.additionalDnsNames.slice(0, 2),
-        watch('ingress_hosts')?.[0],
-      ],
+      ingress_hosts: [commonValueIngress],
+      ingress_tls_hosts: [commonValueIngress],
+      certManager_additionalIpAddresses: [commonValueIngress],
+      zookeeper_url: commonValueIngress,
+      registry_url: commonValueIngress,
+      registry_ingress_hosts_host: [commonValueIngress],
+      registry_ingress_tls_hosts: [commonValueIngress],
+      registry_certManager_additionalIpAddresses: [commonValueIngress],
     };
     const payload = { values: fieldValues, valuesYaml: yamlValue };
     setEditorModal(true);
