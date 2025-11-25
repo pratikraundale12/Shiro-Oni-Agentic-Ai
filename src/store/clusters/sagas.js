@@ -1037,7 +1037,11 @@ export function* testAzureConfig(api, { payload }) {
     apiParams: [{ payload: payload }],
   });
   if (response?.ok) {
-    // yield put(ClustersActions.setAzureTestPassed(true));
+    toast.success(
+      response?.data?.message || 'Credentials valid & resource group accessible'
+    );
+
+    yield put(ClustersActions.setAzureTestPassed(true));
   } else {
     toast.error(response?.data?.message);
   }
