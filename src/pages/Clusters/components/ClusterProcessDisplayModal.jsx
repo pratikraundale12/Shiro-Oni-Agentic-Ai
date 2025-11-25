@@ -131,6 +131,169 @@ const CreationModelKubeStepsEC2 = [
   { step: 'Collect NiFi pods/services (remote)', status: 'completed' },
 ];
 
+const CreationModelKubeStepsAKS = [
+  {
+    step: 'Verifying installation files',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying Azure account access',
+    status: 'completed',
+  },
+  {
+    step: 'Connecting to Kubernetes cluster',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up storage monitoring',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying required tools and cluster access',
+    status: 'completed',
+  },
+  {
+    step: 'Reading configuration settings',
+    status: 'completed',
+  },
+  {
+    step: 'Preparing workspace for NiFi',
+    status: 'completed',
+  },
+  {
+    step: 'Checking certificate manager status',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up storage for NiFi',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up performance monitoring',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up Azure LoadBalancer Public IP',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying installation files',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying Azure account access',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying installation files',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying Azure account access',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying installation files',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying Azure account access',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying installation files',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying Azure account access',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying installation files',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying Azure account access',
+    status: 'completed',
+  },
+  {
+    step: 'Connecting to Kubernetes cluster',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up storage monitoring',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying required tools and cluster access',
+    status: 'completed',
+  },
+  {
+    step: 'Reading configuration settings',
+    status: 'completed',
+  },
+  {
+    step: 'Preparing workspace for NiFi',
+    status: 'completed',
+  },
+  {
+    step: 'Checking certificate manager status',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying installation files',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying Azure account access',
+    status: 'completed',
+  },
+  {
+    step: 'Connecting to Kubernetes cluster',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up storage monitoring',
+    status: 'completed',
+  },
+  {
+    step: 'Verifying required tools and cluster access',
+    status: 'completed',
+  },
+  {
+    step: 'Reading configuration settings',
+    status: 'completed',
+  },
+  {
+    step: 'Preparing workspace for NiFi',
+    status: 'completed',
+  },
+  {
+    step: 'Checking certificate manager status',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up storage for NiFi',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up performance monitoring',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up Azure LoadBalancer Public IP',
+    status: 'completed',
+  },
+  {
+    step: 'Installing NiFi',
+    status: 'completed',
+  },
+  {
+    step: 'Gathering deployment information',
+    status: 'completed',
+  },
+];
+
 const deleteModalSteps = [
   {
     step: 'Connectivity check',
@@ -415,9 +578,11 @@ export const ClusterProcessDisplayModal = ({
         ? CreationModelKubeStepsEKS
         : processData?.isKubeCluster && processData?.cluster_type === 'ec2'
           ? CreationModelKubeStepsEC2
-          : processData?.has_third_party_cert
-            ? CreationModelThirdPartySteps
-            : CreationmodelSteps;
+          : processData?.isKubeCluster && processData?.cluster_type === 'aks'
+            ? CreationModelKubeStepsAKS
+            : processData?.has_third_party_cert
+              ? CreationModelThirdPartySteps
+              : CreationmodelSteps;
     } else if (processExeName === 'restart') {
       return RestartModalSteps;
     } else if (processExeName === 'stop') {
