@@ -83,6 +83,8 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const configOptions = uniqBy(configOptionsUnsorted, 'value');
   const configOptionsOnUpgrade = uniqBy(allconfigOptionsUnsorted, 'value');
   const configVerionsList = useSelector(ClustersSelectors.getkubConfigVersion);
+  const azureCluster = useSelector(ClustersSelectors.getAzureCluster);
+
   const configVersionOption =
     (!isEmpty(configVerionsList) &&
       configVerionsList?.map(ele => ({
@@ -292,7 +294,8 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       setValue('host', kubeUpgradeData?.master_node?.id);
       setValue('configName', kubeUpgradeData?.config_name);
       setValue('configVersion', kubeUpgradeData?.config_version);
-      setValue('cluster_type', kubeUpgradeData?.cluster_type);
+      // setValue('cluster_type', kubeUpgradeData?.cluster_type);  REMOVING TEMP  CHANGEHERE
+      setValue('cluster_type', 'aks');
     }
   }, [kubeUpgradeData]);
   const loading = useSelector(state =>
@@ -359,6 +362,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     if (clusterType === 'eks' || clusterType === 'aks') {
       setOpenAddConfigModal(true);
     } else {
+      // Kube cluster create and upgrade
       if (sshAdd) {
         setOpenAddConfigModal(true);
       } else {
@@ -516,7 +520,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
             // onClick={handleSubmit(handleCreateCluster)}
             onClick={handleSubmitClick}
           >
-            {!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
+            {!isEmpty(kubeClusterIDEdit) ? 'Upgrade Cluster' : 'Create Cluster'}
           </Button>
         </BottomButtonDiv>
       </BottomButton>

@@ -184,6 +184,9 @@ export const ListClusters = () => {
   const handleEditAnsibleCluster = item => {
     if (item?.is_kube_cluster) {
       dispatch(ClustersActions.setCreateClusterMethod('Kubernetes'));
+      // if (item?.is_azure_cluster) {
+      // }  CHANGEHERE
+      dispatch(ClustersActions.setAzureCluster(true));
     }
     dispatch(ClustersActions.setansibleClucterToEdit(item?.id));
     dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));

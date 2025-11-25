@@ -1,10 +1,13 @@
 /* eslint-disable */
 import React, { useState } from 'react';
-import { CheckboxField, InputField, Modal } from '../../../shared';
+import { Button, CheckboxField, InputField, Modal } from '../../../shared';
 import { QRIcons } from '../../../assets';
 import styled from 'styled-components';
 import PemUploadField from '../PEMUploadFile';
 import { isEmpty } from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
+import { ClustersActions, ClustersSelectors } from '../../../store';
+import { dispatch } from 'd3';
 const LabelSelect = styled.div`
   font-size: 14px;
   font-weight: 600;
@@ -46,8 +49,21 @@ const KubeClusterConfigDetailsModal = ({
   aksSaveDb,
   setAksSaveDb,
 }) => {
+  const dispatch = useDispatch();
+  const azureCluster = useSelector(ClustersSelectors.getAzureCluster);
+  const azureTestPassed = useSelector(ClustersSelectors.getazureTestPassed);
+
+  console.log(azureCluster, 'azureClustermodal');
+  // console.log(kubeClusterIDEdit, 'kubeClusterIDEdit');
+
   const onRequestClose = () => {
     setOpenAddConfigModal(false);
+  };
+
+  const handleTestCredAzure = data => {
+    console.log(data);
+
+    dispatch(ClustersActions.setAzureTestPassed(true));
   };
   return (
     <>
@@ -57,15 +73,23 @@ const KubeClusterConfigDetailsModal = ({
         secondaryButtonText="Back"
         primaryButtonText={
           !isEmpty(kubeClusterIDEdit)
-            ? 'Initiate Cluster Edit'
+            ? 'Initiate Cluster Update'
             : 'Initiate Cluster Creation'
         }
-        primaryButtonDisabled={false}
+        primaryButtonDisabled={clusterType === 'aks' ? !azureTestPassed : false}
         onRequestClose={onRequestClose}
         onSubmit={handleSubmit(handleCreateCluster, onError)}
         onSecondarySubmit={onRequestClose}
-        footerAlign="center"
+        footerAlign="start"
         contentStyles={{ minWidth: '60%', maxHeight: '60%' }}
+        tertiaryButton={clusterType === 'aks'}
+        tertiaryButtonConfig={{
+          tertiaryButtonTest: 'Test Credentials',
+          tertiaryButtonSubmit: () => {
+            handleSubmit(handleTestCredAzure, onError)();
+          },
+          tertiaryButtonDisable: azureTestPassed,
+        }}
       >
         <div className=" row d-flex justify-content-center">
           <div className="">
@@ -220,6 +244,7 @@ const KubeClusterConfigDetailsModal = ({
                       register={register}
                       errors={errors}
                       icon={<QRIcons />}
+                      disabled={azureTestPassed}
                     />
                   </div>
                   <div className="col-6">
@@ -234,6 +259,7 @@ const KubeClusterConfigDetailsModal = ({
                       register={register}
                       errors={errors}
                       icon={<QRIcons />}
+                      disabled={azureTestPassed}
                     />
                   </div>
                 </div>
@@ -250,6 +276,7 @@ const KubeClusterConfigDetailsModal = ({
                       register={register}
                       errors={errors}
                       icon={<QRIcons />}
+                      disabled={azureTestPassed}
                     />
                   </div>
                   <div className="col-6">
@@ -264,6 +291,7 @@ const KubeClusterConfigDetailsModal = ({
                       errors={errors}
                       icon={<QRIcons />}
                       required={true}
+                      disabled={azureTestPassed}
                     />
                   </div>
                   <div className="col-6">
@@ -278,16 +306,9 @@ const KubeClusterConfigDetailsModal = ({
                       errors={errors}
                       icon={<QRIcons />}
                       required={true}
+                      disabled={azureTestPassed}
                     />
                   </div>{' '}
-                  <div className="col-6 d-flex align-items-center">
-                    <CheckboxField
-                      name="check"
-                      label="Do you want to store AKS data?"
-                      checked={aksSaveDb}
-                      onChange={e => setAksSaveDb(e.target.checked)}
-                    />
-                  </div>
                 </div>
               </>
             )}
