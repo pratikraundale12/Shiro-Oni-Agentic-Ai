@@ -265,8 +265,8 @@ export const ListClusters = () => {
     {
       label: KDFM.NIFI_URL,
       renderCell: item => {
-        const updatedUrl = item.nifi_url.endsWith('/nifi')
-          ? item.nifi_url
+        const updatedUrl = item?.nifi_url?.endsWith('/nifi')
+          ? item?.nifi_url
           : `${item.nifi_url}/nifi`;
 
         return (
