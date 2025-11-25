@@ -122,18 +122,18 @@ const ClusterSetupNewConfigKubernetes = () => {
       .required('Persistence enabled is required'),
     dataStorage_size: yup.string().required('Data storage size is required'),
     jvmMemory: yup.string().required('jvmMemory value is required'),
-    properties_webProxyHost: yup
-      .string()
-      .required('Web proxy host is required'),
-    ingress_hosts: yup
-      .string()
-      .transform(value => {
-        if (Array.isArray(value)) {
-          return value?.[0]?.[0]?.replace(/["']/g, '');
-        }
-        return value?.replace(/["']/g, '');
-      })
-      .required('Ingress host is required'),
+    // properties_webProxyHost: yup
+    //   .string()
+    //   .required('Web proxy host is required'),
+    // ingress_hosts: yup
+    //   .string()
+    //   .transform(value => {
+    //     if (Array.isArray(value)) {
+    //       return value?.[0]?.[0]?.replace(/["']/g, '');
+    //     }
+    //     return value?.replace(/["']/g, '');
+    //   })
+    //   .required('Ingress host is required'),
   });
 
   const {
@@ -180,21 +180,19 @@ const ClusterSetupNewConfigKubernetes = () => {
         auth_admin: data?.auth_admin,
         persistence_enabled: data?.persistence_enabled,
         persistence_dataStorage_size: data?.dataStorage_size,
-        properties_webProxyHost: data?.properties_webProxyHost,
-        ingress_hosts: [data?.ingress_hosts.trim()],
-        ingress_tls_hosts: data?.ingress_hosts.trim(),
-        certManager_additionalIpsAddresses: [data?.ingress_hosts.trim()],
-        zookeeper_url: data?.ingress_hosts.trim(),
-        registry_url: data?.ingress_hosts.trim(),
-        registry_ingress_hosts_host: data?.ingress_hosts.trim(),
-        registry_ingress_tls_hosts: data?.ingress_hosts.trim(),
-        registry_certManager_additionalIpAddresses: [
-          data?.ingress_hosts.trim(),
-        ],
-        certManager_additionalDnsNames: [
-          ...parsedJson?.certManager?.additionalDnsNames.slice(0, 2),
-          data?.ingress_hosts.trim(),
-        ],
+        ...(!isEmpty(data?.properties_webProxyHost) && {
+          properties_webProxyHost: data?.properties_webProxyHost,
+        }),
+        ...(!isEmpty(data?.ingress_hosts) && {
+          ingress_hosts: [data?.ingress_hosts],
+          ingress_tls_hosts: data?.ingress_hosts,
+          certManager_additionalIpsAddresses: [data?.ingress_hosts],
+          zookeeper_url: data?.ingress_hosts,
+          registry_url: data?.ingress_hosts,
+          registry_ingress_hosts_host: data?.ingress_hosts,
+          registry_ingress_tls_hosts: data?.ingress_hosts,
+          registry_certManager_additionalIpAddresses: [data?.ingress_hosts],
+        }),
       },
       valuesYaml: !isEmpty(configToEdit)
         ? configToEdit?.config_json
@@ -292,15 +290,27 @@ const ClusterSetupNewConfigKubernetes = () => {
       auth_admin: watch('auth_admin'),
       persistence_enabled: watch('persistence_enabled'),
       persistence_dataStorage_size: watch('dataStorage_size'),
-      properties_webProxyHost: watch('properties_webProxyHost'),
-      ingress_hosts: [watch('ingress_hosts')],
-      ingress_tls_hosts: watch('ingress_hosts'),
-      certManager_additionalIpsAddresses: [watch('ingress_hosts')],
-      zookeeper_url: watch('ingress_hosts'),
-      registry_url: watch('ingress_hosts'),
-      registry_ingress_hosts_host: watch('ingress_hosts'),
-      registry_ingress_tls_hosts: watch('ingress_hosts'),
-      registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
+      ...(!isEmpty(watch('properties_webProxyHost')) && {
+        properties_webProxyHost: watch('properties_webProxyHost'),
+      }),
+      ...(!isEmpty(watch('ingress_hosts')) && {
+        ingress_hosts: [watch('ingress_hosts')],
+        ingress_tls_hosts: watch('ingress_hosts'),
+        certManager_additionalIpsAddresses: [watch('ingress_hosts')],
+        zookeeper_url: watch('ingress_hosts'),
+        registry_url: watch('ingress_hosts'),
+        registry_ingress_hosts_host: watch('ingress_hosts'),
+        registry_ingress_tls_hosts: watch('ingress_hosts'),
+        registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
+      }),
+      // ingress_hosts: [watch('ingress_hosts')],
+      // ingress_tls_hosts: watch('ingress_hosts'),
+      // certManager_additionalIpsAddresses: [watch('ingress_hosts')],
+      // zookeeper_url: watch('ingress_hosts'),
+      // registry_url: watch('ingress_hosts'),
+      // registry_ingress_hosts_host: watch('ingress_hosts'),
+      // registry_ingress_tls_hosts: watch('ingress_hosts'),
+      // registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
     };
     const payload = { values: fieldValues, valuesYaml: yamlValue };
     setEditorModal(true);
@@ -510,7 +520,6 @@ const ClusterSetupNewConfigKubernetes = () => {
                 label={'Web Proxy Hostname/External Access URL'}
                 name="properties_webProxyHost"
                 type="text"
-                required
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
@@ -521,7 +530,6 @@ const ClusterSetupNewConfigKubernetes = () => {
                 label={'Service URL/External Hostname'}
                 name="ingress_hosts"
                 type="text"
-                required
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
