@@ -190,6 +190,7 @@ export const clustersAPI = api => {
 
   const deleteClusterScript = ({ id, narId }) =>
     api.delete(`/clusters/${id}/scripts/${narId}`);
+
   const testAzureConfig = ({ payload }) => {
     return api.post(`/test-azure-creds`, payload);
   };

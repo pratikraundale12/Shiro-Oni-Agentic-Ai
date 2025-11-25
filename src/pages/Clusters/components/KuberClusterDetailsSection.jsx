@@ -229,6 +229,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   useEffect(() => {
     dispatch(ClustersActions.fetchConfigListForKubernetes());
     dispatch(ClustersActions.fetchMasterHostNodesList());
+    dispatch(ClustersActions.setAzureTestPassed(false));
     return () => {
       dispatch(ClustersActions.setkubConfigVersion({}));
     };
@@ -300,6 +301,9 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   }, [kubeUpgradeData]);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchKubeClusterDataToUpgrade')
+  );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'testAzureConfig')
   );
   const onError = errors => {
     if (
@@ -376,7 +380,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       <Title
         title={!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
       />
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <div className="mt-3 ms-3 me-3">

@@ -1037,7 +1037,7 @@ export function* testAzureConfig(api, { payload }) {
     apiParams: [{ payload: payload }],
   });
   if (response?.ok) {
-    // yield put(ClustersActions.setAzureTestPassed(true));
+    yield put(ClustersActions.setAzureTestPassed(true));
   } else {
     toast.error(response?.data?.message);
   }

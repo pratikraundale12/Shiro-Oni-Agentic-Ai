@@ -61,9 +61,15 @@ const KubeClusterConfigDetailsModal = ({
   };
 
   const handleTestCredAzure = data => {
-    console.log(data);
+    const payload = {
+      tenantId: data?.tenantId,
+      clientId: data?.clientId,
+      clientSecret: data?.clientSecret,
+      subscriptionId: data?.subscriptionId,
+      resourceGroup: data?.resourceGroup,
+    };
 
-    dispatch(ClustersActions.setAzureTestPassed(true));
+    dispatch(ClustersActions.testAzureConfig(payload));
   };
   return (
     <>
