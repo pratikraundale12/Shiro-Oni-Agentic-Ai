@@ -278,6 +278,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       payload.append('subscriptionId', data?.subscriptionId);
       payload.append('resourceGroup', data?.resourceGroup);
       payload.append('saveInDb', aksSaveDb);
+      payload.append('useSsh', false);
     }
 
     dispatch(ClustersActions.createKubernetesCluster(payload));
