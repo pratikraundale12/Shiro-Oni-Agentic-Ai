@@ -137,7 +137,6 @@ export const ACTIVITY_EVENTS = [
   { label: 'Generate Flow', value: 'Generate Flow' },
   { label: 'Comparison', value: 'Comparison' },
   { label: 'Validate', value: 'Validate' },
-  { label: 'Comparison', value: 'Comparison' },
   { label: 'Add Data Flow Inventory', value: 'Add Data Flow Inventory' },
   { label: 'Start Cluster', value: 'Start Cluster' },
   { label: 'Update Nodes', value: 'Update Nodes' },
