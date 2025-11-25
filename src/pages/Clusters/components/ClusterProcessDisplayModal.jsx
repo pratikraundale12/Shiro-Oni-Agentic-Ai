@@ -133,151 +133,43 @@ const CreationModelKubeStepsEC2 = [
 
 const CreationModelKubeStepsAKS = [
   {
-    step: 'Verifying installation files',
+    step: 'Checking chart',
     status: 'completed',
   },
   {
-    step: 'Verifying Azure account access',
+    step: 'Verifying Azure access',
     status: 'completed',
   },
   {
-    step: 'Connecting to Kubernetes cluster',
+    step: 'Resolving kubeconfig',
     status: 'completed',
   },
   {
-    step: 'Setting up storage monitoring',
+    step: 'Ensuring pvc-exporter monitoring in namespace pvc-exporter',
     status: 'completed',
   },
   {
-    step: 'Verifying required tools and cluster access',
+    step: 'Checking helm/kubectl availability and cluster reachability',
     status: 'completed',
   },
   {
-    step: 'Reading configuration settings',
+    step: 'Parsing values file',
     status: 'completed',
   },
   {
-    step: 'Preparing workspace for NiFi',
+    step: 'Ensuring namespace nifi exists',
     status: 'completed',
   },
   {
-    step: 'Checking certificate manager status',
+    step: 'Evaluating cert-manager release cert-manager in namespace cert-manager',
     status: 'completed',
   },
   {
-    step: 'Setting up storage for NiFi',
+    step: 'Validating storage class local-path for persistence',
     status: 'completed',
   },
   {
-    step: 'Setting up performance monitoring',
-    status: 'completed',
-  },
-  {
-    step: 'Setting up Azure LoadBalancer Public IP',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying installation files',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying Azure account access',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying installation files',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying Azure account access',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying installation files',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying Azure account access',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying installation files',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying Azure account access',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying installation files',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying Azure account access',
-    status: 'completed',
-  },
-  {
-    step: 'Connecting to Kubernetes cluster',
-    status: 'completed',
-  },
-  {
-    step: 'Setting up storage monitoring',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying required tools and cluster access',
-    status: 'completed',
-  },
-  {
-    step: 'Reading configuration settings',
-    status: 'completed',
-  },
-  {
-    step: 'Preparing workspace for NiFi',
-    status: 'completed',
-  },
-  {
-    step: 'Checking certificate manager status',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying installation files',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying Azure account access',
-    status: 'completed',
-  },
-  {
-    step: 'Connecting to Kubernetes cluster',
-    status: 'completed',
-  },
-  {
-    step: 'Setting up storage monitoring',
-    status: 'completed',
-  },
-  {
-    step: 'Verifying required tools and cluster access',
-    status: 'completed',
-  },
-  {
-    step: 'Reading configuration settings',
-    status: 'completed',
-  },
-  {
-    step: 'Preparing workspace for NiFi',
-    status: 'completed',
-  },
-  {
-    step: 'Checking certificate manager status',
-    status: 'completed',
-  },
-  {
-    step: 'Setting up storage for NiFi',
-    status: 'completed',
-  },
-  {
-    step: 'Setting up performance monitoring',
+    step: 'Ensuring metrics-server is deployed in kube-system',
     status: 'completed',
   },
   {
@@ -289,7 +181,7 @@ const CreationModelKubeStepsAKS = [
     status: 'completed',
   },
   {
-    step: 'Gathering deployment information',
+    step: 'Collect NiFi pods/services (remote)',
     status: 'completed',
   },
 ];
