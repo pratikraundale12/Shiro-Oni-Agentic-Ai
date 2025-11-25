@@ -133,11 +133,11 @@ const CreationModelKubeStepsEC2 = [
 
 const CreationModelKubeStepsAKS = [
   {
-    step: 'Checking chart',
+    step: 'Launching NiFi deployment',
     status: 'completed',
   },
   {
-    step: 'Verifying Azure access',
+    step: 'Validating Azure access',
     status: 'completed',
   },
   {
