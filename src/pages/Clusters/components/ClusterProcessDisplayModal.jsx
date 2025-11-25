@@ -111,6 +111,10 @@ const CreationModelKubeStepsEC2 = [
   },
   { step: 'Setting up workspace on remote server', status: 'completed' },
   {
+    step: 'Packaging Helm chart for remote deployment',
+    status: 'completed',
+  },
+  {
     step: 'Setting up cluster connection on remote server',
     status: 'completed',
   },

@@ -109,7 +109,7 @@ export const ClusterCustomScript = ({ data }) => {
     },
     {
       label: 'File',
-      renderCell: item => <>{item?.narPath}</>,
+      renderCell: item => <>{item?.scriptPath}</>,
       resize: true,
       width: '50%',
     },

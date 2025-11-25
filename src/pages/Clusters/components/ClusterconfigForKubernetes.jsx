@@ -25,6 +25,8 @@ import { theme } from '../../../styles';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
+  display: flex;
+  flex-direction: column;
 `;
 const OuterContainer = styled.div`
   background-color: ${props => props.theme.colors.lightGrey};
@@ -32,15 +34,30 @@ const OuterContainer = styled.div`
   padding-top: 10px;
   margin-bottom: 2rem;
   height: 88%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
 `;
 
 const DisplaySection = styled.div`
-  height: 450px !important;
+  flex-grow: 1;
+  min-height: 0;
   border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
 `;
 const RightDisplaySection = styled.div`
   overflow: auto;
   left: 20%;
+
+  .monaco-editor .find-widget.visible {
+    position: absolute;
+    top: 24px !important;
+    right: 40px !important;
+  }
 `;
 
 export const List = styled.ul`
@@ -141,7 +158,7 @@ const ClusterSetupNewConfigKubernetes = () => {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -182,17 +199,13 @@ const ClusterSetupNewConfigKubernetes = () => {
         persistence_dataStorage_size: data?.dataStorage_size,
         properties_webProxyHost: data?.properties_webProxyHost,
         ingress_hosts: [data?.ingress_hosts.trim()],
-        ingress_tls_hosts: data?.ingress_hosts.trim(),
-        certManager_additionalIpsAddresses: [data?.ingress_hosts.trim()],
+        ingress_tls_hosts: [data?.ingress_hosts.trim()],
+        certManager_additionalIpAddresses: [data?.ingress_hosts.trim()],
         zookeeper_url: data?.ingress_hosts.trim(),
         registry_url: data?.ingress_hosts.trim(),
-        registry_ingress_hosts_host: data?.ingress_hosts.trim(),
-        registry_ingress_tls_hosts: data?.ingress_hosts.trim(),
+        registry_ingress_hosts_host: [data?.ingress_hosts.trim()],
+        registry_ingress_tls_hosts: [data?.ingress_hosts.trim()],
         registry_certManager_additionalIpAddresses: [
-          data?.ingress_hosts.trim(),
-        ],
-        certManager_additionalDnsNames: [
-          ...parsedJson?.certManager?.additionalDnsNames.slice(0, 2),
           data?.ingress_hosts.trim(),
         ],
       },
@@ -259,7 +272,7 @@ const ClusterSetupNewConfigKubernetes = () => {
       setValue('dataStorage_size', parsedJson?.persistence?.dataStorage?.size);
       setValue('jvmMemory', parsedJson?.jvmMemory || parsedJson?.jvmMemory);
       setValue('properties_webProxyHost', parsedJson?.properties?.webProxyHost);
-      setValue('ingress_hosts', parsedJson?.ingress?.hosts);
+      setValue('ingress_hosts', parsedJson?.ingress?.hosts?.[0]);
     }
   }, [parsedJson]);
 
@@ -283,6 +296,14 @@ const ClusterSetupNewConfigKubernetes = () => {
     parsedJson?.ingress?.hosts?.[0] == watch('ingress_hosts');
 
   const handleOpenEditor = () => {
+    let createValue = dirtyFields.ingress_hosts
+      ? watch('ingress_hosts')
+      : watch('ingress_hosts');
+    const commonValueIngress = isEmpty(configToEdit)
+      ? createValue
+      : Array.isArray(watch('ingress_hosts'))
+        ? watch('ingress_hosts')?.[0]
+        : watch('ingress_hosts');
     const fieldValues = {
       replicaCount: watch('replicaCount'),
       image_tag: watch('image_tag'),
@@ -293,14 +314,14 @@ const ClusterSetupNewConfigKubernetes = () => {
       persistence_enabled: watch('persistence_enabled'),
       persistence_dataStorage_size: watch('dataStorage_size'),
       properties_webProxyHost: watch('properties_webProxyHost'),
-      ingress_hosts: [watch('ingress_hosts')],
-      ingress_tls_hosts: watch('ingress_hosts'),
-      certManager_additionalIpsAddresses: [watch('ingress_hosts')],
-      zookeeper_url: watch('ingress_hosts'),
-      registry_url: watch('ingress_hosts'),
-      registry_ingress_hosts_host: watch('ingress_hosts'),
-      registry_ingress_tls_hosts: watch('ingress_hosts'),
-      registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
+      ingress_hosts: [commonValueIngress],
+      ingress_tls_hosts: [commonValueIngress],
+      certManager_additionalIpAddresses: [commonValueIngress],
+      zookeeper_url: commonValueIngress,
+      registry_url: commonValueIngress,
+      registry_ingress_hosts_host: [commonValueIngress],
+      registry_ingress_tls_hosts: [commonValueIngress],
+      registry_certManager_additionalIpAddresses: [commonValueIngress],
     };
     const payload = { values: fieldValues, valuesYaml: yamlValue };
     setEditorModal(true);
@@ -367,22 +388,10 @@ const ClusterSetupNewConfigKubernetes = () => {
         displayBackButton={true}
       />
       <OuterContainer>
-        <div className="row px-3">
-          <div className="col-8">
-            <InputField
-              label={KDFM.CONFIG_NAME}
-              name="configName"
-              type="text"
-              placeholder={KDFM.ENTER_CONFIG_NAME}
-              required
-              register={register}
-              errors={errors}
-              icon={<NotePadIcon />}
-              disabled={!isEmpty(configToEdit)}
-            />
-          </div>
-          <div className="col-4 d-flex align-items-end justify-content-end">
-            <div className="pb-2">
+        <div className="row">
+          {' '}
+          <div className=" d-flex align-items-end justify-content-end">
+            <div className="pb-2 me-2">
               {!editorModal && (
                 <span
                   style={{
@@ -393,7 +402,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                   }}
                   onClick={handleOpenEditor}
                 >
-                  View YAML Editor
+                  Edit YAML
                 </span>
               )}
               {editorModal && (
@@ -409,10 +418,25 @@ const ClusterSetupNewConfigKubernetes = () => {
                     handleBack();
                   }}
                 >
-                  View Quick Editor
+                  Edit in Quick Editor
                 </span>
               )}
             </div>
+          </div>
+        </div>
+        <div className="row px-3">
+          <div className="col-8">
+            <InputField
+              label={KDFM.CONFIG_NAME}
+              name="configName"
+              type="text"
+              placeholder={KDFM.ENTER_CONFIG_NAME}
+              required
+              register={register}
+              errors={errors}
+              icon={<NotePadIcon />}
+              disabled={!isEmpty(configToEdit)}
+            />
           </div>
         </div>
         {!editorModal && (

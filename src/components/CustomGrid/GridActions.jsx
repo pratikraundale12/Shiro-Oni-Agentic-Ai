@@ -114,7 +114,7 @@ const StyledSelectField = styled(SelectField)`
   min-width: 8.5rem;
 
   &.entity-dropdown {
-    min-width: 10rem;
+    min-width: 12rem;
   }
 
   > div {
@@ -122,17 +122,14 @@ const StyledSelectField = styled(SelectField)`
   }
   /* Apply fixed width to dropdown options */
   .react-select__menu {
-    width: 175px;
   }
 
   .react-select__menu-list {
-    max-width: 175px;
     white-space: wrap;
     text-overflow: ellipsis;
   }
 
   .react-select__option {
-    max-width: 175px;
     word-break: break-all;
     overflow: hidden;
   }
