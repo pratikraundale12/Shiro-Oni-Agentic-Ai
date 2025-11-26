@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { AuthenticationSelectors } from '../../store';
 import Image from '../../assets/images/license-bg.png';
 import { KDFM } from '../../constants';
+import { format } from 'date-fns';
 
 const Container = styled.div`
   height: 95%;
@@ -86,31 +87,30 @@ const ValueCell = styled.div`
 
 const License = () => {
   const licenseInfo = useSelector(AuthenticationSelectors.getLicenseInfo);
+
   const formatDate = isoString => {
+    if (!isoString) return '-';
     const date = new Date(isoString);
-    return date.toLocaleString('en-US', {
-      year: '2-digit',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
+    return format(date, 'do MMM yyyy, hh:mm:ss a');
   };
 
   const getLicenseText = () => {
     if (licenseInfo?.version.toLowerCase() === 'trial') {
-      return 'Your Trial License will expire on';
+      return 'Your trial License will expire on';
     } else {
-      return 'Your License will expire on';
+      return 'Your enterprise license will expire on';
     }
   };
 
   const infoItems = [
+    { name: 'Customer Id', value: licenseInfo?.customerId },
     { name: 'License Owner', value: licenseInfo?.customerName },
-    { name: 'License Id', value: licenseInfo?.customerId },
-    { name: 'Number of Nodes', value: licenseInfo?.numberOfNodes },
+    {
+      name: 'License Type',
+      value:
+        licenseInfo?.version.toLowerCase() === 'trial' ? 'Trial' : 'Enterprise',
+    },
+    { name: 'Number Of Nodes', value: licenseInfo?.numberOfNodes },
   ].filter(
     item => item.value !== undefined && item.value !== null && item.value !== ''
   );
