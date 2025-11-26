@@ -479,7 +479,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                       value: 'ec2',
                     },
                     {
-                      label: 'Azure',
+                      label: 'Azure Kubernetes Service',
                       value: 'aks',
                     },
                   ] || []
