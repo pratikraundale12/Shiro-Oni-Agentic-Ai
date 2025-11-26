@@ -131,6 +131,61 @@ const CreationModelKubeStepsEC2 = [
   { step: 'Collect NiFi pods/services (remote)', status: 'completed' },
 ];
 
+const CreationModelKubeStepsAKS = [
+  {
+    step: 'Launching NiFi deployment',
+    status: 'completed',
+  },
+  {
+    step: 'Validating Azure access',
+    status: 'completed',
+  },
+  {
+    step: 'Resolving kubeconfig',
+    status: 'completed',
+  },
+  {
+    step: 'Ensuring pvc-exporter monitoring in namespace pvc-exporter',
+    status: 'completed',
+  },
+  {
+    step: 'Checking helm/kubectl availability and cluster reachability',
+    status: 'completed',
+  },
+  {
+    step: 'Parsing values file',
+    status: 'completed',
+  },
+  {
+    step: 'Ensuring namespace nifi exists',
+    status: 'completed',
+  },
+  {
+    step: 'Evaluating cert-manager release cert-manager in namespace cert-manager',
+    status: 'completed',
+  },
+  {
+    step: 'Validating storage class local-path for persistence',
+    status: 'completed',
+  },
+  {
+    step: 'Ensuring metrics-server is deployed in kube-system',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up Azure LoadBalancer Public IP',
+    status: 'completed',
+  },
+  {
+    step: 'Installing NiFi',
+    status: 'completed',
+  },
+  {
+    step: 'Collect NiFi pods/services (remote)',
+    status: 'completed',
+  },
+];
+
 const deleteModalSteps = [
   {
     step: 'Connectivity check',
@@ -415,9 +470,11 @@ export const ClusterProcessDisplayModal = ({
         ? CreationModelKubeStepsEKS
         : processData?.isKubeCluster && processData?.cluster_type === 'ec2'
           ? CreationModelKubeStepsEC2
-          : processData?.has_third_party_cert
-            ? CreationModelThirdPartySteps
-            : CreationmodelSteps;
+          : processData?.isKubeCluster && processData?.cluster_type === 'aks'
+            ? CreationModelKubeStepsAKS
+            : processData?.has_third_party_cert
+              ? CreationModelThirdPartySteps
+              : CreationmodelSteps;
     } else if (processExeName === 'restart') {
       return RestartModalSteps;
     } else if (processExeName === 'stop') {

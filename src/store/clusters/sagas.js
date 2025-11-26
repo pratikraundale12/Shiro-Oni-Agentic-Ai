@@ -1029,7 +1029,23 @@ export function* deleteClusterScript(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
+export function* testAzureConfig(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'testAzureConfig',
+    loadingSection: 'testAzureConfig',
+    apiMethod: api.testAzureConfig,
+    apiParams: [{ payload: payload }],
+  });
+  if (response?.ok) {
+    toast.success(
+      response?.data?.message || 'Credentials valid & resource group accessible'
+    );
 
+    yield put(ClustersActions.setAzureTestPassed(true));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
 export function* clustersSagas(api) {
   yield all([
     takeLatest(
@@ -1197,5 +1213,6 @@ export function* clustersSagas(api) {
     takeLatest(ClustersActions.addScript, addScript, api),
     takeLatest(ClustersActions.fetchScriptList, fetchScriptList, api),
     takeLatest(ClustersActions.deleteClusterScript, deleteClusterScript, api),
+    takeLatest(ClustersActions.testAzureConfig, testAzureConfig, api),
   ]);
 }

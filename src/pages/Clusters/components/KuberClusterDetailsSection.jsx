@@ -50,6 +50,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const [formSchemaCluster, setFormSchemaCluster] = useState('eks');
   const [openAddConfigModal, setOpenAddConfigModal] = useState(false);
   const [sshAdd, setShhAdd] = useState(false);
+  const [aksSaveDb, setAksSaveDb] = useState(false);
   const kubeConfigList = useSelector(
     ClustersSelectors.getlistConfigListKubernetes
   );
@@ -82,6 +83,8 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const configOptions = uniqBy(configOptionsUnsorted, 'value');
   const configOptionsOnUpgrade = uniqBy(allconfigOptionsUnsorted, 'value');
   const configVerionsList = useSelector(ClustersSelectors.getkubConfigVersion);
+  const azureCluster = useSelector(ClustersSelectors.getAzureCluster);
+
   const configVersionOption =
     (!isEmpty(configVerionsList) &&
       configVerionsList?.map(ele => ({
@@ -90,6 +93,28 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       }))) ||
     []; //
 
+  const schemaAKS = yup.object().shape({
+    clusterName: yup
+      .string()
+      .required('Cluster name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Cluster name must not start or end with a space.',
+        value => value === value?.trim()
+      )
+      .matches(
+        /^[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*$/,
+        'Cluster name must contain only letters, numbers, underscores, or hyphens.'
+      ),
+    host: yup.string().required('Master Node is required'),
+    configName: yup.string().required('Config name is required'),
+    configVersion: yup.string().required('Config version is required'),
+    tenantId: yup.string().required('Tenant ID is required'),
+    clientId: yup.string().required('Client ID is required'),
+    clientSecret: yup.string().required('Client Secret is required'),
+    subscriptionId: yup.string().required('Subscription ID is required'),
+    resourceGroup: yup.string().required('Resource Group is required'),
+  });
   const schemaEKS = yup.object().shape({
     clusterName: yup
       .string()
@@ -169,13 +194,15 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     configVersion: yup.string().required('Config version is required'),
   });
   let schemaForm =
-    formSchemaCluster === 'eks'
-      ? schemaEKS
-      : isEmpty(kubeUpgradeData) && !sshAdd
-        ? schemaEC2withoutSSH
-        : isEmpty(kubeUpgradeData) && sshAdd
-          ? schemaEC2
-          : schemaUpgradeEC2;
+    formSchemaCluster === 'aks'
+      ? schemaAKS
+      : formSchemaCluster === 'eks'
+        ? schemaEKS
+        : isEmpty(kubeUpgradeData) && !sshAdd
+          ? schemaEC2withoutSSH
+          : isEmpty(kubeUpgradeData) && sshAdd
+            ? schemaEC2
+            : schemaUpgradeEC2;
   const {
     register,
     control,
@@ -202,6 +229,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   useEffect(() => {
     dispatch(ClustersActions.fetchConfigListForKubernetes());
     dispatch(ClustersActions.fetchMasterHostNodesList());
+    dispatch(ClustersActions.setAzureTestPassed(false));
     return () => {
       dispatch(ClustersActions.setkubConfigVersion({}));
     };
@@ -243,6 +271,15 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     if (formSchemaCluster === 'ec2' && isEmpty(kubeUpgradeData) && !sshAdd) {
       payload.append('useSsh', false);
     }
+    if (formSchemaCluster === 'aks') {
+      payload.append('tenantId', data?.tenantId);
+      payload.append('clientId', data?.clientId);
+      payload.append('clientSecret', data?.clientSecret);
+      payload.append('subscriptionId', data?.subscriptionId);
+      payload.append('resourceGroup', data?.resourceGroup);
+      payload.append('saveInDb', aksSaveDb);
+      payload.append('useSsh', false);
+    }
 
     dispatch(ClustersActions.createKubernetesCluster(payload));
   };
@@ -259,11 +296,15 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       setValue('host', kubeUpgradeData?.master_node?.id);
       setValue('configName', kubeUpgradeData?.config_name);
       setValue('configVersion', kubeUpgradeData?.config_version);
-      setValue('cluster_type', kubeUpgradeData?.cluster_type);
+      // setValue('cluster_type', kubeUpgradeData?.cluster_type);  REMOVING TEMP  CHANGEHERE
+      setValue('cluster_type', 'aks');
     }
   }, [kubeUpgradeData]);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchKubeClusterDataToUpgrade')
+  );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'testAzureConfig')
   );
   const onError = errors => {
     if (
@@ -274,7 +315,12 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       errors?.aws_region ||
       errors?.aws_secret_access_key ||
       errors?.aws_session_token ||
-      errors?.ec2_ssh_pem_file
+      errors?.ec2_ssh_pem_file ||
+      errors?.clientId ||
+      errors?.clientSecret ||
+      errors?.resourceGroup ||
+      errors?.subscriptionId ||
+      errors?.tenantId
     ) {
       return;
     }
@@ -318,9 +364,10 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   }, [hostOptions]);
 
   const handleSubmitClick = () => {
-    if (clusterType === 'eks') {
+    if (clusterType === 'eks' || clusterType === 'aks') {
       setOpenAddConfigModal(true);
     } else {
+      // Kube cluster create and upgrade
       if (sshAdd) {
         setOpenAddConfigModal(true);
       } else {
@@ -334,7 +381,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       <Title
         title={!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
       />
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <div className="mt-3 ms-3 me-3">
@@ -431,6 +478,10 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                       label: 'Self-Managed Kubernetes',
                       value: 'ec2',
                     },
+                    {
+                      label: 'Azure',
+                      value: 'aks',
+                    },
                   ] || []
                 }
                 placeholder={KDFM.SELECT_CONFIG_VERSION}
@@ -474,7 +525,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
             // onClick={handleSubmit(handleCreateCluster)}
             onClick={handleSubmitClick}
           >
-            {!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
+            {!isEmpty(kubeClusterIDEdit) ? 'Upgrade Cluster' : 'Create Cluster'}
           </Button>
         </BottomButtonDiv>
       </BottomButton>
@@ -491,6 +542,8 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
         reset={reset}
         kubeClusterIDEdit={kubeClusterIDEdit}
         onError={onError}
+        aksSaveDb={aksSaveDb}
+        setAksSaveDb={setAksSaveDb}
       />
     </>
   );

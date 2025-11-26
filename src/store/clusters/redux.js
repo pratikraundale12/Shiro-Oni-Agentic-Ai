@@ -196,6 +196,9 @@ export const ClustersActions = {
   fetchScriptList: createAction(`${prefix}fetchScriptList`),
   deleteClusterScript: createAction(`${prefix}deleteClusterScript`),
   setScriptList: createAction(`${prefix}setScriptList`),
+  setAzureCluster: createAction(`${prefix}setAzureCluster`),
+  testAzureConfig: createAction(`${prefix}testAzureConfig`),
+  setAzureTestPassed: createAction(`${prefix}setAzureTestPassed`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -265,6 +268,8 @@ export const CLUSTERS_INITIAL_STATE = {
   isDownloadRegistryCertOpen: false,
   updatedKubeConfig: {},
   scriptList: [],
+  azureCluster: false,
+  azureTestPassed: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -350,6 +355,8 @@ export const ClustersSelectors = {
     state.clusters.isDownloadRegistryCertOpen,
   getUpdatedKubeConfig: state => state.clusters.updatedKubeConfig,
   getScriptList: state => state.clusters.scriptList,
+  getAzureCluster: state => state.clusters.azureCluster,
+  getazureTestPassed: state => state.clusters.azureTestPassed,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -768,6 +775,18 @@ const setScriptList = (state, { payload }) => {
     scriptList: payload,
   };
 };
+const setAzureCluster = (state, { payload }) => {
+  return {
+    ...state,
+    azureCluster: payload,
+  };
+};
+const setAzureTestPassed = (state, { payload }) => {
+  return {
+    ...state,
+    azureTestPassed: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -937,6 +956,8 @@ export const clustersReducer = createReducer(
         setIsDownloadRegistryCertOpen
       )
       .addCase(ClustersActions.setUpdatedKubeConfig, setUpdatedKubeConfig)
-      .addCase(ClustersActions.setScriptList, setScriptList);
+      .addCase(ClustersActions.setScriptList, setScriptList)
+      .addCase(ClustersActions.setAzureCluster, setAzureCluster)
+      .addCase(ClustersActions.setAzureTestPassed, setAzureTestPassed);
   }
 );
