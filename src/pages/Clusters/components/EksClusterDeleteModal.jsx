@@ -41,41 +41,41 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
   const noSpaces = /^(\S.*\S|\S)$/;
 
   const schemaAZURE = yup.object().shape({
-    azure_tenant_id: yup
-      .string()
-      .required('Azure Tenant ID is required')
-      .matches(
-        noSpaces,
-        'Azure Tenant ID must not contain leading or trailing spaces'
-      ),
-    azure_client_id: yup
-      .string()
-      .required('Azure Client ID is required')
-      .matches(
-        noSpaces,
-        'Azure Client ID must not contain leading or trailing spaces'
-      ),
-    azure_client_secret: yup
-      .string()
-      .required('Azure Client Secret is required')
-      .matches(
-        noSpaces,
-        'Azure Client Secret must not contain leading or trailing spaces'
-      ),
-    azure_subscription_id: yup
-      .string()
-      .required('Azure Subscription ID is required')
-      .matches(
-        noSpaces,
-        'Azure Subscription ID must not contain leading or trailing spaces'
-      ),
-    azure_resource_group: yup
-      .string()
-      .required('Azure Resource Group is required')
-      .matches(
-        noSpaces,
-        'Azure Resource Group must not contain leading or trailing spaces'
-      ),
+    // azure_tenant_id: yup
+    //   .string()
+    //   .required('Azure Tenant ID is required')
+    //   .matches(
+    //     noSpaces,
+    //     'Azure Tenant ID must not contain leading or trailing spaces'
+    //   ),
+    // azure_client_id: yup
+    //   .string()
+    //   .required('Azure Client ID is required')
+    //   .matches(
+    //     noSpaces,
+    //     'Azure Client ID must not contain leading or trailing spaces'
+    //   ),
+    // azure_client_secret: yup
+    //   .string()
+    //   .required('Azure Client Secret is required')
+    //   .matches(
+    //     noSpaces,
+    //     'Azure Client Secret must not contain leading or trailing spaces'
+    //   ),
+    // azure_subscription_id: yup
+    //   .string()
+    //   .required('Azure Subscription ID is required')
+    //   .matches(
+    //     noSpaces,
+    //     'Azure Subscription ID must not contain leading or trailing spaces'
+    //   ),
+    // azure_resource_group: yup
+    //   .string()
+    //   .required('Azure Resource Group is required')
+    //   .matches(
+    //     noSpaces,
+    //     'Azure Resource Group must not contain leading or trailing spaces'
+    //   ),
   });
 
   const schema =
@@ -108,11 +108,11 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
         clusterIdToDelete: deleteKubeClusterData?.id,
         deleteType: unInstallNiFi ? 'nifi_uninstall' : 'db_only',
         payloadData: {
-          azure_tenant_id: data?.azure_tenant_id,
-          azure_client_id: data?.azure_client_id,
-          azure_client_secret: data?.azure_client_secret,
-          azure_subscription_id: data?.azure_subscription_id,
-          azure_resource_group: data?.azure_resource_group,
+          // azure_tenant_id: data?.azure_tenant_id,
+          // azure_client_id: data?.azure_client_id,
+          // azure_client_secret: data?.azure_client_secret,
+          // azure_subscription_id: data?.azure_subscription_id,
+          // azure_resource_group: data?.azure_resource_group,
         },
       };
 
@@ -245,7 +245,7 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
               <>
                 {' '}
                 <div className="row mt-3">
-                  <div className="col-6">
+                  {/* <div className="col-6">
                     <LabelSelect className="mb-3">
                       Tenant Id <span style={{ color: 'red' }}>*</span>
                     </LabelSelect>
@@ -272,10 +272,10 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
                       errors={errors}
                       icon={<QRIcons />}
                     />
-                  </div>
+                  </div> */}
                 </div>
                 <div className="row">
-                  <div className="col-6">
+                  {/* <div className="col-6">
                     <LabelSelect className="mb-3">
                       Client Secret <span style={{ color: 'red' }}>*</span>
                     </LabelSelect>
@@ -316,8 +316,8 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
                       icon={<QRIcons />}
                       required={true}
                     />
-                  </div>
-                  <div className="col-6 d-flex align-items-center">
+                  </div> */}
+                  <div className="col-12 d-flex align-items-center justify-content-center">
                     <CheckboxField
                       name="check"
                       label="Do you also want to uninstall NiFi?"
