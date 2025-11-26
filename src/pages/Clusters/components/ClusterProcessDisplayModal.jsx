@@ -426,6 +426,45 @@ const deleteEC2ClusterSteps = [
     status: 'completed',
   },
 ];
+
+const deleteAKSClusterSteps = [
+  {
+    step: 'NiFi AKS uninstall routine',
+    status: 'completed',
+  },
+  {
+    step: 'Normalizing kubeconfig path',
+    status: 'completed',
+  },
+  {
+    step: 'Validating kubectl access',
+    status: 'completed',
+  },
+  {
+    step: 'Checking Helm release nifi in namespace nifi',
+    status: 'completed',
+  },
+  {
+    step: 'Deleting NiFi workloads (STS/Deploy/SVC)',
+    status: 'completed',
+  },
+  {
+    step: 'Deleting NiFi PVCs',
+    status: 'completed',
+  },
+  {
+    step: 'Deleting NiFiKop CRDs if present',
+    status: 'completed',
+  },
+  {
+    step: 'Deleting namespace nifi',
+    status: 'completed',
+  },
+  {
+    step: 'Waiting for namespace nifi to terminate',
+    status: 'completed',
+  },
+];
 export const ClusterProcessDisplayModal = ({
   isProcessModalOpen,
   setIsProcessModalOpen,
@@ -464,7 +503,9 @@ export const ClusterProcessDisplayModal = ({
         ? deleteEKSClusterSteps
         : processData?.isKubeCluster && processData?.cluster_type === 'ec2'
           ? deleteEC2ClusterSteps
-          : deleteModalSteps;
+          : processData?.isKubeCluster && processData?.cluster_type === 'aks'
+            ? deleteAKSClusterSteps
+            : deleteModalSteps;
     } else if (processExeName === 'creation') {
       return processData?.isKubeCluster && processData?.cluster_type === 'eks'
         ? CreationModelKubeStepsEKS
