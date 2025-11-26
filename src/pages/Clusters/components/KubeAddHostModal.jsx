@@ -114,7 +114,7 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
         onRequestClose={onRequestClose}
         onSubmit={handleSubmit(addIndividualHost)}
         title={`${isEmpty(hostToEdit) ? 'Add' : 'Edit'} Kubernetes Details`}
-        primaryButtonText="Add Cluster"
+        primaryButtonText="Add Configuration"
         secondaryButtonText="Back"
         contentStyles={{ minWidth: '50%', maxHeight: '65%' }}
         footerAlign="start"

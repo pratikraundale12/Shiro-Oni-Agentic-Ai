@@ -315,7 +315,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
                   <PlusCircleIcon height={19} width={19} color={'#fff'} />
                   {createClusterVisKubernetes === 'VM'
                     ? 'Add New Host'
-                    : 'Add Kube Cluster'}
+                    : 'Add Kubernetes Configuration'}
                 </div>
               </Button>
             </div>

@@ -617,7 +617,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 (!isEmpty(configToEdit) && quickFieldChanged)
               }
             >
-              {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
+              {!isEmpty(configToEdit) ? 'Update Configuration' : 'Add Configuration'}
             </Button>
           )}
           {editorModal && (
@@ -629,7 +629,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 (!isEmpty(configToEdit) && !hasYamlChanged)
               }
             >
-              {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
+              {!isEmpty(configToEdit) ? 'Update Configuration' : 'Add Configuration'}
             </Button>
           )}
         </BottomButtonDiv>

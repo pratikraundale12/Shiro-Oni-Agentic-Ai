@@ -261,24 +261,27 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
                   style={{ fontSize: '14px', fontWeight: '750' }}
                 >
                   <PlusCircleIcon height={19} width={19} color={'#fff'} />
-                  {KDFM.ADD_NEW_CONFIG}
+                  {createClusterVisKubernetes === 'VM'
+                    ? KDFM.ADD_NEW_CONFIG
+                    : KDFM.ADD_NIFI_CONFIG}
                 </div>
               </Button>
             </div>
           </div>
-
-          <Table
-            data={
-              createClusterVisKubernetes === 'VM'
-                ? congigListData
-                : kubeConfigList
-            }
-            columns={
-              createClusterVisKubernetes === 'VM' ? COLUMNS : KUBE_COLUMNS
-            }
-            customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
-            tableWithFullHeight={true}
-          />
+          <div className="ms-3 me-3">
+            <Table
+              data={
+                createClusterVisKubernetes === 'VM'
+                  ? congigListData
+                  : kubeConfigList
+              }
+              columns={
+                createClusterVisKubernetes === 'VM' ? COLUMNS : KUBE_COLUMNS
+              }
+              customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
+              tableWithFullHeight={true}
+            />
+          </div>
         </TableContainer>
         <ModalWithIcon
           title={'Delete Config'}
