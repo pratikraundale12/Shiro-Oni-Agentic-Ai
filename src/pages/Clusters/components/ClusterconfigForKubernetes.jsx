@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { NotePadIcon } from '../../../assets';
+import { InfoIcon, NotePadIcon } from '../../../assets';
 import { Title } from './Title';
 import { history } from '../../../helpers/history';
 import { Button, InputField, Modal } from '../../../shared';
@@ -197,6 +197,9 @@ const ClusterSetupNewConfigKubernetes = () => {
         auth_admin: data?.auth_admin,
         persistence_enabled: data?.persistence_enabled,
         persistence_dataStorage_size: data?.dataStorage_size,
+        registry_url: data?.registry_url,
+        registry_port: data?.registry_port,
+        registry_enabled: data?.registry_enabled,
         ...(!isEmpty(data?.properties_webProxyHost) && {
           properties_webProxyHost: data?.properties_webProxyHost,
         }),
@@ -205,7 +208,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           ingress_tls_hosts: data?.ingress_hosts,
           certManager_additionalIpsAddresses: [data?.ingress_hosts],
           zookeeper_url: data?.ingress_hosts,
-          registry_url: data?.ingress_hosts,
+
           registry_ingress_hosts_host: data?.ingress_hosts,
           registry_ingress_tls_hosts: data?.ingress_hosts,
           registry_certManager_additionalIpAddresses: [data?.ingress_hosts],
@@ -275,6 +278,9 @@ const ClusterSetupNewConfigKubernetes = () => {
       setValue('jvmMemory', parsedJson?.jvmMemory || parsedJson?.jvmMemory);
       setValue('properties_webProxyHost', parsedJson?.properties?.webProxyHost);
       setValue('ingress_hosts', parsedJson?.ingress?.hosts?.[0]);
+      setValue('registry_enabled', parsedJson?.registry?.enabled);
+      setValue('registry_url', parsedJson?.registry?.url);
+      setValue('registry_port', parsedJson?.registry?.port);
     }
   }, [parsedJson]);
 
@@ -315,6 +321,9 @@ const ClusterSetupNewConfigKubernetes = () => {
       auth_admin: watch('auth_admin'),
       persistence_enabled: watch('persistence_enabled'),
       persistence_dataStorage_size: watch('dataStorage_size'),
+      registry_url: watch('registry_url'),
+      registry_port: watch('registry_port'),
+      registry_enabled: watch('registry_enabled'),
       ...(!isEmpty(watch('properties_webProxyHost')) && {
         properties_webProxyHost: watch('properties_webProxyHost'),
       }),
@@ -323,7 +332,6 @@ const ClusterSetupNewConfigKubernetes = () => {
         ingress_tls_hosts: watch('ingress_hosts'),
         certManager_additionalIpsAddresses: [watch('ingress_hosts')],
         zookeeper_url: watch('ingress_hosts'),
-        registry_url: watch('ingress_hosts'),
         registry_ingress_hosts_host: watch('ingress_hosts'),
         registry_ingress_tls_hosts: watch('ingress_hosts'),
         registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
@@ -332,7 +340,6 @@ const ClusterSetupNewConfigKubernetes = () => {
       // ingress_tls_hosts: watch('ingress_hosts'),
       // certManager_additionalIpsAddresses: [watch('ingress_hosts')],
       // zookeeper_url: watch('ingress_hosts'),
-      // registry_url: watch('ingress_hosts'),
       // registry_ingress_hosts_host: watch('ingress_hosts'),
       // registry_ingress_tls_hosts: watch('ingress_hosts'),
       // registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
@@ -381,7 +388,9 @@ const ClusterSetupNewConfigKubernetes = () => {
       yamlParsedValue?.properties?.webProxyHost
     );
     setValue('ingress_hosts', yamlParsedValue?.ingress?.hosts);
-
+    setValue('registry_enabled', yamlParsedValue?.registry?.enabled);
+    setValue('registry_url', yamlParsedValue?.registry?.url);
+    setValue('registry_port', yamlParsedValue?.registry?.port);
     setEditorModal(false);
   };
 
@@ -464,6 +473,8 @@ const ClusterSetupNewConfigKubernetes = () => {
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="Specifies the number of NiFi nodes (pods) to deploy within the Kubernetes cluster. This controls cluster size and ensures high availability and load distribution."
               />
             </div>
             <div className="col-4">
@@ -475,6 +486,8 @@ const ClusterSetupNewConfigKubernetes = () => {
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="Defines the specific NiFi Docker image version to deploy. Ensures consistency across environments and helps control upgrades and rollbacks."
               />
             </div>
             <div className="col-4">
@@ -486,6 +499,8 @@ const ClusterSetupNewConfigKubernetes = () => {
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="Username used when NiFi is configured in Single User Authentication mode. Represents the initial admin user for accessing the UI before integrating external authentication (LDAP/OAuth)."
               />
             </div>
             <div className="col-4">
@@ -497,6 +512,8 @@ const ClusterSetupNewConfigKubernetes = () => {
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="Password associated with the single user admin account. Must be secured because it allows full administrative access during initial deployment."
               />
             </div>
             <div className="col-4">
@@ -508,6 +525,8 @@ const ClusterSetupNewConfigKubernetes = () => {
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="Administrators list or configuration required, especially when using secure deployments for cluster management / external identity providers."
               />
             </div>
             <div className="col-4">
@@ -519,6 +538,8 @@ const ClusterSetupNewConfigKubernetes = () => {
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="When enabled, NiFi data persists across pod restarts (required for production). When disabled, data is lost on restart (suitable for testing only)"
               />
             </div>
             <div className="col-4">
@@ -530,6 +551,8 @@ const ClusterSetupNewConfigKubernetes = () => {
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="Defines the size of persistent volumes used to store FlowFile, content, and provenance repositories."
               />
             </div>
             <div className="col-4">
@@ -541,6 +564,8 @@ const ClusterSetupNewConfigKubernetes = () => {
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="Memory allocated to the Java Virtual Machine heap. Should be set to 50-75% of the total memory limit for optimal performance."
               />
             </div>
             <div className="col-4">
@@ -551,6 +576,8 @@ const ClusterSetupNewConfigKubernetes = () => {
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="External hostname used to access NiFi through Ingress or load balancer. Required for proper URL generation. Must match the Ingress hostname"
               />
             </div>
             <div className="col-4">
@@ -561,8 +588,47 @@ const ClusterSetupNewConfigKubernetes = () => {
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="Defines the external domain/hostname used to access the NiFi UI. Must match DNS and certificate values in secured deployments"
+              />
+            </div>
+            {/*  */}
+            <div className="col-4">
+              <InputField
+                label={'Registry Enabled'}
+                name="registry_enabled"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="Boolean flag to enable or disable NiFi Registry integration. Set to true to allow NiFi to communicate with a Registry for versioned flows; false disables Registry usage."
               />
             </div>{' '}
+            <div className="col-4">
+              <InputField
+                label={'Registry URL'}
+                name="registry_url"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="URL or hostname of the NiFi Registry instance. This is where NiFi will push or fetch versioned flows."
+              />
+            </div>
+            <div className="col-4">
+              <InputField
+                label={'Registry Port'}
+                name="registry_port"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="Port number on which the NiFi Registry service is running. Default secure port is 18443 for HTTPS. Must match the port configured in the Registry deployment."
+              />
+            </div>
           </div>
         )}
 

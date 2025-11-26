@@ -10,6 +10,7 @@ import {
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGlobalContext } from '../../../utils';
+import { history } from '../../../helpers/history';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -219,7 +220,49 @@ const ClusterNavigationTab = ({
           eventOff="blur"
         />
       )}
+      {state?.is_kube_cluster && (
+        <>
+          <NavButton
+            active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS}
+            onClick={() => {
+              if (state?.is_kube_cluster) {
+                dispatch(ClustersActions.setCreateClusterMethod('Kubernetes'));
+                // if (item?.is_azure_cluster) {
+                // }  CHANGEHERE
+                dispatch(ClustersActions.setAzureCluster(true));
+              }
+              dispatch(
+                ClustersActions.setansibleClucterToEdit(state?.nodeClusterId)
+              );
+              dispatch(
+                ClustersActions.setActiveTabClusterSetup('cluster_details')
+              );
 
+              history.push(`/clusters/setup-cluster`);
+            }}
+            disabled={
+              state?.is_kube_cluster ? false : !sshDataAdded?.sshCredsAvailable
+            }
+            data-tooltip-id="cluster_upgarde_navigate"
+          >
+            Cluster Upgrade
+          </NavButton>
+          {!sshDataAdded?.sshCredsAvailable && (
+            <ReactTooltip
+              id="cluster_upgarde_navigate"
+              place="right"
+              effect="solid"
+              content="Navigate to Upgrade"
+              style={{
+                whiteSpace: 'normal',
+                zIndex: 9999,
+              }}
+              event="focus"
+              eventOff="blur"
+            />
+          )}
+        </>
+      )}
       {false && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.FLOW_GZ}
