@@ -38,8 +38,52 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
     aws_session_token: yup.string().required('AWS Session Token is required'),
   });
   const schemaEC2 = yup.object().shape({});
+  const noSpaces = /^(\S.*\S|\S)$/;
+
+  const schemaAZURE = yup.object().shape({
+    azure_tenant_id: yup
+      .string()
+      .required('Azure Tenant ID is required')
+      .matches(
+        noSpaces,
+        'Azure Tenant ID must not contain leading or trailing spaces'
+      ),
+    azure_client_id: yup
+      .string()
+      .required('Azure Client ID is required')
+      .matches(
+        noSpaces,
+        'Azure Client ID must not contain leading or trailing spaces'
+      ),
+    azure_client_secret: yup
+      .string()
+      .required('Azure Client Secret is required')
+      .matches(
+        noSpaces,
+        'Azure Client Secret must not contain leading or trailing spaces'
+      ),
+    azure_subscription_id: yup
+      .string()
+      .required('Azure Subscription ID is required')
+      .matches(
+        noSpaces,
+        'Azure Subscription ID must not contain leading or trailing spaces'
+      ),
+    azure_resource_group: yup
+      .string()
+      .required('Azure Resource Group is required')
+      .matches(
+        noSpaces,
+        'Azure Resource Group must not contain leading or trailing spaces'
+      ),
+  });
+
   const schema =
-    deleteKubeClusterData?.cluster_type === 'ec2' ? schemaEC2 : schemaEKS;
+    deleteKubeClusterData?.cluster_type === 'ec2'
+      ? schemaEC2
+      : deleteKubeClusterData?.cluster_type === 'aks'
+        ? schemaAZURE
+        : schemaEKS;
   const {
     register,
     control,
@@ -49,12 +93,27 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+
   const deleteCluster = data => {
     if (deleteKubeClusterData?.cluster_type === 'ec2') {
       const payload = {
         clusterIdToDelete: deleteKubeClusterData?.id,
         deleteType: unInstallNiFi ? 'nifi_uninstall' : 'db_only',
         payloadData: {},
+      };
+
+      dispatch(ClustersActions.deleteClusterKube(payload));
+    } else if (deleteKubeClusterData?.cluster_type === 'aks') {
+      const payload = {
+        clusterIdToDelete: deleteKubeClusterData?.id,
+        deleteType: unInstallNiFi ? 'nifi_uninstall' : 'db_only',
+        payloadData: {
+          azure_tenant_id: data?.azure_tenant_id,
+          azure_client_id: data?.azure_client_id,
+          azure_client_secret: data?.azure_client_secret,
+          azure_subscription_id: data?.azure_subscription_id,
+          azure_resource_group: data?.azure_resource_group,
+        },
       };
 
       dispatch(ClustersActions.deleteClusterKube(payload));
@@ -99,72 +158,75 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
           </div>
           <PrimaryText>{KDFM.HARD_DELETE_CLUSTER_WARNING}</PrimaryText>
           <div className="">
-            {deleteKubeClusterData?.cluster_type !== 'ec2' && (
-              <>
-                {' '}
-                <div className="row mt-3">
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      AWS Region <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="aws_region"
-                      type="text"
-                      placeholder={'Enter AWS Region'}
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
+            {deleteKubeClusterData?.cluster_type !== 'ec2' &&
+              deleteKubeClusterData?.cluster_type !== 'aks' && (
+                <>
+                  {' '}
+                  <div className="row mt-3">
+                    <div className="col-6">
+                      <LabelSelect className="mb-3">
+                        AWS Region <span style={{ color: 'red' }}>*</span>
+                      </LabelSelect>
+                      <InputField
+                        name="aws_region"
+                        type="text"
+                        placeholder={'Enter AWS Region'}
+                        required={true}
+                        register={register}
+                        errors={errors}
+                        icon={<QRIcons />}
+                      />
+                    </div>
+                    <div className="col-6">
+                      <LabelSelect className="mb-3">
+                        AWS Access Key Id{' '}
+                        <span style={{ color: 'red' }}>*</span>
+                      </LabelSelect>
+                      <InputField
+                        name="aws_access_key_id"
+                        type="text"
+                        placeholder="Enter AWS Access Key Id"
+                        required={true}
+                        register={register}
+                        errors={errors}
+                        icon={<QRIcons />}
+                      />
+                    </div>
                   </div>
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      AWS Access Key Id <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="aws_access_key_id"
-                      type="text"
-                      placeholder="Enter AWS Access Key Id"
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
+                  <div className="row">
+                    <div className="col-6">
+                      <LabelSelect className="mb-3">
+                        AWS Secret Access Key{' '}
+                        <span style={{ color: 'red' }}>*</span>
+                      </LabelSelect>
+                      <InputField
+                        name="aws_secret_access_key"
+                        type="text"
+                        placeholder="Enter AWS Secret Access Key"
+                        required={true}
+                        register={register}
+                        errors={errors}
+                        icon={<QRIcons />}
+                      />
+                    </div>
+                    <div className="col-6">
+                      <LabelSelect className="mb-3">
+                        AWS Session Token{' '}
+                        <span style={{ color: 'red' }}>*</span>
+                      </LabelSelect>
+                      <InputField
+                        name="aws_session_token"
+                        type="text"
+                        placeholder={'Enter AWS Session Token'}
+                        register={register}
+                        errors={errors}
+                        icon={<QRIcons />}
+                        required={true}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      AWS Secret Access Key{' '}
-                      <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="aws_secret_access_key"
-                      type="text"
-                      placeholder="Enter AWS Secret Access Key"
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
-                  </div>
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      AWS Session Token <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="aws_session_token"
-                      type="text"
-                      placeholder={'Enter AWS Session Token'}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                      required={true}
-                    />
-                  </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
             {deleteKubeClusterData?.cluster_type === 'ec2' && (
               <>
                 {' '}
@@ -175,6 +237,94 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
                     checked={unInstallNiFi}
                     onChange={e => setUninstallNiFi(e.target.checked)}
                   />
+                </div>
+              </>
+            )}
+
+            {deleteKubeClusterData?.cluster_type === 'aks' && (
+              <>
+                {' '}
+                <div className="row mt-3">
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Tenant Id <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="azure_tenant_id"
+                      type="text"
+                      placeholder={'Enter Tenant Id '}
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Client Id <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="azure_client_id"
+                      type="text"
+                      placeholder="Enter Client Id"
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Client Secret <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="azure_client_secret"
+                      type="text"
+                      placeholder="Enter Client Secret"
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Subscription Id <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="azure_subscription_id"
+                      type="text"
+                      placeholder={'Enter Subscription Id'}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                      required={true}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Resource Group <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="azure_resource_group"
+                      type="text"
+                      placeholder={'Enter Resource Group'}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                      required={true}
+                    />
+                  </div>
+                  <div className="col-6 d-flex align-items-center">
+                    <CheckboxField
+                      name="check"
+                      label="Do you also want to uninstall NiFi?"
+                      checked={unInstallNiFi}
+                      onChange={e => setUninstallNiFi(e.target.checked)}
+                    />
+                  </div>
                 </div>
               </>
             )}
