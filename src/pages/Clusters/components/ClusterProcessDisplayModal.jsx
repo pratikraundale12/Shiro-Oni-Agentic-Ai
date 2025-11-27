@@ -153,7 +153,7 @@ const CreationModelKubeStepsAKS = [
     status: 'completed',
   },
   {
-    step: 'Parsing values file',
+    step: 'Parsing values file for deployment options',
     status: 'completed',
   },
   {
@@ -527,7 +527,9 @@ export const ClusterProcessDisplayModal = ({
         ? CreationModelKubeStepsEKS
         : processData?.isKubeCluster && processData?.cluster_type === 'ec2'
           ? CreationModelKubeStepsEC2
-          : UpgradeModalSteps;
+          : processData?.isKubeCluster && processData?.cluster_type === 'aks'
+            ? CreationModelKubeStepsAKS
+            : UpgradeModalSteps;
     } else if (processExeName === 'update-nodes') {
       return processData?.has_third_party_cert
         ? nodesAddThirdPartyModalSteps
