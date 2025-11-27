@@ -713,7 +713,7 @@ export function* createKubernetesMasterNodeCluster(api, { payload }) {
     yield put(ClustersActions.setkubeHostModalOpen(false));
     yield put(ClustersActions.fetchMasterHostNodesList());
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* deleteMasterNodeConfig(api, { payload }) {
