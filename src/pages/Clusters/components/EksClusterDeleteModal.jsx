@@ -40,43 +40,7 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
   const schemaEC2 = yup.object().shape({});
   const noSpaces = /^(\S.*\S|\S)$/;
 
-  const schemaAZURE = yup.object().shape({
-    // azure_tenant_id: yup
-    //   .string()
-    //   .required('Azure Tenant ID is required')
-    //   .matches(
-    //     noSpaces,
-    //     'Azure Tenant ID must not contain leading or trailing spaces'
-    //   ),
-    // azure_client_id: yup
-    //   .string()
-    //   .required('Azure Client ID is required')
-    //   .matches(
-    //     noSpaces,
-    //     'Azure Client ID must not contain leading or trailing spaces'
-    //   ),
-    // azure_client_secret: yup
-    //   .string()
-    //   .required('Azure Client Secret is required')
-    //   .matches(
-    //     noSpaces,
-    //     'Azure Client Secret must not contain leading or trailing spaces'
-    //   ),
-    // azure_subscription_id: yup
-    //   .string()
-    //   .required('Azure Subscription ID is required')
-    //   .matches(
-    //     noSpaces,
-    //     'Azure Subscription ID must not contain leading or trailing spaces'
-    //   ),
-    // azure_resource_group: yup
-    //   .string()
-    //   .required('Azure Resource Group is required')
-    //   .matches(
-    //     noSpaces,
-    //     'Azure Resource Group must not contain leading or trailing spaces'
-    //   ),
-  });
+  const schemaAZURE = yup.object().shape({});
 
   const schema =
     deleteKubeClusterData?.cluster_type === 'ec2'
@@ -107,13 +71,7 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
       const payload = {
         clusterIdToDelete: deleteKubeClusterData?.id,
         deleteType: unInstallNiFi ? 'nifi_uninstall' : 'db_only',
-        payloadData: {
-          // azure_tenant_id: data?.azure_tenant_id,
-          // azure_client_id: data?.azure_client_id,
-          // azure_client_secret: data?.azure_client_secret,
-          // azure_subscription_id: data?.azure_subscription_id,
-          // azure_resource_group: data?.azure_resource_group,
-        },
+        payloadData: {},
       };
 
       dispatch(ClustersActions.deleteClusterKube(payload));
@@ -244,79 +202,8 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
             {deleteKubeClusterData?.cluster_type === 'aks' && (
               <>
                 {' '}
-                <div className="row mt-3">
-                  {/* <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      Tenant Id <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="azure_tenant_id"
-                      type="text"
-                      placeholder={'Enter Tenant Id '}
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
-                  </div>
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      Client Id <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="azure_client_id"
-                      type="text"
-                      placeholder="Enter Client Id"
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
-                  </div> */}
-                </div>
+                <div className="row mt-3"></div>
                 <div className="row">
-                  {/* <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      Client Secret <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="azure_client_secret"
-                      type="text"
-                      placeholder="Enter Client Secret"
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
-                  </div>
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      Subscription Id <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="azure_subscription_id"
-                      type="text"
-                      placeholder={'Enter Subscription Id'}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                      required={true}
-                    />
-                  </div>
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      Resource Group <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="azure_resource_group"
-                      type="text"
-                      placeholder={'Enter Resource Group'}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                      required={true}
-                    />
-                  </div> */}
                   <div className="col-12 d-flex align-items-center justify-content-center">
                     <CheckboxField
                       name="check"
