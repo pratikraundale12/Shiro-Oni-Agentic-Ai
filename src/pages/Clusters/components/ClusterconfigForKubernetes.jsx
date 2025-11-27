@@ -629,6 +629,18 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Port number on which the NiFi Registry service is running. Default secure port is 18443 for HTTPS. Must match the port configured in the Registry deployment."
               />
             </div>
+            <div className="col-4">
+              <InputField
+                label={'CPU Limit'}
+                name="cpu"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent=""
+              />
+            </div>
           </div>
         )}
 
