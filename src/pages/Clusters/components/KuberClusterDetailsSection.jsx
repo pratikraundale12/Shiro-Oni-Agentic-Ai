@@ -84,7 +84,9 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const configOptionsOnUpgrade = uniqBy(allconfigOptionsUnsorted, 'value');
   const configVerionsList = useSelector(ClustersSelectors.getkubConfigVersion);
   const azureCluster = useSelector(ClustersSelectors.getAzureCluster);
-
+  const recentSelectedCluster = useSelector(
+    ClustersSelectors.getrecentClusterSelected
+  );
   const configVersionOption =
     (!isEmpty(configVerionsList) &&
       configVerionsList?.map(ele => ({
@@ -405,7 +407,11 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       }
     }
   };
-
+  useEffect(() => {
+    if (!isEmpty(recentSelectedCluster) && isEmpty(kubeClusterIDEdit)) {
+      setValue('cluster_type', recentSelectedCluster);
+    }
+  }, [recentSelectedCluster]);
   return (
     <>
       <Title

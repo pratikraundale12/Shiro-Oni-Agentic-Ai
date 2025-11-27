@@ -199,8 +199,8 @@ export const ClustersActions = {
   setAzureCluster: createAction(`${prefix}setAzureCluster`),
   testAzureConfig: createAction(`${prefix}testAzureConfig`),
   setAzureTestPassed: createAction(`${prefix}setAzureTestPassed`),
+  setRecentClusterSelected: createAction(`${prefix}setRecentClusterSelected`),
 };
-
 /* ------------- INITIAL STATE ------------- */
 export const CLUSTERS_INITIAL_STATE = {
   list: [],
@@ -270,6 +270,7 @@ export const CLUSTERS_INITIAL_STATE = {
   scriptList: [],
   azureCluster: false,
   azureTestPassed: false,
+  recentClusterSelected: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -357,6 +358,7 @@ export const ClustersSelectors = {
   getScriptList: state => state.clusters.scriptList,
   getAzureCluster: state => state.clusters.azureCluster,
   getazureTestPassed: state => state.clusters.azureTestPassed,
+  getrecentClusterSelected: state => state.clusters.recentClusterSelected,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -787,6 +789,12 @@ const setAzureTestPassed = (state, { payload }) => {
     azureTestPassed: payload,
   };
 };
+const setRecentClusterSelected = (state, { payload }) => {
+  return {
+    ...state,
+    recentClusterSelected: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -958,6 +966,10 @@ export const clustersReducer = createReducer(
       .addCase(ClustersActions.setUpdatedKubeConfig, setUpdatedKubeConfig)
       .addCase(ClustersActions.setScriptList, setScriptList)
       .addCase(ClustersActions.setAzureCluster, setAzureCluster)
-      .addCase(ClustersActions.setAzureTestPassed, setAzureTestPassed);
+      .addCase(ClustersActions.setAzureTestPassed, setAzureTestPassed)
+      .addCase(
+        ClustersActions.setRecentClusterSelected,
+        setRecentClusterSelected
+      );
   }
 );

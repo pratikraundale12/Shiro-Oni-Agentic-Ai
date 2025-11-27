@@ -132,18 +132,20 @@ export const clustersAPI = api => {
     return api.get(`/clusters/${clusterId}/drivers-list`);
   };
 
-  const fetchMasterHostNodesList = () => {
-    const url = `cluster-nodes/list-master-nodes`;
+  const fetchMasterHostNodesList = ({ payload }) => {
+    const url = payload
+      ? `cluster-nodes/list-master-nodes?type=${payload}`
+      : `cluster-nodes/list-master-nodes`;
     return api.get(url);
   };
-  const fetchConfigFieldsForKubernetes = () => {
-    return api.get(`/config-fields`);
+  const fetchConfigFieldsForKubernetes = ({ payload }) => {
+    return api.get(`/config-fields?type=${payload}`);
   };
   const createConfigForKubernetesCluster = ({ payload }) => {
     return api.post(`/create-config`, payload);
   };
-  const fetchConfigListForKubernetes = () => {
-    return api.get(`/list-configs`);
+  const fetchConfigListForKubernetes = ({ payload }) => {
+    return api.get(payload ? `/list-configs?type=${payload}` : `/list-configs`);
   };
   const createKubernetesCluster = ({ payload }) => {
     return api.post(`/kube/create-cluster`, payload);

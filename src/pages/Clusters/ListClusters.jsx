@@ -206,6 +206,7 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setAnsibleClusterData({}));
     dispatch(ClustersActions.setAnsibleClusterNodeUpdate(''));
     dispatch(ClustersActions.setkubeClusterUpgradeData({}));
+    dispatch(ClustersActions.setRecentClusterSelected(null));
   }, [dispatch]);
 
   const handleHardDeleteAnsibleCluster = item => {

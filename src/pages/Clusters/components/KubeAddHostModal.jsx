@@ -8,13 +8,14 @@ import {
   ClustersSelectors,
   LoadingSelectors,
 } from '../../../store';
-import { InputField, ModalWithRightBtn } from '../../../shared';
-import { DocumentTextIcon } from '../../../assets';
+import { InputField, ModalWithRightBtn, SelectField } from '../../../shared';
+import { DocumentTextIcon, QRIcons } from '../../../assets';
 import { isEmpty, set } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
+import { KDFM } from '../../../constants';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -44,6 +45,12 @@ const UploadWrapper = styled.div`
     background-color: rgb(253, 250, 245);
   }
 `;
+const LabelSelect = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+`;
 export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
   const dispatch = useDispatch();
   const isModalOpen = useSelector(ClustersSelectors.getkubeHostModalOpen);
@@ -67,6 +74,7 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
         value => value === value?.trim()
       ),
     kubeConfigFile: yup.mixed().required('File is required'),
+    cluster_type: yup.string().required('Cluster type is required'),
   });
 
   const {
@@ -94,7 +102,9 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
     const payload = new FormData();
     payload.append('kubeClusterName', data?.kubeClusterName);
     payload.append('kubeConfigFile', data?.kubeConfigFile);
+    payload.append('type', data?.cluster_type);
     dispatch(ClustersActions.createKubernetesMasterNodeCluster(payload));
+    dispatch(ClustersActions.setRecentClusterSelected(data?.cluster_type));
   };
 
   useEffect(() => {
@@ -121,7 +131,7 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
       >
         <Container>
           <div className="row">
-            <div className="col-12">
+            <div className="col-6">
               <InputField
                 name="kubeClusterName"
                 type="text"
@@ -133,7 +143,35 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
                 icon={<DocumentTextIcon />}
               />
             </div>{' '}
+            <div className="col-6 mb-4">
+              <LabelSelect className="mb-3">
+                Kubernetes cluster type
+              </LabelSelect>
+              <SelectField
+                name="cluster_type"
+                icon={<DocumentTextIcon />}
+                register={register}
+                errors={errors}
+                control={control}
+                options={
+                  [
+                    { label: 'Amazon EKS', value: 'eks' },
+                    {
+                      label: 'Self-Managed Kubernetes',
+                      value: 'ec2',
+                    },
+                    {
+                      label: 'Azure Kubernetes Service',
+                      value: 'aks',
+                    },
+                  ] || []
+                }
+                placeholder={KDFM.SELECT_CONFIG_VERSION}
+                required={true}
+              />
+            </div>
           </div>
+
           <div>
             <div className="col-12">
               <span>
