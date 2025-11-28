@@ -327,8 +327,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       setValue('host', kubeUpgradeData?.master_node?.id);
       setValue('configName', kubeUpgradeData?.config_name);
       setValue('configVersion', kubeUpgradeData?.config_version);
-      // setValue('cluster_type', kubeUpgradeData?.cluster_type);  REMOVING TEMP  CHANGEHERE
-      setValue('cluster_type', 'aks');
+      setValue('cluster_type', kubeUpgradeData?.cluster_type);
       setValue('nifi_namespace', kubeUpgradeData?.nifi_namespace);
     }
   }, [kubeUpgradeData]);
