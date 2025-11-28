@@ -186,13 +186,14 @@ export const Add = () => {
       .string()
       .url('Enter a valid NiFi URL')
       .required('NiFi URL is required')
-      .test('unique-registry-url', ' Cluster already exists', function (value) {
-        if (!value) return true;
-        return !filteredGridData?.some(
-          reg =>
-            reg?.nifi_url.trim() === value.trim() ||
-            reg?.nifi_url.trim() + '/nifi' === value.trim()
-        );
+      .test('unique-registry-url', 'Cluster already exists', function (value) {
+        const val = value?.trim?.() || '';
+        if (!val) return true;
+
+        return !filteredGridData?.some(reg => {
+          const regUrl = reg?.nifi_url?.trim?.() || '';
+          return regUrl === val || regUrl + '/nifi' === val;
+        });
       }),
     metrics_url: yup.string().url('Enter a valid Metrics URL'),
     logs_url: yup.string().url('Enter a valid Logs URL'),
