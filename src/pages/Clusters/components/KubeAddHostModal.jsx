@@ -166,7 +166,7 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
                     },
                   ] || []
                 }
-                placeholder={KDFM.SELECT_CONFIG_VERSION}
+                placeholder={'Select Cluster'}
                 required={true}
               />
             </div>

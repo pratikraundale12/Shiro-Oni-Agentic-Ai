@@ -14,9 +14,14 @@ import PemUploadField from '../PEMUploadFile';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
+  InfoIcon,
   NotePadIcon,
 } from '../../../assets';
-import { LoadingSelectors } from '../../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../../store';
 import { theme } from '../../../styles';
 
 const Container = styled.div``;
@@ -68,7 +73,7 @@ export const ClusterCustomProcessor = ({ data }) => {
   const loading4 = useSelector(state =>
     LoadingSelectors.getLoading(state, 'deleteClusterNarFile')
   );
-
+  const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const schema = yup.object().shape({
     nar_file: yup.mixed().required('File is required'),
   });
@@ -162,10 +167,22 @@ export const ClusterCustomProcessor = ({ data }) => {
         payload: {},
       })
     );
+    if (loggedInCluster?.value == data?.id) {
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
   };
   return (
     <>
-      <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
+      <FullPageLoader
+        loading={loading || loading2 || loading3 || loading4}
+        restartText={loading2}
+      />
 
       <Container>
         <div className="row mb-3">
@@ -204,6 +221,17 @@ export const ClusterCustomProcessor = ({ data }) => {
             <Button type="button" variant="primary" onClick={handleRestart}>
               Restart
             </Button>
+          </div>
+          <div
+            className="col-10 d-flex align-items-center ms-2"
+            style={{
+              fontWeight: '500',
+              fontSize: '16px',
+              color: theme.colors.primary,
+            }}
+          >
+            <InfoIcon color={theme.colors.primary} /> &nbsp; The cluster restart
+            will take approximately 5 minutes.
           </div>
         </FlexWrapper>
         <div className="ms-1 mt-2 d-flex justify-content-end">

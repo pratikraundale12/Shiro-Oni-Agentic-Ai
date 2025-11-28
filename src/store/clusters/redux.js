@@ -200,6 +200,7 @@ export const ClustersActions = {
   testAzureConfig: createAction(`${prefix}testAzureConfig`),
   setAzureTestPassed: createAction(`${prefix}setAzureTestPassed`),
   setRecentClusterSelected: createAction(`${prefix}setRecentClusterSelected`),
+  setclusterViewTab: createAction(`${prefix}setclusterViewTab`),
 };
 /* ------------- INITIAL STATE ------------- */
 export const CLUSTERS_INITIAL_STATE = {
@@ -271,6 +272,7 @@ export const CLUSTERS_INITIAL_STATE = {
   azureCluster: false,
   azureTestPassed: false,
   recentClusterSelected: null,
+  clusterViewTab: 'node',
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -359,6 +361,7 @@ export const ClustersSelectors = {
   getAzureCluster: state => state.clusters.azureCluster,
   getazureTestPassed: state => state.clusters.azureTestPassed,
   getrecentClusterSelected: state => state.clusters.recentClusterSelected,
+  getclusterViewTab: state => state.clusters.clusterViewTab,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -795,6 +798,12 @@ const setRecentClusterSelected = (state, { payload }) => {
     recentClusterSelected: payload,
   };
 };
+const setclusterViewTab = (state, { payload }) => {
+  return {
+    ...state,
+    clusterViewTab: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -970,6 +979,7 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setRecentClusterSelected,
         setRecentClusterSelected
-      );
+      )
+      .addCase(ClustersActions.setclusterViewTab, setclusterViewTab);
   }
 );
