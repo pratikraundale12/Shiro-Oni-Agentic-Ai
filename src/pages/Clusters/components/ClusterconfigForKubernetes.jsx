@@ -38,6 +38,8 @@ const OuterContainer = styled.div`
   flex-direction: column;
   flex-grow: 1;
   min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const DisplaySection = styled.div`
@@ -148,18 +150,6 @@ const ClusterSetupNewConfigKubernetes = () => {
       .required('Persistence enabled is required'),
     dataStorage_size: yup.string().required('Data storage size is required'),
     jvmMemory: yup.string().required('jvmMemory value is required'),
-    // properties_webProxyHost: yup
-    //   .string()
-    //   .required('Web proxy host is required'),
-    // ingress_hosts: yup
-    //   .string()
-    //   .transform(value => {
-    //     if (Array.isArray(value)) {
-    //       return value?.[0]?.[0]?.replace(/["']/g, '');
-    //     }
-    //     return value?.replace(/["']/g, '');
-    //   })
-    //   .required('Ingress host is required'),
   });
 
   const {
@@ -215,6 +205,20 @@ const ClusterSetupNewConfigKubernetes = () => {
         registry_url: data?.registry_url,
         registry_port: data?.registry_port,
         registry_enabled: data?.registry_enabled,
+
+        //
+        resources_limits_cpu: data?.resources_limits_cpu,
+        resources_limits_memory: data?.resources_limits_memory,
+        resources_requests_cpu: data?.resources_requests_cpu,
+        resources_requests_memory: data?.resources_requests_memory,
+
+        registry_resources_limits_cpu: data?.registry_resources_limits_cpu,
+        registry_resources_limits_memory:
+          data?.registry_resources_limits_memory,
+        registry_resources_requests_cpu: data?.registry_resources_requests_cpu,
+        registry_resources_requests_memory:
+          data?.registry_resources_requests_memory,
+        //
         ...(!isEmpty(data?.properties_webProxyHost) && {
           properties_webProxyHost: data?.properties_webProxyHost,
         }),
@@ -294,9 +298,35 @@ const ClusterSetupNewConfigKubernetes = () => {
       setValue('jvmMemory', parsedJson?.jvmMemory || parsedJson?.jvmMemory);
       setValue('properties_webProxyHost', parsedJson?.properties?.webProxyHost);
       setValue('ingress_hosts', parsedJson?.ingress?.hosts?.[0]);
-      setValue('registry_enabled', parsedJson?.registry?.enabled);
+      setValue('registry_enabled', String(parsedJson?.registry?.enabled));
       setValue('registry_url', parsedJson?.registry?.url);
-      setValue('registry_port', parsedJson?.registry?.port);
+      setValue('registry_port', String(parsedJson?.registry?.port));
+      setValue('resources_limits_cpu', parsedJson?.resources?.limits?.cpu);
+      setValue(
+        'resources_limits_memory',
+        parsedJson?.resources?.limits?.memory
+      );
+      setValue('resources_requests_cpu', parsedJson?.resources?.requests?.cpu);
+      setValue(
+        'resources_requests_memory',
+        parsedJson?.resources?.requests?.memory
+      );
+      setValue(
+        'registry_resources_limits_cpu',
+        parsedJson?.registry?.resources?.limits?.cpu
+      );
+      setValue(
+        'registry_resources_limits_memory',
+        parsedJson?.registry?.resources?.limits?.memory
+      );
+      setValue(
+        'registry_resources_requests_cpu',
+        parsedJson?.registry?.resources?.requests?.cpu
+      );
+      setValue(
+        'registry_resources_requests_memory',
+        parsedJson?.registry?.resources?.requests?.memory
+      );
     }
   }, [parsedJson]);
 
@@ -317,7 +347,23 @@ const ClusterSetupNewConfigKubernetes = () => {
     parsedJson?.persistence?.dataStorage?.size == watch('dataStorage_size') &&
     parsedJson?.jvmMemory == watch('jvmMemory') &&
     parsedJson?.properties?.webProxyHost == watch('properties_webProxyHost') &&
-    parsedJson?.ingress?.hosts?.[0] == watch('ingress_hosts');
+    parsedJson?.ingress?.hosts?.[0] == watch('ingress_hosts') &&
+    parsedJson?.resources?.limits?.cpu == watch('resources_limits_cpu') &&
+    parsedJson?.resources?.limits?.memory == watch('resources_limits_memory') &&
+    parsedJson?.resources?.requests?.cpu == watch('resources_requests_cpu') &&
+    parsedJson?.resources?.requests?.memory ==
+      watch('resources_requests_memory') &&
+    String(parsedJson?.registry?.enabled) == watch('registry_enabled') &&
+    parsedJson?.registry?.url == watch('registry_url') &&
+    String(parsedJson?.registry?.port) == watch('registry_port') &&
+    parsedJson?.registry?.resources?.limits?.cpu ==
+      watch('registry_resources_limits_cpu') &&
+    parsedJson?.registry?.resources?.limits?.memory ==
+      watch('registry_resources_limits_memory') &&
+    parsedJson?.registry?.resources?.requests?.cpu ==
+      watch('registry_resources_requests_cpu') &&
+    parsedJson?.registry?.resources?.requests?.memory ==
+      watch('registry_resources_requests_memory');
 
   const handleOpenEditor = () => {
     let createValue = dirtyFields.ingress_hosts
@@ -352,13 +398,6 @@ const ClusterSetupNewConfigKubernetes = () => {
         registry_ingress_tls_hosts: watch('ingress_hosts'),
         registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
       }),
-      // ingress_hosts: [watch('ingress_hosts')],
-      // ingress_tls_hosts: watch('ingress_hosts'),
-      // certManager_additionalIpsAddresses: [watch('ingress_hosts')],
-      // zookeeper_url: watch('ingress_hosts'),
-      // registry_ingress_hosts_host: watch('ingress_hosts'),
-      // registry_ingress_tls_hosts: watch('ingress_hosts'),
-      // registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
     };
     const payload = { values: fieldValues, valuesYaml: yamlValue };
     setEditorModal(true);
@@ -516,7 +555,7 @@ const ClusterSetupNewConfigKubernetes = () => {
         </div>
         {!editorModal && (
           <div className="row px-3">
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Pods count'}
                 name="replicaCount"
@@ -529,7 +568,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Specifies the number of NiFi nodes (pods) to deploy within the Kubernetes cluster. This controls cluster size and ensures high availability and load distribution."
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'NiFi Version'}
                 name="image_tag"
@@ -542,7 +581,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Defines the specific NiFi Docker image version to deploy. Ensures consistency across environments and helps control upgrades and rollbacks."
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Administrator Username'}
                 name="auth_singleUser_username"
@@ -555,7 +594,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Username used when NiFi is configured in Single User Authentication mode. Represents the initial admin user for accessing the UI before integrating external authentication (LDAP/OAuth)."
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Administrator Password'}
                 name="auth_singleUser_password"
@@ -568,7 +607,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Password associated with the single user admin account. Must be secured because it allows full administrative access during initial deployment."
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Admin Authentication'}
                 name="auth_admin"
@@ -581,7 +620,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Administrators list or configuration required, especially when using secure deployments for cluster management / external identity providers."
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Enable Persistent Storage'}
                 name="persistence_enabled"
@@ -594,7 +633,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="When enabled, NiFi data persists across pod restarts (required for production). When disabled, data is lost on restart (suitable for testing only)"
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Allocated Storage/Storage Allocation'}
                 name="dataStorage_size"
@@ -607,7 +646,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Defines the size of persistent volumes used to store FlowFile, content, and provenance repositories."
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'JVM Heap Memory/JVM Resource Limit'}
                 name="jvmMemory"
@@ -620,7 +659,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Memory allocated to the Java Virtual Machine heap. Should be set to 50-75% of the total memory limit for optimal performance."
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Web Proxy Hostname/External Access URL'}
                 name="properties_webProxyHost"
@@ -632,7 +671,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="External hostname used to access NiFi through Ingress or load balancer. Required for proper URL generation. Must match the Ingress hostname"
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Service URL/External Hostname'}
                 name="ingress_hosts"
@@ -645,7 +684,7 @@ const ClusterSetupNewConfigKubernetes = () => {
               />
             </div>
             {/*  */}
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Registry Enabled'}
                 name="registry_enabled"
@@ -657,7 +696,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Boolean flag to enable or disable NiFi Registry integration. Set to true to allow NiFi to communicate with a Registry for versioned flows; false disables Registry usage."
               />
             </div>{' '}
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Registry URL'}
                 name="registry_url"
@@ -669,7 +708,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="URL or hostname of the NiFi Registry instance. This is where NiFi will push or fetch versioned flows."
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
                 label={'Registry Port'}
                 name="registry_port"
@@ -681,16 +720,101 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Port number on which the NiFi Registry service is running. Default secure port is 18443 for HTTPS. Must match the port configured in the Registry deployment."
               />
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <InputField
-                label={'CPU Limit'}
-                name="cpu"
+                label={'NIFi CPU Limit'}
+                name="resources_limits_cpu"
                 type="text"
                 register={register}
                 errors={errors}
                 icon={<NotePadIcon />}
                 rightIcon={<InfoIcon />}
-                rightIconToolTipContent=""
+                rightIconToolTipContent="The maximum amount of CPU NiFi is allowed to use. If the application tries to use more than this, Kubernetes will throttle it."
+              />
+            </div>{' '}
+            <div className="col-3">
+              <InputField
+                label={'NIFi Memory Limit'}
+                name="resources_limits_memory"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="The maximum RAM memory NiFi can consume. If memory usage exceeds this limit, the pod may get OOMKilled (Out of Memory)."
+              />
+            </div>{' '}
+            <div className="col-3">
+              <InputField
+                label={'NIFi CPU Request'}
+                name="resources_requests_cpu"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="The minimum amount of CPU guaranteed for NiFi. Kubernetes ensures at least this much CPU is always available for the pod."
+              />
+            </div>
+            <div className="col-3">
+              <InputField
+                label={'NIFi Memory Request'}
+                name="resources_requests_memory"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="The minimum amount of memory reserved for NiFi. Kubernetes guarantees this memory. If not enough memory is available, the pod won’t start."
+              />
+            </div>
+            {/*  */}
+            <div className="col-3">
+              <InputField
+                label={'Registry CPU Limit'}
+                name="registry_resources_limits_cpu"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="The maximum CPU that the NiFi Registry container can use. Prevents the registry from consuming excessive compute resources."
+              />
+            </div>{' '}
+            <div className="col-3">
+              <InputField
+                label={'Registry Memory Limit'}
+                name="registry_resources_limits_memory"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="The upper memory limit for the NiFi Registry container. Container will be terminated if it exceeds this memory."
+              />
+            </div>{' '}
+            <div className="col-3">
+              <InputField
+                label={'Registry CPU Request'}
+                name="registry_resources_requests_cpu"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="The minimal CPU guaranteed for registry performance & availability. Helps scheduler choose the right node."
+              />
+            </div>
+            <div className="col-3">
+              <InputField
+                label={'Registry Memory Request'}
+                name="registry_resources_requests_memory"
+                type="text"
+                register={register}
+                errors={errors}
+                icon={<NotePadIcon />}
+                rightIcon={<InfoIcon />}
+                rightIconToolTipContent="The minimum RAM reserved for the NiFi Registry container to run smoothly. Pod will not start without this much memory available."
               />
             </div>
           </div>
