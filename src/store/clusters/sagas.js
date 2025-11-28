@@ -117,12 +117,12 @@ export function* fetchHostNodesList(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
-export function* fetchMasterHostNodesList(api) {
+export function* fetchMasterHostNodesList(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchMasterHostNodesList',
     loadingSection: 'fetchMasterHostNodesList',
     apiMethod: api.fetchMasterHostNodesList,
-    apiParams: [],
+    apiParams: [{ payload: payload }],
   });
   if (response.ok) {
     yield put(ClustersActions.setHostIpList(response?.data));
@@ -616,12 +616,12 @@ export function* testMultipleNodes(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
-export function* fetchConfigFieldsForKubernetes(api) {
+export function* fetchConfigFieldsForKubernetes(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchConfigFieldsForKubernetes',
     loadingSection: 'fetchConfigFieldsForKubernetes',
     apiMethod: api.fetchConfigFieldsForKubernetes,
-    apiParams: [],
+    apiParams: [{ payload: payload }],
   });
   if (response.ok) {
     yield put(ClustersActions.setKubernetesConfigFields(response?.data));
@@ -643,12 +643,12 @@ export function* createConfigForKubernetesCluster(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
-export function* fetchConfigListForKubernetes(api) {
+export function* fetchConfigListForKubernetes(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchConfigListForKubernetes',
     loadingSection: 'fetchConfigListForKubernetes',
     apiMethod: api.fetchConfigListForKubernetes,
-    apiParams: [],
+    apiParams: [{ payload: payload }],
   });
   if (response.ok) {
     yield put(ClustersActions.setListConfigListKubernetes(response?.data));
@@ -713,7 +713,7 @@ export function* createKubernetesMasterNodeCluster(api, { payload }) {
     yield put(ClustersActions.setkubeHostModalOpen(false));
     yield put(ClustersActions.fetchMasterHostNodesList());
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* deleteMasterNodeConfig(api, { payload }) {

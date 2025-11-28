@@ -86,6 +86,9 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const configVerionsList = useSelector(ClustersSelectors.getkubConfigVersion);
   const azureCluster = useSelector(ClustersSelectors.getAzureCluster);
   const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
+  const recentSelectedCluster = useSelector(
+    ClustersSelectors.getrecentClusterSelected
+  );
   const configVersionOption =
     (!isEmpty(configVerionsList) &&
       configVerionsList?.map(ele => ({
@@ -93,7 +96,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
         value: ele?.config_version,
       }))) ||
     []; //
-
+  const noSpaces = /^(\S.*\S|\S)$/;
   const schemaAKS = yup.object().shape({
     clusterName: yup
       .string()
@@ -115,6 +118,13 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     clientSecret: yup.string().required('Client Secret is required'),
     subscriptionId: yup.string().required('Subscription ID is required'),
     resourceGroup: yup.string().required('Resource Group is required'),
+    nifi_namespace: yup
+      .string()
+      .required('NiFi namespace is required')
+      .matches(
+        noSpaces,
+        'NiFi namespace must not contain leading or trailing spaces'
+      ),
   });
   const schemaEKS = yup.object().shape({
     clusterName: yup
@@ -138,6 +148,13 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       .string()
       .required('AWS Secret Access Key is required'),
     aws_session_token: yup.string().required('AWS Session Token is required'),
+    nifi_namespace: yup
+      .string()
+      .required('NiFi namespace is required')
+      .matches(
+        noSpaces,
+        'NiFi namespace must not contain leading or trailing spaces'
+      ),
   });
   const schemaEC2 = yup.object().shape({
     clusterName: yup
@@ -159,6 +176,13 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     ec2_ssh_username: yup.string().required('Username is required'),
     ec2_local_forward_port: yup.string().required('Post is required'),
     ec2_ssh_pem_file: yup.mixed().required('File is required'),
+    nifi_namespace: yup
+      .string()
+      .required('NiFi namespace is required')
+      .matches(
+        noSpaces,
+        'NiFi namespace must not contain leading or trailing spaces'
+      ),
   });
   const schemaEC2withoutSSH = yup.object().shape({
     clusterName: yup
@@ -176,6 +200,13 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     host: yup.string().required('Master Node is required'),
     configName: yup.string().required('Config name is required'),
     configVersion: yup.string().required('Config version is required'),
+    nifi_namespace: yup
+      .string()
+      .required('NiFi namespace is required')
+      .matches(
+        noSpaces,
+        'NiFi namespace must not contain leading or trailing spaces'
+      ),
   });
   const schemaUpgradeEC2 = yup.object().shape({
     clusterName: yup
@@ -214,14 +245,14 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     reset,
   } = useForm({
     resolver: yupResolver(schemaForm),
-    defaultValues: { cluster_type: 'eks' },
+    defaultValues: { cluster_type: 'eks', nifi_namespace: 'nifi' },
   });
   const configNameValue = watch('configName');
   const clusterType = watch('cluster_type');
   const kubeClusterConfig = watch('host');
   const clusterNameValue = watch('clusterName');
   const configVersionValue = watch('configVersion');
-
+  const nifiNamespaceName = watch('nifi_namespace');
   const schemaCluster = useMemo(() => clusterType, [clusterType]);
 
   useEffect(() => {
@@ -255,6 +286,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       !isEmpty(kubeClusterIDEdit) ? 'upgrade' : 'create'
     );
     payload.append('host', data?.host);
+    payload.append('nifi_namespace', data?.nifi_namespace);
     if (formSchemaCluster === 'eks') {
       payload.append('aws_region', data?.aws_region);
       payload.append('aws_access_key_id', data?.aws_access_key_id);
@@ -299,6 +331,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       setValue('configVersion', kubeUpgradeData?.config_version);
       // setValue('cluster_type', kubeUpgradeData?.cluster_type);  REMOVING TEMP  CHANGEHERE
       setValue('cluster_type', 'aks');
+      setValue('nifi_namespace', kubeUpgradeData?.nifi_namespace);
     }
   }, [kubeUpgradeData]);
   const loading = useSelector(state =>
@@ -376,7 +409,11 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       }
     }
   };
-
+  useEffect(() => {
+    if (!isEmpty(recentSelectedCluster) && isEmpty(kubeClusterIDEdit)) {
+      setValue('cluster_type', recentSelectedCluster);
+    }
+  }, [recentSelectedCluster]);
   return (
     <>
       <Title
@@ -481,7 +518,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                       value: 'ec2',
                     },
                     {
-                      label: 'Azure',
+                      label: 'Azure Kubernetes Service',
                       value: 'aks',
                     },
                   ] || []
@@ -492,15 +529,32 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
               />
             </div>
           </div>
-          <div className="mt-3">
-            {clusterType === 'ec2' && isEmpty(kubeUpgradeData) && (
-              <CheckboxField
-                name="check"
-                label="Do you want to add Kubernetes Admin Jumpbox?"
-                checked={sshAdd}
-                onChange={e => setShhAdd(e.target.checked)}
+          <div className="row mt-3">
+            <div className="col-6">
+              <LabelSelect className="mb-3">
+                NiFi Cluster Namespace <span style={{ color: 'red' }}>*</span>
+              </LabelSelect>
+              <InputField
+                name="nifi_namespace"
+                type="text"
+                placeholder="Enter NiFi cluster namespace"
+                required={true}
+                register={register}
+                errors={errors}
+                icon={<QRIcons />}
+                disabled={!isEmpty(kubeClusterIDEdit)}
               />
-            )}
+            </div>
+            <div className="col-6 d-flex align-items-center">
+              {clusterType === 'ec2' && isEmpty(kubeUpgradeData) && (
+                <CheckboxField
+                  name="check"
+                  label="Do you want to add Kubernetes Admin Jumpbox?"
+                  checked={sshAdd}
+                  onChange={e => setShhAdd(e.target.checked)}
+                />
+              )}
+            </div>
           </div>
         </div>
       </Container>
@@ -531,7 +585,8 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                 configVersionValue !== null &&
                 configVersionValue !== undefined &&
                 !isNaN(configVersionValue)
-              )
+              ) ||
+              isEmpty(nifiNamespaceName?.trim())
             }
             // onClick={() => setOpenAddConfigModal(true)}
             // onClick={handleSubmit(handleCreateCluster)}

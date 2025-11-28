@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { InfoIcon, NotePadIcon } from '../../../assets';
+import { NotePadIcon, QRIcons } from '../../../assets';
 import { Title } from './Title';
 import { history } from '../../../helpers/history';
-import { Button, InputField, Modal } from '../../../shared';
+import { Button, InputField, Modal, SelectField } from '../../../shared';
 import { KDFM } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -100,7 +101,12 @@ const BottomButton = styled.div`
   align-items: center;
   justify-content: space-between !important;
 `;
-
+const LabelSelect = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+`;
 const ClusterSetupNewConfigKubernetes = () => {
   const dispatch = useDispatch();
   const [errorsInEditor, setErrorsInEditor] = useState([]);
@@ -109,6 +115,10 @@ const ClusterSetupNewConfigKubernetes = () => {
   const configDefaultValue = useSelector(
     ClustersSelectors.getKubernetesConfigFields
   );
+  const recentSelectedCluster = useSelector(
+    ClustersSelectors.getrecentClusterSelected
+  );
+
   const [editorModal, setEditorModal] = useState(false);
   const [yamlEditorValue, setYamlEditorValue] = useState('');
   const configToEdit = useSelector(ClustersSelectors.getkubeCofigToEdit);
@@ -158,10 +168,13 @@ const ClusterSetupNewConfigKubernetes = () => {
     handleSubmit,
     watch,
     setValue,
+    control,
     formState: { errors, dirtyFields },
   } = useForm({
     resolver: yupResolver(schema),
   });
+
+  const clusterType = watch('cluster_type');
 
   const handleAddConfig = async data => {
     if (!isEmpty(configToEdit)) {
@@ -169,6 +182,7 @@ const ClusterSetupNewConfigKubernetes = () => {
         configName: data?.configName,
         configVersion: configToEdit?.config_version + 1,
         valuesYaml: yamlEditorValue || '',
+        type: clusterType,
       };
       dispatch(ClustersActions.createConfigForKubernetesCluster(payload));
       return;
@@ -177,6 +191,7 @@ const ClusterSetupNewConfigKubernetes = () => {
       configName: data?.configName,
       configVersion: 1,
       valuesYaml: yamlEditorValue || '',
+      type: clusterType,
     };
     dispatch(ClustersActions.createConfigForKubernetesCluster(payload));
   };
@@ -184,6 +199,7 @@ const ClusterSetupNewConfigKubernetes = () => {
   const handleAddConfigByQuickEdits = data => {
     const payload = {
       configName: data?.configName,
+      type: clusterType,
       configVersion: !isEmpty(configToEdit)
         ? configToEdit?.config_version + 1
         : 1,
@@ -223,14 +239,15 @@ const ClusterSetupNewConfigKubernetes = () => {
   };
 
   useEffect(() => {
-    if (isEmpty(configToEdit)) {
-      dispatch(ClustersActions.fetchConfigFieldsForKubernetes());
+    if (isEmpty(configToEdit) && !isEmpty(clusterType)) {
+      dispatch(ClustersActions.fetchConfigFieldsForKubernetes(clusterType));
     }
-  }, [dispatch]);
+  }, [dispatch, clusterType]);
   useEffect(() => {
     if (!isEmpty(configToEdit)) {
       setYamlValue(configToEdit?.config_json);
       setValue('configName', configToEdit?.config_name);
+      setValue('cluster_type', configToEdit?.type);
     } else {
       setYamlValue(configDefaultValue?.valuesYaml || '');
     }
@@ -394,6 +411,16 @@ const ClusterSetupNewConfigKubernetes = () => {
     setEditorModal(false);
   };
 
+  useEffect(() => {
+    if (isEmpty(configToEdit)) {
+      if (!isEmpty(recentSelectedCluster) && isEmpty(configToEdit)) {
+        setValue('cluster_type', recentSelectedCluster);
+      } else {
+        setValue('cluster_type', 'aks');
+      }
+    }
+  }, [recentSelectedCluster]);
+
   return (
     <Wrapper>
       <FullPageLoader loading={loading} />
@@ -458,6 +485,32 @@ const ClusterSetupNewConfigKubernetes = () => {
               register={register}
               errors={errors}
               icon={<NotePadIcon />}
+              disabled={!isEmpty(configToEdit)}
+            />
+          </div>
+          <div className="col-4">
+            <LabelSelect className="mb-3">Cluster type</LabelSelect>
+            <SelectField
+              name="cluster_type"
+              icon={<QRIcons />}
+              register={register}
+              errors={errors}
+              control={control}
+              options={
+                [
+                  { label: 'Amazon EKS', value: 'eks' },
+                  {
+                    label: 'Self-Managed Kubernetes',
+                    value: 'ec2',
+                  },
+                  {
+                    label: 'Azure Kubernetes Service',
+                    value: 'aks',
+                  },
+                ] || []
+              }
+              placeholder={KDFM.SELECT_CONFIG_VERSION}
+              required={true}
               disabled={!isEmpty(configToEdit)}
             />
           </div>
@@ -695,7 +748,9 @@ const ClusterSetupNewConfigKubernetes = () => {
                 (!isEmpty(configToEdit) && quickFieldChanged)
               }
             >
-              {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
+              {!isEmpty(configToEdit)
+                ? 'Update Configuration'
+                : 'Add Configuration'}
             </Button>
           )}
           {editorModal && (
@@ -707,7 +762,9 @@ const ClusterSetupNewConfigKubernetes = () => {
                 (!isEmpty(configToEdit) && !hasYamlChanged)
               }
             >
-              {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
+              {!isEmpty(configToEdit)
+                ? 'Update Configuration'
+                : 'Add Configuration'}
             </Button>
           )}
         </BottomButtonDiv>

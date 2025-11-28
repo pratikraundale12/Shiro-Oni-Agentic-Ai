@@ -147,6 +147,12 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
       resize: true,
     },
   ];
+  const toUpperIfAlphanumeric = str => {
+    if (typeof str !== 'string') return str;
+    const isAlphanumeric = /^[a-zA-Z0-9]+$/.test(str);
+    return isAlphanumeric ? str.toUpperCase() : str;
+  };
+
   const KUBE_COLUMNS = [
     {
       label: 'Config Name',
@@ -156,9 +162,15 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
     },
     {
       label: 'Config Version',
+      renderCell: item => <>{toUpperIfAlphanumeric(item?.type)}</>,
+      resize: true,
+      width: '10%',
+    },
+    {
+      label: 'Config Version',
       renderCell: item => <>{item.config_version}</>,
       resize: true,
-      width: '25%',
+      width: '20%',
     },
     {
       label: 'Actions',
@@ -213,7 +225,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
         </ActionTd>
       ),
       resize: true,
-      width: '25%',
+      width: '20%',
     },
   ];
   useEffect(() => {
@@ -238,7 +250,6 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
       history.push('/clusters/add-new-config');
     }
   };
-  //
   return (
     <Wrapper>
       <FullPageLoader loading={loading} />
@@ -261,24 +272,27 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
                   style={{ fontSize: '14px', fontWeight: '750' }}
                 >
                   <PlusCircleIcon height={19} width={19} color={'#fff'} />
-                  {KDFM.ADD_NEW_CONFIG}
+                  {createClusterVisKubernetes === 'VM'
+                    ? KDFM.ADD_NEW_CONFIG
+                    : KDFM.ADD_NIFI_CONFIG}
                 </div>
               </Button>
             </div>
           </div>
-
-          <Table
-            data={
-              createClusterVisKubernetes === 'VM'
-                ? congigListData
-                : kubeConfigList
-            }
-            columns={
-              createClusterVisKubernetes === 'VM' ? COLUMNS : KUBE_COLUMNS
-            }
-            customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
-            tableWithFullHeight={true}
-          />
+          <div className="ms-3 me-3">
+            <Table
+              data={
+                createClusterVisKubernetes === 'VM'
+                  ? congigListData
+                  : kubeConfigList
+              }
+              columns={
+                createClusterVisKubernetes === 'VM' ? COLUMNS : KUBE_COLUMNS
+              }
+              customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
+              tableWithFullHeight={true}
+            />
+          </div>
         </TableContainer>
         <ModalWithIcon
           title={'Delete Config'}

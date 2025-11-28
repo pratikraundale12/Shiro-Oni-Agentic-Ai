@@ -82,7 +82,7 @@ const ClusterSetupGettingStartedTab = () => {
                   <BottomText>
                     {createClusterVisKubernetes === 'VM'
                       ? KDFM.GETTING_STARTED_MANAGE_HOST_DESCRIPTION
-                      : 'Manage Kubernetes Cluster'}
+                      : 'Manage Kubernetes Configuration'}
                   </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
@@ -121,7 +121,9 @@ const ClusterSetupGettingStartedTab = () => {
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <BottomText>
-                    {KDFM.GETTING_STARTED_MANAGE_CONFIG_DESCRIPTION}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.GETTING_STARTED_MANAGE_CONFIG_DESCRIPTION
+                      : 'Manage NiFi Configuration'}
                   </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
@@ -136,7 +138,9 @@ const ClusterSetupGettingStartedTab = () => {
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    {KDFM.MANAGE_CONFIG}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.MANAGE_CONFIG
+                      : 'NiFi Configuration'}
                   </BottomText>
                 </div>
               </div>
@@ -161,7 +165,7 @@ const ClusterSetupGettingStartedTab = () => {
                   <BottomText>
                     {createClusterVisKubernetes === 'VM'
                       ? KDFM.GETTING_STARTED_CLUSTER_DETAILS_DESCRIPTION
-                      : 'Add Cluster Details'}
+                      : 'Manage Cluster Details'}
                   </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
@@ -176,7 +180,7 @@ const ClusterSetupGettingStartedTab = () => {
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    {KDFM.ADD_NEW_CLUSTER}
+                    {KDFM.CLUSTER_DETAILS}
                   </BottomText>
                 </div>
               </div>

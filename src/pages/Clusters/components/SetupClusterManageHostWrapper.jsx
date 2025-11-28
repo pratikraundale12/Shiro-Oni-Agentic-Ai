@@ -205,6 +205,13 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       width: '10%',
     },
   ];
+  const toUpperIfAlphanumeric = str => {
+    if (typeof str !== 'string') return str;
+
+    const isAlphanumeric = /^[a-zA-Z0-9]+$/.test(str);
+
+    return isAlphanumeric ? str.toUpperCase() : str;
+  };
   const COLUMNS_KUBERNETSTES_FLOW = [
     {
       label: 'Kubernetes Cluster Configuration',
@@ -213,9 +220,19 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       ),
 
       resize: true,
-      width: '80%',
+      width: '60%',
     },
+    {
+      label: 'Type',
+      renderCell: item => (
+        <div className="d-flex gap-2">
+          {toUpperIfAlphanumeric(item?.type) || 'N/A'}
+        </div>
+      ),
 
+      resize: true,
+      width: '20%',
+    },
     {
       label: 'Actions',
       renderCell: item => (
@@ -315,7 +332,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
                   <PlusCircleIcon height={19} width={19} color={'#fff'} />
                   {createClusterVisKubernetes === 'VM'
                     ? 'Add New Host'
-                    : 'Add Kube Cluster'}
+                    : 'Add Kubernetes Configuration'}
                 </div>
               </Button>
             </div>
