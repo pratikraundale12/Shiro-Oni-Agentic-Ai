@@ -1,8 +1,7 @@
 /* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { InfoIcon, NotePadIcon } from '../../../assets';
-import { NotePadIcon, QRIcons } from '../../../assets';
+import { InfoIcon, NotePadIcon, QRIcons } from '../../../assets';
 import { Title } from './Title';
 import { history } from '../../../helpers/history';
 import { Button, InputField, Modal, SelectField } from '../../../shared';
