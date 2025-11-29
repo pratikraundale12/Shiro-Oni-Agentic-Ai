@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -18,6 +18,8 @@ import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { InputField, Modal } from '../../shared';
 import {
+  AuthenticationSelectors,
+  ClustersActions,
   ClustersSelectors,
   LoadingSelectors,
   NamespacesActions,
@@ -172,7 +174,37 @@ export const ListNamespaces = () => {
   const selectedClusterString = localStorage.getItem('selected_cluster');
   const parsedSelectedCluster = JSON.parse(selectedClusterString);
 
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
+
+  const isFetchingClusters = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusters')
+  );
+  const [isFetchComplete, setIsFetchComplete] = useState(false);
+  const hasFetchStarted = useRef(false);
+
   useEffect(() => {
+    if (isFetchingClusters) {
+      hasFetchStarted.current = true;
+    }
+    if (!isFetchingClusters && hasFetchStarted.current) {
+      setIsFetchComplete(true);
+    }
+  }, [isFetchingClusters]);
+
+  useEffect(() => {
+    if (
+      !isEmpty(currentUser?.permissions) &&
+      currentUser?.permissions?.includes('view_cluster')
+    ) {
+      dispatch(ClustersActions.fetchClusters());
+    } else if (!isEmpty(currentUser)) {
+      setIsFetchComplete(true);
+    }
+  }, [currentUser, dispatch]);
+
+  useEffect(() => {
+    if (!isFetchComplete) return;
+
     if (
       (!isEmpty(settingsData) &&
         isEmpty(settingsData?.username) &&
@@ -200,7 +232,13 @@ export const ListNamespaces = () => {
         autoClose: 5000,
       });
     }
-  }, [settingsData?.username, selectedClusterObj, parsedSelectedCluster]);
+  }, [
+    settingsData?.username,
+    selectedClusterObj,
+    parsedSelectedCluster,
+    isFetchComplete,
+  ]);
+
   const handleScheduleClick = item => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);

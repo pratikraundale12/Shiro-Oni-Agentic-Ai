@@ -28,6 +28,7 @@ import { Button, CheckboxField, Modal, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
+  ClustersActions,
   ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
@@ -395,6 +396,22 @@ const Summary = () => {
   const changeRequestValue = useSelector(NamespacesSelectors.getChangeRequest);
   const [openConfigDetailsModal, setOpenConfigDetailsModal] = useState(false);
   const [isSanityCheckModalOpen, setIsSanityCheckModalOpen] = useState(false);
+  const selectedClusterMethod = useSelector(
+    NamespacesSelectors.getSelectedCluster
+  );
+
+  useEffect(() => {
+    if (!isEmpty(selectedClusterMethod?.value)) {
+      dispatch(ClustersActions.fetchClusters());
+    }
+  }, [dispatch, selectedClusterMethod]);
+
+  const clusters_new_list = useSelector(ClustersSelectors.getAllClustersList);
+  const matchedCluster = clusters_new_list.find(
+    cluster => cluster.id === selectedClusterMethod?.value
+  );
+  const hasSanityCheckAccess = matchedCluster?.view_sanity_check;
+
   const handleSanityCheckModalSubmit = () => {
     setIsSanityCheckModalOpen(false);
     dispatch(NamespacesActions.setSanityCheckAtDeploy(true));
@@ -505,6 +522,9 @@ const Summary = () => {
         return rest;
       }),
     }));
+  const singleNamespaceData1 = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
 
   const newProcessorEC =
     registryAllDetails.controllerServicesData?.externalControllerServices?.filter(
@@ -1086,10 +1106,10 @@ const Summary = () => {
       }));
       const payload = {
         version: versionSelected?.version,
-        flowId: selectedNameSpace?.flowId,
-        namespaceId: checkDestCluster?.id,
-        registryId: registryData?.id,
-        bucketId: selectedNameSpace?.bucketId,
+        flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
+        namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
+        registryId: registryData?.id || singleNamespaceData1?.registryId,
+        bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
         namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
         payload: {
           namespaceId: checkDestCluster?.value,
@@ -1100,11 +1120,11 @@ const Summary = () => {
           },
         },
         previousVersion: selectedNameSpace?.version || 1,
-        flowName: selectedNameSpace?.flowName,
+        flowName: selectedNameSpace?.flowName || singleNamespaceData1?.flowName,
         isScheduled: true,
         mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
         type: scheduleStartFlow ? scheduleflowtypeMethod : type,
-        nameSpaceName: selectedNameSpace?.name,
+        nameSpaceName: selectedNameSpace?.name || singleNamespaceData1?.name,
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
         revert_local_changes: shouldRevertChanges,
         position: {
@@ -1139,6 +1159,7 @@ const Summary = () => {
       : scheduleFlowType === 'RUNNING'
         ? 'RUNNING'
         : '';
+
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -1146,10 +1167,10 @@ const Summary = () => {
     }));
     const payload = {
       version: versionSelected?.version,
-      flowId: selectedNameSpace?.flowId,
-      namespaceId: checkDestCluster?.id,
-      registryId: registryData?.id,
-      bucketId: selectedNameSpace?.bucketId,
+      flowId: selectedNameSpace?.flowId || singleNamespaceData1?.flowId,
+      namespaceId: checkDestCluster?.id || singleNamespaceData1?.id,
+      registryId: registryData?.id || singleNamespaceData1?.registryId,
+      bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
       namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
       revert_local_changes: shouldRevertChanges,
       payload: {
@@ -1159,10 +1180,10 @@ const Summary = () => {
         previousControllerServices: { localServicesData: filteredCSArrayDiff },
       },
       previousVersion: selectedNameSpace?.version || 1,
-      flowName: selectedNameSpace?.flowName,
+      flowName: selectedNameSpace?.flowName || singleNamespaceData1?.flowName,
       isScheduled: true,
       mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
-      nameSpaceName: selectedNameSpace?.name,
+      nameSpaceName: selectedNameSpace?.name || singleNamespaceData1?.name,
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       position: {
         x: XcordUpdated || selectedNameSpace?.position?.x,
@@ -1324,7 +1345,7 @@ const Summary = () => {
             :
             <MainTitleHfour className="mb-0">
               {!isUpgrade
-                ? selectedNameSpace.label
+                ? selectedNameSpace?.label
                 : formDataRegistry?.selectedFlowName}
             </MainTitleHfour>
           </MainTitleDiv>
@@ -1503,42 +1524,44 @@ const Summary = () => {
                   {isRegistryDeploy && (
                     <>
                       <UseColXl className="col-xl-4 col-6 mb-4 pb-1 row">
-                        <div className="summary-details d-flex">
-                          <SummaryDetailsHFourTag className="mb-2">
-                            <CheckboxField
-                              name="check"
-                              label="Sanity Check and Deployment"
-                              checked={sanityCheckAfterDeploy}
-                              onChange={e =>
-                                dispatch(
-                                  NamespacesActions.setSanityCheckAtDeploy(
-                                    e.target.checked
+                        {hasSanityCheckAccess === true && (
+                          <div className="summary-details d-flex">
+                            <SummaryDetailsHFourTag className="mb-2">
+                              <CheckboxField
+                                name="check"
+                                label="Sanity Check and Deployment"
+                                checked={sanityCheckAfterDeploy}
+                                onChange={e =>
+                                  dispatch(
+                                    NamespacesActions.setSanityCheckAtDeploy(
+                                      e.target.checked
+                                    )
                                   )
-                                )
+                                }
+                              />
+                            </SummaryDetailsHFourTag>
+                            <div
+                              className="d-flex align-items-center ms-2"
+                              data-tooltip-id={`sanity-check-info`}
+                            >
+                              <InfoIcon color={theme.colors.primary} />
+                            </div>
+                            <ReactTooltip
+                              id={`sanity-check-info`}
+                              place="bottom"
+                              effect="solid"
+                              content={
+                                'This deployment will be performed using the DFM (Data Flow Manager) UI in NiFi. Also upon deployment, it ensures that all processors remain in the STOPPED state and are not scheduled to run automatically'
                               }
+                              style={{
+                                width: '400px',
+                                whiteSpace: 'normal',
+                                wordWrap: 'break-word',
+                                zIndex: 10000,
+                              }}
                             />
-                          </SummaryDetailsHFourTag>
-                          <div
-                            className="d-flex align-items-center ms-2"
-                            data-tooltip-id={`sanity-check-info`}
-                          >
-                            <InfoIcon color={theme.colors.primary} />
                           </div>
-                          <ReactTooltip
-                            id={`sanity-check-info`}
-                            place="bottom"
-                            effect="solid"
-                            content={
-                              'This deployment will be performed using the DFM (Data Flow Manager) UI in NiFi. Also upon deployment, it ensures that all processors remain in the STOPPED state and are not scheduled to run automatically'
-                            }
-                            style={{
-                              width: '400px',
-                              whiteSpace: 'normal',
-                              wordWrap: 'break-word',
-                              zIndex: 10000,
-                            }}
-                          />
-                        </div>
+                        )}
                       </UseColXl>
                     </>
                   )}
