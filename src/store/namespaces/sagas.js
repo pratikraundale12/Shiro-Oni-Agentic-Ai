@@ -1240,6 +1240,13 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+  const scheduleStartFlow = yield select(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+  // Extract ID from current URL
+  const currentPath = window.location.pathname;
+  const urlId = currentPath.split('/').pop();
+
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1257,7 +1264,11 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: !isUpgrade ? selectedNamespace?.id : null,
+        namespaceId: scheduleStartFlow
+          ? urlId
+          : !isUpgrade
+            ? selectedNamespace?.id
+            : null,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,
         version: payload?.version,
@@ -1413,6 +1424,7 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  const formDataRegistry = yield select(NamespacesSelectors.getDeployFormData);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
 
@@ -1422,7 +1434,7 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
     apiMethod: api.fetchDuplicateScheduleData,
     apiParams: [
       {
-        flowId: payload?.flowId,
+        flowId: payload?.flowId || formDataRegistry?.flow_name,
       },
     ],
   });

@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
+import {
+  // useDispatch,
+  useSelector,
+} from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Button, SwitchButton } from '../../../shared';
 import PropTypes from 'prop-types';
-import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
+import {
+  // ClustersActions,
+  ClustersSelectors,
+} from '../../../store/clusters';
 import { InputField, PasswordField } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
@@ -13,7 +19,7 @@ import {
   CurvedProfileIcon,
   CircleExclamationMarkIcon,
 } from '../../../assets';
-import { isEmpty } from 'lodash';
+// import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
@@ -56,12 +62,13 @@ const FlexWrapper = styled.div`
 
 export const ClusterServiceAccountModal = ({
   tags,
-  hostToEdit,
+  // hostToEdit,
   clusterData,
   clusterId,
   data,
+  notificationEnable,
 }) => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [method, setMethod] = useState(
@@ -233,7 +240,7 @@ export const ClusterServiceAccountModal = ({
   }, [watchAllFields, changeRequestEnabled, method]);
 
   const handleSave = async () => {
-    const formData = new FormData();
+    // const formData = new FormData();
     const payloadData = {
       name: clusterData.clusterName,
       nifi_url: clusterData.nifiUrl,
@@ -241,7 +248,11 @@ export const ClusterServiceAccountModal = ({
       ...(clusterData.logs_url && { logs_url: clusterData.logs_url }),
       ...(clusterData.metrics_url && { metrics_url: clusterData.metrics_url }),
       tag: tags,
-      notification_enable: clusterData.notification_enable || false,
+      notification_enable:
+        notificationEnable ||
+        clusterData?.notification_enable ||
+        data?.notification_enable ||
+        false,
       has_custom_service_account: changeRequestEnabled ? true : false,
       service_account_type: 'username_password',
       service_username: watch('service_username'),
@@ -250,88 +261,88 @@ export const ClusterServiceAccountModal = ({
 
     const response = await updateCluster(clusterId, payloadData);
     console.log('Response:', response);
-    formData.append('name', clusterData.clusterName);
-    formData.append('nifi_url', clusterData.nifiUrl);
+    // formData.append('name', clusterData.clusterName);
+    // formData.append('nifi_url', clusterData.nifiUrl);
 
-    if (clusterData.registryId) {
-      formData.append('registry_id', clusterData.registryId);
-    }
+    // if (clusterData.registryId) {
+    //   formData.append('registry_id', clusterData.registryId);
+    // }
 
-    if (clusterData.logs_url) {
-      formData.append('logs_url', clusterData.logs_url);
-    }
+    // if (clusterData.logs_url) {
+    //   formData.append('logs_url', clusterData.logs_url);
+    // }
 
-    if (clusterData.metrics_url) {
-      formData.append('metrics_url', clusterData.metrics_url);
-    }
+    // if (clusterData.metrics_url) {
+    //   formData.append('metrics_url', clusterData.metrics_url);
+    // }
 
-    formData.append('tag', tags);
-    formData.append(
-      'notification_enable',
-      clusterData.notification_enable || false
-    );
-    formData.append('approver_enable', clusterData.approver_enable || false);
-    formData.append(
-      'change_request_enable',
-      clusterData.change_request_enable || false
-    );
+    // formData.append('tag', tags);
+    // formData.append(
+    //   'notification_enable',
+    //   clusterData.notification_enable || false
+    // );
+    // formData.append('approver_enable', clusterData.approver_enable || false);
+    // formData.append(
+    //   'change_request_enable',
+    //   clusterData.change_request_enable || false
+    // );
 
-    if (changeRequestEnabled) {
-      const saType =
-        method === 'username_password' ? 'username_password' : 'p12';
-      formData.append('service_account_type', saType);
+    // if (changeRequestEnabled) {
+    //   const saType =
+    //     method === 'username_password' ? 'username_password' : 'p12';
+    //   formData.append('service_account_type', saType);
 
-      if (method === 'username_password') {
-        formData.append('service_username', watch('service_username'));
-        formData.append('service_password', watch('service_password'));
-        formData.append('has_custom_service_account', 'true');
-        formData.append('service_account_certificate_password', '');
-        formData.append('service_account_certificate', '');
-      } else {
-        formData.append('service_username', '');
-        formData.append('service_password', '');
-        formData.append('has_custom_service_account', 'true');
-        formData.append(
-          'service_account_certificate_password',
-          watch('service_account_certificate_password')
-        );
-        formData.append(
-          'service_account_certificate',
-          watch('service_account_certificate')
-        );
-      }
-    } else {
-      formData.append('has_custom_service_account', 'false');
-      formData.append('service_account_type', 'username_password');
-      formData.append('service_username', '');
-      formData.append('service_password', '');
-      formData.append('service_account_certificate_password', '');
-      formData.append('service_account_certificate', '');
-    }
+    //   if (method === 'username_password') {
+    //     formData.append('service_username', watch('service_username'));
+    //     formData.append('service_password', watch('service_password'));
+    //     formData.append('has_custom_service_account', 'true');
+    //     formData.append('service_account_certificate_password', '');
+    //     formData.append('service_account_certificate', '');
+    //   } else {
+    //     formData.append('service_username', '');
+    //     formData.append('service_password', '');
+    //     formData.append('has_custom_service_account', 'true');
+    //     formData.append(
+    //       'service_account_certificate_password',
+    //       watch('service_account_certificate_password')
+    //     );
+    //     formData.append(
+    //       'service_account_certificate',
+    //       watch('service_account_certificate')
+    //     );
+    //   }
+    // } else {
+    //   formData.append('has_custom_service_account', 'false');
+    //   formData.append('service_account_type', 'username_password');
+    //   formData.append('service_username', '');
+    //   formData.append('service_password', '');
+    //   formData.append('service_account_certificate_password', '');
+    //   formData.append('service_account_certificate', '');
+    // }
 
-    if (!clusterId || !formData) {
-      console.error(
-        'ClusterServiceAccountModal: Missing clusterId or formData'
-      );
-      toast.error('Failed to save: Missing required data');
-      return;
-    }
+    // if (!clusterId || !formData) {
+    //   console.error(
+    //     'ClusterServiceAccountModal: Missing clusterId or formData'
+    //   );
+    //   toast.error('Failed to save: Missing required data');
+    //   return;
+    // }
 
-    if (isEmpty(hostToEdit)) {
-      dispatch(
-        ClustersActions.addServiceAccountHostRequest({
-          clusterId,
-          formData,
-        })
-      );
-    } else {
-      dispatch(
-        ClustersActions.updateServiceAccountHostRequest({
-          clusterId,
-          formData,
-        })
-      );
-    }
+    // if (isEmpty(hostToEdit)) {
+    //   dispatch(
+    //     ClustersActions.addServiceAccountHostRequest({
+    //       clusterId,
+    //       formData,
+    //     })
+    //   );
+    // } else {
+    //   dispatch(
+    //     ClustersActions.updateServiceAccountHostRequest({
+    //       clusterId,
+    //       formData,
+    //     })
+    //   );
+    // }
 
     navigate(-1);
   };
@@ -520,4 +531,5 @@ ClusterServiceAccountModal.propTypes = {
       PropTypes.bool,
     ]),
   }),
+  notificationEnable: PropTypes.bool,
 };
