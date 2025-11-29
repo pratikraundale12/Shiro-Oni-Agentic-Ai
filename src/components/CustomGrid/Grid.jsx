@@ -164,7 +164,7 @@ export const Grid = ({
   const [selectEvent, setSelectEvent] = useState(null);
   const [selectEntity, setSelectEntity] = useState(null);
   const registryNodesData = useSelector(ClustersSelectors.getRegistryNodesData);
-
+  const activeTabClusterView = useSelector(ClustersSelectors.getclusterViewTab);
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
 
@@ -279,8 +279,10 @@ export const Grid = ({
 
   const getNamespacesListData = () => {
     if (
-      (module === 'nodes' && !isClusterLoggedIn) ||
-      (module === 'nodes' && is_kube_cluster)
+      module === 'nodes' &&
+      !isClusterLoggedIn
+      // ||
+      // (module === 'nodes' && is_kube_cluster)
     ) {
       return;
     }
@@ -596,7 +598,7 @@ export const Grid = ({
       <div className="mb-2 ps-1">
         <Breadcrumb module={module} />
       </div>
-      {!is_kube_cluster && (
+      {activeTabClusterView === 'node' && (
         <TableContainer
           module={module}
           fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
@@ -614,7 +616,6 @@ export const Grid = ({
           )}
         </TableContainer>
       )}
-
       {gridCount >= 10 && (
         <Pagination
           page={currentPage}

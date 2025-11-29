@@ -4,15 +4,19 @@ import {
   ClustersActions,
   ClustersSelectors,
   LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
 } from '../../../store';
 import { FullPageLoader, Table } from '../../../components';
 import { useGlobalContext } from '../../../utils';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { BookIcon, NotePadIcon } from '../../../assets';
+import { BookIcon, InfoIcon, NotePadIcon } from '../../../assets';
 import { theme } from '../../../styles';
 import KubeClusterHealthMetrics from './KubeClusterHealthMetrics';
 import { isEmpty } from 'lodash';
+import { Button } from '../../../shared';
+import { SchedularSelectors } from '../../../store/schedular';
 const ActiveTd = styled.div`
   font-weight: var(--fw-500);
   line-height: 19.36px;
@@ -93,10 +97,11 @@ const renderStatus = status => {
   return <RedInactive redColor={theme.colors.primary}>{status}</RedInactive>;
 };
 const KubeClusterPodsAndMetrics = () => {
-  const [activeTab, setActiveTab] = useState('status');
   const dispatch = useDispatch();
   const podsList = useSelector(ClustersSelectors.getKubePods);
+  const activeTab = useSelector(ClustersSelectors.getclusterViewTab);
   const { state } = useGlobalContext();
+  const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   const COLUMNS = [
     {
@@ -171,18 +176,73 @@ const KubeClusterPodsAndMetrics = () => {
     }, 30000);
     return () => clearInterval(interval);
   }, [activeTab, state?.nodeClusterId, dispatch]);
+  const handleRestart = () => {
+    dispatch(
+      ClustersActions.restartCluster({
+        id: state.nodeClusterId,
+        payload: {},
+      })
+    );
+
+    if (loggedInCluster?.value == state.nodeClusterId) {
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
+  };
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchKubePodStatus')
   );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'restartCluster')
+  );
   return (
     <>
-      <FullPageLoader loading={loading && isEmpty(podsList)} />{' '}
+      <FullPageLoader
+        loading={(loading && isEmpty(podsList)) || loading2}
+        restartText={loading2}
+      />{' '}
+      <div className="row">
+        <div className="col-2">
+          <Button onClick={handleRestart}>Restart Cluster</Button>
+        </div>
+        <div
+          className="col-10 d-flex align-items-center"
+          style={{
+            fontWeight: '500',
+            fontSize: '16px',
+            color: theme.colors.primary,
+          }}
+        >
+          <InfoIcon color={theme.colors.primary} /> &nbsp; The cluster restart
+          will take approximately 5 minutes.
+        </div>
+      </div>
       <NavTabs id="nav-tab" role="tablist" className="mb-4">
+        <NavButton
+          active={activeTab === 'node'}
+          onClick={() => {
+            dispatch(ClustersActions.setclusterViewTab('node'));
+          }}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <NotePadIcon
+              color={activeTab === 'node' ? '#FF7A00' : '#444445'}
+              width={22}
+              height={22}
+            />
+            Nodes
+          </div>
+        </NavButton>
         <NavButton
           active={activeTab === 'status'}
           onClick={() => {
-            setActiveTab('status');
+            dispatch(ClustersActions.setclusterViewTab('status'));
           }}
         >
           <div className="d-flex align-items-center gap-2">
@@ -197,7 +257,7 @@ const KubeClusterPodsAndMetrics = () => {
         <NavButton
           active={activeTab === 'healthMetices'}
           onClick={() => {
-            setActiveTab('healthMetices');
+            dispatch(ClustersActions.setclusterViewTab('healthMetices'));
           }}
         >
           <div className="d-flex align-items-center gap-2">
