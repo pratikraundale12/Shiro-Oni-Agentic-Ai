@@ -23,6 +23,7 @@ import {
 } from '../../../store';
 import { FullPageLoader } from '../../../components';
 import KubeClusterConfigDetailsModal from './KubeClusterConfigdetailsModal';
+import { history } from '../../../helpers/history';
 const Container = styled.div`
   background-color: ${props => props.theme.colors.lightGrey};
   border-radius: 20px;
@@ -84,6 +85,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const configOptionsOnUpgrade = uniqBy(allconfigOptionsUnsorted, 'value');
   const configVerionsList = useSelector(ClustersSelectors.getkubConfigVersion);
   const azureCluster = useSelector(ClustersSelectors.getAzureCluster);
+  const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const recentSelectedCluster = useSelector(
     ClustersSelectors.getrecentClusterSelected
   );
@@ -494,6 +496,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
                 options={configVersionOption || []}
                 placeholder={'Select NiFi Configuration Version'}
                 required={true}
+                sortAlphabetically={false}
               />
             </div>
             <div className="col-6">
@@ -556,7 +559,17 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       </Container>
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
-          <Button variant="secondary" type="button" onClick={() => {}}>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => {
+              if (lastVisit === 'cluster') {
+                history.push(`/clusters`);
+              } else {
+                dispatch(ClustersActions.setActiveTabClusterSetup(lastVisit));
+              }
+            }}
+          >
             {KDFM.BACK}
           </Button>
 
