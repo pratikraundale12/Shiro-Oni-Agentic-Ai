@@ -5,7 +5,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import { InputField, Modal } from '../../shared';
 import { PropertyIcon } from '../../assets';
 import {
@@ -212,15 +211,6 @@ const FlowUploadModal = ({ setFlowUploadModalOpen, flowUploadModalOpen }) => {
       onRequestClose();
     }
   }, [uploadFlowState.success, dispatch]);
-
-  // Watch for upload errors
-  useEffect(() => {
-    if (uploadFlowState.error) {
-      toast.error(
-        uploadFlowState.error?.message || 'Upload failed. Please try again.'
-      );
-    }
-  }, [uploadFlowState.error]);
 
   // Reset upload flow state when component unmounts
   useEffect(() => {
