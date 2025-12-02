@@ -404,7 +404,8 @@ export const ListClusters = () => {
                             </Item>
                           )}
                           {item?.edit_cluster &&
-                            item?.created_by_ansible &&
+                            (item?.created_by_ansible ||
+                              item?.is_kube_cluster) &&
                             item?.status !== CLUSTER_STATUS.DISCONNECTED &&
                             !item?.registry_id && (
                               <Item
