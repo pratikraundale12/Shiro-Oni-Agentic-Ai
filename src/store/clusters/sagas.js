@@ -783,15 +783,38 @@ export function* fetchSSHstatus(api, { payload }) {
   }
 }
 export function* addNarFile(api, { payload }) {
+  const restartAfterUpload = yield select(
+    ClustersSelectors.getrestartClusterAfterAction
+  );
+
+  const loggedInCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const response = yield call(requestSaga, {
     errorSection: 'addNarFile',
     loadingSection: 'addNarFile',
     apiMethod: api.addNarFile,
     apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
   });
+
   if (response?.ok) {
     toast.success(response?.data?.message || 'Added Successfully');
     yield put(ClustersActions.fetchNarList(payload?.id));
+    if (restartAfterUpload) {
+      yield put(
+        ClustersActions.restartCluster({
+          id: payload?.id,
+          payload: {},
+        })
+      );
+      if (loggedInCluster?.value == payload?.id) {
+        yield put(
+          NamespacesActions.setSelectedCluster({
+            label: '',
+            value: '',
+          })
+        );
+        localStorage.removeItem('selected_cluster');
+      }
+    }
   } else {
     toast.error(response?.data?.message);
   }
@@ -892,6 +915,11 @@ export function* deleteClusterKube(api, { payload }) {
 }
 
 export function* deleteClusterNarFile(api, { payload }) {
+  const restartAfterUpload = yield select(
+    ClustersSelectors.getrestartClusterAfterAction
+  );
+
+  const loggedInCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const response = yield call(requestSaga, {
     errorSection: 'deleteClusterNarFile',
     loadingSection: 'deleteClusterNarFile',
@@ -905,6 +933,23 @@ export function* deleteClusterNarFile(api, { payload }) {
   });
   if (response?.ok) {
     yield put(ClustersActions.fetchNarList(payload?.id));
+    if (restartAfterUpload) {
+      yield put(
+        ClustersActions.restartCluster({
+          id: payload?.id,
+          payload: {},
+        })
+      );
+      if (loggedInCluster?.value == payload?.id) {
+        yield put(
+          NamespacesActions.setSelectedCluster({
+            label: '',
+            value: '',
+          })
+        );
+        localStorage.removeItem('selected_cluster');
+      }
+    }
   } else {
     toast.error(response?.data?.message);
   }

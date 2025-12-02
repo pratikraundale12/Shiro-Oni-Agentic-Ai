@@ -668,6 +668,7 @@ export const ListClusters = () => {
         created_by_ansible: item?.created_by_ansible,
         is_kube_cluster: item?.is_kube_cluster,
         isRegistrySecured: item?.isRegistrySecured,
+        nifi_version: item?.nifi_version,
       });
     }
     if (type === 'view') {
@@ -722,6 +723,7 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setRegistryNodesData({}));
     dispatch(ClustersActions.setClusterSetupSelectedNiFiVersion(null));
     dispatch(ClustersActions.setSshAddedStatus({}));
+    dispatch(ClustersActions.setNarList([]));
     return () => {
       dispatch(ClustersActions.setLastVisitedTab('cluster'));
     };

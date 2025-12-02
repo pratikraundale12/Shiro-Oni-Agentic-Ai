@@ -16,6 +16,7 @@ import {
   DeleteSmallIcon,
   InfoIcon,
   NotePadIcon,
+  RefreshIcon,
 } from '../../../assets';
 import {
   LoadingSelectors,
@@ -23,6 +24,7 @@ import {
   NamespacesSelectors,
 } from '../../../store';
 import { theme } from '../../../styles';
+import { useGlobalContext } from '../../../utils';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -74,9 +76,12 @@ export const ClusterCustomProcessor = ({ data }) => {
     LoadingSelectors.getLoading(state, 'deleteClusterNarFile')
   );
   const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const [restartImmediatlyModal, setRestartImmediatlyModal] = useState(false);
   const schema = yup.object().shape({
     nar_file: yup.mixed().required('File is required'),
   });
+  const { state } = useGlobalContext();
+
   const {
     watch,
     handleSubmit,
@@ -177,6 +182,31 @@ export const ClusterCustomProcessor = ({ data }) => {
       localStorage.removeItem('selected_cluster');
     }
   };
+  const handleOpenModal = () => {
+    setRestartImmediatlyModal(true);
+  };
+  const handleUploadWithNoRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(false));
+    handleSubmit(handleUpload)();
+    setRestartImmediatlyModal(false);
+  };
+  const handleUploadWithRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(true));
+    handleSubmit(handleUpload)();
+    setRestartImmediatlyModal(false);
+  };
+
+  //
+  const handleDeleteWithNoRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(false));
+    handleNarDeleteConfirm();
+    setIsDeleteModalOpen(false);
+  };
+  const handleDeleteWithRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(true));
+    handleNarDeleteConfirm();
+    setIsDeleteModalOpen(false);
+  };
   return (
     <>
       <FullPageLoader
@@ -199,9 +229,17 @@ export const ClusterCustomProcessor = ({ data }) => {
                   placeholder={'Upload nar file'}
                   errors={errors}
                   fileLable="Custom Nar file"
-                  validExtensionsArray={['.nar', '.py']}
-                  acceptString={'.nar,.py'}
-                  errorText={'Nar or py'}
+                  validExtensionsArray={
+                    Number(state?.nifi_version?.[0]) >= 2
+                      ? ['.nar', '.py']
+                      : ['.nar']
+                  }
+                  acceptString={
+                    Number(state?.nifi_version?.[0]) >= 2 ? '.nar,.py' : '.nar'
+                  }
+                  errorText={
+                    Number(state?.nifi_version?.[0]) >= 2 ? 'Nar or py' : 'Nar'
+                  }
                   key={fileInputKey}
                 />
               </ModalContainer>
@@ -214,7 +252,7 @@ export const ClusterCustomProcessor = ({ data }) => {
             <Button
               type="button"
               variant="primary"
-              onClick={handleSubmit(handleUpload)}
+              onClick={handleSubmit(handleOpenModal)}
             >
               Upload
             </Button>
@@ -253,7 +291,47 @@ export const ClusterCustomProcessor = ({ data }) => {
           isOpen={isDeleteModalOpen}
           onRequestClose={() => setIsDeleteModalOpen(false)}
           primaryText={`Are you sure you want to delete?`}
-          onSubmit={handleNarDeleteConfirm}
+          onSubmit={handleDeleteWithNoRestart}
+          tertiaryButton="true"
+          tertiaryButtonConfig={{
+            tertiaryButtonTest: 'Delete and Restart',
+            tertiaryButtonSubmit: handleDeleteWithRestart,
+          }}
+        />
+        <ModalWithIcon
+          title={
+            watch('nar_file')?.name?.includes('.py')
+              ? 'File Upload Confirmation'
+              : `Restart Confirmation`
+          }
+          primaryButtonText={'Upload'}
+          secondaryButtonText="Back"
+          tertiaryButton={!watch('nar_file')?.name?.includes('.py')}
+          tertiaryButtonConfig={{
+            tertiaryButtonTest: 'Upload and Restart',
+            tertiaryButtonSubmit: handleUploadWithRestart,
+          }}
+          icon={
+            <RefreshIcon
+              style={{ cursor: 'pointer' }}
+              width={50}
+              height={50}
+              color={theme.colors.primary}
+            />
+          }
+          isOpen={restartImmediatlyModal}
+          onRequestClose={() => setRestartImmediatlyModal(false)}
+          primaryText={
+            watch('nar_file')?.name?.includes('.py')
+              ? 'Do you want to upload file!'
+              : `Do you want to retart the cluster after upload!`
+          }
+          secondaryText={
+            watch('nar_file')?.name?.includes('.py')
+              ? ''
+              : 'Restart will reflect the changes on NiFi immediatly.'
+          }
+          onSubmit={handleUploadWithNoRestart}
         />
       </Container>
     </>
