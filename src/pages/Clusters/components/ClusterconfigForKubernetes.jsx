@@ -1,10 +1,9 @@
-/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { InfoIcon, NotePadIcon, QRIcons } from '../../../assets';
 import { Title } from './Title';
 import { history } from '../../../helpers/history';
-import { Button, InputField, Modal, SelectField } from '../../../shared';
+import { Button, InputField, SelectField } from '../../../shared';
 import { KDFM } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -164,6 +163,7 @@ const ClusterSetupNewConfigKubernetes = () => {
   });
 
   const clusterType = watch('cluster_type');
+  const registryEnabled = watch('registry_enabled');
 
   const handleAddConfig = async data => {
     if (!isEmpty(configToEdit)) {
@@ -264,6 +264,7 @@ const ClusterSetupNewConfigKubernetes = () => {
     yamlEditorValue &&
     updatedConfigKube?.updatedYaml &&
     yamlEditorValue.trim() !== updatedConfigKube?.updatedYaml.trim();
+
   useEffect(() => {
     if (!isEmpty(yamlValue)) {
       const value = yamlValue || configDefaultValue?.valuesYaml;
@@ -298,7 +299,10 @@ const ClusterSetupNewConfigKubernetes = () => {
       setValue('jvmMemory', parsedJson?.jvmMemory || parsedJson?.jvmMemory);
       setValue('properties_webProxyHost', parsedJson?.properties?.webProxyHost);
       setValue('ingress_hosts', parsedJson?.ingress?.hosts?.[0]);
-      setValue('registry_enabled', String(parsedJson?.registry?.enabled));
+      setValue(
+        'registry_enabled',
+        String(parsedJson?.registry?.enabled) === 'true' ? 'true' : 'false'
+      );
       setValue('registry_url', parsedJson?.registry?.url);
       setValue('registry_port', String(parsedJson?.registry?.port));
       setValue('resources_limits_cpu', parsedJson?.resources?.limits?.cpu);
@@ -330,11 +334,6 @@ const ClusterSetupNewConfigKubernetes = () => {
     }
   }, [parsedJson]);
 
-  const onError = errors => {
-    if (isEmpty(errors)) {
-      handleOpenEditor();
-    }
-  };
   const quickFieldChanged =
     parsedJson?.replicaCount == watch('replicaCount') &&
     parsedJson?.image?.tag == watch('image_tag') &&
@@ -353,7 +352,8 @@ const ClusterSetupNewConfigKubernetes = () => {
     parsedJson?.resources?.requests?.cpu == watch('resources_requests_cpu') &&
     parsedJson?.resources?.requests?.memory ==
       watch('resources_requests_memory') &&
-    String(parsedJson?.registry?.enabled) == watch('registry_enabled') &&
+    (String(parsedJson?.registry?.enabled) === 'true' ? 'true' : 'false') ==
+      watch('registry_enabled') &&
     parsedJson?.registry?.url == watch('registry_url') &&
     String(parsedJson?.registry?.port) == watch('registry_port') &&
     parsedJson?.registry?.resources?.limits?.cpu ==
@@ -369,6 +369,7 @@ const ClusterSetupNewConfigKubernetes = () => {
     let createValue = dirtyFields.ingress_hosts
       ? watch('ingress_hosts')
       : watch('ingress_hosts');
+    // eslint-disable-next-line no-unused-vars
     const commonValueIngress = isEmpty(configToEdit)
       ? createValue
       : Array.isArray(watch('ingress_hosts'))
@@ -386,6 +387,18 @@ const ClusterSetupNewConfigKubernetes = () => {
       registry_url: watch('registry_url'),
       registry_port: watch('registry_port'),
       registry_enabled: watch('registry_enabled'),
+      registry_resources_limits_cpu: watch('registry_resources_limits_cpu'),
+      registry_resources_limits_memory: watch(
+        'registry_resources_limits_memory'
+      ),
+      registry_resources_requests_cpu: watch('registry_resources_requests_cpu'),
+      registry_resources_requests_memory: watch(
+        'registry_resources_requests_memory'
+      ),
+      resources_limits_cpu: watch('resources_limits_cpu'),
+      resources_limits_memory: watch('resources_limits_memory'),
+      resources_requests_cpu: watch('resources_requests_cpu'),
+      resources_requests_memory: watch('resources_requests_memory'),
       ...(!isEmpty(watch('properties_webProxyHost')) && {
         properties_webProxyHost: watch('properties_webProxyHost'),
       }),
@@ -443,9 +456,41 @@ const ClusterSetupNewConfigKubernetes = () => {
       yamlParsedValue?.properties?.webProxyHost
     );
     setValue('ingress_hosts', yamlParsedValue?.ingress?.hosts);
-    setValue('registry_enabled', yamlParsedValue?.registry?.enabled);
+    setValue(
+      'registry_enabled',
+      String(yamlParsedValue?.registry?.enabled) === 'true' ? 'true' : 'false'
+    );
     setValue('registry_url', yamlParsedValue?.registry?.url);
     setValue('registry_port', yamlParsedValue?.registry?.port);
+    setValue(
+      'registry_resources_limits_cpu',
+      yamlParsedValue?.registry?.resources?.limits?.cpu
+    );
+    setValue(
+      'registry_resources_limits_memory',
+      yamlParsedValue?.registry?.resources?.limits?.memory
+    );
+    setValue(
+      'registry_resources_requests_cpu',
+      yamlParsedValue?.registry?.resources?.requests?.cpu
+    );
+    setValue(
+      'registry_resources_requests_memory',
+      yamlParsedValue?.registry?.resources?.requests?.memory
+    );
+    setValue('resources_limits_cpu', yamlParsedValue?.resources?.limits?.cpu);
+    setValue(
+      'resources_limits_memory',
+      yamlParsedValue?.resources?.limits?.memory
+    );
+    setValue(
+      'resources_requests_cpu',
+      yamlParsedValue?.resources?.requests?.cpu
+    );
+    setValue(
+      'resources_requests_memory',
+      yamlParsedValue?.resources?.requests?.memory
+    );
     setEditorModal(false);
   };
 
@@ -489,6 +534,13 @@ const ClusterSetupNewConfigKubernetes = () => {
                     cursor: 'pointer',
                   }}
                   onClick={handleOpenEditor}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleOpenEditor();
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
                 >
                   Edit YAML
                 </span>
@@ -505,6 +557,14 @@ const ClusterSetupNewConfigKubernetes = () => {
                     setEditorModal(false);
                     handleBack();
                   }}
+                  onKeyDown={event => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      setEditorModal(false);
+                      handleBack();
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
                 >
                   Edit in Quick Editor
                 </span>
@@ -685,41 +745,97 @@ const ClusterSetupNewConfigKubernetes = () => {
             </div>
             {/*  */}
             <div className="col-3">
-              <InputField
-                label={'Registry Enabled'}
+              <LabelSelect className="mb-3">Registry Enabled</LabelSelect>
+              <SelectField
                 name="registry_enabled"
-                type="text"
+                icon={<QRIcons />}
                 register={register}
                 errors={errors}
-                icon={<NotePadIcon />}
-                rightIcon={<InfoIcon />}
-                rightIconToolTipContent="Boolean flag to enable or disable NiFi Registry integration. Set to true to allow NiFi to communicate with a Registry for versioned flows; false disables Registry usage."
-              />
-            </div>{' '}
-            <div className="col-3">
-              <InputField
-                label={'Registry URL'}
-                name="registry_url"
-                type="text"
-                register={register}
-                errors={errors}
-                icon={<NotePadIcon />}
-                rightIcon={<InfoIcon />}
-                rightIconToolTipContent="URL or hostname of the NiFi Registry instance. This is where NiFi will push or fetch versioned flows."
+                control={control}
+                options={[
+                  { label: 'True', value: 'true' },
+                  { label: 'False', value: 'false' },
+                ]}
+                placeholder="Select Registry Enabled"
+                sortAlphabetically={false}
               />
             </div>
-            <div className="col-3">
-              <InputField
-                label={'Registry Port'}
-                name="registry_port"
-                type="text"
-                register={register}
-                errors={errors}
-                icon={<NotePadIcon />}
-                rightIcon={<InfoIcon />}
-                rightIconToolTipContent="Port number on which the NiFi Registry service is running. Default secure port is 18443 for HTTPS. Must match the port configured in the Registry deployment."
-              />
-            </div>
+            {registryEnabled === 'true' && (
+              <>
+                <div className="col-3">
+                  <InputField
+                    label={'Registry URL'}
+                    name="registry_url"
+                    type="text"
+                    register={register}
+                    errors={errors}
+                    icon={<NotePadIcon />}
+                    rightIcon={<InfoIcon />}
+                    rightIconToolTipContent="URL or hostname of the NiFi Registry instance. This is where NiFi will push or fetch versioned flows."
+                  />
+                </div>
+                <div className="col-3">
+                  <InputField
+                    label={'Registry Port'}
+                    name="registry_port"
+                    type="text"
+                    register={register}
+                    errors={errors}
+                    icon={<NotePadIcon />}
+                    rightIcon={<InfoIcon />}
+                    rightIconToolTipContent="Port number on which the NiFi Registry service is running. Default secure port is 18443 for HTTPS. Must match the port configured in the Registry deployment."
+                  />
+                </div>
+                <div className="col-3">
+                  <InputField
+                    label={'Registry CPU Limit'}
+                    name="registry_resources_limits_cpu"
+                    type="text"
+                    register={register}
+                    errors={errors}
+                    icon={<NotePadIcon />}
+                    rightIcon={<InfoIcon />}
+                    rightIconToolTipContent="The maximum CPU that the NiFi Registry container can use. Prevents the registry from consuming excessive compute resources."
+                  />
+                </div>{' '}
+                <div className="col-3">
+                  <InputField
+                    label={'Registry Memory Limit'}
+                    name="registry_resources_limits_memory"
+                    type="text"
+                    register={register}
+                    errors={errors}
+                    icon={<NotePadIcon />}
+                    rightIcon={<InfoIcon />}
+                    rightIconToolTipContent="The upper memory limit for the NiFi Registry container. Container will be terminated if it exceeds this memory."
+                  />
+                </div>{' '}
+                <div className="col-3">
+                  <InputField
+                    label={'Registry CPU Request'}
+                    name="registry_resources_requests_cpu"
+                    type="text"
+                    register={register}
+                    errors={errors}
+                    icon={<NotePadIcon />}
+                    rightIcon={<InfoIcon />}
+                    rightIconToolTipContent="The minimal CPU guaranteed for registry performance & availability. Helps scheduler choose the right node."
+                  />
+                </div>
+                <div className="col-3">
+                  <InputField
+                    label={'Registry Memory Request'}
+                    name="registry_resources_requests_memory"
+                    type="text"
+                    register={register}
+                    errors={errors}
+                    icon={<NotePadIcon />}
+                    rightIcon={<InfoIcon />}
+                    rightIconToolTipContent="The minimum RAM reserved for the NiFi Registry container to run smoothly. Pod will not start without this much memory available."
+                  />
+                </div>
+              </>
+            )}
             <div className="col-3">
               <InputField
                 label={'NIFi CPU Limit'}
@@ -766,55 +882,6 @@ const ClusterSetupNewConfigKubernetes = () => {
                 icon={<NotePadIcon />}
                 rightIcon={<InfoIcon />}
                 rightIconToolTipContent="The minimum amount of memory reserved for NiFi. Kubernetes guarantees this memory. If not enough memory is available, the pod won’t start."
-              />
-            </div>
-            {/*  */}
-            <div className="col-3">
-              <InputField
-                label={'Registry CPU Limit'}
-                name="registry_resources_limits_cpu"
-                type="text"
-                register={register}
-                errors={errors}
-                icon={<NotePadIcon />}
-                rightIcon={<InfoIcon />}
-                rightIconToolTipContent="The maximum CPU that the NiFi Registry container can use. Prevents the registry from consuming excessive compute resources."
-              />
-            </div>{' '}
-            <div className="col-3">
-              <InputField
-                label={'Registry Memory Limit'}
-                name="registry_resources_limits_memory"
-                type="text"
-                register={register}
-                errors={errors}
-                icon={<NotePadIcon />}
-                rightIcon={<InfoIcon />}
-                rightIconToolTipContent="The upper memory limit for the NiFi Registry container. Container will be terminated if it exceeds this memory."
-              />
-            </div>{' '}
-            <div className="col-3">
-              <InputField
-                label={'Registry CPU Request'}
-                name="registry_resources_requests_cpu"
-                type="text"
-                register={register}
-                errors={errors}
-                icon={<NotePadIcon />}
-                rightIcon={<InfoIcon />}
-                rightIconToolTipContent="The minimal CPU guaranteed for registry performance & availability. Helps scheduler choose the right node."
-              />
-            </div>
-            <div className="col-3">
-              <InputField
-                label={'Registry Memory Request'}
-                name="registry_resources_requests_memory"
-                type="text"
-                register={register}
-                errors={errors}
-                icon={<NotePadIcon />}
-                rightIcon={<InfoIcon />}
-                rightIconToolTipContent="The minimum RAM reserved for the NiFi Registry container to run smoothly. Pod will not start without this much memory available."
               />
             </div>
           </div>
