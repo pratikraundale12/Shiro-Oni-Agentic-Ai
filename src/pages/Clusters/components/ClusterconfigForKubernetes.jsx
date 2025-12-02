@@ -527,7 +527,7 @@ const ClusterSetupNewConfigKubernetes = () => {
             />
           </div>
           <div className="col-4">
-            <LabelSelect className="mb-3">Cluster type</LabelSelect>
+            <LabelSelect className="mb-3">Kubernetes cluster type</LabelSelect>
             <SelectField
               name="cluster_type"
               icon={<QRIcons />}
