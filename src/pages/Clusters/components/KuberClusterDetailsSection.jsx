@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import React, { useEffect, useMemo, useState } from 'react';
 import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
@@ -20,6 +19,8 @@ import {
   ClustersActions,
   ClustersSelectors,
   LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
 } from '../../../store';
 import { FullPageLoader } from '../../../components';
 import KubeClusterConfigDetailsModal from './KubeClusterConfigdetailsModal';
@@ -46,6 +47,7 @@ const LabelSelect = styled.div`
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
 `;
+// eslint-disable-next-line react/prop-types
 const KubeClusterDetailsSection = ({ activeTab }) => {
   const dispatch = useDispatch();
   const [formSchemaCluster, setFormSchemaCluster] = useState('eks');
@@ -84,7 +86,6 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const configOptions = uniqBy(configOptionsUnsorted, 'value');
   const configOptionsOnUpgrade = uniqBy(allconfigOptionsUnsorted, 'value');
   const configVerionsList = useSelector(ClustersSelectors.getkubConfigVersion);
-  const azureCluster = useSelector(ClustersSelectors.getAzureCluster);
   const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const recentSelectedCluster = useSelector(
     ClustersSelectors.getrecentClusterSelected
@@ -254,6 +255,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const configVersionValue = watch('configVersion');
   const nifiNamespaceName = watch('nifi_namespace');
   const schemaCluster = useMemo(() => clusterType, [clusterType]);
+  const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   useEffect(() => {
     setFormSchemaCluster(schemaCluster);
@@ -315,6 +317,15 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     }
 
     dispatch(ClustersActions.createKubernetesCluster(payload));
+    if (loggedInCluster?.value == kubeClusterIDEdit) {
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
   };
   useEffect(() => {
     if (!isEmpty(kubeClusterIDEdit)) {
