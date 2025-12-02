@@ -293,6 +293,7 @@ export const ClusterCustomProcessor = ({ data }) => {
           primaryText={`Are you sure you want to delete?`}
           onSubmit={handleDeleteWithNoRestart}
           tertiaryButton="true"
+          secondaryText="Restart will reflect the changes on NiFi immediatly."
           tertiaryButtonConfig={{
             tertiaryButtonTest: 'Delete and Restart',
             tertiaryButtonSubmit: handleDeleteWithRestart,
