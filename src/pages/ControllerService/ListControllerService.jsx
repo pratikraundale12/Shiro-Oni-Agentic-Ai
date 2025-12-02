@@ -31,7 +31,8 @@ import ConfigControllerService from './ConfigControllerService';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
 import { isEmpty } from 'lodash';
-import { SEARCH_INPUT_ERROR } from '../../constants';
+import { KDFM, SEARCH_INPUT_ERROR } from '../../constants';
+import { toast } from 'react-toastify';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -197,6 +198,28 @@ export const ListControllerService = () => {
     setIsEnableModalOpen(true);
   };
 
+  const fetchingClusters = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusters')
+  );
+  const [hasTriedFetchingClusters, setHasTriedFetchingClusters] =
+    useState(false);
+  useEffect(() => {
+    if (!fetchingClusters) {
+      setHasTriedFetchingClusters(true);
+    }
+  }, [fetchingClusters]);
+
+  useEffect(() => {
+    if (
+      hasTriedFetchingClusters &&
+      !fetchingClusters &&
+      isEmpty(selectedCluster?.value)
+    ) {
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
+    }
+  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
   const handleDeleteClick = item => {
     setSelectedItemFromList(item);
     setIsDeleteModalOpen(true);

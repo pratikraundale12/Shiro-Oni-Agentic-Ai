@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { PropertyIcon } from '../../assets';
@@ -8,11 +8,16 @@ import { CompareValidationIcon } from '../../assets/Icons/CompareValidationIcon'
 import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { NamespacesActions } from '../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { FlowValidationActions } from '../../store/flowValidation';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from '../Namespaces/ProcessGroupSorting';
 import AnalyzeNewFlow from './AnalyzeNewFlow';
+import { toast } from 'react-toastify';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -60,6 +65,30 @@ const FlowAnalysis = () => {
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
   }, []);
+
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const fetchingClusters = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusters')
+  );
+  const [hasTriedFetchingClusters, setHasTriedFetchingClusters] =
+    useState(false);
+  useEffect(() => {
+    if (!fetchingClusters) {
+      setHasTriedFetchingClusters(true);
+    }
+  }, [fetchingClusters]);
+
+  useEffect(() => {
+    if (
+      hasTriedFetchingClusters &&
+      !fetchingClusters &&
+      isEmpty(selectedCluster?.value)
+    ) {
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
+    }
+  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
 
   const handleEdit = item => {
     dispatch(FlowValidationActions.setSelectedItem(item));
