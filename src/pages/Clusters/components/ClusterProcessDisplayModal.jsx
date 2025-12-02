@@ -445,6 +445,10 @@ const deleteAKSClusterSteps = [
     status: 'completed',
   },
   {
+    step: 'Uninstalling Helm release nifi',
+    status: 'completed',
+  },
+  {
     step: 'Deleting NiFi workloads (STS/Deploy/SVC)',
     status: 'completed',
   },
