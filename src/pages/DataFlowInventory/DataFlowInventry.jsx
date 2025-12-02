@@ -13,7 +13,7 @@ import {
 import { AddsquareIcon } from '../../assets/Icons/AddSquareIcon';
 // import { DownloadIcon } from '../../assets/Icons/DownloadIcon';
 import { FullPageLoader } from '../../components';
-import { API_URL } from '../../constants';
+import { API_URL, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { AuthenticationSelectors, LoadingSelectors } from '../../store';
 import {
@@ -362,6 +362,28 @@ const DataFlowInventory = () => {
     setSelectedFlowByDefalut(option); // 👈 yahan pura option object rakho
     dispatch(FlowValidationActions.fetchFlows(option?.value));
   };
+  const fetchingClusters = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusters')
+  );
+  const [hasTriedFetchingClusters, setHasTriedFetchingClusters] =
+    useState(false);
+  useEffect(() => {
+    if (!fetchingClusters) {
+      setHasTriedFetchingClusters(true);
+    }
+  }, [fetchingClusters]);
+
+  useEffect(() => {
+    if (
+      hasTriedFetchingClusters &&
+      !fetchingClusters &&
+      isEmpty(selectedCluster?.value)
+    ) {
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
+    }
+  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
 
   useEffect(() => {
     if (!isEmpty(bucketListData)) {

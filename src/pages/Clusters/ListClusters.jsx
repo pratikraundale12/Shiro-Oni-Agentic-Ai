@@ -745,7 +745,7 @@ export const ListClusters = () => {
           setSelectedCluster({});
         }}
         primaryText={KDFM.HARD_DELETE_CLUSTER_WARNING}
-        secondaryText={'This is will clean the hosts of failed cluster'}
+        secondaryText={'This will clean the hosts of failed cluster'}
       />
       <ClusterRegistryAssociationModal
         selectedCluster={selectedCluster}

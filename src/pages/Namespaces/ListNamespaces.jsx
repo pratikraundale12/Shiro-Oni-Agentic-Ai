@@ -18,13 +18,16 @@ import {
   AuthenticationSelectors,
   ClustersActions,
   GridSelectors,
+  LoadingSelectors,
   NamespacesActions,
+  NamespacesSelectors,
 } from '../../store';
 import { FlowValidationActions } from '../../store/flowValidation';
 import { SchedularActions } from '../../store/schedular/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from './ProcessGroupSorting';
+import { toast } from 'react-toastify';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -95,6 +98,30 @@ export const ListNamespaces = () => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
   };
+
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const fetchingClusters = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusters')
+  );
+  const [hasTriedFetchingClusters, setHasTriedFetchingClusters] =
+    useState(false);
+  useEffect(() => {
+    if (!fetchingClusters) {
+      setHasTriedFetchingClusters(true);
+    }
+  }, [fetchingClusters]);
+
+  useEffect(() => {
+    if (
+      hasTriedFetchingClusters &&
+      !fetchingClusters &&
+      isEmpty(selectedCluster?.value)
+    ) {
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
+    }
+  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
 
   useEffect(() => {
     dispatch(SchedularActions.setScheduleFromList(false));
