@@ -149,6 +149,7 @@ const ClusterSetupNewConfigKubernetes = () => {
       .required('Persistence enabled is required'),
     dataStorage_size: yup.string().required('Data storage size is required'),
     jvmMemory: yup.string().required('jvmMemory value is required'),
+    cluster_type: yup.string().required('Kubernetes cluster type is required'),
   });
 
   const {
@@ -607,7 +608,7 @@ const ClusterSetupNewConfigKubernetes = () => {
                   },
                 ] || []
               }
-              placeholder={KDFM.SELECT_CONFIG_VERSION}
+              placeholder={'Select Kubernetes Cluster'}
               required={true}
               disabled={!isEmpty(configToEdit)}
             />
