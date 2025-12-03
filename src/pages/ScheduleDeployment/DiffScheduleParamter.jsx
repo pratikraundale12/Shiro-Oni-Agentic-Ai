@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { SchedularSelectors } from '../../store/schedular';
 import { useSelector } from 'react-redux';
@@ -64,91 +65,120 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 //
-const DiffScheduleParameter = () => {
+const DiffScheduleParameter = ({
+  parametersData,
+  isFromDeploySummary = false,
+}) => {
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
+  const data = scheduleDiffData?.diffParameters || parametersData;
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {scheduleDiffData?.diffParameters?.map(element => (
+        {data?.map(element => (
           <div className="mt-4" key={element?.parameterName}>
             <PgHead className="mb-2">{element?.parameterName}</PgHead>
             <GreyBoxNamespace>
-              <div className="d-flex mb-3">
-                <TileHeader className="col-3"></TileHeader>
-                <TileHeader className="col-5">New</TileHeader>
-                <TileHeader className="col-4">Current</TileHeader>
-              </div>
-              {element?.parameters?.map(item => (
-                <div className="row" key={item?.name}>
-                  <TileHeader
-                    style={{
-                      backgroundColor: '#E9ECF1',
-                      height: '30px',
-                      color: theme.colors.primary,
-                    }}
-                    className="d-flex align-items-center"
-                  >
-                    <span className="">{item?.name}</span>
-                  </TileHeader>
-                  {(item?.new_value?.value || item?.old_value?.value) && (
-                    <div className="d-flex">
-                      <TileHeader className="col-3 d-flex align-items-center">
-                        Value
-                      </TileHeader>
-                      <TileItem className="col-5">
-                        <div
-                          style={{
-                            backgroundColor: '#E9ECF1',
-                            borderRadius: '12px',
-                            margin: '2px 0px 1px 0px',
-                          }}
-                          className="p-2 me-2"
-                        >
-                          {item?.new_value?.value || 'N/A'}
-                        </div>
-                      </TileItem>
-                      <TileItem className="col-4 d-flex align-items-center">
-                        {item?.old_value?.value || 'N/A'}
-                      </TileItem>
-                    </div>
-                  )}
-                  {(item?.new_value?.description ||
-                    item?.old_value?.description) && (
-                    <div className="d-flex">
-                      <TileHeader className="col-3 d-flex align-items-center">
-                        Description
-                      </TileHeader>
-                      <TileItem className="col-5">
-                        <div
-                          style={{
-                            backgroundColor: '#E9ECF1',
-                            borderRadius: '12px',
-                            margin: '1px 0px 2px 0px',
-                          }}
-                          className="p-2 me-2"
-                        >
-                          {item?.new_value?.description || 'N/A'}
-                        </div>
-                      </TileItem>
-                      <TileItem className="col-4 d-flex align-items-center">
-                        {item?.old_value?.description || 'N/A'}
-                      </TileItem>
-                    </div>
-                  )}
+              {!isFromDeploySummary && (
+                <div className="d-flex mb-3">
+                  <TileHeader className="col-3"></TileHeader>
+                  <TileHeader className="col-5">New</TileHeader>
+                  <TileHeader className="col-4">Current</TileHeader>
                 </div>
-              ))}
+              )}
+              {element?.parameters?.map(item => {
+                const value =
+                  item?.value === ''
+                    ? 'Empty String Set'
+                    : item?.value === null
+                      ? 'No Value set'
+                      : item?.value;
+                return (
+                  <div className="row" key={item?.name}>
+                    <TileHeader
+                      style={{
+                        backgroundColor: '#E9ECF1',
+                        height: '30px',
+                        color: theme.colors.primary,
+                      }}
+                      className="d-flex align-items-center"
+                    >
+                      <span className="">{item?.name}</span>
+                    </TileHeader>
+                    {(item?.new_value?.value ||
+                      item?.old_value?.value ||
+                      value !== 'N/A') && (
+                      <div className="d-flex">
+                        <TileHeader className="col-3 d-flex align-items-center">
+                          Value
+                        </TileHeader>
+                        <TileItem className="col-5">
+                          <div
+                            style={{
+                              backgroundColor: '#E9ECF1',
+                              borderRadius: '12px',
+                              margin: '2px 0px 1px 0px',
+                            }}
+                            className="p-2 me-2"
+                          >
+                            {isFromDeploySummary
+                              ? value
+                              : item?.new_value?.value || 'N/A'}
+                          </div>
+                        </TileItem>
+                        {!isFromDeploySummary && (
+                          <TileItem className="col-4 d-flex align-items-center">
+                            {item?.old_value?.value || 'N/A'}
+                          </TileItem>
+                        )}
+                      </div>
+                    )}
+                    {(item?.new_value?.description ||
+                      item?.old_value?.description ||
+                      item?.description) && (
+                      <div className="d-flex">
+                        <TileHeader className="col-3 d-flex align-items-center">
+                          Description
+                        </TileHeader>
+                        <TileItem className="col-5">
+                          <div
+                            style={{
+                              backgroundColor: '#E9ECF1',
+                              borderRadius: '12px',
+                              margin: '1px 0px 2px 0px',
+                            }}
+                            className="p-2 me-2"
+                          >
+                            {isFromDeploySummary
+                              ? item?.description
+                              : item?.new_value?.description || 'N/A'}
+                          </div>
+                        </TileItem>
+                        {!isFromDeploySummary && (
+                          <TileItem className="col-4 d-flex align-items-center">
+                            {item?.old_value?.description || 'N/A'}
+                          </TileItem>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </GreyBoxNamespace>
           </div>
         ))}
-        {isEmpty(scheduleDiffData?.diffParameters) && (
-          <div className="d-flex flex-column align-items-center mt-5">
-            <NoDataIcon width={130} />
-            <NoDataText>No Data Found!!</NoDataText>
-          </div>
-        )}
+        {isEmpty(scheduleDiffData?.diffParameters) &&
+          isEmpty(parametersData) && (
+            <div className="d-flex flex-column align-items-center mt-5">
+              <NoDataIcon width={130} />
+              <NoDataText>No Data Found!!</NoDataText>
+            </div>
+          )}
       </ScrollSetGrey>
     </DataWrapper>
   );
 };
-DiffScheduleParameter.propTypes = {};
+DiffScheduleParameter.propTypes = {
+  parametersData: PropTypes.array,
+  isFromDeploySummary: PropTypes.bool,
+};
 export default DiffScheduleParameter;

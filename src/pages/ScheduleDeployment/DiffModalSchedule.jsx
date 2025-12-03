@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { KDFM } from '../../constants';
@@ -6,10 +7,10 @@ import { Modal } from '../../shared';
 import { ActivityHistorySelectors } from '../../store/activityHistory';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
-import DiffModalFlowValidation from './DiffModalFlowValidation';
 import DiffScheduleCS from './DiffScheduleControllerService';
 import DiffScheduleParameter from './DiffScheduleParamter';
 import DiffScheduleVariables from './DiffScheduleVariables';
+import DiffLocalChanges from './DiffLocalChanges';
 const GreyBoxNamespace = styled.div`
   padding: 5px 10px 0px 10px;
   border-radius: 20px;
@@ -56,13 +57,28 @@ export const DiffModalScheduleList = props => {
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
-        return <DiffScheduleParameter />;
+        return (
+          <DiffScheduleParameter
+            isFromDeploySummary={props?.isFromDeploySummary || false}
+            parametersData={props?.parametersData}
+          />
+        );
       case KDFM.VARIABLES:
-        return <DiffScheduleVariables />;
+        return (
+          <DiffScheduleVariables
+            isFromDeploySummary={props?.isFromDeploySummary || false}
+            variablesData={props?.variablesData}
+          />
+        );
       case KDFM.CONTROLLER_SERVICE:
-        return <DiffScheduleCS />;
-      case 'Flow Validation':
-        return <DiffModalFlowValidation />;
+        return (
+          <DiffScheduleCS
+            isFromDeploySummary={props?.isFromDeploySummary || false}
+            csData={props?.csData}
+          />
+        );
+      case 'Local Changes':
+        return <DiffLocalChanges />;
       default:
         return null;
     }
@@ -71,6 +87,7 @@ export const DiffModalScheduleList = props => {
   const closeModal = () => {
     dispatch(SchedularActions.setDiffAllData({}));
     dispatch(SchedularActions.setIsDiffModalOpen(false));
+    props?.setIsModalOpen && props?.setIsModalOpen(false);
     setActiveTab(KDFM.PARAMETER_CONTEXT);
   };
   const handleSetTab = tab => {
@@ -80,8 +97,11 @@ export const DiffModalScheduleList = props => {
     <div {...props}>
       <Modal
         size="lg"
-        title={`${selectedSchedule?.namespace_name || selectedItem?.namespace} : Schedule Deployment Changes`}
-        isOpen={modalOpen}
+        title={
+          props?.title ||
+          `${selectedSchedule?.namespace_name || selectedItem?.namespace} : Schedule Deployment Changes`
+        }
+        isOpen={props?.isModalOpen || modalOpen}
         onRequestClose={closeModal}
         primaryButtonText="Close"
         onSubmit={() => closeModal()}
@@ -101,7 +121,7 @@ export const DiffModalScheduleList = props => {
                 color: '#444445',
               }}
             >
-              {scheduleDiffData?.versionDetailText}
+              {props?.versionText || scheduleDiffData?.versionDetailText}
             </div>
           </div>
 
@@ -140,4 +160,15 @@ export const DiffModalScheduleList = props => {
       </Modal>
     </div>
   );
+};
+
+DiffModalScheduleList.propTypes = {
+  versionText: PropTypes.string,
+  title: PropTypes.string,
+  isModalOpen: PropTypes.bool,
+  setIsModalOpen: PropTypes.func,
+  isFromDeploySummary: PropTypes.bool,
+  parametersData: PropTypes.array,
+  variablesData: PropTypes.array,
+  csData: PropTypes.array,
 };

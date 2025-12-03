@@ -53,9 +53,6 @@ const KubeClusterConfigDetailsModal = ({
   const azureCluster = useSelector(ClustersSelectors.getAzureCluster);
   const azureTestPassed = useSelector(ClustersSelectors.getazureTestPassed);
 
-  console.log(azureCluster, 'azureClustermodal');
-  // console.log(kubeClusterIDEdit, 'kubeClusterIDEdit');
-
   const onRequestClose = () => {
     setOpenAddConfigModal(false);
   };
