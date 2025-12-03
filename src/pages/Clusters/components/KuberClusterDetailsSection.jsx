@@ -246,7 +246,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     reset,
   } = useForm({
     resolver: yupResolver(schemaForm),
-    defaultValues: { cluster_type: 'eks', nifi_namespace: 'nifi' },
+    defaultValues: { cluster_type: 'aks', nifi_namespace: 'nifi' },
   });
   const configNameValue = watch('configName');
   const clusterType = watch('cluster_type');

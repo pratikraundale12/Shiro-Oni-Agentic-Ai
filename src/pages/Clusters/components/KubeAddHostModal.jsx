@@ -54,7 +54,9 @@ const LabelSelect = styled.div`
 export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
   const dispatch = useDispatch();
   const isModalOpen = useSelector(ClustersSelectors.getkubeHostModalOpen);
-
+  const recentSelectedCluster = useSelector(
+    ClustersSelectors.getrecentClusterSelected
+  );
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
   );
@@ -116,6 +118,13 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
       }
     }
   }, [isModalOpen]);
+  useEffect(() => {
+    if (!isEmpty(recentSelectedCluster)) {
+      setValue('cluster_type', recentSelectedCluster);
+    } else {
+      setValue('cluster_type', 'aks');
+    }
+  }, [recentSelectedCluster]);
   return (
     <>
       <FullPageLoader loading={loading} />
@@ -166,7 +175,7 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
                     },
                   ] || []
                 }
-                placeholder={'Select Cluster'}
+                placeholder={'Select Kubernetes Cluster'}
                 required={true}
               />
             </div>
