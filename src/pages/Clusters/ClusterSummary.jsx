@@ -118,6 +118,7 @@ export const ClusterSummary = () => {
 
   const handleBackAction = () => {
     history.push('/clusters');
+    dispatch(ClustersActions.setclusterViewTab('node'));
   };
   useEffect(() => {
     dispatch(ClustersActions.fetchClusterRegistryNodes(clusterId));

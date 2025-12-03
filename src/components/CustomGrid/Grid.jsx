@@ -556,6 +556,13 @@ export const Grid = ({
       </>
     );
   };
+  function tableDispaly(module, activeTabClusterView) {
+    if (module === 'nodes') {
+      return activeTabClusterView === 'node';
+    }
+    return true;
+  }
+
   return (
     <Container>
       {!is_kube_cluster && (
@@ -598,7 +605,7 @@ export const Grid = ({
       <div className="mb-2 ps-1">
         <Breadcrumb module={module} />
       </div>
-      {activeTabClusterView === 'node' && (
+      {tableDispaly(module, activeTabClusterView) && (
         <TableContainer
           module={module}
           fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}

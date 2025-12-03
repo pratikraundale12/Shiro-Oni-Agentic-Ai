@@ -194,7 +194,7 @@ const SpanEle = styled.span`
 // };
 
 export const GridActions = ({
-  title,
+  title = '',
   module,
   statusOptions,
   search,
