@@ -206,6 +206,15 @@ const ClusterSetupNewConfigKubernetes = () => {
         registry_url: data?.registry_url,
         registry_port: data?.registry_port,
         registry_enabled: data?.registry_enabled,
+        ...(data?.registry_enabled !== 'true' && {
+          initContainers: {},
+          extraVolumeMounts: [],
+          extraVolumes: [],
+          registry_enabled: false,
+          registry_certManager_enabled: false,
+          registry_initContainers: {},
+          registry_presistence_enabled: false,
+        }),
 
         //
         resources_limits_cpu: data?.resources_limits_cpu,
