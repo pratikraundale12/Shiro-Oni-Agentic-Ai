@@ -475,6 +475,7 @@ export const ClusterProcessDisplayModal = ({
   setSelectedCluster,
   selectedCluster,
   sortingState,
+  itemPerClusterList,
 }) => {
   const dispatch = useDispatch();
   const [isCompleted, setIsCompleted] = useState(false);
@@ -651,7 +652,7 @@ export const ClusterProcessDisplayModal = ({
     dispatch(
       GridActions.fetchGrid({
         module: 'clusters',
-        params: { page: 1, limit: 10, sort: 'name' },
+        params: { page: 1, limit: itemPerClusterList, sort: 'name' },
         ...(sortingState && {
           sort: sortingState,
         }),
@@ -802,7 +803,7 @@ export const ClusterProcessDisplayModal = ({
     dispatch(
       GridActions.fetchGrid({
         module: 'clusters',
-        params: { page: 1, limit: 10, sort: 'name' },
+        params: { page: 1, limit: itemPerClusterList, sort: 'name' },
         ...(sortingState && {
           sort: sortingState,
         }),
