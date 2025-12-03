@@ -835,6 +835,7 @@ export const ListClusters = () => {
         setSelectedCluster={setSelectedCluster}
         selectedCluster={selectedCluster}
         sortingState={sortingState}
+        itemPerClusterList={itemPerClusterList}
       />
     </>
   );
