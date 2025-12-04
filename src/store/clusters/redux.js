@@ -204,6 +204,9 @@ export const ClustersActions = {
   setrestartClusterAfterAction: createAction(
     `${prefix}setrestartClusterAfterAction`
   ),
+  setRestartDelayLoadingState: createAction(
+    `${prefix}setRestartDelayLoadingState`
+  ),
 };
 /* ------------- INITIAL STATE ------------- */
 export const CLUSTERS_INITIAL_STATE = {
@@ -277,6 +280,7 @@ export const CLUSTERS_INITIAL_STATE = {
   recentClusterSelected: null,
   clusterViewTab: 'node',
   restartClusterAfterAction: false,
+  restartDelayLoadingState: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -368,6 +372,7 @@ export const ClustersSelectors = {
   getclusterViewTab: state => state.clusters.clusterViewTab,
   getrestartClusterAfterAction: state =>
     state.clusters.restartClusterAfterAction,
+  getrestartDelayLoadingState: state => state.clusters.restartDelayLoadingState,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -816,6 +821,12 @@ const setrestartClusterAfterAction = (state, { payload }) => {
     restartClusterAfterAction: payload,
   };
 };
+const setRestartDelayLoadingState = (state, { payload }) => {
+  return {
+    ...state,
+    restartDelayLoadingState: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -996,6 +1007,10 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setrestartClusterAfterAction,
         setrestartClusterAfterAction
+      )
+      .addCase(
+        ClustersActions.setRestartDelayLoadingState,
+        setRestartDelayLoadingState
       );
   }
 );

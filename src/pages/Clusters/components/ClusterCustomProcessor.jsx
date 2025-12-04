@@ -76,6 +76,8 @@ export const ClusterCustomProcessor = ({ data }) => {
     LoadingSelectors.getLoading(state, 'deleteClusterNarFile')
   );
   const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const loading5 = useSelector(ClustersSelectors.getrestartDelayLoadingState);
+
   const [restartImmediatlyModal, setRestartImmediatlyModal] = useState(false);
   const schema = yup.object().shape({
     nar_file: yup.mixed().required('File is required'),
@@ -87,6 +89,7 @@ export const ClusterCustomProcessor = ({ data }) => {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -158,6 +161,7 @@ export const ClusterCustomProcessor = ({ data }) => {
     let payload = { payload: payloadFile, id: data?.id };
     dispatch(ClustersActions.addNarFile(payload));
     setFileInputKey(prev => prev + 1);
+    reset();
   };
 
   useEffect(() => {
@@ -166,6 +170,7 @@ export const ClusterCustomProcessor = ({ data }) => {
     }
   }, [data?.id]);
   const handleRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(false));
     dispatch(
       ClustersActions.restartCluster({
         id: data?.id,
@@ -210,7 +215,7 @@ export const ClusterCustomProcessor = ({ data }) => {
   return (
     <>
       <FullPageLoader
-        loading={loading || loading2 || loading3 || loading4}
+        loading={loading || loading2 || loading3 || loading4 || loading5}
         restartText={loading2}
       />
 

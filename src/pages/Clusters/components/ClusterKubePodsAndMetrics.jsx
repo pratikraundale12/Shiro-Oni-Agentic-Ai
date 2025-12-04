@@ -177,6 +177,7 @@ const KubeClusterPodsAndMetrics = () => {
     return () => clearInterval(interval);
   }, [activeTab, state?.nodeClusterId, dispatch]);
   const handleRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(false));
     dispatch(
       ClustersActions.restartCluster({
         id: state.nodeClusterId,
