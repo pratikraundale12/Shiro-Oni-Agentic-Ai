@@ -725,6 +725,7 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setClusterSetupSelectedNiFiVersion(null));
     dispatch(ClustersActions.setSshAddedStatus({}));
     dispatch(ClustersActions.setNarList([]));
+    dispatch(ClustersActions.setclusterViewTab('node'));
     return () => {
       dispatch(ClustersActions.setLastVisitedTab('cluster'));
     };
