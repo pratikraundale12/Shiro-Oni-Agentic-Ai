@@ -73,6 +73,7 @@ export const DriversCluster = ({ data }) => {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -131,6 +132,7 @@ export const DriversCluster = ({ data }) => {
     let payload = { payload: payloadFile, id: data?.id };
     dispatch(ClustersActions.uploadClusterDriver(payload));
     setFileInputKey(prev => prev + 1);
+    reset();
   };
 
   useEffect(() => {
