@@ -797,7 +797,7 @@ export function* addNarFile(api, { payload }) {
 
   if (response?.ok) {
     toast.success(response?.data?.message || 'Added Successfully');
-    yield put(ClustersActions.fetchNarList(payload?.id));
+
     if (restartAfterUpload) {
       yield put(
         ClustersActions.restartCluster({
@@ -814,6 +814,8 @@ export function* addNarFile(api, { payload }) {
         );
         localStorage.removeItem('selected_cluster');
       }
+    } else {
+      yield put(ClustersActions.fetchNarList(payload?.id));
     }
   } else {
     toast.error(response?.data?.message);
@@ -839,6 +841,9 @@ export function* fetchNarList(api, { payload }) {
 }
 
 export function* restartCluster(api, { payload }) {
+  const restartAfterUpload = yield select(
+    ClustersSelectors.getrestartClusterAfterAction
+  );
   const response = yield call(requestSaga, {
     errorSection: 'restartCluster',
     loadingSection: 'restartCluster',
@@ -847,6 +852,9 @@ export function* restartCluster(api, { payload }) {
   });
   if (response?.ok) {
     toast.success(response?.data?.message || 'Added Successfully');
+    if (restartAfterUpload) {
+      yield put(ClustersActions.fetchNarList(payload?.id));
+    }
     // yield put(ClustersActions.fetchNarList(payload?.id));
   } else {
     toast.error(response?.data?.error);

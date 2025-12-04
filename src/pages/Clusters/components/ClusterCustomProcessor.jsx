@@ -166,6 +166,7 @@ export const ClusterCustomProcessor = ({ data }) => {
     }
   }, [data?.id]);
   const handleRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(false));
     dispatch(
       ClustersActions.restartCluster({
         id: data?.id,
