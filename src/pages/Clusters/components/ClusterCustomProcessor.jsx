@@ -76,7 +76,7 @@ export const ClusterCustomProcessor = ({ data }) => {
     LoadingSelectors.getLoading(state, 'deleteClusterNarFile')
   );
   const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  const loading5 = useSelector(NamespacesSelectors.getrestartDelayLoadingState);
+  const loading5 = useSelector(ClustersSelectors.getrestartDelayLoadingState);
 
   const [restartImmediatlyModal, setRestartImmediatlyModal] = useState(false);
   const schema = yup.object().shape({
