@@ -74,6 +74,7 @@ export const ClusterCustomScript = ({ data }) => {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -139,6 +140,7 @@ export const ClusterCustomScript = ({ data }) => {
     let payload = { payload: payloadFile, id: data?.id };
     dispatch(ClustersActions.addScript(payload));
     setFileInputKey(prev => prev + 1);
+    reset();
   };
 
   useEffect(() => {
