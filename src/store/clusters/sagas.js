@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { all, call, put, select, takeLatest } from 'redux-saga/effects';
+import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
@@ -841,6 +841,7 @@ export function* fetchNarList(api, { payload }) {
 }
 
 export function* restartCluster(api, { payload }) {
+  yield put(ClustersActions.setRestartDelayLoadingState(true));
   const restartAfterUpload = yield select(
     ClustersSelectors.getrestartClusterAfterAction
   );
@@ -853,7 +854,9 @@ export function* restartCluster(api, { payload }) {
   if (response?.ok) {
     toast.success(response?.data?.message || 'Added Successfully');
     if (restartAfterUpload) {
+      yield delay(10000);
       yield put(ClustersActions.fetchNarList(payload?.id));
+      yield put(ClustersActions.setRestartDelayLoadingState(false));
     }
     // yield put(ClustersActions.fetchNarList(payload?.id));
   } else {
