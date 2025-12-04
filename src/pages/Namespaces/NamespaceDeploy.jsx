@@ -1,6 +1,6 @@
 /*eslint-disable*/
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -12,10 +12,17 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
-import { KDFM } from '../../constants';
+import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Modal } from '../../shared';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
+import { isEmpty } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -194,10 +201,54 @@ const NamespaceDeploy = ({
   const currentSelectedCluster = useSelector(
     NamespacesSelectors.getSelectedCluster
   );
+
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
+  useEffect(() => {
+    if (
+      !isEmpty(currentUser?.permissions) &&
+      currentUser?.permissions?.includes('view_cluster')
+    ) {
+      dispatch(ClustersActions.fetchClusters());
+    }
+  }, [currentUser?.permissions, dispatch]);
+
+  const clusters = useSelector(ClustersSelectors.getAllClustersList);
+  const selectedCluster = clusters.find(
+    cluster => cluster.id === currentSelectedCluster.value
+  );
+
   const handleClick = () => {
-    const updatedUrl = deployOrUpgradeDetails?.nifiUrl?.endsWith('/nifi')
-      ? `${deployOrUpgradeDetails.nifiUrl}?processGroupId=${deployOrUpgradeDetails?.id}`
-      : `${deployOrUpgradeDetails.nifiUrl}/nifi?processGroupId=${deployOrUpgradeDetails?.id}`;
+    if (!deployOrUpgradeDetails?.nifiUrl || !deployOrUpgradeDetails?.id) {
+      console.warn('Cannot navigate: Missing NiFi URL or Process Group ID');
+      return;
+    }
+
+    let nifiBaseUrl = deployOrUpgradeDetails.nifiUrl;
+
+    if (nifiBaseUrl.endsWith('/')) {
+      nifiBaseUrl = nifiBaseUrl.slice(0, -1);
+    }
+
+    if (!nifiBaseUrl.endsWith('/nifi')) {
+      nifiBaseUrl = `${nifiBaseUrl}/nifi`;
+    }
+
+    const nifiVersion = selectedCluster?.nifi_version;
+    let isV2OrAbove = false;
+
+    if (nifiVersion) {
+      const majorVersion = parseInt(nifiVersion.split('.')[0], 10);
+      if (!isNaN(majorVersion) && majorVersion >= 2) {
+        isV2OrAbove = true;
+      }
+    }
+    let updatedUrl = '';
+
+    if (isV2OrAbove) {
+      updatedUrl = `${nifiBaseUrl}/#/process-groups/${deployOrUpgradeDetails.id}`;
+    } else {
+      updatedUrl = `${nifiBaseUrl}/?processGroupId=${deployOrUpgradeDetails.id}`;
+    }
 
     window.open(updatedUrl, '_blank');
   };
