@@ -223,7 +223,6 @@ const ClusterNavigationTab = ({
       {state?.is_kube_cluster && (
         <>
           <NavButton
-            active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS}
             onClick={() => {
               if (state?.is_kube_cluster) {
                 dispatch(ClustersActions.setCreateClusterMethod('Kubernetes'));
