@@ -302,6 +302,10 @@ const KubeClusterHealthMetrics = ({ podsList, clusterId }) => {
     }
   }, [podValue]);
 
+  useEffect(() => {
+    dispatch(ClustersActions.fetchKubePodStatus(clusterId));
+  }, [dispatch]);
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchKubeHealth')
   );
