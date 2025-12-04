@@ -89,6 +89,7 @@ export const ClusterCustomProcessor = ({ data }) => {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -160,6 +161,7 @@ export const ClusterCustomProcessor = ({ data }) => {
     let payload = { payload: payloadFile, id: data?.id };
     dispatch(ClustersActions.addNarFile(payload));
     setFileInputKey(prev => prev + 1);
+    reset();
   };
 
   useEffect(() => {
