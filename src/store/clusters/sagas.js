@@ -943,7 +943,6 @@ export function* deleteClusterNarFile(api, { payload }) {
     ],
   });
   if (response?.ok) {
-    yield put(ClustersActions.fetchNarList(payload?.id));
     if (restartAfterUpload) {
       yield put(
         ClustersActions.restartCluster({
@@ -960,6 +959,8 @@ export function* deleteClusterNarFile(api, { payload }) {
         );
         localStorage.removeItem('selected_cluster');
       }
+    } else {
+      yield put(ClustersActions.fetchNarList(payload?.id));
     }
   } else {
     toast.error(response?.data?.message);
