@@ -493,6 +493,10 @@ export const Grid = ({
               handleCert={() =>
                 dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true))
               }
+              showRegistryDownload={
+                registryNodesData?.cluster?.registry?.is_kube_registry &&
+                registryNodesData?.cluster?.registry?.id
+              }
             />
           )}
         </ClusterRegistryContainer>

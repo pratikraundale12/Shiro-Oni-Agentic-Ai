@@ -3,13 +3,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { Table, TextRender, UrlRender } from '../../../components';
 import { KDFM } from '../../../constants';
+import { isEmpty } from 'lodash';
 
 const Container = styled.div`
   .customTable {
     height: auto;
   }
 `;
-const RegistryDetail = ({ data, handleCert }) => {
+const RegistryDetail = ({ data, handleCert, showRegistryDownload }) => {
   const REGISTRYCOLUMNS = [
     {
       label: KDFM.REGISTRY_NAME,
@@ -32,7 +33,7 @@ const RegistryDetail = ({ data, handleCert }) => {
           tooltipPlacement="top"
           type="Registry"
           copy_btn_tooltip={'Copy Registry URL'}
-          displayCert={true}
+          displayCert={!isEmpty(showRegistryDownload)}
           handleCert={handleCert}
           certTitle="Download Certificate"
         />
@@ -55,6 +56,7 @@ const RegistryDetail = ({ data, handleCert }) => {
 RegistryDetail.propTypes = {
   data: PropTypes.object.isRequired,
   handleCert: PropTypes.func.isRequired,
+  showRegistryDownload: PropTypes.any,
 };
 
 export default RegistryDetail;
