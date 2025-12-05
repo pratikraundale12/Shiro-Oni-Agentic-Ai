@@ -1681,7 +1681,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
           </Button>
           <ReactTooltip
             id={`tooltip-manage-config-from-add-new-config`}
-            place="top"
+            place="left"
             content={'Back to Manage Config'}
             style={{
               width: '170px',

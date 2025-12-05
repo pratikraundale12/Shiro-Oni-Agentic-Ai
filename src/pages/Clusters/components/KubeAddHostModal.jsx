@@ -60,7 +60,9 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
   );
-
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'createKubernetesMasterNodeCluster')
+  );
   const onRequestClose = () => {
     dispatch(ClustersActions.setkubeHostModalOpen(false));
     setHostToEdit({});
@@ -127,7 +129,7 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
   }, [recentSelectedCluster]);
   return (
     <>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
       <ModalWithRightBtn
         isOpen={isModalOpen}
         onRequestClose={onRequestClose}
