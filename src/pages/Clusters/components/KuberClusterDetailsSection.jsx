@@ -350,6 +350,16 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
   const loading2 = useSelector(state =>
     LoadingSelectors.getLoading(state, 'testAzureConfig')
   );
+  const loading3 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchConfigListForKubernetes')
+  );
+  const loading4 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchMasterHostNodesList')
+  );
+  const loading5 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchConfigVersionsPerConfig')
+  );
+
   const onError = errors => {
     if (
       errors?.ec2_bastion_host ||
@@ -429,7 +439,9 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       <Title
         title={!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
       />
-      <FullPageLoader loading={loading || loading2} />
+      <FullPageLoader
+        loading={loading || loading2 || loading3 || loading4 || loading5}
+      />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <div className="mt-3 ms-3 me-3">

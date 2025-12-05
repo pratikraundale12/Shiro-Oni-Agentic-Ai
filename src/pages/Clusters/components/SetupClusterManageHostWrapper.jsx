@@ -70,6 +70,9 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchHostNodesList')
   );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchMasterHostNodesList')
+  );
   const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const createClusterVisKubernetes = useSelector(
     ClustersSelectors.getCreateClusterMethod
@@ -283,7 +286,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
   }, [dispatch]);
   return (
     <Wrapper>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
       <Title title={'Add New Cluster'} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />

@@ -64,6 +64,10 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getConfigList')
   );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchConfigListForKubernetes')
+  );
+
   const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const handleEditConfig = ({ configItem }) => {
     dispatch(ClustersActions.getSingleConfigData(configItem?.id));
@@ -252,7 +256,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   };
   return (
     <Wrapper>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
       <Title title={'Add New Cluster'} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />

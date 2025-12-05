@@ -201,11 +201,11 @@ const ClusterSetupNewConfigKubernetes = () => {
         auth_singleUser_username: data?.auth_singleUser_username,
         auth_singleUser_password: data?.auth_singleUser_password,
         auth_admin: data?.auth_admin,
-        persistence_enabled: data?.persistence_enabled,
+        persistence_enabled: data?.persistence_enabled === 'true',
         persistence_dataStorage_size: data?.dataStorage_size,
         registry_url: data?.registry_url,
         registry_port: data?.registry_port,
-        registry_enabled: data?.registry_enabled,
+        registry_enabled: Boolean(data?.registry_enabled),
         ...(data?.registry_enabled !== 'true' && {
           initContainers: {},
           extraVolumeMounts: [],
@@ -213,7 +213,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           registry_enabled: false,
           registry_certManager_enabled: false,
           registry_initContainers: {},
-          registry_presistence_enabled: false,
+          registry_persistence_enabled: false,
         }),
 
         //
@@ -930,7 +930,7 @@ const ClusterSetupNewConfigKubernetes = () => {
           </Button>
           <ReactTooltip
             id={`tooltip-manage-config-from-add-new-config`}
-            place="top"
+            place="left"
             content={'Back to Manage Config'}
             style={{
               width: '170px',
