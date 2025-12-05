@@ -678,6 +678,7 @@ export function* createKubernetesCluster(api, { payload }) {
     apiParams: [{ payload: payload }],
   });
   if (response?.ok) {
+    yield put(ClustersActions.setCreateLoadingState(false));
     toast.success(response?.data?.message);
     yield call(history.push, '/clusters');
     yield put(ClustersActions.setProgressTrackingModalOpen(true));
@@ -687,6 +688,7 @@ export function* createKubernetesCluster(api, { payload }) {
   } else {
     toast.error(response?.data?.message);
   }
+  yield put(ClustersActions.setCreateLoadingState(false));
 }
 export function* fetchConfigVersionsPerConfig(api, { payload }) {
   const response = yield call(requestSaga, {
