@@ -65,6 +65,8 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     ClustersSelectors.getkubeClusterUpgradeData
   );
 
+  const loadingState = useSelector(ClustersSelectors.getcreateLoadingState);
+
   const hostOptions = listHostIpData
     ?.filter(ele => !ele?.is_selected)
     ?.map(ele => ({
@@ -315,6 +317,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       payload.append('saveInDb', aksSaveDb);
       payload.append('useSsh', false);
     }
+    dispatch(ClustersActions.setCreateLoadingState(true));
 
     dispatch(ClustersActions.createKubernetesCluster(payload));
     if (loggedInCluster?.value == kubeClusterIDEdit) {
@@ -429,7 +432,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
       <Title
         title={!isEmpty(kubeClusterIDEdit) ? 'Edit Cluster' : 'Create Cluster'}
       />
-      <FullPageLoader loading={loading || loading2} />
+      <FullPageLoader loading={loading || loading2 || loadingState} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <div className="mt-3 ms-3 me-3">
