@@ -897,6 +897,8 @@ export function* fetchDriversList(api, { payload }) {
   }
 }
 export function* deleteClusterKube(api, { payload }) {
+  const deleteType = payload?.deleteType || 'db_only';
+
   const response = yield call(requestSaga, {
     errorSection: 'deleteClusterKube',
     loadingSection: 'deleteClusterKube',
@@ -904,7 +906,7 @@ export function* deleteClusterKube(api, { payload }) {
     apiParams: [
       {
         clusterIdToDelete: payload?.clusterIdToDelete,
-        deleteType: payload?.deleteType || 'db_only',
+        deleteType,
         payload: payload?.payloadData,
       },
     ],
@@ -918,7 +920,9 @@ export function* deleteClusterKube(api, { payload }) {
       })
     );
     yield put(ClustersActions.setIsOpenDeleteKubeClusterModal(false));
-    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    if (deleteType === 'nifi_uninstall') {
+      yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    }
     yield put(
       ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
     );
