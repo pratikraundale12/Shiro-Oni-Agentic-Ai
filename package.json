@@ -23,6 +23,7 @@
     "bootstrap": "^5.0.1",
     "classnames": "^2.5.1",
     "d3": "^7.9.0",
+    "date-fns": "^4.1.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
