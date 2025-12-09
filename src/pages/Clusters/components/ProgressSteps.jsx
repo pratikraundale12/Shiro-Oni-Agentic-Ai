@@ -131,21 +131,21 @@ const StepProgress = () => {
   const processData = useSelector(
     ClustersSelectors.getAnsibleClusterProgressData
   );
+
   const progressStageRef = useRef(null);
+  const isUserAtBottomRef = useRef(true);
+  const handleScroll = e => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const distanceToBottom = scrollHeight - scrollTop - clientHeight;
+    isUserAtBottomRef.current = distanceToBottom < 50;
+  };
 
   useEffect(() => {
-    if (progressStageRef.current) {
-      const element = progressStageRef.current;
-      if (!element) return;
-
-      const { scrollTop, scrollHeight, clientHeight } = element;
-      const sum = scrollTop + clientHeight;
-      if (Math.abs(sum - scrollHeight) < 80) {
-        progressStageRef.current.scrollTop =
-          progressStageRef.current.scrollHeight;
-      }
+    if (isUserAtBottomRef.current && progressStageRef.current) {
+      progressStageRef.current.scrollTop =
+        progressStageRef.current.scrollHeight;
     }
-  }, [processData?.data?.steps]);
+  }, [processData?.data?.steps, openTabIndex]);
 
   const handleOpenTab = index => {
     if (openTabIndex === index) {
@@ -154,6 +154,7 @@ const StepProgress = () => {
       setOpenTabIndex(index);
     }
   };
+
   return (
     <Container className="mb-4">
       <>
@@ -167,8 +168,7 @@ const StepProgress = () => {
           </div>
         ) : (
           <>
-            {' '}
-            <ProgressStage ref={progressStageRef}>
+            <ProgressStage ref={progressStageRef} onScroll={handleScroll}>
               {processData?.data?.steps?.map((ele, index) => (
                 <StepConatiner
                   className={`row d-flex ${ele?.status === 'completed' ? 'done' : 'processing'}`}
@@ -210,7 +210,6 @@ const StepProgress = () => {
         (processData?.data?.status === 'in_progress' ||
           processData?.data?.status === 'in-progress') && (
           <div className="mt-2">
-            {' '}
             <Loader size="md" />
           </div>
         )}
