@@ -95,6 +95,7 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
   const onRequestClose = () => {
     dispatch(ClustersActions.setIsOpenDeleteKubeClusterModal(false));
     reset();
+    setUninstallNiFi(false);
   };
   return (
     <>
