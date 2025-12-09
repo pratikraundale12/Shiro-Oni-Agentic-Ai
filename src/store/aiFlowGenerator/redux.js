@@ -48,6 +48,17 @@ export const AiFlowGeneratorActions = {
     `${prefix}setIsFlowAlreadyAddedSuccessFully`
   ),
   setIsFlowJsonSaved: createAction(`${prefix}setIsFlowJsonSaved`),
+
+  fetchSessionId: createAction(`${prefix}fetchSessionId`),
+  getSessionIdSuccess: createAction(`${prefix}getSessionIdSuccess`),
+  setSessionId: createAction(`${prefix}setSessionId`),
+  setSessionIdError: createAction(`${prefix}setSessionIdError`),
+
+  fetchMessageChatAi: createAction(`${prefix}fetchMessageChatAi`),
+  messageChatAiSuccess: createAction(`${prefix}messageChatAiSuccess`), // removable
+  messageChatAiFailure: createAction(`${prefix}messageChatAiFailure`), // removable
+  setMessageChatAi: createAction(`${prefix}setMessageChatAi`),
+  setMessageChatAiError: createAction(`${prefix}setMessageChatAiError`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -65,6 +76,12 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   isFlowValidatedSuccessfully: false,
   isFlowErrorModalOpen: false,
   isFlowJsonSaved: false,
+
+  sessionId: {} || null,
+  sessionIdError: {},
+
+  messageChatAi: {},
+  messageChatAiError: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -85,6 +102,12 @@ export const AiFlowGeneratorSelectors = {
     state.aiFlowGenerator.isFlowValidatedSuccessfully,
   getIsFlowErrorModalOpen: state => state.aiFlowGenerator.isFlowErrorModalOpen,
   getIsflowJsonSaved: state => state.aiFlowGenerator.isFlowJsonSaved,
+
+  getSessionId: state => state.aiFlowGenerator.sessionId,
+  getSessionIdError: state => state.aiFlowGenerator.sessionIdError,
+
+  getMessageChatAi: state => state.aiFlowGenerator.messageChatAi,
+  getMessageChatAiError: state => state.aiFlowGenerator.messageChatAiError,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -206,6 +229,56 @@ const setIsFlowJsonSaved = (state, { payload }) => {
     isFlowJsonSaved: payload,
   };
 };
+
+const setSessionId = (state, { payload }) => {
+  return {
+    ...state,
+    sessionId: payload,
+  };
+};
+
+const setSessionIdError = (state, { payload }) => {
+  return {
+    ...state,
+    sessionIdError: payload,
+  };
+};
+
+const getSessionIdSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    sessionId: payload,
+  };
+};
+
+const messageChatAiSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    messageChatAi: payload,
+  };
+};
+
+const messageChatAiFailure = (state, { payload }) => {
+  return {
+    ...state,
+    messageChatAiError: payload,
+  };
+};
+
+const setMessageChatAi = (state, { payload }) => {
+  return {
+    ...state,
+    messageChatAi: payload,
+  };
+};
+
+const setMessageChatAiError = (state, { payload }) => {
+  return {
+    ...state,
+    messageChatAiError: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const aiFlowGeneratorReducer = createReducer(
   AI_FLOW_GENERATOR_INITIAL_STATE,
@@ -257,6 +330,22 @@ export const aiFlowGeneratorReducer = createReducer(
         AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully,
         setIsFlowAlreadyAddedSuccessFully
       )
-      .addCase(AiFlowGeneratorActions.setIsFlowJsonSaved, setIsFlowJsonSaved);
+      .addCase(AiFlowGeneratorActions.setIsFlowJsonSaved, setIsFlowJsonSaved)
+      .addCase(AiFlowGeneratorActions.getSessionIdSuccess, getSessionIdSuccess)
+      .addCase(AiFlowGeneratorActions.setSessionIdError, setSessionIdError)
+      .addCase(AiFlowGeneratorActions.setSessionId, setSessionId)
+      .addCase(
+        AiFlowGeneratorActions.messageChatAiSuccess,
+        messageChatAiSuccess
+      )
+      .addCase(
+        AiFlowGeneratorActions.messageChatAiFailure,
+        messageChatAiFailure
+      )
+      .addCase(AiFlowGeneratorActions.setMessageChatAi, setMessageChatAi)
+      .addCase(
+        AiFlowGeneratorActions.setMessageChatAiError,
+        setMessageChatAiError
+      );
   }
 );

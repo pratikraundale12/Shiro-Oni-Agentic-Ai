@@ -6,7 +6,11 @@ import { KDFM } from '../../constants';
 import { toast } from 'react-toastify';
 import DOMPurify from 'dompurify';
 import { useDispatch, useSelector } from 'react-redux';
-import { AiFlowGeneratorActions, AuthenticationSelectors } from '../../store';
+import {
+  AiFlowGeneratorActions,
+  AiFlowGeneratorSelectors,
+  AuthenticationSelectors,
+} from '../../store';
 import { formattedTime, validateInput, validatePayload } from './utils';
 import { v4 as uuidv4 } from 'uuid';
 import { FieldErrorMessage } from '../../shared';
@@ -84,6 +88,7 @@ export const PromptInputBox = ({
   setInputError,
   setConversationalRes,
   nifiVersion,
+  fromAgenticAI = false,
 }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -99,7 +104,16 @@ export const PromptInputBox = ({
   }, [queryText, isInputEmpty]);
 
   const dispatch = useDispatch();
-  const handleGenerateFLowClick = () => {
+
+  const sessionId = useSelector(AiFlowGeneratorSelectors.getSessionId);
+  const handleGenerateFLowClick = e => {
+    if (e) e.preventDefault();
+    // if (fromAgenticAI) {
+    //   console.log('API calling initiated');
+    //   const payload = {};
+    //   dispatch(AiFlowGeneratorActions.fetchMessageChatAi(payload));
+    //   return;
+    // }
     if (disabled) {
       if (!toast.isActive('permission-error')) {
         toast.error(KDFM.NO_PERMISSION_TO_GENERATE_FLOW, {
@@ -156,8 +170,19 @@ export const PromptInputBox = ({
         'user_role',
         'nifi_version',
       ];
-      if (validatePayload(payload, requiredFields)) {
-        dispatch(AiFlowGeneratorActions.generateFlowAPI(payload));
+
+      if (fromAgenticAI) {
+        console.log('agentica ai message api called');
+        const payload = {
+          message: queryText.trim(),
+          session_id: sessionId,
+          nifi_server_id: 'nifi-local-example',
+        };
+        dispatch(AiFlowGeneratorActions.fetchMessageChatAi(payload));
+      } else {
+        if (validatePayload(payload, requiredFields)) {
+          dispatch(AiFlowGeneratorActions.generateFlowAPI(payload));
+        }
       }
     }
   };
@@ -196,6 +221,7 @@ export const PromptInputBox = ({
           }}
         />
         <GenerateFLowButton
+          type="button"
           disabled={isSendBtnDisabled}
           isSendBtnDisabled={isSendBtnDisabled}
           onClick={handleGenerateFLowClick}
@@ -221,4 +247,5 @@ PromptInputBox.propTypes = {
   setInputError: PropTypes.func,
   setConversationalRes: PropTypes.func,
   nifiVersion: PropTypes.string,
+  fromAgenticAI: PropTypes.bool,
 };

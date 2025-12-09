@@ -297,6 +297,101 @@ export function* validateFlowJson(api, { payload }) {
     yield put(AiFlowGeneratorActions.setIsFlowErrorModalOpen(true));
   }
 }
+
+export function* fetchSessionId(api, { payload }) {
+  console.log('session id api called');
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'getSessionId',
+    loadingSection: 'getSessionId',
+    apiMethod: api.getSessionId,
+    apiParams: [payload],
+    successAction: AiFlowGeneratorActions.getSessionIdSuccess,
+  });
+  console.log('session id response', response);
+  if (response.ok) {
+    yield put(AiFlowGeneratorActions.setSessionId(response?.data?.session_id));
+  } else {
+    yield put(AiFlowGeneratorActions.setSessionIdError(response?.data));
+    toast.error(
+      response?.message || response?.data?.message || 'Failed to get session id'
+    );
+  }
+}
+
+export function* fetchMessageChatAi(api, { payload }) {
+  console.log('Saga called');
+  console.log('Payload', payload);
+  // return;
+
+  /////////////
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+  yield put(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
+
+  yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+  yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
+
+  yield put(AiFlowGeneratorActions.setNewBucket({}));
+  yield put(AiFlowGeneratorActions.setGenFlowError(''));
+  if (!api.fetchMessageChatAi) {
+    console.error('fetchMessageChatAi is undefined!');
+    return;
+  }
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: AiFlowGeneratorActions.messageChatAiFailure,
+    loadingSection: 'fetchMessageChatAi',
+    apiMethod: api.fetchMessageChatAi,
+    apiParams: [payload],
+    successAction: AiFlowGeneratorActions.messageChatAiSuccess,
+  });
+  console.log('chat ai response', response);
+  if (response.ok || response?.data?.status) {
+    try {
+      yield put(AiFlowGeneratorActions.setGenFlowError(''));
+      yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+      yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
+      const rawResponse = response?.data?.data;
+      const parsedJson =
+        typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
+
+      if (parsedJson && typeof parsedJson === 'object') {
+        yield put(AiFlowGeneratorActions.setMessageChatAi(parsedJson));
+      } else {
+        throw new Error('Invalid JSON format');
+      }
+    } catch (error) {
+      console.error('JSON Parsing Error:', error?.message);
+      toast.error(
+        'Failed to parse the server response. Please check the data format.'
+      );
+    }
+  } else {
+    const error =
+      response?.message ||
+      response?.data?.message ||
+      'Unable process the generation of the flow. Please try again!';
+    yield put(AiFlowGeneratorActions.setMessageChatAiError(error));
+    toast.error(error);
+  }
+}
+
 export function* aiFlowGeneratorSagas(api) {
   yield all([
     takeLatest(AiFlowGeneratorActions.fetchDefaultRecentFlows, action =>
@@ -325,6 +420,12 @@ export function* aiFlowGeneratorSagas(api) {
     ),
     takeLatest(AiFlowGeneratorActions.validateFlowJson, action =>
       validateFlowJson(api, action)
+    ),
+    takeLatest(AiFlowGeneratorActions.fetchSessionId, action =>
+      fetchSessionId(api, action)
+    ),
+    takeLatest(AiFlowGeneratorActions.fetchMessageChatAi, action =>
+      fetchMessageChatAi(api, action)
     ),
   ]);
 }
