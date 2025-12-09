@@ -661,7 +661,7 @@ export const ClusterProcessDisplayModal = ({
   };
 
   useEffect(() => {
-    if (isProcessModalOpen || isModalOpen) {
+    if ((isProcessModalOpen || isModalOpen) && processData?.data?.status !== 'failed') {
       const payload = {
         clusterId:
           selectedCluster?.id || ansibleClusterCreationData?.cluster_id,
@@ -687,11 +687,12 @@ export const ClusterProcessDisplayModal = ({
     dispatch,
     selectedCluster,
     ansibleClusterCreationData,
+    processData?.data?.status,
   ]);
 
   useEffect(() => {
     let intervalId;
-    if ((isProcessModalOpen || isModalOpen) && progress < 100) {
+    if ((isProcessModalOpen || isModalOpen) && progress < 100 && processData?.data?.status !== 'failed') {
       intervalId = setInterval(() => {
         const payload = {
           clusterId:
@@ -727,6 +728,7 @@ export const ClusterProcessDisplayModal = ({
     dispatch,
     selectedCluster,
     ansibleClusterCreationData,
+    processData?.data?.status,
   ]);
 
   const extractNumberFromTimeString = timeString => {
