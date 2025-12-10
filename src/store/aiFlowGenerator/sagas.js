@@ -299,7 +299,6 @@ export function* validateFlowJson(api, { payload }) {
 }
 
 export function* fetchSessionId(api, { payload }) {
-  console.log('session id api called');
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -307,16 +306,19 @@ export function* fetchSessionId(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
-  api.headers['x-cluster-id'] = selectedClusterToken?.id;
-  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  if (api.headers) {
+    api.headers['x-cluster-id'] = selectedClusterToken?.id;
+    api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  }
+
   const response = yield call(requestSaga, {
-    errorSection: 'getSessionId',
-    loadingSection: 'getSessionId',
-    apiMethod: api.getSessionId,
+    errorSection: 'fetchSessionId',
+    loadingSection: 'fetchSessionId',
+    apiMethod: api.fetchSessionId,
     apiParams: [payload],
     successAction: AiFlowGeneratorActions.getSessionIdSuccess,
   });
-  console.log('session id response', response);
   if (response.ok) {
     yield put(AiFlowGeneratorActions.setSessionId(response?.data?.session_id));
   } else {
@@ -328,11 +330,6 @@ export function* fetchSessionId(api, { payload }) {
 }
 
 export function* fetchMessageChatAi(api, { payload }) {
-  console.log('Saga called');
-  console.log('Payload', payload);
-  // return;
-
-  /////////////
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -340,58 +337,72 @@ export function* fetchMessageChatAi(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
-  yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
-  yield put(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
+  const clusterId = selectedClusterToken?.id;
 
-  yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
-  yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
-
-  yield put(AiFlowGeneratorActions.setNewBucket({}));
-  yield put(AiFlowGeneratorActions.setGenFlowError(''));
   if (!api.fetchMessageChatAi) {
     console.error('fetchMessageChatAi is undefined!');
     return;
   }
-  api.headers['x-cluster-id'] = selectedClusterToken?.id;
-  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  if (api.headers) {
+    api.headers['x-cluster-id'] = selectedClusterToken?.id;
+    api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  }
+
+  const serviceCallArgument = {
+    clusterId: clusterId,
+    payload: payload,
+  };
+
   const response = yield call(requestSaga, {
-    errorSection: AiFlowGeneratorActions.messageChatAiFailure,
+    // errorSection: AiFlowGeneratorActions.messageChatAiFailure,
     loadingSection: 'fetchMessageChatAi',
     apiMethod: api.fetchMessageChatAi,
-    apiParams: [payload],
-    successAction: AiFlowGeneratorActions.messageChatAiSuccess,
+    apiParams: [serviceCallArgument],
+    // successAction is not needed if we handle dispatch manually below
   });
-  console.log('chat ai response', response);
+
   if (response.ok || response?.data?.status) {
     try {
-      yield put(AiFlowGeneratorActions.setGenFlowError(''));
-      yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
-      yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
-      const rawResponse = response?.data?.data;
-      const parsedJson =
-        typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
-
-      if (parsedJson && typeof parsedJson === 'object') {
-        yield put(AiFlowGeneratorActions.setMessageChatAi(parsedJson));
+      const resContent = response?.data?.message?.content;
+      if (resContent) {
+        yield put(
+          AiFlowGeneratorActions.setMessageChatAi({ message: resContent })
+        );
       } else {
-        throw new Error('Invalid JSON format');
+        yield put(
+          AiFlowGeneratorActions.setMessageChatAi({
+            message: 'Received successful but empty response from AI.',
+          })
+        );
       }
     } catch (error) {
-      console.error('JSON Parsing Error:', error?.message);
-      toast.error(
-        'Failed to parse the server response. Please check the data format.'
+      console.error('Response Handling Error:', error?.message);
+      toast.error('Failed to process the server response format.');
+      yield put(
+        AiFlowGeneratorActions.setMessageChatAiError({
+          message: error?.message || 'Processing response failed.',
+        })
       );
     }
   } else {
-    const error =
-      response?.message ||
-      response?.data?.message ||
+    let errorMessage =
       'Unable process the generation of the flow. Please try again!';
-    yield put(AiFlowGeneratorActions.setMessageChatAiError(error));
-    toast.error(error);
+
+    if (response?.data?.message?.detail) {
+      errorMessage = response.data.message.detail;
+    } else if (typeof response?.data?.message === 'string') {
+      errorMessage = response.data.message;
+    }
+    if (typeof errorMessage === 'object') {
+      errorMessage = JSON.stringify(errorMessage);
+    }
+    yield put(
+      AiFlowGeneratorActions.setMessageChatAiError({ message: errorMessage })
+    );
+    toast.error(errorMessage);
   }
 }
-
 export function* aiFlowGeneratorSagas(api) {
   yield all([
     takeLatest(AiFlowGeneratorActions.fetchDefaultRecentFlows, action =>

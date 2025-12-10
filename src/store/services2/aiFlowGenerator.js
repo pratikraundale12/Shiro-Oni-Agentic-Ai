@@ -91,7 +91,7 @@ export const aiFlowGeneratorAPI = api => {
     }
   };
 
-  const getSessionId = async clusterId => {
+  const fetchSessionId = async clusterId => {
     try {
       return await api.get(`/clusters/${clusterId}/conversation/session`);
     } catch (error) {
@@ -99,7 +99,7 @@ export const aiFlowGeneratorAPI = api => {
     }
   };
 
-  const fetchMessageChatAi = async (clusterId, payload) => {
+  const fetchMessageChatAi = async ({ clusterId, payload }) => {
     try {
       return await api.post(
         `/clusters/${clusterId}/conversation/chat`,
@@ -120,7 +120,7 @@ export const aiFlowGeneratorAPI = api => {
     addFlowToRegistryInventory,
     addNewBucketToRegistry,
     validateFlowJson,
-    getSessionId,
+    fetchSessionId,
     fetchMessageChatAi,
   };
 };

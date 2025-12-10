@@ -188,3 +188,4 @@ export * from './ManageConfigIcon';
 export * from './ClusterDetailsIcon';
 export * from './GettingStartedIcon';
 export * from './StarInfoIcon';
+export * from './AIMiniIcon';
