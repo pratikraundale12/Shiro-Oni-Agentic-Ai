@@ -332,7 +332,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
         onRequestClose={onRequestClose}
         onSubmit={e => addIndividualHost(e)}
         title={`${isEmpty(hostToEdit) ? 'Add' : 'Edit'} Host Details`}
-        primaryButtonText={`${isEmpty(hostToEdit) ? 'Add' : 'Edit'} Host`}
+        primaryButtonText={`${isEmpty(hostToEdit) ? 'Add' : 'Update'} Host`}
         secondaryButtonText="Back"
         primaryButtonDisabled={isPrimaryBtnDisable}
         contentStyles={{ minWidth: '68%', maxHeight: '65%' }}
