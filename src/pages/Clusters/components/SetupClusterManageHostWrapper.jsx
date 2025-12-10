@@ -6,7 +6,7 @@ import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button, ModalWithIcon } from '../../../shared';
-import { KDFM } from '../../../constants';
+import { KDFM, SEARCH_INPUT_ERROR } from '../../../constants';
 import {
   ClustersActions,
   ClustersSelectors,
@@ -25,6 +25,7 @@ import {
   NotePadIcon,
   PencilIcon,
   PlusCircleIcon,
+  SmallSearchIcon,
 } from '../../../assets';
 import { AddHostIPModal } from './AddHostIPModal';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
@@ -61,6 +62,33 @@ const ActionTd = styled.div`
   gap: 6px;
   padding-right: 10px;
 `;
+const SearchContainer = styled.div`
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
+`;
+const Search = styled.input`
+  width: 100%;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
+
+  &:focus-visible {
+    outline: none;
+  }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
+`;
 const SetupClusterManageHostWrapper = ({ activeTab }) => {
   const [hostToDelete, setHostToDelete] = useState({});
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -77,6 +105,16 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
   const createClusterVisKubernetes = useSelector(
     ClustersSelectors.getCreateClusterMethod
   );
+  const [searchText, setSearchText] = useState('');
+  const search = searchText?.toLowerCase();
+  const filteredList = listHostIpData?.filter(item => {
+    if (createClusterVisKubernetes === 'VM') {
+      return item?.host_name?.toLowerCase()?.includes(search);
+    }
+
+    return item?.kube_cluster_name?.toLowerCase()?.includes(search);
+  });
+
   const COLUMNS = [
     {
       label: 'Host Name',
@@ -315,6 +353,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
                 )}
               </div>
             }
+
             <div className="col-auto me-3">
               <Button
                 size="md"
@@ -341,8 +380,36 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
             </div>
           </div>
           <div className="ms-3 me-3">
+            <SearchContainer>
+              <SmallSearchIcon
+                width={18}
+                height={18}
+                color={theme.colors.darkGrey1}
+              />
+              <Search
+                type="search"
+                value={searchText}
+                placeholder={
+                  createClusterVisKubernetes === 'VM'
+                    ? 'Search Host'
+                    : 'Search Configuration'
+                }
+                onChange={e => {
+                  const value = e.target.value;
+                  setSearchText(value);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }
+                }}
+              />
+            </SearchContainer>
+          </div>
+          <div className="ms-3 me-3">
             <Table
-              data={listHostIpData || []}
+              data={filteredList || listHostIpData || []}
               columns={
                 createClusterVisKubernetes === 'VM'
                   ? COLUMNS
