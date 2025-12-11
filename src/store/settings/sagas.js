@@ -1,4 +1,3 @@
-// sagas.js
 import { toast } from 'react-toastify';
 import { all, call, takeLatest, put, select } from 'redux-saga/effects';
 import { changeFavicon } from '../../helpers';

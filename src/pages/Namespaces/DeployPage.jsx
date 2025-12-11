@@ -173,11 +173,14 @@ function DeployPage() {
   const registrySelectedId = useSelector(
     NamespacesSelectors.getSelectedRegistryOnDeploy
   );
-  const registryDropdownOptions = registryData.map(item => ({
-    label: item?.name,
-    value: item?.nifiRegistryId,
-    default_registry_id: item?.is_default,
-  }));
+  const registryDropdownOptions = registryData
+    ?.filter(ele => ele?.localRegistryId)
+    ?.map(item => ({
+      label: item?.name,
+      value: item?.nifiRegistryId,
+      default_registry_id: item?.is_default,
+    }));
+
   const defaultRegistry = registryDropdownOptions.find(
     item => item.default_registry_id === true
   );

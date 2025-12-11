@@ -158,11 +158,11 @@ const ControllerServiceTab = ({
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const csReduxData = useSelector(NamespacesSelectors.getCsLocalData);
-  
+
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
-  
+
   const [controllerServicesData, setControllerServicesData] =
     useState(csReduxData);
 
@@ -1721,76 +1721,76 @@ const ControllerServiceTab = ({
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
-const [lastClickedItemId, setLastClickedItemId] = useState(null);
+  const [lastClickedItemId, setLastClickedItemId] = useState(null);
 
-const handleSettingClick = (item) => {
-  setListPropertTableData(null);
-  setSelectedItemFromList(item);
+  const handleSettingClick = item => {
+    setListPropertTableData(null);
+    setSelectedItemFromList(item);
 
-  if (isEmpty(serviceDefinition?.properties)) {
-    const filteredData =
-      !isEmpty(item?.properties) &&
-      item?.properties
-        ?.filter(
-          prop =>
-            isEmpty(prop?.dependencies) ||
-            prop?.dependencies?.every(dep =>
-              item?.properties?.some(
-                obj =>
-                  obj?.name === dep?.propertyName &&
-                  dep?.dependentValues?.includes(obj?.value)
+    if (isEmpty(serviceDefinition?.properties)) {
+      const filteredData =
+        !isEmpty(item?.properties) &&
+        item?.properties
+          ?.filter(
+            prop =>
+              isEmpty(prop?.dependencies) ||
+              prop?.dependencies?.every(dep =>
+                item?.properties?.some(
+                  obj =>
+                    obj?.name === dep?.propertyName &&
+                    dep?.dependentValues?.includes(obj?.value)
+                )
               )
-            )
-        )
-        .map(prop => ({
-          ...prop,
-          old_val: prop?.value,
-        }));
-    setListPropertTableData([]);
-  }
+          )
+          .map(prop => ({
+            ...prop,
+            old_val: prop?.value,
+          }));
+      setListPropertTableData([]);
+    }
 
-  // 🔹 Check: API tabhi chale jab naya item ho
-  if (
-    !isEmpty(controllerServicesData?.localServices) &&
-    (lastClickedItemId !== item?.id && lastClickedItemId !== item?.identifier)
-  ) {
-    dispatch(
-      NamespacesActions.fetchServiceDefinition({
-        group: item?.bundle?.group,
-        artifact: item?.bundle?.artifact,
-        version: item?.bundle?.version,
-        type: item?.type,
-        instanceIdentifier: item?.instanceIdentifier,
-        properties: item?.properties,
-      })
-    );
-    setLastClickedItemId(item?.id || item?.identifier); // ✅ last clicked update
-  }
-
-  setIsPropertyResponse(true);
-  setIsNewlyAddedExternalServiceResponse(false);
-  setIsStateChangeResponse(false);
-
-  const match = externalControllerServices?.some(data => {
-    if (data.controllerService?.length) {
-      return data.controllerService.some(
-        service =>
-          service?.id === item?.id || service?.id === item?.identifier
+    // 🔹 Check: API tabhi chale jab naya item ho
+    if (
+      !isEmpty(controllerServicesData?.localServices) &&
+      lastClickedItemId !== item?.id &&
+      lastClickedItemId !== item?.identifier
+    ) {
+      dispatch(
+        NamespacesActions.fetchServiceDefinition({
+          group: item?.bundle?.group,
+          artifact: item?.bundle?.artifact,
+          version: item?.bundle?.version,
+          type: item?.type,
+          instanceIdentifier: item?.instanceIdentifier,
+          properties: item?.properties,
+        })
       );
+      setLastClickedItemId(item?.id || item?.identifier); // ✅ last clicked update
     }
-    if (data?.configured && data?.configuredData?.id === item?.id) {
-      return true;
-    }
-    return (
-      item?.updatedValue !== undefined &&
-      data?.updatedValue === item.updatedValue
-    );
-  });
 
-  setisFromExternalService(match ? true : false);
-  dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
-};
+    setIsPropertyResponse(true);
+    setIsNewlyAddedExternalServiceResponse(false);
+    setIsStateChangeResponse(false);
 
+    const match = externalControllerServices?.some(data => {
+      if (data.controllerService?.length) {
+        return data.controllerService.some(
+          service =>
+            service?.id === item?.id || service?.id === item?.identifier
+        );
+      }
+      if (data?.configured && data?.configuredData?.id === item?.id) {
+        return true;
+      }
+      return (
+        item?.updatedValue !== undefined &&
+        data?.updatedValue === item.updatedValue
+      );
+    });
+
+    setisFromExternalService(match ? true : false);
+    dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
+  };
 
   const handleConfigure = item => {
     setIsNewlyAddedExternalServiceResponse(true);
@@ -2092,7 +2092,6 @@ const handleSettingClick = (item) => {
     refreshingRowId,
     refreshedControllerService,
   ]);
-  
 
   const checkIfLocalCsConfigured = useSelector(
     NamespacesSelectors.getIsLocalCsConfigured
@@ -2421,6 +2420,7 @@ const handleSettingClick = (item) => {
           setUpdatedData={setUpdatedData}
           updatedData={updatedData}
           isFromControllerServiceTab={true}
+          setReferenceListPropertyTableData={setReferenceListPropertyTableData}
         />
 
         <PropertyDropdownModal
