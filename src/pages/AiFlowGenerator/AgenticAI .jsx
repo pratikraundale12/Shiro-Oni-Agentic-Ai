@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled, { keyframes } from 'styled-components';
 import { isEmpty } from 'lodash';
 import {
-  AiFlowGeneratorActions,
-  AiFlowGeneratorSelectors,
+  AgenticAiActions,
+  AgenticAiSelectors,
   LoadingSelectors,
   NamespacesSelectors,
 } from '../../store';
 import { KDFM } from '../../constants';
 import { formattedTime } from './utils';
-import { SendMessageIcon, UserIcon, AIMiniIcon } from '../../assets'; // Assume these icons are available
+import { SendMessageIcon, UserIcon, AIMiniIcon } from '../../assets';
 import { toast } from 'react-toastify';
 
 const Container = styled.div`
@@ -137,24 +137,16 @@ const LoaderDots = styled.span`
 export const AgenticAI = () => {
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
-
-  // Local State
   const [queryText, setQueryText] = useState('');
   const [conversationalRes, setConversationalRes] = useState([]);
-
-  // Redux Selectors
-  // Using the new selector from your Saga logic (messageChatAi)
-  const apiResponse = useSelector(AiFlowGeneratorSelectors.getMessageChatAi);
-  const apiError = useSelector(AiFlowGeneratorSelectors.getMessageChatAiError);
+  const apiResponse = useSelector(AgenticAiSelectors.getMessageChatAi);
+  const apiError = useSelector(AgenticAiSelectors.getMessageChatAiError);
   // const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
-  // const sessionId = useSelector(AiFlowGeneratorSelectors.getSessionId);
+  // const sessionId = useSelector(AgenticAiSelectors.getSessionId);
 
-  // Loading state (Assuming 'fetchMessageChatAi' is the action for chat API call)
   const isLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchMessageChatAi')
   );
-
-  // --- Utility Functions ---
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -163,7 +155,7 @@ export const AgenticAI = () => {
   const isInputValid = queryText.trim().length > 0;
   const isSendBtnDisabled = isLoading || !isInputValid;
 
-  const sessionId = useSelector(AiFlowGeneratorSelectors.getSessionId);
+  const sessionId = useSelector(AgenticAiSelectors.getSessionId);
 
   const handleSendMessage = useCallback(
     e => {
@@ -177,46 +169,34 @@ export const AgenticAI = () => {
         }
         return;
       }
-
       const timestamp = formattedTime();
-
-      // 1. Create User Message
       const newUserMessage = {
         role: 'user',
         data: trimmedQuery,
         status: 'completed',
         time: timestamp,
       };
-
-      // 2. Create Pending System Message
       const tempSystemMessage = {
         role: 'system',
         status: 'pending',
         time: timestamp,
         data: 'Waiting for response...',
       };
-
-      // 3. Update UI conversation list
       setConversationalRes(prev => [
         ...prev,
         newUserMessage,
         tempSystemMessage,
       ]);
-
-      // 4. Dispatch API action with complete payload
       const payload = {
         message: trimmedQuery,
-        session_id: sessionId, // Now guaranteed to be available by the check above
+        session_id: sessionId,
         nifi_server_id: 'nifi-local-example',
       };
 
-      // Ensure you use the correct action name
-      dispatch(AiFlowGeneratorActions.fetchMessageChatAi(payload));
+      dispatch(AgenticAiActions.fetchMessageChatAi(payload));
 
-      // 5. Clear Input
       setQueryText('');
     },
-    // 6. ⚠️ Updated Dependencies: Must include sessionId
     [queryText, isLoading, dispatch, sessionId]
   );
 
@@ -224,25 +204,19 @@ export const AgenticAI = () => {
 
   useEffect(() => {
     if (selectedCluster?.value) {
-      dispatch(AiFlowGeneratorActions.fetchSessionId(selectedCluster.value));
+      dispatch(AgenticAiActions.fetchSessionId(selectedCluster.value));
     }
   }, [dispatch, selectedCluster?.value]);
 
-  // 2. Handle API Response/Error Update
   useEffect(() => {
-    // Check if the API response changed and it's not empty
     if (!isEmpty(apiResponse)) {
       const timestamp = formattedTime();
-
       const newSystemMessage = {
         role: 'system',
         status: 'completed',
-        // Assuming the successful API response contains the chat message in a specific field
         data: apiResponse.message || JSON.stringify(apiResponse),
         time: timestamp,
       };
-
-      // Update the last pending message
       setConversationalRes(prev => {
         const updated = [...prev];
         const lastIndex = updated.map(msg => msg.status).lastIndexOf('pending');
@@ -252,12 +226,9 @@ export const AgenticAI = () => {
         }
         return updated;
       });
-
-      // Clear the response from Redux after use to prepare for the next message
-      dispatch(AiFlowGeneratorActions.setMessageChatAi({}));
+      dispatch(AgenticAiActions.setMessageChatAi({}));
     }
 
-    // Check for API Error
     if (!isEmpty(apiError)) {
       const timestamp = formattedTime();
 
@@ -268,7 +239,6 @@ export const AgenticAI = () => {
         time: timestamp,
       };
 
-      // Update the last pending message with the error
       setConversationalRes(prev => {
         const updated = [...prev];
         const lastIndex = updated.map(msg => msg.status).lastIndexOf('pending');
@@ -279,17 +249,13 @@ export const AgenticAI = () => {
         return updated;
       });
 
-      // Clear the error from Redux
-      dispatch(AiFlowGeneratorActions.setMessageChatAiError({}));
+      dispatch(AgenticAiActions.setMessageChatAiError({}));
     }
   }, [apiResponse, apiError, dispatch]);
 
-  // 3. Scroll to bottom whenever messages update
   useEffect(() => {
     scrollToBottom();
   }, [conversationalRes]);
-
-  // --- Render Functions ---
 
   const renderMessage = (item, index) => {
     const isUser = item.role === 'user';
