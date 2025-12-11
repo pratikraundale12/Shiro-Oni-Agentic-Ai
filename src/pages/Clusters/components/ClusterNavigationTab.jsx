@@ -9,7 +9,8 @@ import {
   ClustersSelectors,
 } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { isEmpty } from 'lodash';
+import { useGlobalContext } from '../../../utils';
+import { history } from '../../../helpers/history';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -48,8 +49,10 @@ const ClusterNavigationTab = ({
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
   const sshDataAdded = useSelector(ClustersSelectors.getsshAddedStatus);
   const isSuperAdmin = currentUserData?.role === 'superadmin';
+  const { state } = useGlobalContext();
+
   useEffect(() => {
-    if (data?.id && activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS) {
+    if (data?.id && !state?.is_kube_cluster) {
       dispatch(ClustersActions.fetchSSHstatus(data?.id));
     }
   }, [data?.id, activeTab]);
@@ -67,7 +70,7 @@ const ClusterNavigationTab = ({
         {KDFM.CLUSTER_DETAILS}
       </NavButton>
       <>
-        {!data?.created_by_ansible && (
+        {!data?.created_by_ansible && !data?.is_kube_cluster && (
           <NavButton
             active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
             onClick={() =>
@@ -111,7 +114,7 @@ const ClusterNavigationTab = ({
           {KDFM.SERVICE_ACCOUNT}
         </NavButton>
       )}
-      {data && (
+      {data && !state?.is_kube_cluster && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS}
           onClick={() =>
@@ -134,7 +137,9 @@ const ClusterNavigationTab = ({
                 ? setActiveTab(CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR)
                 : {}
             }
-            disabled={!sshDataAdded?.sshCredsAvailable}
+            disabled={
+              state?.is_kube_cluster ? false : !sshDataAdded?.sshCredsAvailable
+            }
             data-tooltip-id="custom_processor"
           >
             {CLUSTER_MODULE_TABS.CUSTOM_PROCESSOR}
@@ -144,7 +149,39 @@ const ClusterNavigationTab = ({
               id="custom_processor"
               place="right"
               effect="solid"
-              content="Add SSH details"
+              content="Add Processor details"
+              style={{
+                whiteSpace: 'normal',
+                zIndex: 9999,
+              }}
+              event="focus"
+              eventOff="blur"
+            />
+          )}
+        </>
+      }
+      {
+        <>
+          <NavButton
+            active={activeTab === CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS}
+            onClick={() =>
+              Object.keys(data || {})?.length
+                ? setActiveTab(CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS)
+                : {}
+            }
+            disabled={
+              state?.is_kube_cluster ? false : !sshDataAdded?.sshCredsAvailable
+            }
+            data-tooltip-id="custom_scripts"
+          >
+            {CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS}
+          </NavButton>
+          {!sshDataAdded?.sshCredsAvailable && (
+            <ReactTooltip
+              id="custom_scripts"
+              place="right"
+              effect="solid"
+              content="Add Scripts"
               style={{
                 whiteSpace: 'normal',
                 zIndex: 9999,
@@ -164,7 +201,9 @@ const ClusterNavigationTab = ({
               ? setActiveTab(CLUSTER_MODULE_TABS.DRIVERS)
               : {}
           }
-          disabled={!sshDataAdded?.sshCredsAvailable}
+          disabled={
+            state?.is_kube_cluster ? false : !sshDataAdded?.sshCredsAvailable
+          }
           data-tooltip-id="drivers"
         >
           {CLUSTER_MODULE_TABS.DRIVERS}
@@ -184,7 +223,48 @@ const ClusterNavigationTab = ({
           eventOff="blur"
         />
       )}
+      {state?.is_kube_cluster && (
+        <>
+          <NavButton
+            onClick={() => {
+              if (state?.is_kube_cluster) {
+                dispatch(ClustersActions.setCreateClusterMethod('Kubernetes'));
+                // if (item?.is_azure_cluster) {
+                // }  CHANGEHERE
+                dispatch(ClustersActions.setAzureCluster(true));
+              }
+              dispatch(
+                ClustersActions.setansibleClucterToEdit(state?.nodeClusterId)
+              );
+              dispatch(
+                ClustersActions.setActiveTabClusterSetup('cluster_details')
+              );
 
+              history.push(`/clusters/setup-cluster`);
+            }}
+            disabled={
+              state?.is_kube_cluster ? false : !sshDataAdded?.sshCredsAvailable
+            }
+            data-tooltip-id="cluster_upgarde_navigate"
+          >
+            Cluster Upgrade
+          </NavButton>
+          {!sshDataAdded?.sshCredsAvailable && (
+            <ReactTooltip
+              id="cluster_upgarde_navigate"
+              place="right"
+              effect="solid"
+              content="Navigate to Upgrade"
+              style={{
+                whiteSpace: 'normal',
+                zIndex: 9999,
+              }}
+              event="focus"
+              eventOff="blur"
+            />
+          )}
+        </>
+      )}
       {false && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.FLOW_GZ}

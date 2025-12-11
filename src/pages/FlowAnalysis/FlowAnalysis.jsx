@@ -8,7 +8,11 @@ import { CompareValidationIcon } from '../../assets/Icons/CompareValidationIcon'
 import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { FlowValidationActions } from '../../store/flowValidation';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from '../Namespaces/ProcessGroupSorting';
@@ -69,6 +73,29 @@ const FlowAnalysis = () => {
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
   }, []);
+
+  const fetchingClusters = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusters')
+  );
+  const [hasTriedFetchingClusters, setHasTriedFetchingClusters] =
+    useState(false);
+  useEffect(() => {
+    if (!fetchingClusters) {
+      setHasTriedFetchingClusters(true);
+    }
+  }, [fetchingClusters]);
+
+  useEffect(() => {
+    if (
+      hasTriedFetchingClusters &&
+      !fetchingClusters &&
+      isEmpty(selectedCluster?.value)
+    ) {
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
+    }
+  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
 
   const handleEdit = item => {
     dispatch(FlowValidationActions.setSelectedItem(item));

@@ -20,7 +20,9 @@ import {
   DeleteSmallIcon,
   PencilIcon,
   PlusCircleIcon,
+  SmallSearchIcon,
 } from '../../../assets';
+import { theme } from '../../../styles';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -52,6 +54,33 @@ const ActionTd = styled.div`
   gap: 6px;
   padding-right: 10px;
 `;
+const SearchContainer = styled.div`
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
+`;
+const Search = styled.input`
+  width: 100%;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
+
+  &:focus-visible {
+    outline: none;
+  }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
+`;
 const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   const dispatch = useDispatch();
   const congigListData = useSelector(ClustersSelectors.getConfigNameList);
@@ -64,6 +93,10 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getConfigList')
   );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchConfigListForKubernetes')
+  );
+
   const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const handleEditConfig = ({ configItem }) => {
     dispatch(ClustersActions.getSingleConfigData(configItem?.id));
@@ -73,7 +106,13 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
     dispatch(ClustersActions.setkubeCofigToEdit(configItem));
     history.push('/clusters/add-new-config');
   };
-
+  const [searchText, setSearchText] = useState('');
+  const filteredListKube = kubeConfigList?.filter(item =>
+    item?.config_name?.toLowerCase()?.includes(searchText?.toLowerCase())
+  );
+  const filteredListVM = congigListData?.filter(item =>
+    item?.config_name?.toLowerCase()?.includes(searchText?.toLowerCase())
+  );
   const createClusterVisKubernetes = useSelector(
     ClustersSelectors.getCreateClusterMethod
   );
@@ -147,18 +186,30 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
       resize: true,
     },
   ];
+  const toUpperIfAlphanumeric = str => {
+    if (typeof str !== 'string') return str;
+    const isAlphanumeric = /^[a-zA-Z0-9]+$/.test(str);
+    return isAlphanumeric ? str.toUpperCase() : str;
+  };
+
   const KUBE_COLUMNS = [
     {
-      label: 'Name',
+      label: 'Config Name',
       renderCell: item => <>{item.config_name}</>,
       resize: true,
       width: '50%',
     },
     {
       label: 'Config Version',
+      renderCell: item => <>{toUpperIfAlphanumeric(item?.type)}</>,
+      resize: true,
+      width: '10%',
+    },
+    {
+      label: 'Config Version',
       renderCell: item => <>{item.config_version}</>,
       resize: true,
-      width: '25%',
+      width: '20%',
     },
     {
       label: 'Actions',
@@ -185,7 +236,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
               zIndex: 10000,
             }}
           />
-          {!item?.is_part_of_cluster && (
+          {
             <IconButton
               onClick={() => {
                 setConfigToDelete(item);
@@ -193,10 +244,11 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
               }}
               className="pencil-icon-schedule-list"
               data-tooltip-id={'config-ansible-delete-option'}
+              disabled={item?.is_part_of_cluster}
             >
               <DeleteSmallIcon width={16} height={16} color="red" />
             </IconButton>
-          )}
+          }
           <ReactTooltip
             id={`config-ansible-delete-option`}
             place="bottom"
@@ -212,7 +264,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
         </ActionTd>
       ),
       resize: true,
-      width: '25%',
+      width: '20%',
     },
   ];
   useEffect(() => {
@@ -237,10 +289,9 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
       history.push('/clusters/add-new-config');
     }
   };
-  //
   return (
     <Wrapper>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
       <Title title={'Add New Cluster'} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
@@ -260,24 +311,51 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
                   style={{ fontSize: '14px', fontWeight: '750' }}
                 >
                   <PlusCircleIcon height={19} width={19} color={'#fff'} />
-                  {KDFM.ADD_NEW_CONFIG}
+                  {createClusterVisKubernetes === 'VM'
+                    ? KDFM.ADD_NEW_CONFIG
+                    : KDFM.ADD_NIFI_CONFIG}
                 </div>
               </Button>
             </div>
           </div>
-
-          <Table
-            data={
-              createClusterVisKubernetes === 'VM'
-                ? congigListData
-                : kubeConfigList
-            }
-            columns={
-              createClusterVisKubernetes === 'VM' ? COLUMNS : KUBE_COLUMNS
-            }
-            customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
-            tableWithFullHeight={true}
-          />
+          <div className="ms-3 me-3">
+            <SearchContainer>
+              <SmallSearchIcon
+                width={18}
+                height={18}
+                color={theme.colors.darkGrey1}
+              />
+              <Search
+                type="search"
+                value={searchText}
+                placeholder={'Search Configuration'}
+                onChange={e => {
+                  const value = e.target.value;
+                  setSearchText(value);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }
+                }}
+              />
+            </SearchContainer>
+          </div>
+          <div className="ms-3 me-3">
+            <Table
+              data={
+                createClusterVisKubernetes === 'VM'
+                  ? filteredListVM
+                  : filteredListKube
+              }
+              columns={
+                createClusterVisKubernetes === 'VM' ? COLUMNS : KUBE_COLUMNS
+              }
+              customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
+              tableWithFullHeight={true}
+            />
+          </div>
         </TableContainer>
         <ModalWithIcon
           title={'Delete Config'}
@@ -304,7 +382,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
             setIsDeleteModalOpen(false);
             setConfigToDelete({});
           }}
-          primaryText={`Are you sure you want to delete config !`}
+          primaryText={`Are you sure you want to delete config!`}
         />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">

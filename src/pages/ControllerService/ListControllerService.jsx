@@ -211,8 +211,10 @@ export const ListControllerService = () => {
   const fetchingClusters = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchClusters')
   );
+
   const [hasTriedFetchingClusters, setHasTriedFetchingClusters] =
     useState(false);
+
   useEffect(() => {
     if (!fetchingClusters) {
       setHasTriedFetchingClusters(true);
@@ -259,6 +261,17 @@ export const ListControllerService = () => {
     setIsEnableModalOpen(true);
   };
 
+  useEffect(() => {
+    if (
+      hasTriedFetchingClusters &&
+      !fetchingClusters &&
+      isEmpty(selectedCluster?.value)
+    ) {
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
+    }
+  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
   const handleDeleteClick = item => {
     setSelectedItemFromList(item);
     setIsDeleteModalOpen(true);

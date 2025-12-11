@@ -14,10 +14,17 @@ import PemUploadField from '../PEMUploadFile';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
+  InfoIcon,
   NotePadIcon,
+  RefreshIcon,
 } from '../../../assets';
-import { LoadingSelectors } from '../../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../../store';
 import { theme } from '../../../styles';
+import { useGlobalContext } from '../../../utils';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -68,15 +75,21 @@ export const ClusterCustomProcessor = ({ data }) => {
   const loading4 = useSelector(state =>
     LoadingSelectors.getLoading(state, 'deleteClusterNarFile')
   );
+  const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const loading5 = useSelector(ClustersSelectors.getrestartDelayLoadingState);
 
+  const [restartImmediatlyModal, setRestartImmediatlyModal] = useState(false);
   const schema = yup.object().shape({
     nar_file: yup.mixed().required('File is required'),
   });
+  const { state } = useGlobalContext();
+
   const {
     watch,
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -101,9 +114,13 @@ export const ClusterCustomProcessor = ({ data }) => {
       renderCell: item => (
         <>
           {' '}
-          {item?.addedViaDFM && (
-            <NotePadIcon height="21" width="21" color={theme.colors.primary} />
-          )}{' '}
+          {
+            <NotePadIcon
+              height="21"
+              width="21"
+              color={item?.addedViaDFM ? theme.colors.primary : '#444445'}
+            />
+          }{' '}
           &nbsp;
           {item?.name || 'N/A'}
         </>
@@ -144,6 +161,7 @@ export const ClusterCustomProcessor = ({ data }) => {
     let payload = { payload: payloadFile, id: data?.id };
     dispatch(ClustersActions.addNarFile(payload));
     setFileInputKey(prev => prev + 1);
+    reset();
   };
 
   useEffect(() => {
@@ -152,16 +170,54 @@ export const ClusterCustomProcessor = ({ data }) => {
     }
   }, [data?.id]);
   const handleRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(false));
     dispatch(
       ClustersActions.restartCluster({
         id: data?.id,
         payload: {},
       })
     );
+    if (loggedInCluster?.value == data?.id) {
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
+  };
+  const handleOpenModal = () => {
+    setRestartImmediatlyModal(true);
+  };
+  const handleUploadWithNoRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(false));
+    handleSubmit(handleUpload)();
+    setRestartImmediatlyModal(false);
+  };
+  const handleUploadWithRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(true));
+    handleSubmit(handleUpload)();
+    setRestartImmediatlyModal(false);
+  };
+
+  //
+  const handleDeleteWithNoRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(false));
+    handleNarDeleteConfirm();
+    setIsDeleteModalOpen(false);
+  };
+  const handleDeleteWithRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(true));
+    handleNarDeleteConfirm();
+    setIsDeleteModalOpen(false);
   };
   return (
     <>
-      <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
+      <FullPageLoader
+        loading={loading || loading2 || loading3 || loading4 || loading5}
+        restartText={loading2}
+      />
 
       <Container>
         <div className="row mb-3">
@@ -178,9 +234,17 @@ export const ClusterCustomProcessor = ({ data }) => {
                   placeholder={'Upload nar file'}
                   errors={errors}
                   fileLable="Custom Nar file"
-                  validExtensionsArray={['.nar']}
-                  acceptString={'.nar'}
-                  errorText={'Nar'}
+                  validExtensionsArray={
+                    Number(state?.nifi_version?.[0]) >= 2
+                      ? ['.nar', '.py']
+                      : ['.nar']
+                  }
+                  acceptString={
+                    Number(state?.nifi_version?.[0]) >= 2 ? '.nar,.py' : '.nar'
+                  }
+                  errorText={
+                    Number(state?.nifi_version?.[0]) >= 2 ? 'Nar or py' : 'Nar'
+                  }
                   key={fileInputKey}
                 />
               </ModalContainer>
@@ -193,7 +257,7 @@ export const ClusterCustomProcessor = ({ data }) => {
             <Button
               type="button"
               variant="primary"
-              onClick={handleSubmit(handleUpload)}
+              onClick={handleSubmit(handleOpenModal)}
             >
               Upload
             </Button>
@@ -201,16 +265,24 @@ export const ClusterCustomProcessor = ({ data }) => {
               Restart
             </Button>
           </div>
+          <div
+            className="col-10 d-flex align-items-center ms-2"
+            style={{
+              fontWeight: '500',
+              fontSize: '16px',
+              color: theme.colors.primary,
+            }}
+          >
+            <InfoIcon color={theme.colors.primary} /> &nbsp; The cluster restart
+            will take approximately 5 minutes.
+          </div>
         </FlexWrapper>
-        <div className="ms-3 mt-2 d-flex justify-content-end">
+        <div className="ms-1 mt-2 d-flex justify-content-end">
           <div>
-            <div style={{ fontSize: '14px', fontWeight: '600' }}>Legend</div>
-            <NotePadIcon
-              height="21"
-              width="21"
-              color={theme.colors.primary}
-            />{' '}
-            : Added by DFM &nbsp;&nbsp;
+            <NotePadIcon height="21" width="21" color={theme.colors.primary} />{' '}
+            : &nbsp;Uploaded by DFM &nbsp;&nbsp; <br />
+            <NotePadIcon height="21" width="21" /> : &nbsp;Uploaded on NiFi
+            &nbsp;&nbsp;
           </div>
         </div>
         <div className="mt-2">
@@ -224,7 +296,48 @@ export const ClusterCustomProcessor = ({ data }) => {
           isOpen={isDeleteModalOpen}
           onRequestClose={() => setIsDeleteModalOpen(false)}
           primaryText={`Are you sure you want to delete?`}
-          onSubmit={handleNarDeleteConfirm}
+          onSubmit={handleDeleteWithNoRestart}
+          tertiaryButton="true"
+          secondaryText="Restart will reflect the changes on NiFi immediatly."
+          tertiaryButtonConfig={{
+            tertiaryButtonTest: 'Delete and Restart',
+            tertiaryButtonSubmit: handleDeleteWithRestart,
+          }}
+        />
+        <ModalWithIcon
+          title={
+            watch('nar_file')?.name?.includes('.py')
+              ? 'File Upload Confirmation'
+              : `Restart Confirmation`
+          }
+          primaryButtonText={'Upload'}
+          secondaryButtonText="Back"
+          tertiaryButton={!watch('nar_file')?.name?.includes('.py')}
+          tertiaryButtonConfig={{
+            tertiaryButtonTest: 'Upload and Restart',
+            tertiaryButtonSubmit: handleUploadWithRestart,
+          }}
+          icon={
+            <RefreshIcon
+              style={{ cursor: 'pointer' }}
+              width={50}
+              height={50}
+              color={theme.colors.primary}
+            />
+          }
+          isOpen={restartImmediatlyModal}
+          onRequestClose={() => setRestartImmediatlyModal(false)}
+          primaryText={
+            watch('nar_file')?.name?.includes('.py')
+              ? 'Do you want to upload file!'
+              : `Do you want to retart the cluster after upload!`
+          }
+          secondaryText={
+            watch('nar_file')?.name?.includes('.py')
+              ? ''
+              : 'Restart will reflect the changes on NiFi immediatly.'
+          }
+          onSubmit={handleUploadWithNoRestart}
         />
       </Container>
     </>

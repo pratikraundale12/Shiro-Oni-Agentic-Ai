@@ -96,16 +96,94 @@ const CreationModelKubeStepsEKS = [
   { step: 'Collect NiFi pods/services', status: 'completed' },
 ];
 const CreationModelKubeStepsEC2 = [
-  { step: 'Verify chart_path & values_file', status: 'completed' },
-  { step: 'Read values and derive feature flags', status: 'completed' },
-  { step: 'Validate EC2 SSH inputs', status: 'completed' },
-  { step: 'Verify kubectl/helm on remote', status: 'completed' },
-  { step: 'Prepare remote workdir', status: 'completed' },
-  { step: 'Resolve kubeconfig on remote', status: 'completed' },
-  { step: 'Ensure namespace', status: 'completed' },
-  { step: 'cert-manager install/upgrade (remote)', status: 'completed' },
-  { step: 'Deploy/Upgrade NiFi via Helm (remote)', status: 'completed' },
+  {
+    step: 'Checking if NiFi installation files are present',
+    status: 'completed',
+  },
+  { step: 'Reading NiFi configuration settings', status: 'completed' },
+  {
+    step: 'Checking connection details for remote server',
+    status: 'completed',
+  },
+  {
+    step: 'Checking if required tools are installed on remote server',
+    status: 'completed',
+  },
+  { step: 'Setting up workspace on remote server', status: 'completed' },
+  {
+    step: 'Packaging Helm chart for remote deployment',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up cluster connection on remote server',
+    status: 'completed',
+  },
+  { step: 'Ensure namespace nifi', status: 'completed' },
+  {
+    step: 'Installing local-path provisioner and setting default StorageClass',
+    status: 'completed',
+  },
+  {
+    step: 'Installing remote cluster security certificate manager',
+    status: 'completed',
+  },
+  { step: 'Deploying remote cluster NiFi application', status: 'completed' },
   { step: 'Collect NiFi pods/services (remote)', status: 'completed' },
+];
+
+const CreationModelKubeStepsAKS = [
+  {
+    step: 'Launching NiFi deployment',
+    status: 'completed',
+  },
+  {
+    step: 'Validating Azure access',
+    status: 'completed',
+  },
+  {
+    step: 'Resolving kubeconfig',
+    status: 'completed',
+  },
+  {
+    step: 'Ensuring pvc-exporter monitoring in namespace pvc-exporter',
+    status: 'completed',
+  },
+  {
+    step: 'Checking helm/kubectl availability and cluster reachability',
+    status: 'completed',
+  },
+  {
+    step: 'Parsing values file for deployment options',
+    status: 'completed',
+  },
+  {
+    step: 'Ensuring namespace nifi exists',
+    status: 'completed',
+  },
+  {
+    step: 'Evaluating cert-manager release cert-manager in namespace cert-manager',
+    status: 'completed',
+  },
+  {
+    step: 'Validating storage class local-path for persistence',
+    status: 'completed',
+  },
+  {
+    step: 'Ensuring metrics-server is deployed in kube-system',
+    status: 'completed',
+  },
+  {
+    step: 'Setting up Azure LoadBalancer Public IP',
+    status: 'completed',
+  },
+  {
+    step: 'Installing NiFi',
+    status: 'completed',
+  },
+  {
+    step: 'Collect NiFi pods/services (remote)',
+    status: 'completed',
+  },
 ];
 
 const deleteModalSteps = [
@@ -348,12 +426,56 @@ const deleteEC2ClusterSteps = [
     status: 'completed',
   },
 ];
+
+const deleteAKSClusterSteps = [
+  {
+    step: 'NiFi AKS uninstall routine',
+    status: 'completed',
+  },
+  {
+    step: 'Normalizing kubeconfig path',
+    status: 'completed',
+  },
+  {
+    step: 'Validating kubectl access',
+    status: 'completed',
+  },
+  {
+    step: 'Checking Helm release nifi in namespace nifi',
+    status: 'completed',
+  },
+  {
+    step: 'Uninstalling Helm release nifi',
+    status: 'completed',
+  },
+  {
+    step: 'Deleting NiFi workloads (STS/Deploy/SVC)',
+    status: 'completed',
+  },
+  {
+    step: 'Deleting NiFi PVCs',
+    status: 'completed',
+  },
+  {
+    step: 'Deleting NiFiKop CRDs if present',
+    status: 'completed',
+  },
+  {
+    step: 'Deleting namespace nifi',
+    status: 'completed',
+  },
+  {
+    step: 'Waiting for namespace nifi to terminate',
+    status: 'completed',
+  },
+];
 export const ClusterProcessDisplayModal = ({
   isProcessModalOpen,
   setIsProcessModalOpen,
   setSelectedCluster,
   selectedCluster,
   sortingState,
+  itemPerClusterList,
 }) => {
   const dispatch = useDispatch();
   const [isCompleted, setIsCompleted] = useState(false);
@@ -386,15 +508,19 @@ export const ClusterProcessDisplayModal = ({
         ? deleteEKSClusterSteps
         : processData?.isKubeCluster && processData?.cluster_type === 'ec2'
           ? deleteEC2ClusterSteps
-          : deleteModalSteps;
+          : processData?.isKubeCluster && processData?.cluster_type === 'aks'
+            ? deleteAKSClusterSteps
+            : deleteModalSteps;
     } else if (processExeName === 'creation') {
       return processData?.isKubeCluster && processData?.cluster_type === 'eks'
         ? CreationModelKubeStepsEKS
         : processData?.isKubeCluster && processData?.cluster_type === 'ec2'
           ? CreationModelKubeStepsEC2
-          : processData?.has_third_party_cert
-            ? CreationModelThirdPartySteps
-            : CreationmodelSteps;
+          : processData?.isKubeCluster && processData?.cluster_type === 'aks'
+            ? CreationModelKubeStepsAKS
+            : processData?.has_third_party_cert
+              ? CreationModelThirdPartySteps
+              : CreationmodelSteps;
     } else if (processExeName === 'restart') {
       return RestartModalSteps;
     } else if (processExeName === 'stop') {
@@ -406,7 +532,9 @@ export const ClusterProcessDisplayModal = ({
         ? CreationModelKubeStepsEKS
         : processData?.isKubeCluster && processData?.cluster_type === 'ec2'
           ? CreationModelKubeStepsEC2
-          : UpgradeModalSteps;
+          : processData?.isKubeCluster && processData?.cluster_type === 'aks'
+            ? CreationModelKubeStepsAKS
+            : UpgradeModalSteps;
     } else if (processExeName === 'update-nodes') {
       return processData?.has_third_party_cert
         ? nodesAddThirdPartyModalSteps
@@ -519,11 +647,12 @@ export const ClusterProcessDisplayModal = ({
   const onRequestClose = () => {
     setIsProcessModalOpen(false);
     dispatch(ClustersActions.setProgressTrackingModalOpen(false));
+    dispatch(ClustersActions.setansibleClusterProgressData({}));
     setSelectedCluster({});
     dispatch(
       GridActions.fetchGrid({
         module: 'clusters',
-        params: { page: 1, limit: 10, sort: 'name' },
+        params: { page: 1, limit: itemPerClusterList, sort: 'name' },
         ...(sortingState && {
           sort: sortingState,
         }),
@@ -532,7 +661,7 @@ export const ClusterProcessDisplayModal = ({
   };
 
   useEffect(() => {
-    if (isProcessModalOpen || isModalOpen) {
+    if ((isProcessModalOpen || isModalOpen) && processData?.data?.status !== 'failed') {
       const payload = {
         clusterId:
           selectedCluster?.id || ansibleClusterCreationData?.cluster_id,
@@ -558,11 +687,12 @@ export const ClusterProcessDisplayModal = ({
     dispatch,
     selectedCluster,
     ansibleClusterCreationData,
+    processData?.data?.status,
   ]);
 
   useEffect(() => {
     let intervalId;
-    if ((isProcessModalOpen || isModalOpen) && progress < 100) {
+    if ((isProcessModalOpen || isModalOpen) && progress < 100 && processData?.data?.status !== 'failed') {
       intervalId = setInterval(() => {
         const payload = {
           clusterId:
@@ -583,7 +713,7 @@ export const ClusterProcessDisplayModal = ({
             : {}),
         };
         dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
-      }, 2000);
+      }, 5500);
     }
 
     return () => {
@@ -598,6 +728,7 @@ export const ClusterProcessDisplayModal = ({
     dispatch,
     selectedCluster,
     ansibleClusterCreationData,
+    processData?.data?.status,
   ]);
 
   const extractNumberFromTimeString = timeString => {
@@ -611,7 +742,11 @@ export const ClusterProcessDisplayModal = ({
   useEffect(() => {
     const extractedTime = extractNumberFromTimeString('1 mins');
     if (extractedTime !== null && !isNaN(extractedTime)) {
-      setInitialisingTime(180 * 1000);
+      if (processData?.isKubeCluster) {
+        setInitialisingTime(60 * 1000);
+      } else {
+        setInitialisingTime(180 * 1000);
+      }
     }
   }, [processData]);
 
@@ -670,7 +805,7 @@ export const ClusterProcessDisplayModal = ({
     dispatch(
       GridActions.fetchGrid({
         module: 'clusters',
-        params: { page: 1, limit: 10, sort: 'name' },
+        params: { page: 1, limit: itemPerClusterList, sort: 'name' },
         ...(sortingState && {
           sort: sortingState,
         }),
@@ -756,7 +891,7 @@ export const ClusterProcessDisplayModal = ({
                   <FlexRow>
                     <StepHeaderText>Progress</StepHeaderText>
                     <PercentageHeaderText>
-                      {progress}% Complete
+                      {Number(progress) || 0}% Complete
                     </PercentageHeaderText>
                   </FlexRow>
                   <div className="progress">

@@ -8,13 +8,14 @@ import {
   ClustersSelectors,
   LoadingSelectors,
 } from '../../../store';
-import { InputField, ModalWithRightBtn } from '../../../shared';
-import { DocumentTextIcon } from '../../../assets';
+import { InputField, ModalWithRightBtn, SelectField } from '../../../shared';
+import { DocumentTextIcon, QRIcons } from '../../../assets';
 import { isEmpty, set } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
+import { KDFM } from '../../../constants';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -44,14 +45,24 @@ const UploadWrapper = styled.div`
     background-color: rgb(253, 250, 245);
   }
 `;
+const LabelSelect = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+`;
 export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
   const dispatch = useDispatch();
   const isModalOpen = useSelector(ClustersSelectors.getkubeHostModalOpen);
-
+  const recentSelectedCluster = useSelector(
+    ClustersSelectors.getrecentClusterSelected
+  );
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
   );
-
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'createKubernetesMasterNodeCluster')
+  );
   const onRequestClose = () => {
     dispatch(ClustersActions.setkubeHostModalOpen(false));
     setHostToEdit({});
@@ -60,13 +71,14 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
   const schemaPasswrdwithCertificate = yup.object().shape({
     kubeClusterName: yup
       .string()
-      .required('Kubernetes Cluster Name is required')
+      .required('Kubernetes Cluster Configuration is required')
       .test(
         'no-leading-trailing-spaces',
-        'Kubernetes Cluster Name must not have leading or trailing spaces',
+        'Kubernetes Cluster Configuration must not have leading or trailing spaces',
         value => value === value?.trim()
       ),
     kubeConfigFile: yup.mixed().required('File is required'),
+    cluster_type: yup.string().required('Cluster type is required'),
   });
 
   const {
@@ -94,7 +106,9 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
     const payload = new FormData();
     payload.append('kubeClusterName', data?.kubeClusterName);
     payload.append('kubeConfigFile', data?.kubeConfigFile);
+    payload.append('type', data?.cluster_type);
     dispatch(ClustersActions.createKubernetesMasterNodeCluster(payload));
+    dispatch(ClustersActions.setRecentClusterSelected(data?.cluster_type));
   };
 
   useEffect(() => {
@@ -106,34 +120,69 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
       }
     }
   }, [isModalOpen]);
+  useEffect(() => {
+    if (!isEmpty(recentSelectedCluster)) {
+      setValue('cluster_type', recentSelectedCluster);
+    } else {
+      setValue('cluster_type', 'aks');
+    }
+  }, [recentSelectedCluster]);
   return (
     <>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
       <ModalWithRightBtn
         isOpen={isModalOpen}
         onRequestClose={onRequestClose}
         onSubmit={handleSubmit(addIndividualHost)}
         title={`${isEmpty(hostToEdit) ? 'Add' : 'Edit'} Kubernetes Details`}
-        primaryButtonText="Add Cluster"
+        primaryButtonText="Add Configuration"
         secondaryButtonText="Back"
         contentStyles={{ minWidth: '50%', maxHeight: '65%' }}
         footerAlign="start"
       >
         <Container>
           <div className="row">
-            <div className="col-12">
+            <div className="col-6">
               <InputField
                 name="kubeClusterName"
                 type="text"
-                label="Kubernetes Cluster Name"
-                placeholder="Enter Kubernetes Cluster Name"
+                label="Kubernetes Cluster Configuration"
+                placeholder="Enter Kubernetes Cluster Configuration"
                 required
                 register={register}
                 errors={errors}
                 icon={<DocumentTextIcon />}
               />
             </div>{' '}
+            <div className="col-6 mb-4">
+              <LabelSelect className="mb-3">
+                Kubernetes cluster type
+              </LabelSelect>
+              <SelectField
+                name="cluster_type"
+                icon={<DocumentTextIcon />}
+                register={register}
+                errors={errors}
+                control={control}
+                options={
+                  [
+                    { label: 'Amazon EKS', value: 'eks' },
+                    {
+                      label: 'Self-Managed Kubernetes',
+                      value: 'ec2',
+                    },
+                    {
+                      label: 'Azure Kubernetes Service',
+                      value: 'aks',
+                    },
+                  ] || []
+                }
+                placeholder={'Select Kubernetes Cluster'}
+                required={true}
+              />
+            </div>
           </div>
+
           <div>
             <div className="col-12">
               <span>
@@ -144,13 +193,13 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
                     control={control}
                     required
                     rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                    placeholder="Upload kubernetes config file"
+                    placeholder="Upload kubernetes Configuration file"
                     errors={errors}
                     fileLable="File"
                     validExtensionsArray={['.txt', '.yaml', '.yml']}
                     acceptString={'.txt,.yaml,.yml'}
-                    errorText={'YAML or PFX'}
-                    label="Kubernetes config file"
+                    errorText={'YAML, YML or TXT'}
+                    label="Kubernetes Configuration file"
                   />
                 </ModalContainer>
               </span>

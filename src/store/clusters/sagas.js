@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { all, call, put, select, takeLatest } from 'redux-saga/effects';
+import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
@@ -200,12 +200,12 @@ export function* fetchHostNodesList(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
-export function* fetchMasterHostNodesList(api) {
+export function* fetchMasterHostNodesList(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchMasterHostNodesList',
     loadingSection: 'fetchMasterHostNodesList',
     apiMethod: api.fetchMasterHostNodesList,
-    apiParams: [],
+    apiParams: [{ payload: payload }],
   });
   if (response.ok) {
     yield put(ClustersActions.setHostIpList(response?.data));
@@ -620,12 +620,12 @@ export function* testMultipleNodes(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
-export function* fetchConfigFieldsForKubernetes(api) {
+export function* fetchConfigFieldsForKubernetes(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchConfigFieldsForKubernetes',
     loadingSection: 'fetchConfigFieldsForKubernetes',
     apiMethod: api.fetchConfigFieldsForKubernetes,
-    apiParams: [],
+    apiParams: [{ payload: payload }],
   });
   if (response.ok) {
     yield put(ClustersActions.setKubernetesConfigFields(response?.data));
@@ -644,15 +644,15 @@ export function* createConfigForKubernetesCluster(api, { payload }) {
     toast.success(response?.data?.message);
     yield call(history.push, '/clusters/setup-cluster');
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
-export function* fetchConfigListForKubernetes(api) {
+export function* fetchConfigListForKubernetes(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchConfigListForKubernetes',
     loadingSection: 'fetchConfigListForKubernetes',
     apiMethod: api.fetchConfigListForKubernetes,
-    apiParams: [],
+    apiParams: [{ payload: payload }],
   });
   if (response.ok) {
     yield put(ClustersActions.setListConfigListKubernetes(response?.data));
@@ -682,6 +682,7 @@ export function* createKubernetesCluster(api, { payload }) {
     apiParams: [{ payload: payload }],
   });
   if (response?.ok) {
+    yield put(ClustersActions.setCreateLoadingState(false));
     toast.success(response?.data?.message);
     yield call(history.push, '/clusters');
     yield put(ClustersActions.setProgressTrackingModalOpen(true));
@@ -689,8 +690,9 @@ export function* createKubernetesCluster(api, { payload }) {
       ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
     );
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
+  yield put(ClustersActions.setCreateLoadingState(false));
 }
 export function* fetchConfigVersionsPerConfig(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -717,7 +719,7 @@ export function* createKubernetesMasterNodeCluster(api, { payload }) {
     yield put(ClustersActions.setkubeHostModalOpen(false));
     yield put(ClustersActions.fetchMasterHostNodesList());
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* deleteMasterNodeConfig(api, { payload }) {
@@ -787,15 +789,40 @@ export function* fetchSSHstatus(api, { payload }) {
   }
 }
 export function* addNarFile(api, { payload }) {
+  const restartAfterUpload = yield select(
+    ClustersSelectors.getrestartClusterAfterAction
+  );
+
+  const loggedInCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const response = yield call(requestSaga, {
     errorSection: 'addNarFile',
     loadingSection: 'addNarFile',
     apiMethod: api.addNarFile,
     apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
   });
+
   if (response?.ok) {
     toast.success(response?.data?.message || 'Added Successfully');
-    yield put(ClustersActions.fetchNarList(payload?.id));
+
+    if (restartAfterUpload) {
+      yield put(
+        ClustersActions.restartCluster({
+          id: payload?.id,
+          payload: {},
+        })
+      );
+      if (loggedInCluster?.value == payload?.id) {
+        yield put(
+          NamespacesActions.setSelectedCluster({
+            label: '',
+            value: '',
+          })
+        );
+        localStorage.removeItem('selected_cluster');
+      }
+    } else {
+      yield put(ClustersActions.fetchNarList(payload?.id));
+    }
   } else {
     toast.error(response?.data?.message);
   }
@@ -820,6 +847,10 @@ export function* fetchNarList(api, { payload }) {
 }
 
 export function* restartCluster(api, { payload }) {
+  yield put(ClustersActions.setRestartDelayLoadingState(true));
+  const restartAfterUpload = yield select(
+    ClustersSelectors.getrestartClusterAfterAction
+  );
   const response = yield call(requestSaga, {
     errorSection: 'restartCluster',
     loadingSection: 'restartCluster',
@@ -828,6 +859,11 @@ export function* restartCluster(api, { payload }) {
   });
   if (response?.ok) {
     toast.success(response?.data?.message || 'Added Successfully');
+    if (restartAfterUpload) {
+      yield delay(10000);
+      yield put(ClustersActions.fetchNarList(payload?.id));
+      yield put(ClustersActions.setRestartDelayLoadingState(false));
+    }
     // yield put(ClustersActions.fetchNarList(payload?.id));
   } else {
     toast.error(response?.data?.error);
@@ -844,7 +880,7 @@ export function* uploadClusterDriver(api, { payload }) {
     toast.success(response?.data?.message || 'Added Successfully');
     yield put(ClustersActions.fetchDriversList(payload?.id));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* fetchDriversList(api, { payload }) {
@@ -865,6 +901,8 @@ export function* fetchDriversList(api, { payload }) {
   }
 }
 export function* deleteClusterKube(api, { payload }) {
+  const deleteType = payload?.deleteType || 'db_only';
+
   const response = yield call(requestSaga, {
     errorSection: 'deleteClusterKube',
     loadingSection: 'deleteClusterKube',
@@ -872,7 +910,7 @@ export function* deleteClusterKube(api, { payload }) {
     apiParams: [
       {
         clusterIdToDelete: payload?.clusterIdToDelete,
-        deleteType: payload?.deleteType || 'db_only',
+        deleteType,
         payload: payload?.payloadData,
       },
     ],
@@ -886,7 +924,9 @@ export function* deleteClusterKube(api, { payload }) {
       })
     );
     yield put(ClustersActions.setIsOpenDeleteKubeClusterModal(false));
-    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    if (deleteType === 'nifi_uninstall') {
+      yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    }
     yield put(
       ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
     );
@@ -896,6 +936,11 @@ export function* deleteClusterKube(api, { payload }) {
 }
 
 export function* deleteClusterNarFile(api, { payload }) {
+  const restartAfterUpload = yield select(
+    ClustersSelectors.getrestartClusterAfterAction
+  );
+
+  const loggedInCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const response = yield call(requestSaga, {
     errorSection: 'deleteClusterNarFile',
     loadingSection: 'deleteClusterNarFile',
@@ -908,7 +953,25 @@ export function* deleteClusterNarFile(api, { payload }) {
     ],
   });
   if (response?.ok) {
-    yield put(ClustersActions.fetchNarList(payload?.id));
+    if (restartAfterUpload) {
+      yield put(
+        ClustersActions.restartCluster({
+          id: payload?.id,
+          payload: {},
+        })
+      );
+      if (loggedInCluster?.value == payload?.id) {
+        yield put(
+          NamespacesActions.setSelectedCluster({
+            label: '',
+            value: '',
+          })
+        );
+        localStorage.removeItem('selected_cluster');
+      }
+    } else {
+      yield put(ClustersActions.fetchNarList(payload?.id));
+    }
   } else {
     toast.error(response?.data?.message);
   }
@@ -933,6 +996,123 @@ export function* deleteClusterDriverFile(api, { payload }) {
   }
 }
 
+export function* fetchKubePodStatus(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchKubePodStatus',
+    loadingSection: 'fetchKubePodStatus',
+    apiMethod: api.fetchKubePodStatus,
+    apiParams: [
+      {
+        id: payload,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setKubePods(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+export function* fetchKubeHealth(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchKubeHealth',
+    loadingSection: 'fetchKubeHealth',
+    apiMethod: api.fetchKubeHealth,
+    apiParams: [
+      {
+        id: payload?.id,
+        pod: payload?.pod,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setKubePodHealth(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+export function* updateKubeConfigQuickEdit(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'updateKubeConfigQuickEdit',
+    loadingSection: 'updateKubeConfigQuickEdit',
+    apiMethod: api.updateKubeConfigQuickEdit,
+    apiParams: [{ payload: payload }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setUpdatedKubeConfig(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* addScript(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'addScript',
+    loadingSection: 'addScript',
+    apiMethod: api.addScript,
+    apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message || 'Added Successfully');
+    yield put(ClustersActions.fetchScriptList(payload?.id));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* fetchScriptList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchScriptList',
+    loadingSection: 'fetchScriptList',
+    apiMethod: api.fetchScriptList,
+    apiParams: [
+      {
+        clusterId: payload,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setScriptList(response?.data));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* deleteClusterScript(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteClusterScript',
+    loadingSection: 'deleteClusterScript',
+    apiMethod: api.deleteClusterScript,
+    apiParams: [
+      {
+        id: payload?.id,
+        narId: payload?.narId,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.fetchScriptList(payload?.id));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+export function* testAzureConfig(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'testAzureConfig',
+    loadingSection: 'testAzureConfig',
+    apiMethod: api.testAzureConfig,
+    apiParams: [{ payload: payload }],
+  });
+  if (response?.ok) {
+    toast.success(
+      response?.data?.message || 'Credentials valid & resource group accessible'
+    );
+
+    yield put(ClustersActions.setAzureTestPassed(true));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
 export function* clustersSagas(api) {
   yield all([
     takeLatest(
@@ -1095,5 +1275,16 @@ export function* clustersSagas(api) {
       deleteClusterDriverFile,
       api
     ),
+    takeLatest(ClustersActions.fetchKubePodStatus, fetchKubePodStatus, api),
+    takeLatest(ClustersActions.fetchKubeHealth, fetchKubeHealth, api),
+    takeLatest(
+      ClustersActions.updateKubeConfigQuickEdit,
+      updateKubeConfigQuickEdit,
+      api
+    ),
+    takeLatest(ClustersActions.addScript, addScript, api),
+    takeLatest(ClustersActions.fetchScriptList, fetchScriptList, api),
+    takeLatest(ClustersActions.deleteClusterScript, deleteClusterScript, api),
+    takeLatest(ClustersActions.testAzureConfig, testAzureConfig, api),
   ]);
 }

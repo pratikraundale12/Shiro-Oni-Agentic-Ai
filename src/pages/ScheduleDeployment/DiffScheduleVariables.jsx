@@ -254,10 +254,8 @@ const DiffScheduleVariables = ({
     </DataWrapper>
   );
 };
-
 DiffScheduleVariables.propTypes = {
   variablesData: PropTypes.array,
   isFromDeploySummary: PropTypes.bool,
 };
-
 export default DiffScheduleVariables;

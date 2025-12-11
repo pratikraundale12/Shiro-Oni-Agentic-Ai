@@ -6,13 +6,13 @@ import { ActivityHistoryIcon } from '../../assets';
 import { Grid, IconButton, StatusRender, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button } from '../../shared';
+import { Button, Modal } from '../../shared';
 import { useGlobalContext } from '../../utils';
 import ClusterSummaryNavigationTab from './components/ClusterSummaryNavigationTab';
 import ClusterStatusTab from './components/ClusterStatusTab';
 import { dispatch } from 'd3';
-import { useDispatch } from 'react-redux';
-import { ClustersActions } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { ClustersActions, ClustersSelectors } from '../../store';
 import { useParams } from 'react-router-dom';
 import RegistryCertificateDownloadTab from './components/ClusterRegistryCert';
 
@@ -51,6 +51,9 @@ export const ClusterSummary = () => {
   const { state, setState } = useGlobalContext();
   const [activeTab, setActiveTab] = useState('summary');
   const { id: clusterId } = useParams();
+  const registryCertDownloadOpen = useSelector(
+    ClustersSelectors.getIsDownloadRegistryCertOpen
+  );
 
   const getActionsMenu = item => (
     <div data-tooltip-id={`${item?.nodeId}1`}>
@@ -115,6 +118,7 @@ export const ClusterSummary = () => {
 
   const handleBackAction = () => {
     history.push('/clusters');
+    dispatch(ClustersActions.setclusterViewTab('node'));
   };
   useEffect(() => {
     dispatch(ClustersActions.fetchClusterRegistryNodes(clusterId));
@@ -127,6 +131,7 @@ export const ClusterSummary = () => {
         setActiveTab={setActiveTab}
         createdByAnsible={state?.created_by_ansible}
       />
+
       {activeTab === 'summary' && (
         <Grid
           module="nodes"
@@ -143,11 +148,26 @@ export const ClusterSummary = () => {
           <RegistryCertificateDownloadTab clusterId={clusterId} />
         </div>
       )}
+      <Modal
+        title="Registry Details"
+        primaryButtonText={'Back'}
+        isOpen={registryCertDownloadOpen}
+        onRequestClose={() =>
+          dispatch(ClustersActions.setIsDownloadRegistryCertOpen(false))
+        }
+        onSubmit={() =>
+          dispatch(ClustersActions.setIsDownloadRegistryCertOpen(false))
+        }
+        contentStyles={{ minWidth: '50%' }}
+      >
+        <RegistryCertificateDownloadTab clusterId={clusterId} />
+      </Modal>
       {activeTab === 'status' && (
         <div style={{ height: '100%' }}>
           <ClusterStatusTab />
         </div>
       )}
+
       <div style={{ width: '74px', marginTop: 'auto', paddingTop: '10px' }}>
         <Button variant="secondary" type="button" onClick={handleBackAction}>
           {KDFM.BACK}

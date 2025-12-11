@@ -4,13 +4,19 @@ import {
   ClustersActions,
   ClustersSelectors,
   LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
 } from '../../../store';
 import { FullPageLoader, Table } from '../../../components';
 import { useGlobalContext } from '../../../utils';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { NotePadIcon } from '../../../assets';
+import { BookIcon, InfoIcon, NotePadIcon } from '../../../assets';
 import { theme } from '../../../styles';
+import KubeClusterHealthMetrics from './KubeClusterHealthMetrics';
+import { isEmpty } from 'lodash';
+import { Button } from '../../../shared';
+import { SchedularSelectors } from '../../../store/schedular';
 const ActiveTd = styled.div`
   font-weight: var(--fw-500);
   line-height: 19.36px;
@@ -93,7 +99,9 @@ const renderStatus = status => {
 const KubeClusterPodsAndMetrics = () => {
   const dispatch = useDispatch();
   const podsList = useSelector(ClustersSelectors.getKubePods);
+  const activeTab = useSelector(ClustersSelectors.getclusterViewTab);
   const { state } = useGlobalContext();
+  const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   const COLUMNS = [
     {
@@ -158,36 +166,137 @@ const KubeClusterPodsAndMetrics = () => {
       resize: true,
     },
   ];
+
   useEffect(() => {
-    if (state?.nodeClusterId) {
-      dispatch(ClustersActions.fetchKubePodStatus(state?.nodeClusterId));
+    if (activeTab !== 'status') return;
+    if (!state?.nodeClusterId) return;
+    dispatch(ClustersActions.fetchKubePodStatus(state.nodeClusterId));
+    const interval = setInterval(() => {
+      dispatch(ClustersActions.fetchKubePodStatus(state.nodeClusterId));
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [activeTab, state?.nodeClusterId, dispatch]);
+  
+  const handleRestart = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(false));
+    dispatch(
+      ClustersActions.restartCluster({
+        id: state.nodeClusterId,
+        payload: {},
+      })
+    );
+
+    if (loggedInCluster?.value == state.nodeClusterId) {
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
     }
-  }, [dispatch, state?.nodeClusterId]);
+  };
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchKubePodStatus')
   );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'restartCluster')
+  );
   return (
     <>
-      <FullPageLoader loading={loading} />{' '}
+      <FullPageLoader
+        loading={(loading && isEmpty(podsList)) || loading2}
+        restartText={loading2}
+      />{' '}
+      <div className="row">
+        <div className="col-2">
+          <Button onClick={handleRestart}>Restart Cluster</Button>
+        </div>
+        <div
+          className="col-10 d-flex align-items-center"
+          style={{
+            fontWeight: '500',
+            fontSize: '16px',
+            color: theme.colors.primary,
+          }}
+        >
+          <InfoIcon color={theme.colors.primary} /> &nbsp; The cluster restart
+          will take approximately 5 minutes.
+        </div>
+      </div>
       <NavTabs id="nav-tab" role="tablist" className="mb-4">
         <NavButton
-          active={true}
-          // onClick={() => {
-          //   setActiveTab('summary');
-          // }}
+          active={activeTab === 'node'}
+          onClick={() => {
+            dispatch(ClustersActions.setclusterViewTab('node'));
+          }}
         >
           <div className="d-flex align-items-center gap-2">
-            <NotePadIcon color={'#FF7A00'} width={22} height={22} />
-            Pods Status
+            <NotePadIcon
+              color={activeTab === 'node' ? '#FF7A00' : '#444445'}
+              width={22}
+              height={22}
+            />
+            Nodes
+          </div>
+        </NavButton>
+        <NavButton
+          active={activeTab === 'status'}
+          onClick={() => {
+            dispatch(ClustersActions.setclusterViewTab('status'));
+          }}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <NotePadIcon
+              color={activeTab === 'status' ? '#FF7A00' : '#444445'}
+              width={22}
+              height={22}
+            />
+            Pods
+          </div>
+        </NavButton>{' '}
+        <NavButton
+          active={activeTab === 'healthMetices'}
+          onClick={() => {
+            dispatch(ClustersActions.setclusterViewTab('healthMetices'));
+          }}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <BookIcon
+              color={activeTab === 'healthMetices' ? '#FF7A00' : '#444445'}
+              width={22}
+              height={22}
+            />
+            Health Metrics
           </div>
         </NavButton>
       </NavTabs>
-      <Table
-        showPagination={true}
-        data={podsList}
-        columns={COLUMNS}
-        tableWithFullHeight={false}
-      />{' '}
+      {activeTab === 'status' && (
+        <div
+          style={{
+            overflow: 'auto',
+            maxHeight: 'calc(100vh - 250px)',
+            minHeight: 'calc(100vh - 600px)',
+            width: '100%',
+            overflowX: 'hidden',
+          }}
+        >
+          <Table
+            showPagination={true}
+            data={podsList}
+            columns={COLUMNS}
+            tableWithFullHeight={false}
+          />
+        </div>
+      )}
+      {activeTab === 'healthMetices' && (
+        <KubeClusterHealthMetrics
+          activeTab={activeTab}
+          podsList={podsList}
+          clusterId={state?.nodeClusterId}
+        />
+      )}
     </>
   );
 };

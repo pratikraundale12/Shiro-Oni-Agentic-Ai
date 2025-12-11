@@ -16,7 +16,6 @@ import {
 } from '../../../store';
 import { ClusterLoginModal } from '../../ClusterLoginModal';
 import { IconButton } from './AtionRender';
-import { isEmpty } from 'lodash';
 import { SchedularSelectors } from '../../../store/schedular';
 
 const EnableClusterText = styled.div`
@@ -77,30 +76,54 @@ export const EnableClusterRender = ({ item }) => {
       dispatch(DashboardActions.fetchDashboardSuccess({ data: {} }));
 
       const clusterItem = localStorage.getItem('selected_cluster');
-      const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
-      const tokenToRemove =
-        !isEmpty(clustersToken) &&
-        clustersToken?.filter(token => token.id === item?.id);
-      const payload = { id: item?.id, token: tokenToRemove?.[0]?.token };
-      dispatch(ClustersActions.clusterLogout(payload));
+      const clustersToken =
+        JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
 
-      if (clusterItem) {
-        const cluster = JSON.parse(clusterItem);
-        if (cluster.value === item.id) {
-          localStorage.removeItem('selected_cluster');
-          dispatch(
-            NamespacesActions.setSelectedCluster({
-              label: '',
-              value: '',
-            })
-          );
-        }
-      }
-
-      // Remove the matching cluster from clustersToken
       const updatedClustersToken = clustersToken.filter(
         token => token.id !== item.id
       );
+
+      const tokenObjToRemove = clustersToken.find(
+        token => token.id === item?.id
+      );
+      if (tokenObjToRemove) {
+        dispatch(
+          ClustersActions.clusterLogout({
+            id: item?.id,
+            token: tokenObjToRemove.token,
+          })
+        );
+      }
+
+      if (clusterItem) {
+        const currentSelectedCluster = JSON.parse(clusterItem);
+
+        if (currentSelectedCluster.value === item.id) {
+          if (updatedClustersToken.length > 0) {
+            const nextCluster = updatedClustersToken[0];
+            const newSelection = {
+              label: nextCluster.name,
+              value: nextCluster.id,
+            };
+
+            localStorage.setItem(
+              'selected_cluster',
+              JSON.stringify(newSelection)
+            );
+
+            dispatch(NamespacesActions.setSelectedCluster(newSelection));
+          } else {
+            localStorage.removeItem('selected_cluster');
+            dispatch(
+              NamespacesActions.setSelectedCluster({
+                label: '',
+                value: '',
+              })
+            );
+          }
+        }
+      }
+
       localStorage.setItem(
         CLUSTERS_TOKEN,
         JSON.stringify(updatedClustersToken)

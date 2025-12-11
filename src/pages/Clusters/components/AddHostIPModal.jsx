@@ -128,6 +128,14 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
         value => value === value?.trim()
       ),
     port: yup.string().required('Port is required'),
+    hostName: yup
+      .string()
+      .required('Host Name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Host Name must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
     username: yup.string().required('Username is required'),
     password: yup.string().required('Password is required'),
   });
@@ -141,6 +149,14 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
         value => value === value?.trim()
       ),
     port: yup.string().required('Port is required'),
+    hostName: yup
+      .string()
+      .required('Host Name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Host Name must not have leading or trailing spaces',
+        value => value === value?.trim()
+      ),
     username: yup.string().required('Username is required'),
     password: yup.string().required('Password is required'),
     certificateType: yup.string().required('Certificate type is required'),
@@ -316,7 +332,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
         onRequestClose={onRequestClose}
         onSubmit={e => addIndividualHost(e)}
         title={`${isEmpty(hostToEdit) ? 'Add' : 'Edit'} Host Details`}
-        primaryButtonText="Add Host"
+        primaryButtonText={`${isEmpty(hostToEdit) ? 'Add' : 'Update'} Host`}
         secondaryButtonText="Back"
         primaryButtonDisabled={isPrimaryBtnDisable}
         contentStyles={{ minWidth: '68%', maxHeight: '65%' }}
@@ -325,7 +341,8 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
         tertiaryButtonConfig={{
           tertiaryButtonTest: 'Test Credentials',
           tertiaryButtonSubmit: handleSubmit(handleTestSubmit),
-          tertiaryButtonDisable: !isPrimaryBtnDisable,
+          tertiaryButtonDisable:
+            !watch('hostName')?.trim() || !isPrimaryBtnDisable,
         }}
       >
         <Container
@@ -367,6 +384,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 type="text"
                 label="Host Name"
                 placeholder="Enter Your Host Name"
+                required
                 register={register}
                 errors={errors}
                 icon={<CurvedProfileIcon />}

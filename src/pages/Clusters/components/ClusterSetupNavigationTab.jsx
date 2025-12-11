@@ -5,11 +5,10 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { ClustersActions, ClustersSelectors } from '../../../store';
 import {
-  ActivityHistoryIcon,
-  ClusterDetailTabIcon,
-  CubeIcon,
-  ManageHostIcon,
-  SettingSmallIcon,
+  ClusterDetailsIcon,
+  GettingStartedIcon,
+  ManageConfigIcon,
+  ManageKubeClusterIcon,
 } from '../../../assets';
 
 const NavTabs = styled.div`
@@ -49,9 +48,8 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('getting_started'));
         }}
       >
-        <CubeIcon
-          color={activeTab === 'getting_started' ? '#FF7A00' : '#444445'}
-        />{' '}
+        <GettingStartedIcon height="25" width="25" />
+
         {KDFM.GETTING_STARTED}
       </NavButton>
       <NavButton
@@ -60,12 +58,10 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
         }}
       >
-        <ManageHostIcon
-          color={activeTab === 'manage_host' ? '#FF7A00' : '#444445'}
-        />{' '}
+        <ManageKubeClusterIcon height="25" width="25" color={'black'} />
         {createClusterVisKubernetes === 'VM'
           ? KDFM.MANAGE_HOST
-          : 'Manage Kube Cluster'}
+          : 'Kubernetes Configuration'}
       </NavButton>
       <NavButton
         active={activeTab === 'manage_config'}
@@ -73,12 +69,10 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('manage_config'));
         }}
       >
-        <SettingSmallIcon
-          color={activeTab === 'manage_config' ? '#FF7A00' : '#444445'}
-          height={18}
-          width={18}
-        />{' '}
-        {KDFM.MANAGE_CONFIG}
+        <ManageConfigIcon height="25" width="25" color={'black'} />
+        {createClusterVisKubernetes === 'VM'
+          ? KDFM.MANAGE_CONFIG
+          : 'NiFi Configuration'}
       </NavButton>
       <NavButton
         active={activeTab === 'cluster_details'}
@@ -86,9 +80,8 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
         }}
       >
-        <ClusterDetailTabIcon
-          color={activeTab === 'cluster_details' ? '#FF7A00' : '#444445'}
-        />{' '}
+        <ClusterDetailsIcon height="25" width="25" color={'black'} />
+
         {KDFM.CLUSTER_DETAILS}
       </NavButton>
     </NavTabs>

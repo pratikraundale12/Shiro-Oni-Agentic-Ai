@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -11,8 +11,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
-import { DeleteDustbinIcon, DeleteSmallIcon } from '../../../assets';
+import {
+  DeleteDustbinIcon,
+  DeleteSmallIcon,
+  NotePadIcon,
+} from '../../../assets';
 import { LoadingSelectors } from '../../../store';
+import { theme } from '../../../styles';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -44,30 +49,26 @@ const FlexWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
 `;
-
-export const DriversCluster = ({ data }) => {
+export const ClusterCustomScript = ({ data }) => {
   const dispatch = useDispatch();
+  const scriptList = useSelector(ClustersSelectors.getScriptList);
   const [fileInputKey, setFileInputKey] = useState(0);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedDriver, setSelectedDriver] = useState({});
-  const schema = yup.object().shape({
-    driver: yup.mixed().required('File is required'),
-  });
+  const [scriptSelected, setScriptSelected] = useState({});
   const loading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'uploadClusterDriver')
+    LoadingSelectors.getLoading(state, 'addScript')
   );
-  const loading2 = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'restartCluster')
-  );
+
   const loading3 = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'deleteClusterDriverFile')
+    LoadingSelectors.getLoading(state, 'fetchScriptList')
   );
   const loading4 = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchDriversList')
+    LoadingSelectors.getLoading(state, 'deleteClusterScript')
   );
 
-  const driverList = useSelector(ClustersSelectors.getDriversList);
-
+  const schema = yup.object().shape({
+    script_file: yup.mixed().required('File is required'),
+  });
   const {
     watch,
     handleSubmit,
@@ -78,30 +79,38 @@ export const DriversCluster = ({ data }) => {
     resolver: yupResolver(schema),
   });
   const handleDeleteClick = item => {
-    setSelectedDriver(item);
+    setScriptSelected(item);
     setIsDeleteModalOpen(true);
   };
-
-  const handleDeleteConfirm = () => {
+  const handleNarDeleteConfirm = () => {
     dispatch(
-      ClustersActions.deleteClusterDriverFile({
-        id: selectedDriver?.clusterId,
-        driverId: selectedDriver?.id,
+      ClustersActions.deleteClusterScript({
+        id: scriptSelected?.clusterId,
+        narId: scriptSelected?.id,
       })
     );
-    setSelectedDriver({});
+    setScriptSelected({});
     setIsDeleteModalOpen(false);
   };
+
   const COLUMNS = [
     {
       label: 'File Name',
-      renderCell: item => <>{item?.name || 'N/A'}</>,
+      renderCell: item => (
+        <>
+          {item?.addedViaDFM && (
+            <NotePadIcon height="21" width="21" color={theme.colors.primary} />
+          )}
+          &nbsp;
+          {item?.name || 'N/A'}
+        </>
+      ),
       resize: true,
       width: '40%',
     },
     {
-      label: 'File Path',
-      renderCell: item => <>{item?.jarPath}</>,
+      label: 'File',
+      renderCell: item => <>{item?.scriptPath}</>,
       resize: true,
       width: '50%',
     },
@@ -112,11 +121,10 @@ export const DriversCluster = ({ data }) => {
         <>
           {
             <span
-              data-tooltip-id={`delete-driver`}
               onClick={() => handleDeleteClick(item)}
               style={{ cursor: 'pointer' }}
             >
-              {<DeleteSmallIcon color="red" />}
+              {item?.addedViaDFM && <DeleteSmallIcon color="red" />}
             </span>
           }{' '}
         </>
@@ -128,22 +136,22 @@ export const DriversCluster = ({ data }) => {
 
   const handleUpload = formdata => {
     const payloadFile = new FormData();
-    payloadFile.append('driverFile', formdata?.driver);
+    payloadFile.append('scriptFile', formdata?.script_file);
     let payload = { payload: payloadFile, id: data?.id };
-    dispatch(ClustersActions.uploadClusterDriver(payload));
+    dispatch(ClustersActions.addScript(payload));
     setFileInputKey(prev => prev + 1);
     reset();
   };
 
   useEffect(() => {
     if (!isEmpty(data?.id)) {
-      dispatch(ClustersActions.fetchDriversList(data?.id));
+      dispatch(ClustersActions.fetchScriptList(data?.id));
     }
   }, [data?.id]);
 
   return (
     <>
-      <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
+      <FullPageLoader loading={loading || loading3 || loading4} />
 
       <Container>
         <div className="row mb-3">
@@ -151,19 +159,19 @@ export const DriversCluster = ({ data }) => {
             <div className="col-6">
               <ModalContainer>
                 <PemUploadField
-                  name="driver"
-                  label="Driver file"
+                  name="script_file"
+                  label="Custom Script"
                   watch={watch}
                   control={control}
                   required
                   rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                  placeholder={'Upload driver file'}
+                  placeholder={'Upload Script'}
                   errors={errors}
-                  fileLable="Custom driver file"
+                  fileLable="Custom Script"
+                  validExtensionsArray={['.groovy', '.py']}
+                  acceptString={'.groovy,.py'}
+                  errorText={'Script'}
                   key={fileInputKey}
-                  validExtensionsArray={['.jar']}
-                  acceptString={'.jar'}
-                  errorText={'Jar'}
                 />
               </ModalContainer>
             </div>
@@ -181,25 +189,31 @@ export const DriversCluster = ({ data }) => {
             </Button>
           </div>
         </FlexWrapper>
+        <div className="ms-1 mt-2 d-flex justify-content-end">
+          <div>
+            <NotePadIcon height="21" width="21" color={theme.colors.primary} />{' '}
+            : &nbsp;Uploaded by DFM &nbsp;&nbsp;
+          </div>
+        </div>
         <div className="mt-2">
-          <Table data={driverList || []} columns={COLUMNS} />
+          <Table data={scriptList || []} columns={COLUMNS} />
         </div>
         <ModalWithIcon
-          title={`Delete Driver`}
+          title={`Delete Script`}
           primaryButtonText={'Delete'}
           secondaryButtonText="Cancel"
           icon={<DeleteDustbinIcon />}
           isOpen={isDeleteModalOpen}
           onRequestClose={() => setIsDeleteModalOpen(false)}
           primaryText={`Are you sure you want to delete?`}
-          onSubmit={handleDeleteConfirm}
+          onSubmit={handleNarDeleteConfirm}
         />
       </Container>
     </>
   );
 };
 
-DriversCluster.propTypes = {
+ClusterCustomScript.propTypes = {
   data: PropTypes.shape({
     clusterName: PropTypes.string,
     nifiUrl: PropTypes.string,

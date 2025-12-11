@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import {
-  ManageClusterIcon,
-  ManageConfigGearIcon,
-  SSHCredentialsPaperIcon,
+  ClusterDetailsIcon,
+  GettingStartedIcon,
+  ManageConfigIcon,
+  ManageKubeClusterIcon,
 } from '../../../assets';
 import { useDispatch, useSelector } from 'react-redux';
 import { ClustersActions, ClustersSelectors } from '../../../store';
@@ -56,6 +57,7 @@ const ClusterSetupGettingStartedTab = () => {
       <div className="d-flex justify-content-center w-100 mb-3">
         <div className="col-md-8 d-flex flex-column justify-content-center text-center">
           <div>
+            <GettingStartedIcon /> <br />
             <HighlightTextTop>{KDFM.GETTING_STARTED}</HighlightTextTop>
           </div>
         </div>
@@ -65,7 +67,7 @@ const ClusterSetupGettingStartedTab = () => {
         <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
-              <SSHCredentialsPaperIcon height="60" width="60" color={'black'} />
+              <ManageKubeClusterIcon height="75" width="75" color={'black'} />
             </LeftHolder>
             <RightHolder className="col h-100 row">
               <div className="col-10 h-100">
@@ -73,14 +75,14 @@ const ClusterSetupGettingStartedTab = () => {
                   <HighLightText>
                     {createClusterVisKubernetes === 'VM'
                       ? KDFM.GETTING_STARTED_MANAGE_HOST_TITLE
-                      : 'Manage Kube Cluster'}
+                      : 'Kubernetes Configuration'}
                   </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <BottomText>
                     {createClusterVisKubernetes === 'VM'
                       ? KDFM.GETTING_STARTED_MANAGE_HOST_DESCRIPTION
-                      : 'Manage Kubernetes Cluster'}
+                      : 'Manage Kubernetes Configuration'}
                   </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
@@ -95,7 +97,7 @@ const ClusterSetupGettingStartedTab = () => {
                   >
                     {createClusterVisKubernetes === 'VM'
                       ? KDFM.MANAGE_HOST
-                      : 'Manage Kube Cluster'}
+                      : 'Kubernetes Configuration'}
                   </BottomText>
                 </div>
               </div>
@@ -105,18 +107,23 @@ const ClusterSetupGettingStartedTab = () => {
         <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
-              <ManageConfigGearIcon height="60" width="60" color={'black'} />
+              <ManageConfigIcon height="75" width="75" color={'black'} />
             </LeftHolder>
             <RightHolder className="col h-100 row">
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <HighLightText>
-                    {KDFM.GETTING_STARTED_MANAGE_CONFIG_TITLE}
+                    {' '}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.GETTING_STARTED_MANAGE_CONFIG_TITLE
+                      : 'NiFi Configuration'}
                   </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <BottomText>
-                    {KDFM.GETTING_STARTED_MANAGE_CONFIG_DESCRIPTION}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.GETTING_STARTED_MANAGE_CONFIG_DESCRIPTION
+                      : 'Manage NiFi Configuration'}
                   </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
@@ -131,7 +138,9 @@ const ClusterSetupGettingStartedTab = () => {
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    {KDFM.MANAGE_CONFIG}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.MANAGE_CONFIG
+                      : 'NiFi Configuration'}
                   </BottomText>
                 </div>
               </div>
@@ -141,18 +150,22 @@ const ClusterSetupGettingStartedTab = () => {
         <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
-              <ManageClusterIcon height="60" width="60" color={'black'} />
+              <ClusterDetailsIcon height="75" width="75" color={'black'} />
             </LeftHolder>
             <RightHolder className="col h-100 row">
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <HighLightText>
-                    {KDFM.GETTING_STARTED_CLUSTER_DETAILS_TITLE}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.GETTING_STARTED_CLUSTER_DETAILS_TITLE
+                      : 'Cluster Details'}
                   </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <BottomText>
-                    {KDFM.GETTING_STARTED_CLUSTER_DETAILS_DESCRIPTION}
+                    {createClusterVisKubernetes === 'VM'
+                      ? KDFM.GETTING_STARTED_CLUSTER_DETAILS_DESCRIPTION
+                      : 'Manage Cluster Details'}
                   </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
@@ -167,7 +180,7 @@ const ClusterSetupGettingStartedTab = () => {
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    {KDFM.ADD_NEW_CLUSTER}
+                    {KDFM.CLUSTER_DETAILS}
                   </BottomText>
                 </div>
               </div>

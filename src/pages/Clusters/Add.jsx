@@ -48,6 +48,8 @@ import { DriversCluster } from './components/DriversClusters';
 import { FlowGzTabSection } from './components/FlowGzSection';
 import RegistryMultiSelect from '../../shared/FormInputs/components/RegistryMultiSelectField';
 
+import { createRegistry } from '../../store/index1';
+import { ClusterCustomScript } from './components/ClusterCustomScript';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
@@ -223,13 +225,14 @@ export const Add = () => {
           return false;
         }
       })
-      .test('unique-registry-url', ' Cluster already exists', function (value) {
-        if (!value) return true;
-        return !filteredGridData?.some(
-          reg =>
-            reg?.nifi_url.trim() === value.trim() ||
-            reg?.nifi_url.trim() + '/nifi' === value.trim()
-        );
+      .test('unique-registry-url', 'Cluster already exists', function (value) {
+        const val = value?.trim?.() || '';
+        if (!val) return true;
+
+        return !filteredGridData?.some(reg => {
+          const regUrl = reg?.nifi_url?.trim?.() || '';
+          return regUrl === val || regUrl + '/nifi' === val;
+        });
       }),
     metrics_url: yup.string().url('Enter a valid Metrics URL'),
     logs_url: yup.string().url('Enter a valid Logs URL'),
@@ -728,7 +731,8 @@ export const Add = () => {
       activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS ||
       activeTab === CLUSTER_MODULE_TABS.DRIVERS ||
       activeTab === CLUSTER_MODULE_TABS.FLOW_GZ ||
-      activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT
+      activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT ||
+      activeTab === CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS
     ) {
       return false;
     } else {
@@ -1165,6 +1169,9 @@ export const Add = () => {
           <FormContainer>
             {<ClusterCustomProcessor data={data} />}
           </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.CUSTOM_SCRIPTS && (
+          <FormContainer>{<ClusterCustomScript data={data} />}</FormContainer>
         )}
         {activeTab === CLUSTER_MODULE_TABS.SSH_DETAILS && (
           <FormContainer>

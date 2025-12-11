@@ -6,7 +6,7 @@ import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button, ModalWithIcon } from '../../../shared';
-import { KDFM } from '../../../constants';
+import { KDFM, SEARCH_INPUT_ERROR } from '../../../constants';
 import {
   ClustersActions,
   ClustersSelectors,
@@ -25,6 +25,7 @@ import {
   NotePadIcon,
   PencilIcon,
   PlusCircleIcon,
+  SmallSearchIcon,
 } from '../../../assets';
 import { AddHostIPModal } from './AddHostIPModal';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
@@ -61,6 +62,33 @@ const ActionTd = styled.div`
   gap: 6px;
   padding-right: 10px;
 `;
+const SearchContainer = styled.div`
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
+`;
+const Search = styled.input`
+  width: 100%;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
+
+  &:focus-visible {
+    outline: none;
+  }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
+`;
 const SetupClusterManageHostWrapper = ({ activeTab }) => {
   const [hostToDelete, setHostToDelete] = useState({});
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -70,10 +98,23 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchHostNodesList')
   );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchMasterHostNodesList')
+  );
   const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const createClusterVisKubernetes = useSelector(
     ClustersSelectors.getCreateClusterMethod
   );
+  const [searchText, setSearchText] = useState('');
+  const search = searchText?.toLowerCase();
+  const filteredList = listHostIpData?.filter(item => {
+    if (createClusterVisKubernetes === 'VM') {
+      return item?.host_name?.toLowerCase()?.includes(search);
+    }
+
+    return item?.kube_cluster_name?.toLowerCase()?.includes(search);
+  });
+
   const COLUMNS = [
     {
       label: 'Host Name',
@@ -205,17 +246,34 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       width: '10%',
     },
   ];
+  const toUpperIfAlphanumeric = str => {
+    if (typeof str !== 'string') return str;
+
+    const isAlphanumeric = /^[a-zA-Z0-9]+$/.test(str);
+
+    return isAlphanumeric ? str.toUpperCase() : str;
+  };
   const COLUMNS_KUBERNETSTES_FLOW = [
     {
-      label: 'Kubernetes Cluster Name',
+      label: 'Kubernetes Cluster Configuration',
       renderCell: item => (
         <div className="d-flex gap-2">{item?.kube_cluster_name || 'N/A'}</div>
       ),
 
       resize: true,
-      width: '80%',
+      width: '60%',
     },
+    {
+      label: 'Type',
+      renderCell: item => (
+        <div className="d-flex gap-2">
+          {toUpperIfAlphanumeric(item?.type) || 'N/A'}
+        </div>
+      ),
 
+      resize: true,
+      width: '20%',
+    },
     {
       label: 'Actions',
       renderCell: item => (
@@ -229,17 +287,17 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           >
             <PencilIcon width={16} height={16} />
           </IconButton> */}
-          {!item?.is_selected && (
-            <IconButton
-              onClick={() => {
-                setIsDeleteModalOpen(true);
-                setHostToDelete(item);
-              }}
-              className="pencil-icon-schedule-list"
-            >
-              <DeleteSmallIcon width={16} height={16} color="red" />
-            </IconButton>
-          )}
+
+          <IconButton
+            onClick={() => {
+              setIsDeleteModalOpen(true);
+              setHostToDelete(item);
+            }}
+            className="pencil-icon-schedule-list"
+            disabled={item?.is_selected}
+          >
+            <DeleteSmallIcon width={16} height={16} color="red" />
+          </IconButton>
         </ActionTd>
       ),
       resize: true,
@@ -260,13 +318,13 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
     }
 
     return () => {
-      ClustersActions.setHostIpList([]);
+      dispatch(ClustersActions.setHostIpList([]));
       dispatch(ClustersActions.setLastVisitedTab('manage_host'));
     };
   }, [dispatch]);
   return (
     <Wrapper>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
       <Title title={'Add New Cluster'} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
@@ -295,6 +353,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
                 )}
               </div>
             }
+
             <div className="col-auto me-3">
               <Button
                 size="md"
@@ -315,14 +374,42 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
                   <PlusCircleIcon height={19} width={19} color={'#fff'} />
                   {createClusterVisKubernetes === 'VM'
                     ? 'Add New Host'
-                    : 'Add Kube Cluster'}
+                    : 'Add Kubernetes Configuration'}
                 </div>
               </Button>
             </div>
           </div>
           <div className="ms-3 me-3">
+            <SearchContainer>
+              <SmallSearchIcon
+                width={18}
+                height={18}
+                color={theme.colors.darkGrey1}
+              />
+              <Search
+                type="search"
+                value={searchText}
+                placeholder={
+                  createClusterVisKubernetes === 'VM'
+                    ? 'Search Host'
+                    : 'Search Configuration'
+                }
+                onChange={e => {
+                  const value = e.target.value;
+                  setSearchText(value);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }
+                }}
+              />
+            </SearchContainer>
+          </div>
+          <div className="ms-3 me-3">
             <Table
-              data={listHostIpData || []}
+              data={filteredList || listHostIpData || []}
               columns={
                 createClusterVisKubernetes === 'VM'
                   ? COLUMNS

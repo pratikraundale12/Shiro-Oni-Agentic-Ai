@@ -6,12 +6,19 @@ import { KDFM } from '../../../constants';
 import { LockIcon } from '../../../assets';
 import { theme } from '../../../styles';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { isEmpty } from 'lodash';
+
 const Container = styled.div`
   .customTable {
     height: auto;
   }
 `;
-const RegistryDetail = ({ data, displayFullWidth }) => {
+const RegistryDetail = ({
+  displayFullWidth,
+  data,
+  handleCert,
+  showRegistryDownload,
+}) => {
   const REGISTRYCOLUMNS = [
     {
       label: KDFM.REGISTRY_NAME,
@@ -61,6 +68,9 @@ const RegistryDetail = ({ data, displayFullWidth }) => {
           tooltipPlacement="top"
           type="Registry"
           copy_btn_tooltip={'Copy Registry URL'}
+          displayCert={!isEmpty(showRegistryDownload)}
+          handleCert={handleCert}
+          certTitle="Download Certificate"
         />
       ),
       width: '75%',
@@ -81,6 +91,8 @@ const RegistryDetail = ({ data, displayFullWidth }) => {
 RegistryDetail.propTypes = {
   data: PropTypes.object.isRequired,
   displayFullWidth: PropTypes.bool,
+  handleCert: PropTypes.func.isRequired,
+  showRegistryDownload: PropTypes.any,
 };
 
 export default RegistryDetail;

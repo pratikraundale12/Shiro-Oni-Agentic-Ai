@@ -76,6 +76,7 @@ export const CLUSTER_MODULE_TABS = {
   SSH_DETAILS: 'SSH Details',
   DRIVERS: 'Drivers',
   FLOW_GZ: 'Flow Migration',
+  CUSTOM_SCRIPTS: 'Custom Scripts',
 };
 
 export const CLUSTER_STATUS = {
@@ -148,7 +149,6 @@ export const ACTIVITY_EVENTS = [
   { label: 'Generate Flow', value: 'Generate Flow' },
   { label: 'Comparison', value: 'Comparison' },
   { label: 'Validate', value: 'Validate' },
-  { label: 'Comparison', value: 'Comparison' },
   { label: 'Add Data Flow Inventory', value: 'Add Data Flow Inventory' },
   { label: 'Start Cluster', value: 'Start Cluster' },
   { label: 'Update Nodes', value: 'Update Nodes' },
@@ -303,10 +303,11 @@ export const KDFM = {
   ITEMS_PER_PAGE: 20,
   USER_STORY: 'User Story',
   CHANGE_REQUEST: 'Change Request',
-  PLEASE_LOGIN_TO_CLUSTER: 'Please login to cluster',
   SELECT_PROCESS_GROUP: 'Select Process Group',
   DATE_TIME_FORMAT: 'Date/Time Format',
   TREE_VIEW: 'Tree View',
+  SUBMIT: 'Submit',
+  PLEASE_LOGIN_TO_CLUSTER: 'Please login to the cluster.',
 
   // License constants
   TRIAL: 'Trial',

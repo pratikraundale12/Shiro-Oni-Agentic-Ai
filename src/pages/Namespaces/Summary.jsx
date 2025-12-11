@@ -2349,12 +2349,12 @@ const Summary = () => {
                 : checkDestCluster?.version || 'N/A'
             }`}
             isFromDeploySummary={true}
-            parametersData={mergedParametersData}
-            variablesData={mergedVariablesData}
-            csData={mergedControllerServicesData}
+            parametersData={newParametersData}
+            variablesData={variblesReduxData}
+            csData={updatedLocalCsPayloadOnDeploy}
           />
         )}
-        <SanityCheckDeployModal />
+      <SanityCheckDeployModal />
       </MainContainer>
       <ModalWithIcon
         title={'Sanity Check Confirmation'}

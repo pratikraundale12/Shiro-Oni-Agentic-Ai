@@ -672,6 +672,7 @@ const ClusterDetailTab = ({
             options={configVersionOptions || []}
             placeholder={KDFM.SELECT_CONFIG_VERSION}
             disabled={!isEmpty(nodesUpdateAnsbibleClusterId)}
+            sortAlphabetically={false}
           />
         </div>
 

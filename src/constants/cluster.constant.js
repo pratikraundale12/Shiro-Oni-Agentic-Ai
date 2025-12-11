@@ -54,8 +54,8 @@ export const CLUSTER_CONSTANTS = {
   DELETE_CLUSTER: 'Delete Cluster',
   SELECTED_CLUSTER: 'Selected Cluster',
   DEACTIVATE_CLUSTER: 'Deactivate Cluster',
-  SEARCH_CLUSTER_NAME_URL: 'Search Cluster Name, URL, Tag',
-  ENTER_EMAIL: 'Enter Your Email',
+  SEARCH_CLUSTER_NAME_URL: 'Search Cluster Name, URL',
+  ENTER_EMAIL: 'Enter your Email',
   ENTER_SMTP_SERVICE: 'Enter SMTP Service',
   ENTER_SMTP_HOST: 'Enter SMTP Host',
   ENTER_SMTP_PORT: 'Enter SMTP Port',
@@ -107,9 +107,10 @@ export const CLUSTER_CONSTANTS = {
   ENTER_YOUR_CLUSTER_NAME: 'Enter your Cluster Name',
 
   ADD_NEW_CONFIG: 'Add New Config',
+  ADD_NIFI_CONFIG: 'Add NiFi Configuration',
 
-  NEW_CONFIG_DETAILS: 'New Config Details',
-  EDIT_CONFIG_DETAILS: 'Edit Config Details',
+  NEW_CONFIG_DETAILS: 'New Configuration Details',
+  EDIT_CONFIG_DETAILS: 'Edit Configuration Details',
   COMMENTS: 'Comments',
   ENTER_CONFIG_NAME: 'Enter Config Name',
   ENTER_YOUR_COMMENTS: 'Enter your Comments',

@@ -1,10 +1,13 @@
 /* eslint-disable */
 import React, { useState } from 'react';
-import { InputField, Modal } from '../../../shared';
+import { Button, CheckboxField, InputField, Modal } from '../../../shared';
 import { QRIcons } from '../../../assets';
 import styled from 'styled-components';
 import PemUploadField from '../PEMUploadFile';
 import { isEmpty } from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
+import { ClustersActions, ClustersSelectors } from '../../../store';
+import { dispatch } from 'd3';
 const LabelSelect = styled.div`
   font-size: 14px;
   font-weight: 600;
@@ -42,31 +45,58 @@ const KubeClusterConfigDetailsModal = ({
   handleSubmit,
   kubeClusterIDEdit,
   reset,
+  onError,
+  aksSaveDb,
+  setAksSaveDb,
 }) => {
+  const dispatch = useDispatch();
+  const azureCluster = useSelector(ClustersSelectors.getAzureCluster);
+  const azureTestPassed = useSelector(ClustersSelectors.getazureTestPassed);
+
   const onRequestClose = () => {
     setOpenAddConfigModal(false);
+  };
+
+  const handleTestCredAzure = data => {
+    const payload = {
+      tenantId: data?.tenantId,
+      clientId: data?.clientId,
+      clientSecret: data?.clientSecret,
+      subscriptionId: data?.subscriptionId,
+      resourceGroup: data?.resourceGroup,
+    };
+
+    dispatch(ClustersActions.testAzureConfig(payload));
   };
   return (
     <>
       <Modal
         isOpen={openAddConfigModal}
-        title={`${clusterType === 'ec2' ? 'Self-Managed Kubernetes' : 'Amazon EKS'} Details`}
+        title={`${clusterType === 'ec2' ? 'Self-Managed Kubernetes' : clusterType === 'aks' ? 'Azure' : 'Amazon EKS'} Details`}
         secondaryButtonText="Back"
         primaryButtonText={
           !isEmpty(kubeClusterIDEdit)
-            ? 'Initiate Cluster Edit'
+            ? 'Initiate Cluster Update'
             : 'Initiate Cluster Creation'
         }
-        primaryButtonDisabled={false}
+        primaryButtonDisabled={clusterType === 'aks' ? !azureTestPassed : false}
         onRequestClose={onRequestClose}
-        onSubmit={handleSubmit(handleCreateCluster)}
+        onSubmit={handleSubmit(handleCreateCluster, onError)}
         onSecondarySubmit={onRequestClose}
-        footerAlign="center"
+        footerAlign="start"
         contentStyles={{ minWidth: '60%', maxHeight: '60%' }}
+        tertiaryButton={clusterType === 'aks'}
+        tertiaryButtonConfig={{
+          tertiaryButtonTest: 'Test Credentials',
+          tertiaryButtonSubmit: () => {
+            handleSubmit(handleTestCredAzure, onError)();
+          },
+          tertiaryButtonDisable: azureTestPassed,
+        }}
       >
         <div className=" row d-flex justify-content-center">
           <div className="">
-            {clusterType !== 'ec2' && (
+            {clusterType === 'eks' && (
               <>
                 {' '}
                 <div className="row mt-3">
@@ -187,7 +217,6 @@ const KubeClusterConfigDetailsModal = ({
                         name="ec2_ssh_pem_file"
                         watch={watch}
                         control={control}
-                        required
                         rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
                         placeholder="Upload SSH Key File"
                         errors={errors}
@@ -200,6 +229,90 @@ const KubeClusterConfigDetailsModal = ({
                     </div>
                   </div>
                 </>
+              </>
+            )}
+            {clusterType === 'aks' && (
+              <>
+                {' '}
+                <div className="row mt-3">
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Tenant ID <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="tenantId"
+                      type="text"
+                      placeholder={'Enter Tenant ID'}
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                      disabled={azureTestPassed}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Client ID <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="clientId"
+                      type="text"
+                      placeholder="Enter Client ID"
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                      disabled={azureTestPassed}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Client Secret <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="clientSecret"
+                      type="text"
+                      placeholder="Enter Client Secret"
+                      required={true}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                      disabled={azureTestPassed}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Subscription ID <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="subscriptionId"
+                      type="text"
+                      placeholder={'Enter Subscription ID'}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                      required={true}
+                      disabled={azureTestPassed}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <LabelSelect className="mb-3">
+                      Resource Group <span style={{ color: 'red' }}>*</span>
+                    </LabelSelect>
+                    <InputField
+                      name="resourceGroup"
+                      type="text"
+                      placeholder={'Enter Resource Group'}
+                      register={register}
+                      errors={errors}
+                      icon={<QRIcons />}
+                      required={true}
+                      disabled={azureTestPassed}
+                    />
+                  </div>{' '}
+                </div>
               </>
             )}
           </div>

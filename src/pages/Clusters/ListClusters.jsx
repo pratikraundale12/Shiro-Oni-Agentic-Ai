@@ -195,6 +195,9 @@ export const ListClusters = () => {
   const handleEditAnsibleCluster = item => {
     if (item?.is_kube_cluster) {
       dispatch(ClustersActions.setCreateClusterMethod('Kubernetes'));
+      // if (item?.is_azure_cluster) {
+      // }  CHANGEHERE
+      dispatch(ClustersActions.setAzureCluster(true));
     }
     dispatch(ClustersActions.setansibleClucterToEdit(item?.id));
     dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
@@ -215,6 +218,7 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setAnsibleClusterNodeUpdate(''));
     dispatch(ClustersActions.fetchClusters());
     dispatch(ClustersActions.setkubeClusterUpgradeData({}));
+    dispatch(ClustersActions.setRecentClusterSelected(null));
   }, [dispatch]);
 
   const handleHardDeleteAnsibleCluster = item => {
@@ -238,7 +242,6 @@ export const ListClusters = () => {
       })
     );
     setSelectedCluster({});
-    setUninstallNiFi(false);
   };
 
   const handleOpenProgressModal = item => {
@@ -278,8 +281,8 @@ export const ListClusters = () => {
     {
       label: KDFM.NIFI_URL,
       renderCell: item => {
-        const updatedUrl = item.nifi_url.endsWith('/nifi')
-          ? item.nifi_url
+        const updatedUrl = item?.nifi_url?.endsWith('/nifi')
+          ? item?.nifi_url
           : `${item.nifi_url}/nifi`;
 
         return (
@@ -375,7 +378,11 @@ export const ListClusters = () => {
                       {item.is_active ? (
                         <>
                           {item.edit_cluster && (
-                            <Item onClick={() => handleClick('edit')}>
+                            <Item
+                              onClick={() =>
+                                handleClick('edit', item?.id, item)
+                              }
+                            >
                               <PencilIcon width={16} height={16} />
                               <span>{KDFM.EDIT}</span>
                             </Item>
@@ -419,7 +426,8 @@ export const ListClusters = () => {
                             </Item>
                           )}
                           {item?.edit_cluster &&
-                            item?.created_by_ansible &&
+                            (item?.created_by_ansible ||
+                              item?.is_kube_cluster) &&
                             item?.status !== CLUSTER_STATUS.DISCONNECTED &&
                             !item?.registry_id && (
                               <Item
@@ -579,7 +587,6 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
     dispatch(ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false));
     dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
-    setUninstallNiFi(false);
   };
 
   const updateClusterStatus = async id => {
@@ -704,12 +711,22 @@ export const ListClusters = () => {
     handleCloseMenu();
     if (type === 'edit') {
       history.push('/clusters/edit', { state: menuState.row });
+      setState({
+        ...state,
+        nodeClusterId: menuState.row.id,
+        created_by_ansible: item?.created_by_ansible,
+        is_kube_cluster: item?.is_kube_cluster,
+        isRegistrySecured: item?.isRegistrySecured,
+        nifi_version: item?.nifi_version,
+      });
     }
     if (type === 'view') {
       setState({
         ...state,
         nodeClusterId: menuState.row.id,
         created_by_ansible: item?.created_by_ansible,
+        is_kube_cluster: item?.is_kube_cluster,
+        isRegistrySecured: item?.isRegistrySecured,
       });
       history.push(`/clusters/${menuState.row.id}`, {
         clusterSummaryPage: true,
@@ -755,6 +772,8 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setRegistryNodesData({}));
     dispatch(ClustersActions.setClusterSetupSelectedNiFiVersion(null));
     dispatch(ClustersActions.setSshAddedStatus({}));
+    dispatch(ClustersActions.setNarList([]));
+    dispatch(ClustersActions.setclusterViewTab('node'));
     return () => {
       dispatch(ClustersActions.setLastVisitedTab('cluster'));
     };
@@ -780,7 +799,7 @@ export const ListClusters = () => {
           setSelectedCluster({});
         }}
         primaryText={KDFM.HARD_DELETE_CLUSTER_WARNING}
-        secondaryText={'This is will clean the hosts of failed cluster'}
+        secondaryText={'This will clean the hosts of failed cluster'}
       />
       <ClusterRegistryAssociationModal
         selectedCluster={selectedCluster}
@@ -881,6 +900,7 @@ export const ListClusters = () => {
         setSelectedCluster={setSelectedCluster}
         selectedCluster={selectedCluster}
         sortingState={sortingState}
+        itemPerClusterList={itemPerClusterList}
       />
       <ClusterLoginWithOutCredModal />
     </>

@@ -38,8 +38,16 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
     aws_session_token: yup.string().required('AWS Session Token is required'),
   });
   const schemaEC2 = yup.object().shape({});
+  const noSpaces = /^(\S.*\S|\S)$/;
+
+  const schemaAZURE = yup.object().shape({});
+
   const schema =
-    deleteKubeClusterData?.cluster_type === 'ec2' ? schemaEC2 : schemaEKS;
+    deleteKubeClusterData?.cluster_type === 'ec2'
+      ? schemaEC2
+      : deleteKubeClusterData?.cluster_type === 'aks'
+        ? schemaAZURE
+        : schemaEKS;
   const {
     register,
     control,
@@ -49,8 +57,17 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+
   const deleteCluster = data => {
     if (deleteKubeClusterData?.cluster_type === 'ec2') {
+      const payload = {
+        clusterIdToDelete: deleteKubeClusterData?.id,
+        deleteType: unInstallNiFi ? 'nifi_uninstall' : 'db_only',
+        payloadData: {},
+      };
+
+      dispatch(ClustersActions.deleteClusterKube(payload));
+    } else if (deleteKubeClusterData?.cluster_type === 'aks') {
       const payload = {
         clusterIdToDelete: deleteKubeClusterData?.id,
         deleteType: unInstallNiFi ? 'nifi_uninstall' : 'db_only',
@@ -78,6 +95,7 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
   const onRequestClose = () => {
     dispatch(ClustersActions.setIsOpenDeleteKubeClusterModal(false));
     reset();
+    setUninstallNiFi(false);
   };
   return (
     <>
@@ -99,72 +117,75 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
           </div>
           <PrimaryText>{KDFM.HARD_DELETE_CLUSTER_WARNING}</PrimaryText>
           <div className="">
-            {deleteKubeClusterData?.cluster_type !== 'ec2' && (
-              <>
-                {' '}
-                <div className="row mt-3">
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      AWS Region <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="aws_region"
-                      type="text"
-                      placeholder={'Enter AWS Region'}
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
+            {deleteKubeClusterData?.cluster_type !== 'ec2' &&
+              deleteKubeClusterData?.cluster_type !== 'aks' && (
+                <>
+                  {' '}
+                  <div className="row mt-3">
+                    <div className="col-6">
+                      <LabelSelect className="mb-3">
+                        AWS Region <span style={{ color: 'red' }}>*</span>
+                      </LabelSelect>
+                      <InputField
+                        name="aws_region"
+                        type="text"
+                        placeholder={'Enter AWS Region'}
+                        required={true}
+                        register={register}
+                        errors={errors}
+                        icon={<QRIcons />}
+                      />
+                    </div>
+                    <div className="col-6">
+                      <LabelSelect className="mb-3">
+                        AWS Access Key Id{' '}
+                        <span style={{ color: 'red' }}>*</span>
+                      </LabelSelect>
+                      <InputField
+                        name="aws_access_key_id"
+                        type="text"
+                        placeholder="Enter AWS Access Key Id"
+                        required={true}
+                        register={register}
+                        errors={errors}
+                        icon={<QRIcons />}
+                      />
+                    </div>
                   </div>
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      AWS Access Key Id <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="aws_access_key_id"
-                      type="text"
-                      placeholder="Enter AWS Access Key Id"
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
+                  <div className="row">
+                    <div className="col-6">
+                      <LabelSelect className="mb-3">
+                        AWS Secret Access Key{' '}
+                        <span style={{ color: 'red' }}>*</span>
+                      </LabelSelect>
+                      <InputField
+                        name="aws_secret_access_key"
+                        type="text"
+                        placeholder="Enter AWS Secret Access Key"
+                        required={true}
+                        register={register}
+                        errors={errors}
+                        icon={<QRIcons />}
+                      />
+                    </div>
+                    <div className="col-6">
+                      <LabelSelect className="mb-3">
+                        AWS Session Token{' '}
+                        <span style={{ color: 'red' }}>*</span>
+                      </LabelSelect>
+                      <InputField
+                        name="aws_session_token"
+                        type="text"
+                        placeholder={'Enter AWS Session Token'}
+                        register={register}
+                        errors={errors}
+                        icon={<QRIcons />}
+                        required={true}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      AWS Secret Access Key{' '}
-                      <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="aws_secret_access_key"
-                      type="text"
-                      placeholder="Enter AWS Secret Access Key"
-                      required={true}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                    />
-                  </div>
-                  <div className="col-6">
-                    <LabelSelect className="mb-3">
-                      AWS Session Token <span style={{ color: 'red' }}>*</span>
-                    </LabelSelect>
-                    <InputField
-                      name="aws_session_token"
-                      type="text"
-                      placeholder={'Enter AWS Session Token'}
-                      register={register}
-                      errors={errors}
-                      icon={<QRIcons />}
-                      required={true}
-                    />
-                  </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
             {deleteKubeClusterData?.cluster_type === 'ec2' && (
               <>
                 {' '}
@@ -175,6 +196,23 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
                     checked={unInstallNiFi}
                     onChange={e => setUninstallNiFi(e.target.checked)}
                   />
+                </div>
+              </>
+            )}
+
+            {deleteKubeClusterData?.cluster_type === 'aks' && (
+              <>
+                {' '}
+                <div className="row mt-3"></div>
+                <div className="row">
+                  <div className="col-12 d-flex align-items-center justify-content-center">
+                    <CheckboxField
+                      name="check"
+                      label="Do you also want to uninstall NiFi?"
+                      checked={unInstallNiFi}
+                      onChange={e => setUninstallNiFi(e.target.checked)}
+                    />
+                  </div>
                 </div>
               </>
             )}

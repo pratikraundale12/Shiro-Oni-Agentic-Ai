@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
@@ -101,6 +101,12 @@ const SetupClusterWrapper = ({ activeTab }) => {
     );
   });
   const newlySelectedNodesIds = newlySelectedNodes.map(ele => ele?.id);
+
+  useEffect(() => {
+    return () => {
+      dispatch(ClustersActions.setLastVisitedTab('cluster_details'));
+    };
+  }, [dispatch]);
 
   const handleCreateCluster = data => {
     if (!isEmpty(nodesUpdateAnsbibleClusterId)) {

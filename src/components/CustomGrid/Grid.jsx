@@ -15,6 +15,7 @@ import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { InputField, Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
+  ClustersActions,
   ClustersSelectors,
   LoadingSelectors,
   NamespacesSelectors,
@@ -178,6 +179,7 @@ export const Grid = ({
   const [scheduleType, setScheduleType] = useState(null);
   const [viewMode, setViewMode] = useState('list_view'); // 'list_view' | 'tree_view'
 
+  const activeTabClusterView = useSelector(ClustersSelectors.getclusterViewTab);
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
 
@@ -292,8 +294,10 @@ export const Grid = ({
 
   const getNamespacesListData = () => {
     if (
-      (module === 'nodes' && !isClusterLoggedIn) ||
-      (module === 'nodes' && is_kube_cluster)
+      module === 'nodes' &&
+      !isClusterLoggedIn
+      // ||
+      // (module === 'nodes' && is_kube_cluster)
     ) {
       return;
     }
@@ -525,12 +529,33 @@ export const Grid = ({
           />
         </ClusterRegistryContainer>
         <ClusterRegistryContainer className="row">
-          {registryNodesData?.cluster?.registry?.length > 0 && (
-            <RegistryDetail
-              displayFullWidth
-              data={registryNodesData?.cluster?.registry}
-            />
-          )}
+          {registryNodesData?.cluster?.registry?.length > 0 &&
+            is_kube_cluster && (
+              <RegistryDetail
+                displayFullWidth
+                data={{
+                  name: registryNodesData?.cluster?.registry?.[0]?.name,
+                  registry_url:
+                    registryNodesData?.cluster?.registry?.[0]?.registry_url,
+                }}
+                handleCert={() =>
+                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true))
+                }
+                showRegistryDownload={
+                  registryNodesData?.cluster?.registry?.[0]?.is_kube_registry &&
+                  registryNodesData?.cluster?.registry?.[0]?.id
+                }
+              />
+            )}
+          {registryNodesData?.cluster?.registry?.length > 0 &&
+            !is_kube_cluster && (
+              <RegistryDetail
+                displayFullWidth
+                data={registryNodesData?.cluster?.registry}
+                handleCert={() => {}}
+                showRegistryDownload={false}
+              />
+            )}
         </ClusterRegistryContainer>
         <ClusterRegistryContainer className="row">
           {registryNodesData?.cluster?.metrics_url && (
@@ -592,6 +617,13 @@ export const Grid = ({
       </>
     );
   };
+  function tableDispaly(module, activeTabClusterView) {
+    if (module === 'nodes') {
+      return activeTabClusterView === 'node';
+    }
+    return true;
+  }
+
   return (
     <Container>
       {!is_kube_cluster && (
@@ -619,9 +651,44 @@ export const Grid = ({
           selectEvent={selectEvent}
           selectEntity={selectEntity}
           setSelectEntity={setSelectEntity}
+          setSortingState={setSortingState}
           setSelectStatus={setSelectStatus}
           selectStatus={selectStatus}
-          setSortingState={setSortingState}
+          setCurrentPage={setCurrentPage}
+          isClusterLoggedIn={isClusterLoggedIn}
+          is_kube_cluster={is_kube_cluster}
+        />
+      )}
+      {is_kube_cluster && <div className="mt-4"></div>}
+      {module === 'nodes' &&
+        !loading &&
+        !isEmpty(registryNodesData?.cluster?.name) && (
+          <>{getRegistryNodesData()}</>
+        )}
+      <div className="mb-2 ps-1">
+        <Breadcrumb module={module} />
+      </div>
+      {tableDispaly(module, activeTabClusterView) && (
+        <TableContainer
+          module={module}
+          fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
+        >
+          {loading || isEmpty(TABLE_DATA?.nodes) ? (
+            getLoader()
+          ) : (
+            <CompactTable
+              data={TABLE_DATA}
+              columns={columns}
+              theme={tableTheme}
+              layout={{ custom: true }}
+              // sort={sort}
+            />
+          )}
+        </TableContainer>
+      )}
+      {gridCount >= 10 && (
+        <Pagination
+          page={currentPage}
           setCurrentPage={setCurrentPage}
           isClusterLoggedIn={isClusterLoggedIn}
           is_kube_cluster={is_kube_cluster}

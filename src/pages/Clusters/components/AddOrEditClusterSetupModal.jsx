@@ -11,16 +11,13 @@ import {
 import { Modal } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
-  CreateClusterIcon,
-  InfoIcon,
-  ManageClusterIcon,
+  KubernetesIcon,
+  OnprimiseIcon,
+  RegisterClusterIcon,
   SelectedTickIconOrange,
 } from '../../../assets';
 import { theme } from '../../../styles';
 import { history } from '../../../helpers/history';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { isEmpty } from 'lodash';
-
 const Container = styled.div`
   display: flex;
   gap: 25px;
@@ -28,6 +25,7 @@ const Container = styled.div`
 
 const BulletContainer = styled.div`
   width: 100%;
+  min-width: 260px;
   max-width: 280px;
   height: 280px;
   border: 2px solid
@@ -98,25 +96,19 @@ const TickIconStyle = styled.div`
   top: 10px;
   right: 10px;
 `;
-
-const Divstyled = styled.div`
-  border: 2px solid
-    ${({ borderSelected }) =>
-      borderSelected ? theme.colors.primary : '#DDE4F0'};
-  background-color: ${({ borderSelected }) =>
-    borderSelected ? '#f5f7fa' : '#fff'};
-  border-radius: 8px;
+const HighLightHeadingText = styled.span`
+  white-space: nowrap;
+  font-family: Noto Sans;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 27.24px;
+  letter-spacing: 0%;
   color: #444445;
-  font-family: Red Hat Display;
-  font-weight: 600;
-  font-size: 14px;
-  height: 40px;
-  cursor: pointer;
 `;
 
 export const AddOrEditClusterModal = () => {
   const dispatch = useDispatch();
-  const [selectedFlow, setSelectedFlow] = useState(null);
+  const [selectedFlow, setSelectedFlow] = useState('CreateCluster');
   const [createNewClusterMethod, setCreateNewCusterMethod] = useState('VM');
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
 
@@ -136,12 +128,6 @@ export const AddOrEditClusterModal = () => {
       onRequestClose();
     }
   };
-
-  useEffect(() => {
-    if (!isModalOpen) {
-      setSelectedFlow(null);
-    }
-  }, [isModalOpen]);
   useEffect(() => {
     dispatch(ClustersActions.setCreateClusterMethod(createNewClusterMethod));
   }, [createNewClusterMethod]);
@@ -153,9 +139,8 @@ export const AddOrEditClusterModal = () => {
       onSubmit={handleSubmit(handleContinueSubmit)}
       title={KDFM.NEW_CLUSTER}
       primaryButtonText="Continue"
-      primaryButtonDisabled={isEmpty(selectedFlow)}
       secondaryButtonText="Back"
-      contentStyles={{ minWidth: '32%' }}
+      contentStyles={{ minWidth: '50%' }}
       footerAlign="start"
     >
       <Container>
@@ -163,19 +148,22 @@ export const AddOrEditClusterModal = () => {
           <BulletContainer
             onClick={() => {
               setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
+              setCreateNewCusterMethod('VM');
             }}
-            borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
+            borderSelected={
+              createNewClusterMethod === 'VM' &&
+              selectedFlow !== KDFM.MANAGE_CLUSTER_FLOW
+            }
           >
             <div>
               <LeftHolder>
                 <IconContainer
-                  borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
+                  borderSelected={
+                    createNewClusterMethod === 'VM' &&
+                    selectedFlow !== KDFM.MANAGE_CLUSTER_FLOW
+                  }
                 >
-                  <CreateClusterIcon
-                    height="60"
-                    width="60"
-                    color={theme.colors.primary}
-                  />
+                  <OnprimiseIcon width={80} height={80} />
                 </IconContainer>
               </LeftHolder>
               <RightHolder>
@@ -187,15 +175,65 @@ export const AddOrEditClusterModal = () => {
                   </div>
                   <div>
                     <BottomText>
-                      {KDFM.CREATE_NEW_CLUSTER_DESCRIPTION}
+                      via <br />
                     </BottomText>
+                    <HighLightHeadingText>
+                      Virtual Machine / Instances
+                    </HighLightHeadingText>
                   </div>
                 </div>
-                {selectedFlow === KDFM.CREATE_CLUSTER_FLOW && (
-                  <TickIconStyle>
-                    <SelectedTickIconOrange height="25" width="25" />
-                  </TickIconStyle>
-                )}
+                {createNewClusterMethod === 'VM' &&
+                  selectedFlow !== KDFM.MANAGE_CLUSTER_FLOW && (
+                    <TickIconStyle>
+                      <SelectedTickIconOrange height="25" width="25" />
+                    </TickIconStyle>
+                  )}
+              </RightHolder>
+            </div>
+          </BulletContainer>
+        )}
+        {currentUser?.permissions?.includes('add_cluster_setup') && (
+          <BulletContainer
+            onClick={() => {
+              setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
+              setCreateNewCusterMethod('Kubernetes');
+            }}
+            borderSelected={
+              createNewClusterMethod === 'Kubernetes' &&
+              selectedFlow !== KDFM.MANAGE_CLUSTER_FLOW
+            }
+          >
+            <div>
+              <LeftHolder>
+                <IconContainer
+                  borderSelected={
+                    createNewClusterMethod === 'Kubernetes' &&
+                    selectedFlow !== KDFM.MANAGE_CLUSTER_FLOW
+                  }
+                >
+                  <KubernetesIcon width={80} height={80} />
+                </IconContainer>
+              </LeftHolder>
+              <RightHolder>
+                <div>
+                  <div>
+                    <HighLightText>
+                      {KDFM.CREATE_NEW_CLUSTER_TITLE}
+                    </HighLightText>
+                  </div>
+                  <div>
+                    <BottomText>
+                      via <br />
+                    </BottomText>
+                    <HighLightHeadingText>Kubernetes</HighLightHeadingText>
+                  </div>
+                </div>
+                {selectedFlow === KDFM.CREATE_CLUSTER_FLOW &&
+                  createNewClusterMethod === 'Kubernetes' && (
+                    <TickIconStyle>
+                      <SelectedTickIconOrange height="25" width="25" />
+                    </TickIconStyle>
+                  )}
               </RightHolder>
             </div>
           </BulletContainer>
@@ -211,9 +249,9 @@ export const AddOrEditClusterModal = () => {
               <IconContainer
                 borderSelected={selectedFlow === KDFM.MANAGE_CLUSTER_FLOW}
               >
-                <ManageClusterIcon
-                  height="50"
-                  width="50"
+                <RegisterClusterIcon
+                  height="80"
+                  width="80"
                   color={theme.colors.primary}
                 />
               </IconContainer>
@@ -240,66 +278,6 @@ export const AddOrEditClusterModal = () => {
           </div>
         </BulletContainer>
       </Container>
-      {selectedFlow === KDFM.CREATE_CLUSTER_FLOW && (
-        <div className="mt-4 row" style={{ height: '50px' }}>
-          <div className="col-6">
-            <Divstyled
-              className=" h-100 w-100 d-flex justify-content-center align-items-center"
-              borderSelected={createNewClusterMethod === 'VM'}
-              onClick={() => setCreateNewCusterMethod('VM')}
-            >
-              {' '}
-              <span data-tooltip-id={`tooltip-VM`}>
-                <InfoIcon
-                  color={
-                    createNewClusterMethod === 'VM'
-                      ? theme.colors.primary
-                      : theme.colors.darkGrey2
-                  }
-                />
-              </span>
-              &nbsp; Virtual Machine / Instances
-            </Divstyled>
-            <ReactTooltip
-              id={`tooltip-VM`}
-              place="top"
-              content={'THIS IS DEMO TEXT FOR VM'}
-              style={{
-                whiteSpace: 'normal',
-                zIndex: 9999,
-              }}
-            />
-          </div>
-          <div className="col-6">
-            <Divstyled
-              className=" h-100 w-100 d-flex justify-content-center align-items-center"
-              borderSelected={createNewClusterMethod === 'Kubernetes'}
-              onClick={() => setCreateNewCusterMethod('Kubernetes')}
-            >
-              {' '}
-              <span data-tooltip-id={`tooltip-Kubernetes`}>
-                <InfoIcon
-                  color={
-                    createNewClusterMethod === 'Kubernetes'
-                      ? theme.colors.primary
-                      : theme.colors.darkGrey2
-                  }
-                />
-              </span>{' '}
-              &nbsp;Kubernetes
-            </Divstyled>{' '}
-            <ReactTooltip
-              id={`tooltip-Kubernetes`}
-              place="top"
-              content={'THIS IS DEMO TEXT FOR KUBERNETES'}
-              style={{
-                whiteSpace: 'normal',
-                zIndex: 9999,
-              }}
-            />
-          </div>
-        </div>
-      )}
     </Modal>
   );
 };

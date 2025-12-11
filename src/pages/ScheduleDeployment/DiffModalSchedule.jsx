@@ -88,7 +88,6 @@ export const DiffModalScheduleList = props => {
         return <DiffModalFlowValidation />;
       case 'Local Changes':
         return <DiffLocalChanges />;
-
       default:
         return null;
     }

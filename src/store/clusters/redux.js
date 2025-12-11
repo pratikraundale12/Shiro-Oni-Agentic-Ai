@@ -188,6 +188,31 @@ export const ClustersActions = {
   setTourStart: createAction(`${prefix}setTourStart`),
   deleteClusterNarFile: createAction(`${prefix}deleteClusterNarFile`),
   deleteClusterDriverFile: createAction(`${prefix}deleteClusterDriverFile`),
+  fetchKubePodStatus: createAction(`${prefix}fetchKubePodStatus`),
+  setKubePods: createAction(`${prefix}setKubePods`),
+  fetchKubeHealth: createAction(`${prefix}fetchKubeHealth`),
+  setKubePodHealth: createAction(`${prefix}setKubePodHealth`),
+  setIsDownloadRegistryCertOpen: createAction(
+    `${prefix}setIsDownloadRegistryCertOpen`
+  ),
+  updateKubeConfigQuickEdit: createAction(`${prefix}updateKubeConfigQuickEdit`),
+  setUpdatedKubeConfig: createAction(`${prefix}setUpdatedKubeConfig`),
+  addScript: createAction(`${prefix}addScript`),
+  fetchScriptList: createAction(`${prefix}fetchScriptList`),
+  deleteClusterScript: createAction(`${prefix}deleteClusterScript`),
+  setScriptList: createAction(`${prefix}setScriptList`),
+  setAzureCluster: createAction(`${prefix}setAzureCluster`),
+  testAzureConfig: createAction(`${prefix}testAzureConfig`),
+  setAzureTestPassed: createAction(`${prefix}setAzureTestPassed`),
+  setRecentClusterSelected: createAction(`${prefix}setRecentClusterSelected`),
+  setclusterViewTab: createAction(`${prefix}setclusterViewTab`),
+  setrestartClusterAfterAction: createAction(
+    `${prefix}setrestartClusterAfterAction`
+  ),
+  setRestartDelayLoadingState: createAction(
+    `${prefix}setRestartDelayLoadingState`
+  ),
+  setCreateLoadingState: createAction(`${prefix}setCreateLoadingState`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -256,6 +281,18 @@ export const CLUSTERS_INITIAL_STATE = {
   isOpenDeleteKubeClusterModal: false,
   tourIndex: 0,
   tourStart: false,
+  kubePods: [],
+  kubePodHealth: {},
+  isDownloadRegistryCertOpen: false,
+  updatedKubeConfig: {},
+  scriptList: [],
+  azureCluster: false,
+  azureTestPassed: false,
+  recentClusterSelected: null,
+  clusterViewTab: 'node',
+  restartClusterAfterAction: false,
+  restartDelayLoadingState: false,
+  createLoadingState: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -340,6 +377,20 @@ export const ClustersSelectors = {
     state.clusters.isOpenDeleteKubeClusterModal,
   getTourIndex: state => state.clusters.tourIndex,
   getTourStart: state => state.clusters.tourStart,
+  getKubePods: state => state.clusters.kubePods,
+  getKubePodHealth: state => state.clusters.kubePodHealth,
+  getIsDownloadRegistryCertOpen: state =>
+    state.clusters.isDownloadRegistryCertOpen,
+  getUpdatedKubeConfig: state => state.clusters.updatedKubeConfig,
+  getScriptList: state => state.clusters.scriptList,
+  getAzureCluster: state => state.clusters.azureCluster,
+  getazureTestPassed: state => state.clusters.azureTestPassed,
+  getrecentClusterSelected: state => state.clusters.recentClusterSelected,
+  getclusterViewTab: state => state.clusters.clusterViewTab,
+  getrestartClusterAfterAction: state =>
+    state.clusters.restartClusterAfterAction,
+  getrestartDelayLoadingState: state => state.clusters.restartDelayLoadingState,
+  getcreateLoadingState: state => state.clusters.createLoadingState,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -752,6 +803,80 @@ const setclusterToLoginWithoutCred = (state, { payload }) => {
   };
 };
 
+const setKubePods = (state, { payload }) => {
+  return {
+    ...state,
+    kubePods: payload,
+  };
+};
+const setKubePodHealth = (state, { payload }) => {
+  return {
+    ...state,
+    kubePodHealth: payload,
+  };
+};
+const setIsDownloadRegistryCertOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isDownloadRegistryCertOpen: payload,
+  };
+};
+const setUpdatedKubeConfig = (state, { payload }) => {
+  return {
+    ...state,
+    updatedKubeConfig: payload,
+  };
+};
+
+const setScriptList = (state, { payload }) => {
+  return {
+    ...state,
+    scriptList: payload,
+  };
+};
+const setAzureCluster = (state, { payload }) => {
+  return {
+    ...state,
+    azureCluster: payload,
+  };
+};
+const setAzureTestPassed = (state, { payload }) => {
+  return {
+    ...state,
+    azureTestPassed: payload,
+  };
+};
+const setRecentClusterSelected = (state, { payload }) => {
+  return {
+    ...state,
+    recentClusterSelected: payload,
+  };
+};
+const setclusterViewTab = (state, { payload }) => {
+  return {
+    ...state,
+    clusterViewTab: payload,
+  };
+};
+const setrestartClusterAfterAction = (state, { payload }) => {
+  return {
+    ...state,
+    restartClusterAfterAction: payload,
+  };
+};
+const setRestartDelayLoadingState = (state, { payload }) => {
+  return {
+    ...state,
+    restartDelayLoadingState: payload,
+  };
+};
+const setCreateLoadingState = (state, { payload }) => {
+  return {
+    ...state,
+    createLoadingState: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -918,6 +1043,30 @@ export const clustersReducer = createReducer(
         setIsOpenDeleteKubeClusterModal
       )
       .addCase(ClustersActions.setTourIndex, setTourIndex)
-      .addCase(ClustersActions.setTourStart, setTourStart);
+      .addCase(ClustersActions.setTourStart, setTourStart)
+      .addCase(ClustersActions.setKubePods, setKubePods)
+      .addCase(ClustersActions.setKubePodHealth, setKubePodHealth)
+      .addCase(
+        ClustersActions.setIsDownloadRegistryCertOpen,
+        setIsDownloadRegistryCertOpen
+      )
+      .addCase(ClustersActions.setUpdatedKubeConfig, setUpdatedKubeConfig)
+      .addCase(ClustersActions.setScriptList, setScriptList)
+      .addCase(ClustersActions.setAzureCluster, setAzureCluster)
+      .addCase(ClustersActions.setAzureTestPassed, setAzureTestPassed)
+      .addCase(
+        ClustersActions.setRecentClusterSelected,
+        setRecentClusterSelected
+      )
+      .addCase(ClustersActions.setclusterViewTab, setclusterViewTab)
+      .addCase(
+        ClustersActions.setrestartClusterAfterAction,
+        setrestartClusterAfterAction
+      )
+      .addCase(
+        ClustersActions.setRestartDelayLoadingState,
+        setRestartDelayLoadingState
+      )
+      .addCase(ClustersActions.setCreateLoadingState, setCreateLoadingState);
   }
 );
