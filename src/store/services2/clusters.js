@@ -115,8 +115,11 @@ export const clustersAPI = api => {
   const fetchSSHstatus = ({ clusterId }) => {
     return api.get(`/clusters/${clusterId}/check-ssh-details`);
   };
-  const addNarFile = ({ clusterId, payload }) => {
-    return api.post(`/clusters/${clusterId}/upload-nars`, payload);
+  const addNarFile = ({ clusterId, payload, restart }) => {
+    return api.post(
+      `/clusters/${clusterId}/upload-nars?restart=${restart}`,
+      payload
+    );
   };
   const fetchNarList = ({ clusterId }) => {
     return api.get(`/clusters/${clusterId}/nars-list`);

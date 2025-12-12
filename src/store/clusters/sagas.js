@@ -794,7 +794,13 @@ export function* addNarFile(api, { payload }) {
     errorSection: 'addNarFile',
     loadingSection: 'addNarFile',
     apiMethod: api.addNarFile,
-    apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
+    apiParams: [
+      {
+        clusterId: payload?.id,
+        payload: payload?.payload,
+        restart: restartAfterUpload,
+      },
+    ],
   });
 
   if (response?.ok) {
