@@ -35,6 +35,7 @@ import {
   DashboardActions,
   GridActions,
   NamespacesActions,
+  NamespacesSelectors,
 } from '../../store';
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
@@ -161,7 +162,7 @@ export const ListClusters = () => {
 
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
-
+  const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedCluster, setSelectedCluster] = useState({});
   const toggleSorting = column => {
     setSortingState(prevState => {
@@ -222,6 +223,21 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setIsFailedClusterDeleteModalOpen(true));
   };
   const handleAnsibleClusterNiFiDeleteConfirmation = () => {
+    const selectedCluster = JSON.parse(
+      localStorage.getItem('selected_cluster')
+    );
+    if (
+      loggedInCluster?.value == selectedCluster?.id &&
+      selectedCluster?.id == selectedCluster?.value
+    ) {
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
     handleCloseMenu();
     dispatch(
       ClustersActions.deleteAnsibleClusterHard({
