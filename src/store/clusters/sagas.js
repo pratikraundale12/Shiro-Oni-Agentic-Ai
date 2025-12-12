@@ -951,6 +951,7 @@ export function* deleteClusterNarFile(api, { payload }) {
       {
         id: payload?.id,
         narId: payload?.narId,
+        restart: restartAfterUpload,
       },
     ],
   });
