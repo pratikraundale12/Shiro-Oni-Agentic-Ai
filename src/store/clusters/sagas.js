@@ -956,6 +956,7 @@ export function* deleteClusterNarFile(api, { payload }) {
     ],
   });
   if (response?.ok) {
+    toast.success(response?.data?.message || 'Deleted Successfully');
     if (restartAfterUpload) {
       yield put(
         ClustersActions.restartCluster({
