@@ -994,6 +994,7 @@ export function* deleteClusterDriverFile(api, { payload }) {
     ],
   });
   if (response?.ok) {
+    toast.success(response?.data?.message || 'Deleted Successfully');
     yield put(ClustersActions.fetchDriversList(payload?.id));
   } else {
     toast.error(response?.data?.message);
@@ -1095,6 +1096,7 @@ export function* deleteClusterScript(api, { payload }) {
     ],
   });
   if (response?.ok) {
+    toast.success(response?.data?.message || 'Deleted Successfully');
     yield put(ClustersActions.fetchScriptList(payload?.id));
   } else {
     toast.error(response?.data?.message);
