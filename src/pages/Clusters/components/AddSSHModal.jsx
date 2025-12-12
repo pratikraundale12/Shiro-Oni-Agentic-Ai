@@ -289,9 +289,38 @@ export const AddSSHModal = ({
               </div>
             </div>
           )}
+          <div className="row">
+            {' '}
+            <div className="col-6">
+              <InputField
+                name="nifiLibPath"
+                type="text"
+                label="Lib Path"
+                placeholder="Enter Lib Path"
+                required
+                register={register}
+                errors={errors}
+                icon={<DocumentTextIcon />}
+                disabled={!isPrimaryBtnDisable}
+              />
+            </div>
+            <div className="col-6">
+              <InputField
+                name="username"
+                type="text"
+                label="Username"
+                placeholder="Enter Your User Name"
+                required
+                register={register}
+                errors={errors}
+                icon={<DocumentTextIcon />}
+                disabled={!isPrimaryBtnDisable}
+              />
+            </div>
+          </div>
 
           <div
-            className=" d-flex justify-content-end "
+            className=" d-flex justify-content-start "
             style={{
               pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
               cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
@@ -307,19 +336,6 @@ export const AddSSHModal = ({
           </div>
           <div className="row">
             {' '}
-            <div className="col-6">
-              <InputField
-                name="username"
-                type="text"
-                label="Username"
-                placeholder="Enter Your User Name"
-                required
-                register={register}
-                errors={errors}
-                icon={<DocumentTextIcon />}
-                disabled={!isPrimaryBtnDisable}
-              />
-            </div>
             {(isEmpty(watchMethodCredentials) ||
               watchMethodCredentials === 'password') && (
               <>
