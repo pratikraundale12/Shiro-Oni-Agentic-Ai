@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import { getTheme } from '@table-library/react-table-library/baseline';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
@@ -657,41 +658,7 @@ export const Grid = ({
           setCurrentPage={setCurrentPage}
           isClusterLoggedIn={isClusterLoggedIn}
           is_kube_cluster={is_kube_cluster}
-        />
-      )}
-      {is_kube_cluster && <div className="mt-4"></div>}
-      {module === 'nodes' &&
-        !loading &&
-        !isEmpty(registryNodesData?.cluster?.name) && (
-          <>{getRegistryNodesData()}</>
-        )}
-      <div className="mb-2 ps-1">
-        <Breadcrumb module={module} />
-      </div>
-      {tableDispaly(module, activeTabClusterView) && (
-        <TableContainer
-          module={module}
-          fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
-        >
-          {loading || isEmpty(TABLE_DATA?.nodes) ? (
-            getLoader()
-          ) : (
-            <CompactTable
-              data={TABLE_DATA}
-              columns={columns}
-              theme={tableTheme}
-              layout={{ custom: true }}
-              // sort={sort}
-            />
-          )}
-        </TableContainer>
-      )}
-      {gridCount >= 10 && (
-        <Pagination
-          page={currentPage}
-          setCurrentPage={setCurrentPage}
-          isClusterLoggedIn={isClusterLoggedIn}
-          is_kube_cluster={is_kube_cluster}
+          itemsPerPage={itemsPerPage}
           onItemsPerPageChange={setItemsPerPage}
           scheduleType={scheduleType}
           setScheduleType={setScheduleType}
@@ -704,8 +671,6 @@ export const Grid = ({
           setViewMode={setViewMode}
         />
       )}
-      {is_kube_cluster && <div className="mt-4"></div>}
-
       {module === 'namespaces' && viewMode === 'tree_view' ? (
         <>
           <TreeViewWrapper
@@ -722,13 +687,14 @@ export const Grid = ({
             !isEmpty(registryNodesData?.cluster?.name) && (
               <>{getRegistryNodesData()}</>
             )}
-
           <div className="mb-2 ps-1">
-            <Breadcrumb module={module} setRemoveSearch={setRemoveSearch} />
+            <Breadcrumb module={module} />
           </div>
-
-          {!is_kube_cluster && (
-            <TableContainer module={module}>
+          {tableDispaly(module, activeTabClusterView) && (
+            <TableContainer
+              module={module}
+              fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
+            >
               {loading || isEmpty(TABLE_DATA?.nodes) ? (
                 getLoader()
               ) : (
@@ -737,11 +703,11 @@ export const Grid = ({
                   columns={columns}
                   theme={tableTheme}
                   layout={{ custom: true }}
+                  // sort={sort}
                 />
               )}
             </TableContainer>
           )}
-
           {gridCount >= 10 && (
             <Pagination
               page={currentPage}
@@ -751,12 +717,6 @@ export const Grid = ({
               next={next}
               itemsPerPage={itemsPerPage}
               onItemsPerPageChange={setItemsPerPage}
-              selectEntity={selectEntity}
-              setSelectEntity={setSelectEntity}
-              setSelectStatus={setSelectStatus}
-              selectStatus={selectStatus}
-              selectEvent={selectEvent}
-              setSelectEvent={setSelectEvent}
             />
           )}
         </>

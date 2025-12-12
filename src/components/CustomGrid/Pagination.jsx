@@ -88,7 +88,7 @@ const Pagination = ({
   setCurrentPage,
   itemsPerPage,
   onItemsPerPageChange,
-  setPageLoading,
+  setPageLoading = () => {},
 }) => {
   const dispatch = useDispatch();
   const totalPage = Math.ceil(count / itemsPerPage);
