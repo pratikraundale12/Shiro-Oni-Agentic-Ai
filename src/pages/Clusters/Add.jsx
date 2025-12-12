@@ -20,7 +20,7 @@ import {
   NamespacesActions,
 } from '../../store';
 import {
-  createRegistry,
+  // createRegistry,
   getOneRegistry,
   getRegistryList,
   testCluster,
