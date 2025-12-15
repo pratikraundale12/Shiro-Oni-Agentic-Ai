@@ -220,6 +220,7 @@ export const GridActions = ({
   setCurrentPage,
   isClusterLoggedIn = true,
   is_kube_cluster = false,
+  itemsPerPage,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -279,7 +280,7 @@ export const GridActions = ({
           module: 'clusters',
           params: {
             page: 1,
-            limit: 10,
+            limit: itemsPerPage || 10,
             ...(sortingState && {
               sort: sortingState,
             }),
@@ -373,7 +374,7 @@ export const GridActions = ({
           params: {
             page: 1,
             id: scheduleToken,
-            limit: 10,
+            limit: itemsPerPage || 10,
             ...(search && { search: search }),
             ...(watchStatus &&
               watchStatus !== 'all' && {
@@ -985,4 +986,5 @@ GridActions.propTypes = {
   selectedRole: PropTypes.string,
   sortingState: PropTypes.string,
   setValue: PropTypes.func,
+  itemsPerPage: PropTypes.number,
 };
