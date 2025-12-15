@@ -12,3 +12,4 @@ export * from './LdapConfig';
 export * from './ActivityHistory';
 export * from './HelpAndSupport';
 export * from './SettingPage';
+export * from './AgenticAI';

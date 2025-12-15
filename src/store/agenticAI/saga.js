@@ -7,18 +7,18 @@ import { toast } from 'react-toastify';
 
 export function* fetchSessionId(api, { payload }) {
   console.log('Agentic ai session id api called');
-  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const clustersToken = JSON.parse(
-    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
-  );
-  const selectedClusterToken = clustersToken.find(
-    item => item.id === selectedCluster?.value
-  );
+  // const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  // const clustersToken = JSON.parse(
+  //   localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  // );
+  // const selectedClusterToken = clustersToken.find(
+  //   item => item.id === selectedCluster?.value
+  // );
 
-  if (api.headers) {
-    api.headers['x-cluster-id'] = selectedClusterToken?.id;
-    api.headers['x-cluster-token'] = selectedClusterToken?.token;
-  }
+  // if (api.headers) {
+  //   api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  //   api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  // }
 
   const response = yield call(requestSaga, {
     errorSection: 'fetchSessionId',
@@ -27,7 +27,6 @@ export function* fetchSessionId(api, { payload }) {
     apiParams: [payload],
     // successAction: AgenticAiActions.getSessionIdSuccess,
   });
-  console.log('resp', response);
   if (response.ok) {
     yield put(AgenticAiActions.setSessionId(response?.data?.session_id));
   } else {

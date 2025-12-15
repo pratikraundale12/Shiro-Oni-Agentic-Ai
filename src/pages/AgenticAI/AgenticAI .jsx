@@ -9,43 +9,79 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { KDFM } from '../../constants';
-import { formattedTime } from './utils';
+import { formattedTime } from '../AiFlowGenerator/utils';
 import { SendMessageIcon, UserIcon, AIMiniIcon } from '../../assets';
 import { toast } from 'react-toastify';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  /* Crucial: Use 100% of the parent's defined height, 
-     or define the height here if the parent doesn't. 
-     Assuming the parent element (e.g., a route wrapper) 
-     gives this component a specific height (e.g., calc(100vh - header-height)). 
-     If not, setting a height here is necessary, e.g., height: 80vh; */
   height: 100%;
-  padding: 20px;
+  // padding: 20px;
   background-color: #f7f7f7;
 `;
 
 const ChatContainer = styled.div`
-  flex-grow: 1; /* Allows this area to fill the remaining space */
-  overflow-y: auto; /* Provides scrollbar only for chat content when needed */
-  padding-right: 15px;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 15px 20px;
   margin-bottom: 15px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+  /* Optional: Smooth scrolling */
+  scroll-behavior: smooth;
 `;
 
 const PromptInputWrapper = styled.div`
-  /* This component should not use flex-grow, 
-     it should maintain a fixed height to stay visible */
-  flex-shrink: 0; /* Prevents this section from being squeezed */
+  flex-shrink: 0; /* Ensures this doesn't shrink */
+  display: flex;
+  align-items: flex-end; /* Aligns button to bottom if input grows */
+  padding: 10px 15px; /* Reduced padding slightly */
+  background-color: white;
+  border-radius: 20px; /* Slightly less rounded for multi-line aesthetic */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+`;
+
+const InputBox = styled.textarea`
+  flex-grow: 1;
+  border: none;
+  outline: none;
+  resize: none; /* User cannot manual resize, we do it auto */
+  background: transparent;
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: inherit;
+
+  /* Dimensions Logic */
+  height: auto;
+  min-height: 24px; /* Approx height for 1 line */
+  max-height: 120px; /* Approx height for 5 lines (24px * 5) */
+  overflow-y: auto; /* Show scrollbar only after hitting max-height */
+
+  padding: 8px 0; /* Padding inside the text area */
+  margin-right: 10px;
+`;
+
+const SubmitButton = styled.button`
+  width: 40px;
+  height: 40px;
+  margin-bottom: 4px; /* Visual alignment with the bottom line of text */
+  border-radius: 50%;
+  background-color: ${props => (props.disabled ? '#ccc' : '#ff7a00')};
+  border: none;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   display: flex;
   align-items: center;
-  padding: 15px;
-  background-color: white;
-  border-radius: 30px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  justify-content: center;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+
+  svg {
+    fill: white;
+  }
 `;
 
 const MessageWrapper = styled.div`
@@ -87,34 +123,6 @@ const MessageContent = styled.div`
   word-break: break-word;
 `;
 
-const InputBox = styled.textarea`
-  flex-grow: 1;
-  border: none;
-  outline: none;
-  resize: none;
-  height: 40px;
-  padding: 10px;
-  font-size: 16px;
-  background: transparent;
-`;
-
-const SubmitButton = styled.button`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: ${props => (props.disabled ? '#ccc' : '#ff7a00')};
-  border: none;
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s;
-
-  svg {
-    fill: white;
-  }
-`;
-
 const dotAnimation = keyframes`
   0%, 80%, 100% { opacity: 0; }
   40% { opacity: 1; }
@@ -143,6 +151,14 @@ export const AgenticAI = () => {
   const apiError = useSelector(AgenticAiSelectors.getMessageChatAiError);
   // const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   // const sessionId = useSelector(AgenticAiSelectors.getSessionId);
+  const inputRef = useRef(null);
+  const adjustTextareaHeight = () => {
+    const textarea = inputRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
 
   const isLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchMessageChatAi')
@@ -205,6 +221,8 @@ export const AgenticAI = () => {
   useEffect(() => {
     if (selectedCluster?.value) {
       dispatch(AgenticAiActions.fetchSessionId(selectedCluster.value));
+    } else {
+      toast.info('Please login to a cluster');
     }
   }, [dispatch, selectedCluster?.value]);
 
@@ -257,6 +275,29 @@ export const AgenticAI = () => {
     scrollToBottom();
   }, [conversationalRes]);
 
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [queryText]);
+
+  useEffect(() => {
+    if (!isLoading && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+        adjustTextareaHeight();
+      }, 50);
+    }
+  }, [isLoading]);
+
+  const handleKeyDown = e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!isSendBtnDisabled) {
+        handleSendMessage();
+      }
+    }
+  };
+
   const renderMessage = (item, index) => {
     const isUser = item.role === 'user';
     const senderName = isUser ? KDFM.YOU : KDFM.DATA_FLOW_MANAGER;
@@ -305,15 +346,13 @@ export const AgenticAI = () => {
       </ChatContainer>
       <PromptInputWrapper>
         <InputBox
+          ref={inputRef}
           value={queryText}
-          onChange={e => setQueryText(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' && !isSendBtnDisabled && !e.shiftKey) {
-              e.preventDefault();
-              handleSendMessage();
-            }
+          onChange={e => {
+            setQueryText(e.target.value);
           }}
-          disabled={isLoading}
+          onKeyDown={handleKeyDown}
+          disabled={isLoading || !selectedCluster?.value}
           placeholder={KDFM.PROMPT_INPUT_PLACEHOLDER}
         />
         <SubmitButton

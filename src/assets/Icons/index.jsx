@@ -189,3 +189,7 @@ export * from './ClusterDetailsIcon';
 export * from './GettingStartedIcon';
 export * from './StarInfoIcon';
 export * from './AIMiniIcon';
+export * from './ChatbotIcon';
+export * from './MiniScreenIcon';
+export * from './MaximizeModalIcon';
+export * from './MinimizeModalIcon';

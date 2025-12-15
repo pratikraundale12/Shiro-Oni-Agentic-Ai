@@ -45,6 +45,7 @@ import { ProfileRender } from './CustomGrid';
 import { toast } from 'react-toastify';
 import DiscardFlowConfirmationModal from '../pages/AiFlowGenerator/DiscardFlowConfirmationModal';
 import { Tour } from './Apptour';
+import { AgenticAiIntegration } from '../pages';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -605,6 +606,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
           handleDiscardFlow={() => handleRoute('setting', true)}
         />
       )}
+      {isLoggedIn && <AgenticAiIntegration />}
     </>
   );
 };
