@@ -598,6 +598,7 @@ export const Grid = ({
           setCurrentPage={setCurrentPage}
           isClusterLoggedIn={isClusterLoggedIn}
           is_kube_cluster={is_kube_cluster}
+          itemsPerPage={itemsPerPage}
         />
       )}
       {is_kube_cluster && <div className="mt-4"></div>}
