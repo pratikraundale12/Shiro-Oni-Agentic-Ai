@@ -661,7 +661,10 @@ export const ClusterProcessDisplayModal = ({
   };
 
   useEffect(() => {
-    if ((isProcessModalOpen || isModalOpen) && processData?.data?.status !== 'failed') {
+    if (
+      (isProcessModalOpen || isModalOpen) &&
+      processData?.data?.status !== 'failed'
+    ) {
       const payload = {
         clusterId:
           selectedCluster?.id || ansibleClusterCreationData?.cluster_id,
@@ -692,7 +695,11 @@ export const ClusterProcessDisplayModal = ({
 
   useEffect(() => {
     let intervalId;
-    if ((isProcessModalOpen || isModalOpen) && progress < 100 && processData?.data?.status !== 'failed') {
+    if (
+      (isProcessModalOpen || isModalOpen) &&
+      progress < 100 &&
+      processData?.data?.status !== 'failed'
+    ) {
       intervalId = setInterval(() => {
         const payload = {
           clusterId:
@@ -812,6 +819,19 @@ export const ClusterProcessDisplayModal = ({
       })
     );
   };
+  const handleDeleteClusterFromDB = () => {
+    const payload = {
+      clusterIdToDelete:
+        selectedCluster?.id || ansibleClusterCreationData?.cluster_id,
+      deleteType: 'db_only',
+      payloadData: {},
+    };
+    dispatch(ClustersActions.deleteClusterKube(payload));
+    setIsProcessModalOpen(false);
+    dispatch(ClustersActions.setProgressTrackingModalOpen(false));
+    dispatch(ClustersActions.setansibleClusterProgressData({}));
+    setSelectedCluster({});
+  };
   return (
     <>
       <FullPageLoader loading={loading} />
@@ -840,79 +860,105 @@ export const ClusterProcessDisplayModal = ({
         }
       >
         <Container>
-          {isCompleted ? (
+          {!(
+            processExeName === 'delete' &&
+            processData?.data?.status === 'failed'
+          ) && (
             <>
-              {
+              {isCompleted ? (
                 <>
-                  {' '}
-                  {isInitialisaitionPhase && processExeName !== 'delete' ? (
-                    <div className="d-flex flex-column align-items-center justify-content-center mt-4 flex-grow-1">
-                      <PercentageHeaderText colorBlack={false}>
-                        {percentage}%
-                      </PercentageHeaderText>
-                      <div className="progress w-75" style={{ height: '15px' }}>
+                  {
+                    <>
+                      {' '}
+                      {isInitialisaitionPhase && processExeName !== 'delete' ? (
+                        <div className="d-flex flex-column align-items-center justify-content-center mt-4 flex-grow-1">
+                          <PercentageHeaderText colorBlack={false}>
+                            {percentage}%
+                          </PercentageHeaderText>
+                          <div
+                            className="progress w-75"
+                            style={{ height: '15px' }}
+                          >
+                            <div
+                              className="progress-bar progress-bar-striped progress-bar-animated"
+                              role="progressbar"
+                              aria-valuenow={100}
+                              aria-valuemin={0}
+                              aria-valuemax={100}
+                              style={{
+                                width: `${percentage || 0}%`,
+                                backgroundColor: 'green',
+                              }}
+                            />
+                          </div>
+                          <div className="mt-4">
+                            <PercentageHeaderText colorBlack={true}>
+                              {getInitialingText(processExeName)}
+                            </PercentageHeaderText>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="d-flex flex-column align-items-center justify-content-center mt-4">
+                          <div>
+                            <GreenRightCircleIcon width={180} height={180} />
+                          </div>
+                          <div className="mt-4">
+                            <PercentageHeaderText colorBlack={true}>
+                              {getFinalText(processExeName)}
+                            </PercentageHeaderText>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  }
+                </>
+              ) : (
+                <>
+                  {progress !== 0 && (
+                    <StickyProgressBar>
+                      <FlexRow>
+                        <StepHeaderText>Progress</StepHeaderText>
+                        <PercentageHeaderText>
+                          {Number(progress) || 0}% Complete
+                        </PercentageHeaderText>
+                      </FlexRow>
+                      <div className="progress">
                         <div
-                          className="progress-bar progress-bar-striped progress-bar-animated"
+                          className="progress-bar"
                           role="progressbar"
-                          aria-valuenow={100}
+                          style={{
+                            width: `${progress || 0}%`,
+                            backgroundColor: '#06C270',
+                          }}
+                          aria-valuenow={progress || 0}
                           aria-valuemin={0}
                           aria-valuemax={100}
-                          style={{
-                            width: `${percentage || 0}%`,
-                            backgroundColor: 'green',
-                          }}
                         />
                       </div>
-                      <div className="mt-4">
-                        <PercentageHeaderText colorBlack={true}>
-                          {getInitialingText(processExeName)}
-                        </PercentageHeaderText>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="d-flex flex-column align-items-center justify-content-center mt-4">
-                      <div>
-                        <GreenRightCircleIcon width={180} height={180} />
-                      </div>
-                      <div className="mt-4">
-                        <PercentageHeaderText colorBlack={true}>
-                          {getFinalText(processExeName)}
-                        </PercentageHeaderText>
-                      </div>
-                    </div>
+                    </StickyProgressBar>
                   )}
+                  <StepProgress progressStageRef={progressStageRef} />
                 </>
-              }
-            </>
-          ) : (
-            <>
-              {progress !== 0 && (
-                <StickyProgressBar>
-                  <FlexRow>
-                    <StepHeaderText>Progress</StepHeaderText>
-                    <PercentageHeaderText>
-                      {Number(progress) || 0}% Complete
-                    </PercentageHeaderText>
-                  </FlexRow>
-                  <div className="progress">
-                    <div
-                      className="progress-bar"
-                      role="progressbar"
-                      style={{
-                        width: `${progress || 0}%`,
-                        backgroundColor: '#06C270',
-                      }}
-                      aria-valuenow={progress || 0}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                    />
-                  </div>
-                </StickyProgressBar>
               )}
-              <StepProgress progressStageRef={progressStageRef} />
             </>
           )}
-        </Container>
+          {processExeName === 'delete' &&
+            processData?.data?.status === 'failed' && (
+              <div className="d-flex flex-column justify-content-center align-items-center h-100 flex-grow-1">
+                <div style={{ fontSize: '16px', fontWeight: '600' }}>
+                  Cluster delete has failed due to some reason, Do you want to
+                  delete cluster from db
+                </div>
+
+                <br />
+                <div>
+                  <Button onClick={handleDeleteClusterFromDB}>
+                    Delete Cluster from DB
+                  </Button>
+                </div>
+              </div>
+            )}
+        </Container>{' '}
       </ModalWithRightBtn>
     </>
   );
