@@ -373,6 +373,7 @@ export const GridActions = ({
           params: {
             page: 1,
             id: scheduleToken,
+            limit: 10,
             ...(search && { search: search }),
             ...(watchStatus &&
               watchStatus !== 'all' && {
