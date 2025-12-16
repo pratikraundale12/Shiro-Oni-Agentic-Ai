@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -15,14 +16,21 @@ import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRig
 import { history } from '../helpers/history';
 import { ROUTES_MENU } from '../routes';
 import {
+  AiFlowGeneratorActions,
+  AiFlowGeneratorSelectors,
   AuthenticationActions,
   AuthenticationSelectors,
+  ClustersActions,
+  GridSelectors,
   LoadingSelectors,
   NamespacesActions,
 } from '../store';
-import { SettingsActions, SettingsSelectors } from '../store/settings';
+import { SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
 import { Loader } from './Loader';
+import DiscardFlowConfirmationModal from '../pages/AiFlowGenerator/DiscardFlowConfirmationModal';
+import { isEmpty } from 'lodash';
+import { FlowValidationSelectors } from '../store/flowValidation';
 
 export const Container = styled.div`
   height: 100%;
@@ -177,6 +185,18 @@ export const Sidebar = ({
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'createSettings')
   );
+  const flowGenrating = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'generateFlowAPI')
+  );
+  const isAIFlowSaved = useSelector(
+    AiFlowGeneratorSelectors.getIsflowJsonSaved
+  );
+  const generatedFlow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
+
+  const [isAiFlowWarningModalOpen, setIsAiFlowWarningModalOpen] =
+    useState(false);
+  const [currentPathClicked, setCurrentPathClicked] = useState('');
+  const [logoClicked, setLogoClicked] = useState(false);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const getFiltered = item => {
     if (item.path === 'dashboard') return true;
@@ -200,20 +220,68 @@ export const Sidebar = ({
     }
   }, [pathname, dispatch, route]);
 
-  const handleRoute = path => {
-    if (path === 'setting') {
-      dispatch(SettingsActions.fetchSettings());
+  useEffect(() => {
+    if (pathname === '/dashboard') {
+      setLogoClicked(false);
     }
-    dispatch(AuthenticationActions.setRoute(path));
-    history.push(`/${path}`);
-    if (path === 'process-group') {
-      dispatch(NamespacesActions.setSelectedNamespace({}));
+  }, [pathname]);
+
+  const handleRoute = (path, skipWarning = false) => {
+    if (flowGenrating) {
+      if (!toast.isActive('generating-flow')) {
+        toast.warning('Flow is generating please wait', {
+          toastId: 'generating-flow',
+        });
+      }
+      return;
+    } else if (
+      !isAIFlowSaved &&
+      !skipWarning &&
+      !isEmpty(Object.keys(generatedFlow)) &&
+      typeof generatedFlow?.response === 'object'
+    ) {
+      setIsAiFlowWarningModalOpen(true);
+      setCurrentPathClicked(path);
+    } else {
+      if (logoClicked) {
+        setIsAiFlowWarningModalOpen(false);
+        dispatch(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
+        dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
+        history.push('/dashboard');
+      } else {
+        setLogoClicked(false);
+        setIsAiFlowWarningModalOpen(false);
+        dispatch(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
+        dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
+        dispatch(AuthenticationActions.setRoute(path));
+        history.push(`/${path}`);
+        if (path === 'process-group') {
+          dispatch(NamespacesActions.setSelectedNamespace({}));
+        }
+        if (path === 'flow-analysis') {
+          dispatch(NamespacesActions.setSelectedNamespace({}));
+        }
+      }
     }
   };
 
   const getImage = () => {
     const handleClick = () => {
-      history.push('/dashboard');
+      setLogoClicked(true);
+      if (flowGenrating) {
+        if (!toast.isActive('generating-flow')) {
+          toast.warning('Flow is generating please wait', {
+            toastId: 'generating-flow',
+          });
+        }
+        return;
+      } else if (
+        !isAIFlowSaved &&
+        !isEmpty(Object.keys(generatedFlow)) &&
+        typeof generatedFlow?.response === 'object'
+      ) {
+        setIsAiFlowWarningModalOpen(true);
+      } else history.push('/dashboard');
     };
     if (loading)
       return (
@@ -244,16 +312,41 @@ export const Sidebar = ({
     );
   };
 
+  const [clusterTabTour, setClusterTabTour] = useState(false);
+  const [inventoryTour, setInventoryTour] = useState(false);
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'clusters')
+  );
+  const DataflowInventroyFlows = useSelector(FlowValidationSelectors.getFlows);
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  useEffect(() => {
+    if (!isEmpty(gridData) && clusterTabTour && enableTour) {
+      setTimeout(() => {
+        dispatch(ClustersActions.setTourIndex(2));
+        setClusterTabTour(false);
+      }, 2500);
+    }
+  }, [gridData]);
+  useEffect(() => {
+    if (!isEmpty(DataflowInventroyFlows) && inventoryTour && enableTour) {
+      setTimeout(() => {
+        dispatch(ClustersActions.setTourIndex(5));
+        setInventoryTour(false);
+      }, 500);
+    }
+  }, [DataflowInventroyFlows]);
+
   return (
     <Container
       className={`${isOpenSidebar ? 'menuOpen' : ''} ${collapsed ? 'toggleSidebar' : ''}`}
     >
       <button
-        className="btn btn-hamburger d-lg-none"
+        className="btn btn-hamburger d-lg-none  dashboard-step "
         onClick={() => handleOpenSidebar()}
       >
         <img alt="menu" src="/img/Frame.png" />
       </button>
+
       <button
         className="btn btn-toggle d-none d-lg-block"
         onClick={toggleCollapse}
@@ -278,11 +371,27 @@ export const Sidebar = ({
           return (
             <>
               {currentUser.role === 'superadmin' ? (
-                <div key={item.path}>
+                <div
+                  key={item.path}
+                  className={
+                    item?.name === 'Clusters'
+                      ? 'cluster'
+                      : item?.name === 'Data Flow Inventory'
+                        ? 'data_flow_inventory'
+                        : ''
+                  }
+                >
                   <Item
                     key={item.path}
                     active={active}
-                    onClick={() => handleRoute(item.path)}
+                    onClick={() => {
+                      handleRoute(item.path);
+                      if (item?.name === 'Clusters') {
+                        setClusterTabTour(true);
+                      } else if (item?.name === 'Data Flow Inventory') {
+                        setInventoryTour(true);
+                      }
+                    }}
                     path={item.path}
                     data-tooltip-id={`tooltip-${item.path}`}
                   >
@@ -304,11 +413,27 @@ export const Sidebar = ({
                   )}
                 </div>
               ) : item?.name !== 'Setting' ? (
-                <div key={item.path}>
+                <div
+                  key={item.path}
+                  className={
+                    item?.name === 'Clusters'
+                      ? 'cluster'
+                      : item?.name === 'Data Flow Inventory'
+                        ? 'data_flow_inventory'
+                        : ''
+                  }
+                >
                   <Item
                     key={item.path}
                     active={active}
-                    onClick={() => handleRoute(item.path)}
+                    onClick={() => {
+                      handleRoute(item.path);
+                      if (item?.name === 'Clusters') {
+                        setClusterTabTour(true);
+                      } else if (item?.name === 'Data Flow Inventory') {
+                        setInventoryTour(true);
+                      }
+                    }}
                     path={item.path}
                     data-tooltip-id={`tooltip-${item.path}`}
                   >
@@ -334,11 +459,17 @@ export const Sidebar = ({
           );
         })}
       </List>
-
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
-        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 2.1.23-1`}</span>
+        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 3.0.1`}</span>
       </KDFMVersion>
+      {isAiFlowWarningModalOpen && (
+        <DiscardFlowConfirmationModal
+          isDiscardFlowModalOpen={isAiFlowWarningModalOpen}
+          setIsDiscardFlowModalOpen={setIsAiFlowWarningModalOpen}
+          handleDiscardFlow={() => handleRoute(currentPathClicked, true)}
+        />
+      )}
     </Container>
   );
 };

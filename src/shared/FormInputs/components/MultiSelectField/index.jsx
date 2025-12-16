@@ -6,9 +6,14 @@ import styled, { useTheme } from 'styled-components';
 import CheckboxField from '../CheckboxField';
 import classNames from 'classnames';
 import { get, isEmpty, isFunction } from 'lodash';
+import PropTypes from 'prop-types';
 
 const Container = styled.div`
   position: relative;
+
+  path {
+    fill: ${props => props.theme.colors.grey};
+  }
 
   .error {
     color: ${props => props.theme.colors.error};
@@ -162,6 +167,23 @@ const MultiSelectField = ({
     multiValue: base => ({ ...base, display: 'none' }),
   };
 
+  // const commonProps = {
+  //   isMulti: true,
+  //   isSearchable: true,
+  //   isClearable: true,
+  //   isDisabled: disabled,
+  //   styles: customStyles,
+  //   inputRef: null,
+  //   placeholder,
+  //   options,
+  //   value: null,
+  //   onChange: null,
+  //   theme: theme.reactSelecttheme,
+  //   menuPortalTarget: typeof document !== 'undefined' && document.body,
+  //   menuPosition: 'fixed',
+  //   ...props,
+  // };
+
   // ✅ Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = event => {
@@ -267,6 +289,28 @@ const MultiSelectField = ({
           ) {
             data = registerOption.sortValues(data);
           }
+          // const selectProps = {
+          //   ...commonProps,
+          //   inputRef: ref,
+          //   value: data,
+          //   onChange: (...args) =>
+          //     isFunction(customOnChange)
+          //       ? customOnChange(onChange, ...args)
+          //       : onChange(...args),
+          // };
+
+          // const SelectComponent = enableCheckboxes ? (
+          //   <Select
+          //     {...selectProps}
+          //     hideSelectedOptions={false}
+          //     closeMenuOnSelect={false}
+          //     components={{
+          //       Option: CustomOption,
+          //     }}
+          //   />
+          // ) : (
+          //   <Select {...selectProps} />
+          // );
 
           return (
             <>
@@ -327,6 +371,30 @@ const MultiSelectField = ({
       />
     </Container>
   );
+};
+
+MultiSelectField.propTypes = {
+  name: PropTypes.string.isRequired,
+  control: PropTypes.shape({}).isRequired,
+  placeholder: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  errors: PropTypes.shape({}),
+  label: PropTypes.string,
+  required: PropTypes.bool,
+  disabled: PropTypes.bool,
+  wrapperCustomClass: PropTypes.string,
+  enableCheckboxes: PropTypes.bool,
+  customWidth: PropTypes.string,
+};
+
+MultiSelectField.defaultProps = {
+  errors: {},
+  label: '',
+  required: false,
+  wrapperCustomClass: null,
+  disabled: false,
+  enableCheckboxes: false,
+  customWidth: '',
 };
 
 export default MultiSelectField;

@@ -33,7 +33,7 @@ const PropertyDropdownModal = ({
   isFromExternalService,
   selectedItemFromList,
   setReferenceListPropertyTableData = () => {},
-  isFromControllerServieTab = false,
+  isFromControllerServiceTab = false,
 }) => {
   const dispatch = useDispatch();
   const checkDestCluster = useSelector(
@@ -209,7 +209,7 @@ const PropertyDropdownModal = ({
           : item
       )
     );
-    if (!isFromControllerServieTab) {
+    if (!isFromControllerServiceTab) {
       setReferenceListPropertyTableData(prevData =>
         prevData.map(item =>
           item.name === selectedPropertyToEdit.name

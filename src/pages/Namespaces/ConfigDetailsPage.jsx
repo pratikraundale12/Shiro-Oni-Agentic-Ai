@@ -16,6 +16,9 @@ import { history } from '../../helpers/history';
 import { Button, Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
+  AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
@@ -238,7 +241,18 @@ const ConfigDetailsPage = () => {
     setScheduleDeployTime(null);
     dispatch(NamespacesActions.setScheduleTimeByRegistry(null));
   };
-
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  const stepIndex = useSelector(ClustersSelectors.getTourIndex);
+  if (enableTour) {
+    if (stepIndex != 10) {
+      setTimeout(() => {
+        setTimeout(() => {
+          dispatch(ClustersActions.setTourIndex(10));
+          dispatch(ClustersActions.setTourStart(true));
+        }, 50);
+      }, 300);
+    }
+  }
   const currentTime = new Date();
   const isScheduleTimeValid =
     scheduleDeployTime && scheduleDeployTime > currentTime;
@@ -282,7 +296,7 @@ const ConfigDetailsPage = () => {
       setActiveTab(KDFM.SCHEDULE_DETAILS);
     } else {
       dispatch(NamespacesActions.setScheduleTimeByRegistry(scheduleDeployTime));
-      history.push('/process-group/summary');
+      history.push('/process-group/flow-validation');
     }
   };
 
@@ -374,7 +388,7 @@ const ConfigDetailsPage = () => {
       setActiveTab(KDFM.SCHEDULE_DETAILS);
     } else {
       dispatch(NamespacesActions.setScheduleTimeByRegistry(scheduleDeployTime));
-      history.push('/process-group/summary');
+      history.push('/process-group/flow-validation');
     }
   };
   return (

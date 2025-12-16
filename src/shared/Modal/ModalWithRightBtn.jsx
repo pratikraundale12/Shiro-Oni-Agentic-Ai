@@ -1,0 +1,257 @@
+/*eslint-disable*/
+import PropTypes from 'prop-types';
+import React from 'react';
+import ReactModal from 'react-modal';
+import styled from 'styled-components';
+
+import { CrossIcons } from '../../assets';
+import { theme } from '../../styles';
+import { Button, SvgButton } from '../Button';
+
+const Title = styled.h5`
+  color: ${props => props.theme.colors.darker};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 13px;
+`;
+
+const CloseButton = styled(SvgButton)`
+  width: 30px;
+  height: 30px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 44px;
+  padding: 26px 18px;
+  background-color: ${theme.colors.lightGrey};
+  border-radius: 16px 16px 0px 0px;
+`;
+
+const Body = styled.div`
+  flex: 1;
+  overflow-y: ${({ noScroll }) => (noScroll ? 'unset' : 'auto')};
+  padding: ${({ noPadding }) =>
+    noPadding ? '0' : '2.25rem 1.125rem 1.125rem'};
+`;
+
+const Footer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: ${props =>
+    props.hasSingleButton ? 'center' : 'flex-start'};
+  flex-wrap: nowrap;
+  gap: 1rem;
+  padding: ${props => (props.hasSingleButton ? '32px' : '18px')} 18px;
+  width: 100%;
+`;
+
+const CloseIcon = styled(CrossIcons)`
+  padding: 5px;
+  border-radius: 50%;
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.white};
+`;
+
+const Wrapper = styled.div`
+  flex: 0 0 auto;
+`;
+// 2. Add a dedicated wrapper for the tertiary button:
+const TertiaryWrapper = styled.div`
+  margin-left: auto; /* pushes this wrapper to the right */
+  flex: 0 0 auto; /* don’t grow or shrink */
+`;
+
+ReactModal.setAppElement('#root');
+
+export const ModalWithRightBtn = ({
+  title,
+  children,
+  isOpen,
+  closeIcon = true,
+  isAdditionalIcon = false,
+  additionalIcon,
+  onAdditionalIconClick = () => null,
+  onRequestClose,
+  loading = false,
+  secondaryButtonText = '',
+  primaryButtonText = '',
+  primaryButtonDisabled = false,
+  onSubmit = () => null,
+  onSecondarySubmit,
+  secondaryButtonProps = {},
+  footerAlign = 'center',
+  contentStyles,
+  tertiaryButton = false,
+  tertiaryButtonConfig = {
+    tertiaryButtonTest: '',
+    tertiaryButtonSubmit: () => null,
+    tertiaryButtonDisable: false,
+    tertiaryButtonLoading: false,
+  },
+  tertiaryButtonLoading,
+  thirdVarint = false,
+  noPadding = false,
+  noScroll = false,
+  primaryButtonProps = {},
+  displayCrossIcon = true,
+}) => {
+  const styleObject = {
+    overlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      zIndex: 9,
+      backgroundColor: theme.colors.shadow,
+    },
+    content: {
+      padding: 0,
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      border: 'none',
+      overflow: 'hidden',
+      borderRadius: 16,
+      minWidth: '30%',
+      maxWidth: '546px',
+      width: '90%',
+      maxHeight: '90%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: theme.colors.white,
+      // boxShadow: `0px 4px 18px 0px ${theme.colors.shadow}`,
+      boxShadow: 'none !important',
+      display: 'flex',
+      flexDirection: 'column',
+      ...contentStyles,
+    },
+  };
+
+  const handleKeyDown = e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onSubmit(e); // Prevent the default action when Enter is pressed
+    }
+  };
+
+  return (
+    <ReactModal
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      style={styleObject}
+      shouldCloseOnOverlayClick={false}
+    >
+      <form
+        className="d-flex flex-column overflow-auto"
+        onSubmit={e => {
+          e.preventDefault();
+          onSubmit(e);
+        }}
+        onKeyDown={handleKeyDown}
+      >
+        <Header>
+          <Title className="mb-0">{title}</Title>
+          <div className="d-flex gap-2">
+            {isAdditionalIcon && (
+              <CloseButton
+                type="button"
+                icon={additionalIcon}
+                onClick={onAdditionalIconClick}
+              />
+            )}
+            {closeIcon && displayCrossIcon && (
+              <CloseButton
+                type="button"
+                icon={<CloseIcon />}
+                onClick={onRequestClose}
+              />
+            )}
+          </div>
+        </Header>
+        <Body noPadding={noPadding} noScroll={noScroll}>
+          {children}
+        </Body>
+        {(primaryButtonText || secondaryButtonText || tertiaryButton) && (
+          <Footer
+            footerAlign={footerAlign}
+            hasSingleButton={!secondaryButtonText}
+          >
+            {secondaryButtonText && (
+              <Wrapper>
+                <Button
+                  type="button"
+                  variant={thirdVarint ? 'tertiary' : 'secondary'}
+                  onClick={onSecondarySubmit || onRequestClose}
+                  disabled={secondaryButtonProps.disabled}
+                  {...secondaryButtonProps}
+                >
+                  {secondaryButtonText}
+                </Button>
+              </Wrapper>
+            )}
+
+            {primaryButtonText && (
+              <Wrapper>
+                <Button
+                  type="submit"
+                  loading={loading}
+                  data-dismiss="modal"
+                  disabled={primaryButtonDisabled}
+                  size={!secondaryButtonText ? 'lg' : 'md'}
+                  {...primaryButtonProps}
+                >
+                  {primaryButtonText}
+                </Button>
+              </Wrapper>
+            )}
+            {tertiaryButton && tertiaryButtonConfig && (
+              <TertiaryWrapper>
+                <Button
+                  type="button"
+                  variant={thirdVarint ? 'tertiary' : 'secondary'}
+                  onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
+                  disabled={tertiaryButtonConfig.tertiaryButtonDisable}
+                  loading={tertiaryButtonConfig.tertiaryButtonLoading}
+                  {...tertiaryButtonConfig}
+                >
+                  {tertiaryButtonConfig.tertiaryButtonTest}
+                </Button>
+              </TertiaryWrapper>
+            )}
+          </Footer>
+        )}
+      </form>
+    </ReactModal>
+  );
+};
+
+ModalWithRightBtn.propTypes = {
+  title: PropTypes.string.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onRequestClose: PropTypes.func,
+  children: PropTypes.node,
+  size: PropTypes.oneOf(['lg', 'md', 'sm']),
+  onSubmit: PropTypes.func,
+  secondaryButtonText: PropTypes.string,
+  primaryButtonDisabled: PropTypes.bool,
+  primaryButtonText: PropTypes.string,
+  loading: PropTypes.bool,
+  onSecondarySubmit: PropTypes.func,
+  secondaryButtonProps: PropTypes.object,
+  contentStyles: PropTypes.object,
+  footerAlign: PropTypes.string,
+  tertiaryButton: PropTypes.bool,
+  tertiaryButtonConfig: PropTypes.shape({
+    tertiaryButtonTest: PropTypes.string,
+    tertiaryButtonSubmit: PropTypes.func,
+    tertiaryButtonDisable: PropTypes.bool,
+    tertiaryButtonLoading: PropTypes.bool,
+  }),
+  noPadding: PropTypes.bool,
+  noScroll: PropTypes.bool,
+  displayCrossIcon: PropTypes.bool,
+};

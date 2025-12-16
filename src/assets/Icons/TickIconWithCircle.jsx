@@ -35,3 +35,8 @@ TickIconWithCircle.propTypes = {
   width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   stroke: PropTypes.string,
 };
+TickIconWithCircle.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

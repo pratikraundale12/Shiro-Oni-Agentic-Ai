@@ -13,6 +13,7 @@ const FloatingAlertBox = styled.div`
   font-weight: 600;
   top: 25px;
   left: 271px;
+  pointer-events: all;
   /* width: calc(100vw - 712px) !important; */
   padding: 16px;
 
@@ -45,6 +46,7 @@ const Container = styled.div`
   z-index: 10;
   left: 0px;
   right: 0px;
+  pointer-events: none;
   @media (min-width: 992px) {
     padding-left: 280px;
   }

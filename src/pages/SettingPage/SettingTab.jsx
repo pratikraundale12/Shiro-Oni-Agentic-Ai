@@ -10,13 +10,15 @@ import { SSOLoginSettings } from './SSOLoginSettings';
 import { ExportLogSettings } from './ExportLogSettings';
 import {
   AppIcon,
-  LDAPIcon,
   DeploymentScheduleIcon,
-  ServiceAccountIcon,
   EmailConfigIcon,
+  LDAPIcon,
+  PropertyIcon,
   SSOLoginIcon,
+  ServiceAccountIcon,
   CurvedDocumentIcon,
 } from '../../assets';
+import FlowValidation from './FlowValidation';
 import { useDispatch } from 'react-redux';
 import { SettingsActions } from '../../store/settings';
 // import DeleteDownloadHistory from './DeleteDownloadHistory';
@@ -113,10 +115,10 @@ const SettingTab = () => {
         return <EmailConfigurationSettings />;
       case 'SSOLoginSettings':
         return <SSOLoginSettings />;
+      case 'Flow Validation':
+        return <FlowValidation />;
       case 'ExportLogSettings':
         return <ExportLogSettings />;
-      // case 'DeleteDownloadHistorySettings':
-      //   return <DeleteDownloadHistory />;
     }
   };
   return (
@@ -210,6 +212,24 @@ const SettingTab = () => {
               </IconContent>
               SSO Login
             </Tab>
+
+            <Tab
+              active={activeTab === 'Flow Validation'}
+              onClick={() => setActiveTab('Flow Validation')}
+              className="nav-item d-flex"
+            >
+              <IconContent className="nav-item">
+                <PropertyIcon
+                  height="18"
+                  width="18"
+                  color={
+                    activeTab === 'Flow Validation' ? '#FF7A00' : '#444445'
+                  }
+                />
+              </IconContent>
+              Flow Validation
+            </Tab>
+
             <Tab
               active={activeTab === 'ExportLogSettings'}
               onClick={() => setActiveTab('ExportLogSettings')}

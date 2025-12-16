@@ -19,7 +19,6 @@ import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
-import { updateCluster } from '../../../store/index1';
 import { theme } from '../../../styles';
 
 const Container = styled.div``;
@@ -234,22 +233,7 @@ export const ClusterServiceAccountModal = ({
 
   const handleSave = async () => {
     const formData = new FormData();
-    const payloadData = {
-      name: clusterData.clusterName,
-      nifi_url: clusterData.nifiUrl,
-      ...(clusterData.registryId && { registry_id: clusterData.registryId }),
-      ...(clusterData.logs_url && { logs_url: clusterData.logs_url }),
-      ...(clusterData.metrics_url && { metrics_url: clusterData.metrics_url }),
-      tag: tags,
-      notification_enable: clusterData.notification_enable || false,
-      has_custom_service_account: changeRequestEnabled ? true : false,
-      service_account_type: 'username_password',
-      service_username: watch('service_username'),
-      service_password: watch('service_password'),
-    };
 
-    const response = await updateCluster(clusterId, payloadData);
-    console.log('Response:', response);
     formData.append('name', clusterData.clusterName);
     formData.append('nifi_url', clusterData.nifiUrl);
 
@@ -310,9 +294,6 @@ export const ClusterServiceAccountModal = ({
     }
 
     if (!clusterId || !formData) {
-      console.error(
-        'ClusterServiceAccountModal: Missing clusterId or formData'
-      );
       toast.error('Failed to save: Missing required data');
       return;
     }

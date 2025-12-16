@@ -5,10 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
-  CurvedDeploymentScheduleIcon,
-  EmailSmsTrackingIcon,
-  CurvedProfileDoubleUserIcon,
   ClockIcon,
+  CurvedDeploymentScheduleIcon,
+  CurvedProfileDoubleUserIcon,
+  EmailSmsTrackingIcon,
 } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import {
@@ -62,7 +62,6 @@ const StyledSaveButton = styled(Button)`
   radius: 8px;
   left: 140px;
 `;
-
 const GroupEmailInput = styled.div`
   label {
     margin-bottom: 6px;

@@ -111,8 +111,16 @@ const MODULES = [
     value: 'cluster',
   },
   {
+    label: 'Cluster Setup',
+    value: 'cluster_setup',
+  },
+  {
     label: 'Process Group',
     value: 'namespace',
+  },
+  {
+    label: 'Registry',
+    value: 'registry',
   },
   {
     label: 'User Management',
@@ -134,16 +142,46 @@ const MODULES = [
     label: 'Controller Service',
     value: 'controller_services',
   },
+  {
+    label: 'AI-Powered Data Flow',
+    value: 'genai',
+  },
+  {
+    label: 'Data Flow Inventory',
+    value: 'data_inventory',
+  },
+  {
+    label: 'Flow Analysis',
+    value: 'flow_validation',
+  },
 ];
 
-const EXCLUDE_ADD_PERMISSION = ['namespace', 'history', 'user'];
-const EXCLUDE_EDIT_PERMISSION = ['cluster', 'namespace', 'history', 'user'];
+const EXCLUDE_ADD_PERMISSION = [
+  'namespace',
+  'history',
+  'user',
+  'flow_validation',
+];
+const EXCLUDE_EDIT_PERMISSION = [
+  'cluster',
+  'namespace',
+  'history',
+  'user',
+  'genai',
+  'data_inventory',
+  'flow_validation',
+  'cluster_setup',
+];
 const EXCLUDE_DELETE_PERMISSION = [
   'cluster',
   'permission',
   'ldap',
   'history',
   'user',
+  'genai',
+  'data_inventory',
+  'flow_validation',
+  'cluster_setup',
 ];
 
 const CellRender = ({
@@ -219,6 +257,23 @@ export const ModuleAccess = () => {
     policies.length > 0 &&
     policies?.filter(element => ['view_cluster'].includes(element?.name));
 
+  const registryPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      [
+        'view_registry',
+        'add_registry',
+        'edit_registry',
+        // 'delete_registry',
+      ].includes(element?.name)
+    );
+
+  const viewRegistryPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element => ['view_registry'].includes(element?.name));
+
   const controllerServicePolicy =
     policies &&
     policies.length > 0 &&
@@ -269,10 +324,47 @@ export const ModuleAccess = () => {
     policies.length > 0 &&
     policies?.filter(element => ['view_ldap'].includes(element?.name));
 
+  const genAiPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['add_genai', 'view_genai'].includes(element?.name)
+    );
+
+  const viewGenAiPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element => ['view_genai'].includes(element?.name));
+
+  const dataInventoryPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['add_data_inventory', 'view_data_inventory'].includes(element?.name)
+    );
+
+  const viewDataInventoryPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['view_data_inventory'].includes(element?.name)
+    );
   const viewNamespacePolicy =
     policies &&
     policies.length > 0 &&
     policies?.filter(element => ['view_namespace'].includes(element?.name));
+
+  const clusterSetupPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['add_cluster_setup', 'view_cluster_setup'].includes(element?.name)
+    );
+
+  const viewClusterSetupPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element => ['view_cluster_setup'].includes(element?.name));
 
   useEffect(() => {
     dispatch(RolesActions.setIsRoleListModalOpen(false));
@@ -401,13 +493,26 @@ export const ModuleAccess = () => {
     const clusterPolicies = ['add_cluster'];
     const ldapPolicies = ['add_ldap', 'edit_ldap'];
     const rolesPolicies = ['add_permission', 'edit_permission'];
+    const genAiPolicies = ['add_genai'];
+    const dataInventoryPolicy = ['add_data_inventory'];
+    const registryPolicies = [
+      'add_registry',
+      'edit_registry',
+      // 'delete_registry',
+    ];
+    const clusterSetupPolicy = ['add_cluster_setup'];
+
     const namespacePolicy = ['delete_namespace'];
     handlePolicyCheck(controllerPolicies, 'view_controller_services');
     handlePolicyCheck(userPolicies, 'view_user');
     handlePolicyCheck(clusterPolicies, 'view_cluster');
     handlePolicyCheck(ldapPolicies, 'view_ldap');
     handlePolicyCheck(rolesPolicies, 'view_permission');
+    handlePolicyCheck(genAiPolicies, 'view_genai');
+    handlePolicyCheck(dataInventoryPolicy, 'view_data_inventory');
+    handlePolicyCheck(registryPolicies, 'view_registry');
     handlePolicyCheck(namespacePolicy, 'view_namespace');
+    handlePolicyCheck(clusterSetupPolicy, 'view_cluster_setup');
   };
 
   const handleChange = (checked, value) => {
@@ -421,7 +526,11 @@ export const ModuleAccess = () => {
       [viewControllerServicePolicy?.[0]?.id]: controllerServicePolicy,
       [viewRoleandPermissionPolicy?.[0]?.id]: roleandPermissionPolicy,
       [viewldapPolicy?.[0]?.id]: ldapPolicy,
+      [viewGenAiPolicy?.[0]?.id]: genAiPolicy,
+      [viewDataInventoryPolicy?.[0]?.id]: dataInventoryPolicy,
+      [viewRegistryPolicy?.[0]?.id]: registryPolicy,
       [viewNamespacePolicy?.[0]?.id]: namespacePolicy,
+      [viewClusterSetupPolicy?.[0]?.id]: clusterSetupPolicy,
     };
 
     setUpdatedRolePolicies(prev => {
@@ -488,10 +597,30 @@ export const ModuleAccess = () => {
     };
   }, [dispatch]);
 
-  // Filter the modules based on the search query
-  const filteredModules = MODULES.filter(module =>
-    module.label.toLowerCase().includes(search.toLowerCase())
-  );
+  // Function to check if a module should be hidden based on disabled checkboxes
+  const isModuleHidden = module => {
+    if (!hasEditPermssion) {
+      return false; // Don't hide modules if user doesn't have edit permission
+    }
+
+    // Check if view checkbox is disabled (empty policy means disabled)
+    const viewPolicy = policies?.find(
+      policy => policy.name === `view_${module.value}`
+    );
+
+    // Hide module if view checkbox is disabled
+    // View is always available, so if view is disabled, hide the module
+    return isEmpty(viewPolicy);
+  };
+
+  // Filter the modules based on the search query and hidden modules
+  const filteredModules = MODULES.filter(module => {
+    const matchesSearch = module.label
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const isHidden = isModuleHidden(module);
+    return matchesSearch && !isHidden;
+  });
 
   const capitalizeFirstLetter = text => {
     if (!text) return '';

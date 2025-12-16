@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
+import { AI_FLOW_GENERATOR_CONSTANTS } from './aiFlowGenerator.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
 import { USER_CONSTANTS } from './user.constant';
@@ -29,6 +30,8 @@ export const Cluster_STATUS_OPTIONS = [
   { value: 'connected', label: 'Connected' },
   { value: 'disconnected', label: 'Disconnected' },
   { value: 'deactivated', label: 'Deactivated' },
+  { value: 'failed', label: 'Failed' },
+  { value: 'inprogress', label: 'In Progress' },
 ];
 
 export const REFRESH_OPTIONS = [
@@ -69,6 +72,11 @@ export const CLUSTER_MODULE_TABS = {
   CLUSTER: 'cluster',
   REGISTRY: 'registry',
   SERVICE_ACCOUNT: 'service account',
+  CUSTOM_PROCESSOR: 'Custom Processor',
+  SSH_DETAILS: 'SSH Details',
+  DRIVERS: 'Drivers',
+  FLOW_GZ: 'Flow Migration',
+  CUSTOM_SCRIPTS: 'Custom Scripts',
 };
 
 export const CLUSTER_STATUS = {
@@ -90,6 +98,11 @@ export const MODULE_LIST_MAP = [
   { label: 'Parameter Context', value: 'Parameter Context' },
   { label: 'Variable', value: 'Variable' },
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
+  { label: 'AI Flows', value: 'AI Flows' },
+  { label: 'Flow Validation', value: 'Flow Validation' },
+  { label: 'Rule scope', value: 'Rule scope' },
+  { label: 'Rule', value: 'Rule' },
+  { label: 'Data Flow Inventory', value: 'Data Flow Inventory' },
   { label: 'Local Changes', value: 'Local Changes' },
   { label: 'Audit', value: 'Audit' },
   { label: 'Cluster Permission', value: 'Cluster Permission' },
@@ -112,6 +125,8 @@ export const ACTIVITY_STATUS_OPTIONS = [
 
 export const ACTIVITY_EVENTS = [
   { label: 'Add', value: 'Add' },
+  { label: 'Create', value: 'Create' },
+  { label: 'Create Cluster', value: 'Create Cluster' },
   { label: 'Edit', value: 'Edit' },
   { label: 'Delete', value: 'Delete' },
   { label: 'Upgrade', value: 'Upgrade' },
@@ -129,6 +144,18 @@ export const ACTIVITY_EVENTS = [
   { label: 'Logout', value: 'Logout' },
   { label: 'Reschedule', value: 'Reschedule' },
   { label: 'Approve', value: 'Approve' },
+  { label: 'Add Flow', value: 'Add Flow' },
+  { label: 'Add Bucket', value: 'Add Bucket' },
+  { label: 'Generate Flow', value: 'Generate Flow' },
+  { label: 'Comparison', value: 'Comparison' },
+  { label: 'Validate', value: 'Validate' },
+  { label: 'Add Data Flow Inventory', value: 'Add Data Flow Inventory' },
+  { label: 'Start Cluster', value: 'Start Cluster' },
+  { label: 'Update Nodes', value: 'Update Nodes' },
+  { label: 'Add Nodes', value: 'Add Nodes' },
+  { label: 'Remove Nodes', value: 'Remove Nodes' },
+  { label: 'Upgrade Cluster', value: 'Upgrade Cluster' },
+  { label: 'Associate Registry', value: 'Associate Registry' },
   { label: 'Enable', value: 'Enable' },
   { label: 'Disable', value: 'Disable' },
   { label: 'Revert', value: 'Revert' },
@@ -173,6 +200,7 @@ export const LICENSE_EXPIRE_PROMPT_DAYS = 30;
 export const KDFM = {
   // Generic constants
   UPLOAD_P12_FILE: 'Upload P12 File',
+  UPLOAD_FILE: 'Upload File',
   NIFI: 'NiFi',
   ADD: 'Add',
   ADD_NEW: 'Add New',
@@ -275,10 +303,11 @@ export const KDFM = {
   ITEMS_PER_PAGE: 20,
   USER_STORY: 'User Story',
   CHANGE_REQUEST: 'Change Request',
-  PLEASE_LOGIN_TO_CLUSTER: 'Please login to cluster',
   SELECT_PROCESS_GROUP: 'Select Process Group',
   DATE_TIME_FORMAT: 'Date/Time Format',
   TREE_VIEW: 'Tree View',
+  SUBMIT: 'Submit',
+  PLEASE_LOGIN_TO_CLUSTER: 'Please login to the cluster.',
 
   // License constants
   TRIAL: 'Trial',
@@ -296,6 +325,7 @@ export const KDFM = {
   ...NAMESPACE_CONSTANTS,
   ...ACTIVITY_HISTORY_CONSTANTS,
   ...USER_CONSTANTS,
+  ...AI_FLOW_GENERATOR_CONSTANTS,
 };
 
 export const SIDE_MENUS_DISPLAY = [
@@ -310,10 +340,105 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'controller-service', label: 'Controller Services' },
   { path: 'setting', label: 'Settings' },
   { path: 'licensing', label: 'Licensing' },
+  { path: 'ai-flow-generator', label: 'AI-Powered Data Flow' },
+  { path: 'flow-analysis', label: 'Flow Analysis' },
+  { path: 'data-flow-inventory', label: 'Data Flow Inventory' },
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];
 export const SEARCH_INPUT_ERROR = 'Please enter atleast 2 characters to search';
+
+export const TRUE_FALSE_OPTIONS = [
+  { id: 1, value: 'true', label: 'True' },
+  { id: 2, value: 'false', label: 'False' },
+];
+
+export const ZOOOKEEPER_EMBEDED_OPTIONS = [
+  { id: 1, value: true, label: 'True' },
+  { id: 2, value: false, label: 'False' },
+];
+
+export const ALWAYS_SYNC_OPTIONS = [
+  { id: 1, value: 'true', label: 'True' },
+  { id: 2, value: 'false', label: 'False' },
+];
+
+export const FLOW_ELECTION_MAX_WAIT_OPTIONS = [
+  { label: '2 Min', value: '2 mins' },
+  { label: '5 Min', value: '5 mins' },
+  { label: '10 Min', value: '10 mins' },
+];
+
+export const ACCESS_CONTROL_OPTIONS = [
+  { label: 'Open', value: 'Open' },
+  { label: 'CreatorOnly', value: 'CreatorOnly' },
+];
+
+export const ZOOKEEPER_CONNECTION_TIMEOUT = [
+  { label: '10 secs', value: '10 secs' },
+  { label: '20 secs', value: '20 secs' },
+  { label: '30 secs', value: '30 secs' },
+  { label: '40 secs', value: '40 secs' },
+  { label: '50 secs', value: '50 secs' },
+  { label: '60 secs', value: '60 secs' },
+];
+export const CHECKPOINT_INTERVAL_OPTIONS = [
+  { label: '2 Min', value: '2 mins' },
+  { label: '4 Min', value: '4 mins' },
+  { label: '6 Min', value: '6 mins' },
+  { label: '8 Min', value: '8 mins' },
+  { label: '10 Min', value: '10 mins' },
+];
+
+export const SESSION_TIMEOUT_OPTIONS = [
+  { label: '10 seconds', value: '10 seconds' },
+  { label: '20 seconds', value: '20 seconds' },
+  { label: '30 seconds', value: '30 seconds' },
+  { label: '40 seconds', value: '40 seconds' },
+  { label: '50 seconds', value: '50 seconds' },
+  { label: '60 seconds', value: '60 seconds' },
+];
+
+export const CLUSTER_ANSIBLE_DEFAULT_CONFIGURATION_VALUE = {
+  nifi_cluster_flow_election_max_wait_time: '5 mins',
+  nifi_zookeeper_connect_timeout: '10 secs',
+  nifi_web_https_port: 8443,
+  directory: './state/local',
+  partitions: 16,
+  root_node: '/nifi',
+  session_timeout: '10 seconds',
+  checkpoint_interval: '2 mins',
+  always_sync: 'false',
+  access_control: 'Open',
+  loginProvider: 'single-user-provider',
+  ldap_login_identity_strategy: 'USE_USERNAME',
+  scope: 'SUBTREE',
+};
+export const scopeOptions = [
+  {
+    label: 'Subtree',
+    value: 'SUBTREE',
+  },
+  {
+    label: 'One Level',
+    value: 'ONE_LEVEL',
+  },
+  {
+    label: 'Object',
+    value: 'OBJECT',
+  },
+];
+export const loginIdentityStrategy = [
+  {
+    label: 'USE_USERNAME',
+    value: 'USE_USERNAME',
+  },
+  {
+    label: 'USE_DN',
+    value: 'USE_DN',
+  },
+];
+
 export const DATE_TIME_FORMAT_OPTIONS = [
   { value: 'DD/MM/YYYY HH:MM', label: 'DD/MM/YYYY HH:MM' },
   { value: 'MM/DD/YYYY HH:MM AM/PM', label: 'MM/DD/YYYY HH:MM AM/PM' },

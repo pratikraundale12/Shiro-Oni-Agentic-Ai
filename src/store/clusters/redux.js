@@ -1,4 +1,5 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 
 const prefix = '@@KDFM-CLUSTERS/';
 
@@ -18,6 +19,39 @@ export const ClustersActions = {
     `${prefix}setIsclusterHardDeleteModalOpen`
   ),
   clusterLogout: createAction(`${prefix}clusterLogout`),
+  setIsAddorEditClusterModalOpen: createAction(
+    `${prefix}setIsAddorEditClusterModalOpen`
+  ),
+  setIsAddHostIPModalOpen: createAction(`${prefix}setIsAddHostIPModalOpen`),
+  getNiFiVersions: createAction(`${prefix}getNiFiVersions`),
+  setNifiVersions: createAction(`${prefix}setNifiVersions`),
+  checkCredentialsClusterSetup: createAction(
+    `${prefix}checkCredentialsClusterSetup`
+  ),
+  setHostIpList: createAction(`${prefix}setHostIpList`),
+  setActiveTabClusterSetup: createAction(`${prefix}setActiveTabClusterSetup`),
+  fetchHostNodesList: createAction(`${prefix}fetchHostNodesList`),
+  setAddHostBtnDisable: createAction(`${prefix}setAddHostBtnDisable`),
+  setAddHostIndividualData: createAction(`${prefix}setAddHostIndividualData`),
+  addIndividualHost: createAction(`${prefix}addIndividualHost`),
+  deleteIndividualHost: createAction(`${prefix}deleteIndividualHost`),
+  updateIndividualHost: createAction(`${prefix}updateIndividualHost`),
+  getConfigList: createAction(`${prefix}getConfigList`),
+  setConfigNameList: createAction(`${prefix}setConfigNameList`),
+  addConfigClusterSetup: createAction(`${prefix}addConfigClusterSetup`),
+  updateConfigClusterSetup: createAction(`${prefix}updateConfigClusterSetup`),
+  deleteConfig: createAction(`${prefix}deleteConfig`),
+  getConfigVersions: createAction(`${prefix}getConfigVersions`),
+  setConfigVersionList: createAction(`${prefix}setConfigVersionList`),
+  createCluster: createAction(`${prefix}createCluster`),
+  getSingleConfigData: createAction(`${prefix}getSingleConfigData`),
+  changeClusterActionState: createAction(`${prefix}changeClusterActionState`),
+  fetchClusterRegistryNodes: createAction(`${prefix}fetchClusterRegistryNodes`),
+  setRegistryNodesData: createAction(`${prefix}setRegistryNodesData`),
+  fetchRunningStatusCluster: createAction(`${prefix}fetchRunningStatusCluster`),
+  fetchClusterMetrics: createAction(`${prefix}fetchClusterMetrics`),
+  setHealthMetricsData: createAction(`${prefix}setHealthMetricsData`),
+  setRunningStatusData: createAction(`${prefix}setRunningStatusData`),
   // — Service-Account Credentials Check —
   checkServiceAccountCredentialsRequest: createAction(
     `${prefix}checkServiceAccountCredentialsRequest`
@@ -50,10 +84,135 @@ export const ClustersActions = {
   updateServiceAccountHostFailure: createAction(
     `${prefix}updateServiceAccountHostFailure`
   ),
+  setIsRegitryAssociationModalOpen: createAction(
+    `${prefix}setIsRegitryAssociationModalOpen`
+  ),
+  associateClusterWithRegistry: createAction(
+    `${prefix}associateClusterWithRegistry`
+  ),
   setTestCredsButtonVisible: createAction(`${prefix}setTestCredsButtonVisible`),
+  setansibleClucterToEdit: createAction(`${prefix}setansibleClucterToEdit`),
+  fetchAnsibleClusterData: createAction(`${prefix}fetchAnsibleClusterData`),
+  setAnsibleClusterData: createAction(`${prefix}setAnsibleClusterData`),
+  upgradeAnsibleCluster: createAction(`${prefix}upgradeAnsibleCluster`),
+  setAnsibleClusterNodeUpdate: createAction(
+    `${prefix}setAnsibleClusterNodeUpdate`
+  ),
+  updateNodesAnsibleCluster: createAction(`${prefix}updateNodesAnsibleCluster`),
+  deleteAnsibleClusterHard: createAction(`${prefix}deleteAnsibleClusterHard`),
+  setisAnsibleClusterDeleteFrimNiFiModalOpen: createAction(
+    `${prefix}setisAnsibleClusterDeleteFrimNiFiModalOpen`
+  ),
+  fetchAnsibleCLusterProcessData: createAction(
+    `${prefix}fetchAnsibleCLusterProcessData`
+  ),
+  setansibleClusterProgressData: createAction(
+    `${prefix}setansibleClusterProgressData`
+  ),
+  setIsFailedClusterDeleteModalOpen: createAction(
+    `${prefix}setIsFailedClusterDeleteModalOpen`
+  ),
+  setAnsibleClusterCreationResponseData: createAction(
+    `${prefix}setAnsibleClusterCreationResponseData`
+  ),
+  setProgressTrackingModalOpen: createAction(
+    `${prefix}setProgressTrackingModalOpen`
+  ),
+  setLastVisitedTab: createAction(`${prefix}setLastVisitedTab`),
+  setclusterListItems: createAction(`${prefix}setclusterListItems`),
+  fetchAllConfigPropertiesWithValue: createAction(
+    `${prefix}fetchAllConfigPropertiesWithValue`
+  ),
+  setAllConfigPropertiesAndValue: createAction(
+    `${prefix}setAllConfigPropertiesAndValue`
+  ),
+  setClusterSetupSelectedNiFiVersion: createAction(
+    `${prefix}setClusterSetupSelectedNiFiVersion`
+  ),
   setCopyClusterModalOpen: createAction(`${prefix}setCopyClusterModalOpen`),
   setCopyClusterData: createAction(`${prefix}setCopyClusterData`),
-  setclusterListItems: createAction(`${prefix}setclusterListItems`),
+  setclusterToLoginWithoutCred: createAction(
+    `${prefix}setclusterToLoginWithoutCred`
+  ),
+  testMultipleNodes: createAction(`${prefix}testMultipleNodes`),
+  updateMultipleNodeswithSSH: createAction(
+    `${prefix}updateMultipleNodeswithSSH`
+  ),
+  setMultiNodesTestResults: createAction(`${prefix}setMultiNodesTestResults`),
+  setTestCertificateNodes: createAction(`${prefix}setTestCertificateNodes`),
+  fetchSSHstatus: createAction(`${prefix}fetchSSHstatus`),
+  setSshAddedStatus: createAction(`${prefix}setSshAddedStatus`),
+  addNarFile: createAction(`${prefix}addNarFile`),
+  fetchNarList: createAction(`${prefix}fetchNarList`),
+  setNarList: createAction(`${prefix}setNarList`),
+  restartCluster: createAction(`${prefix}restartCluster`),
+  uploadClusterDriver: createAction(`${prefix}uploadClusterDriver`),
+  fetchDriversList: createAction(`${prefix}fetchDriversList`),
+  setDriversList: createAction(`${prefix}setDriversList`),
+  setCreateClusterMethod: createAction(`${prefix}setCreateClusterMethod`),
+  fetchMasterHostNodesList: createAction(`${prefix}fetchMasterHostNodesList`),
+  fetchConfigFieldsForKubernetes: createAction(
+    `${prefix}fetchConfigFieldsForKubernetes`
+  ),
+  setKubernetesConfigFields: createAction(`${prefix}setKubernetesConfigFields`),
+  createConfigForKubernetesCluster: createAction(
+    `${prefix}createConfigForKubernetesCluster`
+  ),
+  fetchConfigListForKubernetes: createAction(
+    `${prefix}fetchConfigListForKubernetes`
+  ),
+  setListConfigListKubernetes: createAction(
+    `${prefix}setListConfigListKubernetes`
+  ),
+  setkubeCofigToEdit: createAction(`${prefix}setkubeCofigToEdit`),
+  deleteKubeConfig: createAction(`${prefix}deleteKubeConfig`),
+  createKubernetesCluster: createAction(`${prefix}createKubernetesCluster`),
+  fetchConfigVersionsPerConfig: createAction(
+    `${prefix}fetchConfigVersionsPerConfig`
+  ),
+  setkubConfigVersion: createAction(`${prefix}setkubConfigVersion`),
+  setkubeHostModalOpen: createAction(`${prefix}setkubeHostModalOpen`),
+  createKubernetesMasterNodeCluster: createAction(
+    `${prefix}createKubernetesMasterNodeCluster`
+  ),
+  deleteMasterNodeConfig: createAction(`${prefix}deleteMasterNodeConfig`),
+  fetchKubeClusterDataToUpgrade: createAction(
+    `${prefix}fetchKubeClusterDataToUpgrade`
+  ),
+  setkubeClusterUpgradeData: createAction(`${prefix}setkubeClusterUpgradeData`),
+  setIsOpenDeleteKubeClusterModal: createAction(
+    `${prefix}setIsOpenDeleteKubeClusterModal`
+  ),
+  deleteClusterKube: createAction(`${prefix}deleteClusterKube`),
+  setTourIndex: createAction(`${prefix}setTourIndex`),
+  setTourStart: createAction(`${prefix}setTourStart`),
+  deleteClusterNarFile: createAction(`${prefix}deleteClusterNarFile`),
+  deleteClusterDriverFile: createAction(`${prefix}deleteClusterDriverFile`),
+  fetchKubePodStatus: createAction(`${prefix}fetchKubePodStatus`),
+  setKubePods: createAction(`${prefix}setKubePods`),
+  fetchKubeHealth: createAction(`${prefix}fetchKubeHealth`),
+  setKubePodHealth: createAction(`${prefix}setKubePodHealth`),
+  setIsDownloadRegistryCertOpen: createAction(
+    `${prefix}setIsDownloadRegistryCertOpen`
+  ),
+  updateKubeConfigQuickEdit: createAction(`${prefix}updateKubeConfigQuickEdit`),
+  setUpdatedKubeConfig: createAction(`${prefix}setUpdatedKubeConfig`),
+  addScript: createAction(`${prefix}addScript`),
+  fetchScriptList: createAction(`${prefix}fetchScriptList`),
+  deleteClusterScript: createAction(`${prefix}deleteClusterScript`),
+  setScriptList: createAction(`${prefix}setScriptList`),
+  setAzureCluster: createAction(`${prefix}setAzureCluster`),
+  testAzureConfig: createAction(`${prefix}testAzureConfig`),
+  setAzureTestPassed: createAction(`${prefix}setAzureTestPassed`),
+  setRecentClusterSelected: createAction(`${prefix}setRecentClusterSelected`),
+  setclusterViewTab: createAction(`${prefix}setclusterViewTab`),
+  setrestartClusterAfterAction: createAction(
+    `${prefix}setrestartClusterAfterAction`
+  ),
+  setRestartDelayLoadingState: createAction(
+    `${prefix}setRestartDelayLoadingState`
+  ),
+  setCreateLoadingState: createAction(`${prefix}setCreateLoadingState`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -65,6 +224,19 @@ export const CLUSTERS_INITIAL_STATE = {
   addEditClusterData: {},
   clusterFormDataResponse: {},
   isclusterHardDeleteModalOpen: false,
+  isAddorEditClusterModalOpen: false,
+  isAddHostIPModalOpen: false,
+  nifiVersions: [],
+  hostIpList: [],
+  activeTabClusterSetup: 'getting_started',
+  addHostBtnDisable: true,
+  addHostIndividualData: {},
+  configNameList: [],
+  configVersionList: [],
+  updateConfigClusterSetupData: {},
+  registryNodesData: {},
+  healthMetricsData: {},
+  runningStatusData: {},
   isCopyClusterModalOpen: false,
   copyClusterData: null,
   originalClusterName: null,
@@ -79,8 +251,48 @@ export const CLUSTERS_INITIAL_STATE = {
   // Update-host
   updatingServiceAccountHost: false,
   updateServiceAccountHostError: null,
+  isRegitryAssociationModalOpen: false,
   isTestCredsButtonVisible: true,
+  ansibleClucterToEdit: '',
+  ansibleClusterData: {},
+  ansibleClusterNodeUpdate: '',
+  isAnsibleClusterDeleteFrimNiFiModalOpen: false,
+  ansibleClusterProgressData: {},
+  isFailedClusterDeleteModalOpen: false,
+  ansibleClusterCreationResponseData: {},
+  progressTrackingModalOpen: false,
+  lastVisitedTab: 'clusters',
   clusterListItems: 10,
+  allConfigPropertiesAndValue: {},
+  clusterSetupSelectedNiFiVersion: null,
+  clusterToLoginWithoutCred: {},
+  multiNodesTestResults: {},
+  testCertificateNodes: [],
+  sshAddedStatus: {},
+  narList: [],
+  driversList: [],
+  createClusterMethod: 'vm',
+  kubernetesConfigFields: {},
+  listConfigListKubernetes: [],
+  kubeCofigToEdit: {},
+  kubConfigVersion: [],
+  kubeHostModalOpen: false,
+  kubeClusterUpgradeData: {},
+  isOpenDeleteKubeClusterModal: false,
+  tourIndex: 0,
+  tourStart: false,
+  kubePods: [],
+  kubePodHealth: {},
+  isDownloadRegistryCertOpen: false,
+  updatedKubeConfig: {},
+  scriptList: [],
+  azureCluster: false,
+  azureTestPassed: false,
+  recentClusterSelected: null,
+  clusterViewTab: 'node',
+  restartClusterAfterAction: false,
+  restartDelayLoadingState: false,
+  createLoadingState: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -93,6 +305,21 @@ export const ClustersSelectors = {
   getClusterFormData: state => state.clusters.clusterFormDataResponse,
   getIsclusterHardDeleteModalOpen: state =>
     state.clusters.isclusterHardDeleteModalOpen,
+  getIsAddorEditClusterModalOpen: state =>
+    state.clusters.isAddorEditClusterModalOpen,
+  getIsAddHostIPModalOpen: state => state.clusters.isAddHostIPModalOpen,
+  getNifiVersions: state => state.clusters.nifiVersions,
+  getHostIpList: state => state.clusters.hostIpList,
+  getActiveTabClusterSetup: state => state.clusters.activeTabClusterSetup,
+  getAddHostBtnDisable: state => state.clusters.addHostBtnDisable,
+  getAddHostIndividualData: state => state.clusters.addHostIndividualData,
+  getConfigNameList: state => state.clusters.configNameList,
+  getConfigVersionList: state => state.clusters.configVersionList,
+  getUpdateConfigClusterSetupData: state =>
+    state.clusters.updateConfigClusterSetupData,
+  getRegistryNodesData: state => state.clusters.registryNodesData,
+  getHealthMetricsData: state => state.clusters.healthMetricsData,
+  getRunningStatusData: state => state.clusters.runningStatusData,
   getIsCopyClusterModalOpen: state => state.clusters.isCopyClusterModalOpen,
   getCopyClusterData: state => state.clusters.copyClusterData,
   getOriginalClusterName: state => state.clusters.originalClusterName,
@@ -110,8 +337,60 @@ export const ClustersSelectors = {
     state.clusters.updatingServiceAccountHost,
   getUpdateServiceAccountHostError: state =>
     state.clusters.updateServiceAccountHostError,
+  getIsRegitryAssociationModalOpen: state =>
+    state.clusters.isRegitryAssociationModalOpen,
   isTestCredsButtonVisible: state => state.clusters.isTestCredsButtonVisible,
+  getAnsibleClusterData: state => state.clusters.ansibleClusterData,
+  getansibleClucterToEdit: state => state.clusters.ansibleClucterToEdit,
+  getAnsibleClusterNodeUpdate: state => state.clusters.ansibleClusterNodeUpdate,
+  getisAnsibleClusterDeleteFrimNiFiModalOpen: state =>
+    state.clusters.isAnsibleClusterDeleteFrimNiFiModalOpen,
+  getAnsibleClusterProgressData: state =>
+    state.clusters.ansibleClusterProgressData,
+  getIsFailedClusterDeleteModalOpen: state =>
+    state.clusters.isFailedClusterDeleteModalOpen,
+  getansibleClusterCreationResponseData: state =>
+    state.clusters.ansibleClusterCreationResponseData,
+  getProgressTrackingModalOpen: state =>
+    state.clusters.progressTrackingModalOpen,
+  getlastVisitedTab: state => state.clusters.lastVisitedTab,
   getClusterListItems: state => state.clusters.clusterListItems,
+  getAllConfigPropertiesAndValue: state =>
+    state.clusters.allConfigPropertiesAndValue,
+  getClusterSetupSelectedNiFiVersion: state =>
+    state.clusters.clusterSetupSelectedNiFiVersion,
+  getclusterToLoginWithoutCred: state =>
+    state.clusters.clusterToLoginWithoutCred,
+  getmultiNodesTestResults: state => state.clusters.multiNodesTestResults,
+  getTestCertificateNodes: state => state.clusters.testCertificateNodes,
+  getsshAddedStatus: state => state.clusters.sshAddedStatus,
+  getnarList: state => state.clusters.narList,
+  getDriversList: state => state.clusters.driversList,
+  getCreateClusterMethod: state => state.clusters.createClusterMethod,
+  getKubernetesConfigFields: state => state.clusters.kubernetesConfigFields,
+  getlistConfigListKubernetes: state => state.clusters.listConfigListKubernetes,
+  getkubeCofigToEdit: state => state.clusters.kubeCofigToEdit,
+  getkubConfigVersion: state => state.clusters.kubConfigVersion,
+  getkubeHostModalOpen: state => state.clusters.kubeHostModalOpen,
+  getkubeClusterUpgradeData: state => state.clusters.kubeClusterUpgradeData,
+  getisOpenDeleteKubeClusterModal: state =>
+    state.clusters.isOpenDeleteKubeClusterModal,
+  getTourIndex: state => state.clusters.tourIndex,
+  getTourStart: state => state.clusters.tourStart,
+  getKubePods: state => state.clusters.kubePods,
+  getKubePodHealth: state => state.clusters.kubePodHealth,
+  getIsDownloadRegistryCertOpen: state =>
+    state.clusters.isDownloadRegistryCertOpen,
+  getUpdatedKubeConfig: state => state.clusters.updatedKubeConfig,
+  getScriptList: state => state.clusters.scriptList,
+  getAzureCluster: state => state.clusters.azureCluster,
+  getazureTestPassed: state => state.clusters.azureTestPassed,
+  getrecentClusterSelected: state => state.clusters.recentClusterSelected,
+  getclusterViewTab: state => state.clusters.clusterViewTab,
+  getrestartClusterAfterAction: state =>
+    state.clusters.restartClusterAfterAction,
+  getrestartDelayLoadingState: state => state.clusters.restartDelayLoadingState,
+  getcreateLoadingState: state => state.clusters.createLoadingState,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -138,6 +417,9 @@ const fetchClustersSuccess = (state, { payload }) => {
   };
 };
 const fetchClusterNodesSuccess = (state, { payload }) => {
+  if (payload?.status === 201) {
+    toast.info(payload?.message);
+  }
   return {
     ...state,
     nodes: payload,
@@ -170,6 +452,112 @@ const setIsclusterHardDeleteModalOpen = (state, { payload }) => {
     isclusterHardDeleteModalOpen: payload,
   };
 };
+const setIsAddorEditClusterModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isAddorEditClusterModalOpen: payload,
+  };
+};
+const setIsAddHostIPModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isAddHostIPModalOpen: payload,
+  };
+};
+const setNifiVersions = (state, { payload }) => {
+  return {
+    ...state,
+    nifiVersions: payload,
+  };
+};
+const setHostIpList = (state, { payload }) => {
+  return {
+    ...state,
+    hostIpList: payload,
+  };
+};
+const setActiveTabClusterSetup = (state, { payload }) => {
+  return {
+    ...state,
+    activeTabClusterSetup: payload,
+  };
+};
+const setAddHostBtnDisable = (state, { payload }) => {
+  return {
+    ...state,
+    addHostBtnDisable: payload,
+  };
+};
+const setAddHostIndividualData = (state, { payload }) => {
+  return {
+    ...state,
+    addHostIndividualData: payload,
+  };
+};
+const setConfigNameList = (state, { payload }) => {
+  return {
+    ...state,
+    configNameList: payload,
+  };
+};
+const setConfigVersionList = (state, { payload }) => {
+  return {
+    ...state,
+    configVersionList: payload,
+  };
+};
+
+const updateConfigClusterSetupData = (state, { payload }) => {
+  return {
+    ...state,
+    updateConfigClusterSetupData: payload,
+  };
+};
+
+const setRegistryNodesData = (state, { payload }) => {
+  return {
+    ...state,
+    registryNodesData: payload,
+  };
+};
+
+const setHealthMetricsData = (state, { payload }) => {
+  return {
+    ...state,
+    healthMetricsData: payload,
+  };
+};
+const setRunningStatusData = (state, { payload }) => {
+  return {
+    ...state,
+    runningStatusData: payload,
+  };
+};
+const setIsRegitryAssociationModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isRegitryAssociationModalOpen: payload,
+  };
+};
+const setansibleClucterToEdit = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClucterToEdit: payload,
+  };
+};
+const setAnsibleClusterData = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterData: payload,
+  };
+};
+const setAnsibleClusterNodeUpdate = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterNodeUpdate: payload,
+  };
+};
+
 const checkServiceAccountCredentialsRequest = state => {
   return {
     ...state,
@@ -244,6 +632,43 @@ const setTestCredsButtonVisible = (state, { payload }) => ({
   isTestCredsButtonVisible: payload, // true or false
 });
 
+const setisAnsibleClusterDeleteFrimNiFiModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isAnsibleClusterDeleteFrimNiFiModalOpen: payload,
+  };
+};
+const setansibleClusterProgressData = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterProgressData: payload,
+  };
+};
+const setIsFailedClusterDeleteModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isFailedClusterDeleteModalOpen: payload,
+  };
+};
+const setAnsibleClusterCreationResponseData = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterCreationResponseData: payload,
+  };
+};
+
+const setProgressTrackingModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    progressTrackingModalOpen: payload,
+  };
+};
+const setLastVisitedTab = (state, { payload }) => {
+  return {
+    ...state,
+    lastVisitedTab: payload,
+  };
+};
 const setCopyClusterModalOpen = (state, { payload }) => {
   return {
     ...state,
@@ -268,6 +693,190 @@ const setclusterListItems = (state, { payload }) => {
   };
 };
 
+const setAllConfigPropertiesAndValue = (state, { payload }) => {
+  return {
+    ...state,
+    allConfigPropertiesAndValue: payload,
+  };
+};
+const setClusterSetupSelectedNiFiVersion = (state, { payload }) => {
+  return {
+    ...state,
+    clusterSetupSelectedNiFiVersion: payload,
+  };
+};
+const setMultiNodesTestResults = (state, { payload }) => {
+  return {
+    ...state,
+    multiNodesTestResults: payload,
+  };
+};
+const setTestCertificateNodes = (state, { payload }) => {
+  return {
+    ...state,
+    testCertificateNodes: payload,
+  };
+};
+const setSshAddedStatus = (state, { payload }) => {
+  return {
+    ...state,
+    sshAddedStatus: payload,
+  };
+};
+const setNarList = (state, { payload }) => {
+  return {
+    ...state,
+    narList: payload,
+  };
+};
+const setDriversList = (state, { payload }) => {
+  return {
+    ...state,
+    driversList: payload,
+  };
+};
+const setCreateClusterMethod = (state, { payload }) => {
+  return {
+    ...state,
+    createClusterMethod: payload,
+  };
+};
+const setKubernetesConfigFields = (state, { payload }) => {
+  return {
+    ...state,
+    kubernetesConfigFields: payload,
+  };
+};
+const setListConfigListKubernetes = (state, { payload }) => {
+  return {
+    ...state,
+    listConfigListKubernetes: payload,
+  };
+};
+const setkubeCofigToEdit = (state, { payload }) => {
+  return {
+    ...state,
+    kubeCofigToEdit: payload,
+  };
+};
+const setkubConfigVersion = (state, { payload }) => {
+  return {
+    ...state,
+    kubConfigVersion: payload,
+  };
+};
+const setkubeHostModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    kubeHostModalOpen: payload,
+  };
+};
+const setkubeClusterUpgradeData = (state, { payload }) => {
+  return {
+    ...state,
+    kubeClusterUpgradeData: payload,
+  };
+};
+const setIsOpenDeleteKubeClusterModal = (state, { payload }) => {
+  return {
+    ...state,
+    isOpenDeleteKubeClusterModal: payload,
+  };
+};
+const setTourIndex = (state, { payload }) => {
+  return {
+    ...state,
+    tourIndex: payload,
+  };
+};
+const setTourStart = (state, { payload }) => {
+  return {
+    ...state,
+    tourStart: payload,
+  };
+};
+
+const setclusterToLoginWithoutCred = (state, { payload }) => {
+  return {
+    ...state,
+    clusterToLoginWithoutCred: payload,
+  };
+};
+
+const setKubePods = (state, { payload }) => {
+  return {
+    ...state,
+    kubePods: payload,
+  };
+};
+const setKubePodHealth = (state, { payload }) => {
+  return {
+    ...state,
+    kubePodHealth: payload,
+  };
+};
+const setIsDownloadRegistryCertOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isDownloadRegistryCertOpen: payload,
+  };
+};
+const setUpdatedKubeConfig = (state, { payload }) => {
+  return {
+    ...state,
+    updatedKubeConfig: payload,
+  };
+};
+
+const setScriptList = (state, { payload }) => {
+  return {
+    ...state,
+    scriptList: payload,
+  };
+};
+const setAzureCluster = (state, { payload }) => {
+  return {
+    ...state,
+    azureCluster: payload,
+  };
+};
+const setAzureTestPassed = (state, { payload }) => {
+  return {
+    ...state,
+    azureTestPassed: payload,
+  };
+};
+const setRecentClusterSelected = (state, { payload }) => {
+  return {
+    ...state,
+    recentClusterSelected: payload,
+  };
+};
+const setclusterViewTab = (state, { payload }) => {
+  return {
+    ...state,
+    clusterViewTab: payload,
+  };
+};
+const setrestartClusterAfterAction = (state, { payload }) => {
+  return {
+    ...state,
+    restartClusterAfterAction: payload,
+  };
+};
+const setRestartDelayLoadingState = (state, { payload }) => {
+  return {
+    ...state,
+    restartDelayLoadingState: payload,
+  };
+};
+const setCreateLoadingState = (state, { payload }) => {
+  return {
+    ...state,
+    createLoadingState: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -288,7 +897,33 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setIsclusterHardDeleteModalOpen,
         setIsclusterHardDeleteModalOpen
-      ) // Check service-account credentials
+      )
+      .addCase(
+        ClustersActions.setIsAddorEditClusterModalOpen,
+        setIsAddorEditClusterModalOpen
+      )
+      .addCase(ClustersActions.setIsAddHostIPModalOpen, setIsAddHostIPModalOpen)
+      .addCase(ClustersActions.setNifiVersions, setNifiVersions)
+      .addCase(ClustersActions.setHostIpList, setHostIpList)
+      .addCase(
+        ClustersActions.setActiveTabClusterSetup,
+        setActiveTabClusterSetup
+      )
+      .addCase(ClustersActions.setAddHostBtnDisable, setAddHostBtnDisable)
+      .addCase(
+        ClustersActions.setAddHostIndividualData,
+        setAddHostIndividualData
+      )
+      .addCase(ClustersActions.setConfigNameList, setConfigNameList)
+      .addCase(ClustersActions.setConfigVersionList, setConfigVersionList)
+      .addCase(
+        ClustersActions.updateConfigClusterSetup,
+        updateConfigClusterSetupData
+      )
+      .addCase(ClustersActions.setRegistryNodesData, setRegistryNodesData)
+      .addCase(ClustersActions.setHealthMetricsData, setHealthMetricsData)
+      .addCase(ClustersActions.setRunningStatusData, setRunningStatusData)
+      // Check service-account credentials
       .addCase(
         ClustersActions.checkServiceAccountCredentialsRequest,
         checkServiceAccountCredentialsRequest
@@ -333,8 +968,105 @@ export const clustersReducer = createReducer(
         ClustersActions.setTestCredsButtonVisible,
         setTestCredsButtonVisible
       )
+      .addCase(
+        ClustersActions.setIsRegitryAssociationModalOpen,
+        setIsRegitryAssociationModalOpen
+      )
+      .addCase(ClustersActions.setansibleClucterToEdit, setansibleClucterToEdit)
+      .addCase(ClustersActions.setAnsibleClusterData, setAnsibleClusterData)
+      .addCase(
+        ClustersActions.setAnsibleClusterNodeUpdate,
+        setAnsibleClusterNodeUpdate
+      )
+      .addCase(
+        ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen,
+        setisAnsibleClusterDeleteFrimNiFiModalOpen
+      )
+      .addCase(
+        ClustersActions.setansibleClusterProgressData,
+        setansibleClusterProgressData
+      )
+      .addCase(
+        ClustersActions.setIsFailedClusterDeleteModalOpen,
+        setIsFailedClusterDeleteModalOpen
+      )
+      .addCase(
+        ClustersActions.setAnsibleClusterCreationResponseData,
+        setAnsibleClusterCreationResponseData
+      )
+      .addCase(
+        ClustersActions.setProgressTrackingModalOpen,
+        setProgressTrackingModalOpen
+      )
+      .addCase(ClustersActions.setLastVisitedTab, setLastVisitedTab)
+      .addCase(ClustersActions.setclusterListItems, setclusterListItems)
+      .addCase(
+        ClustersActions.setAllConfigPropertiesAndValue,
+        setAllConfigPropertiesAndValue
+      )
+      .addCase(
+        ClustersActions.setClusterSetupSelectedNiFiVersion,
+        setClusterSetupSelectedNiFiVersion
+      )
       .addCase(ClustersActions.setCopyClusterModalOpen, setCopyClusterModalOpen)
       .addCase(ClustersActions.setCopyClusterData, setCopyClusterData)
-      .addCase(ClustersActions.setclusterListItems, setclusterListItems);
+      .addCase(
+        ClustersActions.setclusterToLoginWithoutCred,
+        setclusterToLoginWithoutCred
+      )
+      .addCase(
+        ClustersActions.setMultiNodesTestResults,
+        setMultiNodesTestResults
+      )
+      .addCase(ClustersActions.setTestCertificateNodes, setTestCertificateNodes)
+      .addCase(ClustersActions.setSshAddedStatus, setSshAddedStatus)
+      .addCase(ClustersActions.setNarList, setNarList)
+      .addCase(ClustersActions.setDriversList, setDriversList)
+      .addCase(ClustersActions.setCreateClusterMethod, setCreateClusterMethod)
+      .addCase(
+        ClustersActions.setKubernetesConfigFields,
+        setKubernetesConfigFields
+      )
+      .addCase(
+        ClustersActions.setListConfigListKubernetes,
+        setListConfigListKubernetes
+      )
+      .addCase(ClustersActions.setkubeCofigToEdit, setkubeCofigToEdit)
+      .addCase(ClustersActions.setkubConfigVersion, setkubConfigVersion)
+      .addCase(ClustersActions.setkubeHostModalOpen, setkubeHostModalOpen)
+      .addCase(
+        ClustersActions.setkubeClusterUpgradeData,
+        setkubeClusterUpgradeData
+      )
+      .addCase(
+        ClustersActions.setIsOpenDeleteKubeClusterModal,
+        setIsOpenDeleteKubeClusterModal
+      )
+      .addCase(ClustersActions.setTourIndex, setTourIndex)
+      .addCase(ClustersActions.setTourStart, setTourStart)
+      .addCase(ClustersActions.setKubePods, setKubePods)
+      .addCase(ClustersActions.setKubePodHealth, setKubePodHealth)
+      .addCase(
+        ClustersActions.setIsDownloadRegistryCertOpen,
+        setIsDownloadRegistryCertOpen
+      )
+      .addCase(ClustersActions.setUpdatedKubeConfig, setUpdatedKubeConfig)
+      .addCase(ClustersActions.setScriptList, setScriptList)
+      .addCase(ClustersActions.setAzureCluster, setAzureCluster)
+      .addCase(ClustersActions.setAzureTestPassed, setAzureTestPassed)
+      .addCase(
+        ClustersActions.setRecentClusterSelected,
+        setRecentClusterSelected
+      )
+      .addCase(ClustersActions.setclusterViewTab, setclusterViewTab)
+      .addCase(
+        ClustersActions.setrestartClusterAfterAction,
+        setrestartClusterAfterAction
+      )
+      .addCase(
+        ClustersActions.setRestartDelayLoadingState,
+        setRestartDelayLoadingState
+      )
+      .addCase(ClustersActions.setCreateLoadingState, setCreateLoadingState);
   }
 );

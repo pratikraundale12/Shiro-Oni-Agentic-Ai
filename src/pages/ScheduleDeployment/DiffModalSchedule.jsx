@@ -7,6 +7,7 @@ import { Modal } from '../../shared';
 import { ActivityHistorySelectors } from '../../store/activityHistory';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
+import DiffModalFlowValidation from './DiffModalFlowValidation';
 import DiffLocalChanges from './DiffLocalChanges';
 import DiffScheduleCS from './DiffScheduleControllerService';
 import DiffScheduleParameter from './DiffScheduleParamter';
@@ -83,9 +84,10 @@ export const DiffModalScheduleList = props => {
             csData={props?.csData}
           />
         );
+      case 'Flow Validation':
+        return <DiffModalFlowValidation />;
       case 'Local Changes':
         return <DiffLocalChanges />;
-
       default:
         return null;
     }
@@ -165,6 +167,13 @@ export const DiffModalScheduleList = props => {
               className="nav-item"
             >
               {KDFM.CONTROLLER_SERVICE}{' '}
+            </Tab>
+            <Tab
+              active={activeTab === 'Flow Validation'}
+              onClick={() => handleSetTab('Flow Validation')}
+              className="nav-item"
+            >
+              Flow Validation{' '}
             </Tab>
             {/* Conditionally render Local Changes tab */}
             {!isFromDeploySummary && (

@@ -1,9 +1,11 @@
 import { all, fork } from 'redux-saga/effects';
 
 import { activityHistorySagas } from './activityHistory';
+import { aiFlowGeneratorSagas } from './aiFlowGenerator';
 import { authenticationSagas } from './authentication/sagas';
 import { clustersSagas } from './clusters';
 import { dashboardSagas } from './dashboard';
+import { flowValidationSagas } from './flowValidation';
 import { gridSagas } from './grid/sagas';
 import { namespacesSagas } from './namespaces';
 import { policiesSagas } from './policies';
@@ -12,6 +14,7 @@ import { schedularSagas } from './schedular';
 import API from './services2/api';
 import { settingsSagas } from './settings';
 import { usersSagas } from './users';
+import { registrySagas } from './registry';
 
 /* ------------- API ------------- */
 export const api = API.create();
@@ -40,5 +43,11 @@ export default function* root() {
     fork(settingsSagas, api),
     // |---------------------activityHistory-------------------------|
     fork(activityHistorySagas, api),
+    // |---------------------FlowVlidation-------------------------|
+    fork(flowValidationSagas, api),
+    // |---------------------aiFlowGenerator-------------------------|
+    fork(aiFlowGeneratorSagas, api),
+    // |---------------------registry-------------------------|
+    fork(registrySagas, api),
   ]);
 }

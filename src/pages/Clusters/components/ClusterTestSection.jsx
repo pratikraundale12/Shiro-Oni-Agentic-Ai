@@ -1,4 +1,5 @@
 /*eslint-disable*/
+import { isEmpty } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { KDFM } from '../../../constants';
@@ -35,6 +36,7 @@ const ClusterTestSection = ({
   watchedFields,
   testData,
   data,
+  certificateOption = false,
 }) => {
   return (
     <Flex>
@@ -49,28 +51,36 @@ const ClusterTestSection = ({
                 !dataFill ||
                 checkDuplicate ||
                 checkDuplicateName ||
-                watchedFields?.[1] === data?.nifi_url
+                watchedFields?.[1] === data?.nifi_url ||
+                !watchedFields?.[0] ||
+                !watchedFields?.[1]
               }
             >
               {KDFM.ADD_CERTIFICATE}
             </Button>
           </div>
-          <ORText>{KDFM.SEPARATOR}</ORText>
-          <div>
-            <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
-            <Button
-              onClick={() => setIsCredOpen(true)}
-              disabled={
-                testSuccess ||
-                !dataFill ||
-                checkDuplicate ||
-                checkDuplicateName ||
-                watchedFields?.[1] === data?.nifi_url
-              }
-            >
-              {KDFM.ENTER_CREDENTIALS}
-            </Button>
-          </div>
+          {certificateOption === false && (
+            <>
+              <ORText>{KDFM.SEPARATOR}</ORText>
+              <div>
+                <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
+                <Button
+                  onClick={() => setIsCredOpen(true)}
+                  disabled={
+                    testSuccess ||
+                    !dataFill ||
+                    checkDuplicate ||
+                    checkDuplicateName ||
+                    watchedFields?.[1] === data?.nifi_url ||
+                    !watchedFields?.[0] ||
+                    !watchedFields?.[1]
+                  }
+                >
+                  {KDFM.ENTER_CREDENTIALS}
+                </Button>
+              </div>
+            </>
+          )}
         </>
       ) : (
         <div>

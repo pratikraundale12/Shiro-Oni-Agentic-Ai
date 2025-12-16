@@ -1159,6 +1159,11 @@ export function* fetchNamespacesForDestiationCluster(api, { payload }) {
 }
 
 export function* fetchRegistryData(api, { payload }) {
+  let registryId = '';
+  if (payload) {
+    const { registriesId } = payload;
+    registryId = registriesId;
+  }
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
 
   const clustersToken = JSON.parse(
@@ -1169,6 +1174,10 @@ export function* fetchRegistryData(api, { payload }) {
   );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const gridData = yield select(
+    GridSelectors.getNamespaceGridRegistry,
+    'namespaces'
+  );
   const response = yield call(requestSaga, {
     errorSection: 'fetchRegistryData',
     loadingSection: 'fetchRegistryData',
@@ -1176,14 +1185,16 @@ export function* fetchRegistryData(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        registriesId: payload,
+        registriesId: gridData?.id || registryId,
       },
     ],
   });
   if (response.ok) {
     yield put(NamespacesActions.setBucketListDropDownData(response?.data));
   } else {
-    toast.error(response?.message || response?.data?.message);
+    toast.error(
+      response?.message || response?.data?.message || response?.data?.raw?.raw
+    );
   }
 }
 

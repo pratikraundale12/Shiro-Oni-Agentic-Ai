@@ -32,6 +32,8 @@ export const Creditionals = ({
   setSuccessModal,
   setSaveButtonEnable,
   newregistryData = {},
+  setEditUsername,
+  setEditPassword,
 }) => {
   const dispatch = useDispatch();
   const [failedModal, setFailedModal] = useState(false);
@@ -60,12 +62,17 @@ export const Creditionals = ({
 
       const response = await testCluster(payload);
       if (response.status === 200) {
+        dispatch(
+          ClustersActions.setTestCertificateNodes(response?.data?.nodes)
+        );
         setTestSuccess(true);
         setIsCredOpen(false);
         setSuccessModal(true);
         setLoading(false);
         dispatch(ClustersActions.setClusterFormData(response?.data));
         setSaveButtonEnable(false);
+        if (setEditUsername) setEditUsername(data?.username);
+        if (setEditPassword) setEditPassword(data?.password);
       } else {
         setTestMessage(response.message);
         setIsCredOpen(false);
@@ -140,6 +147,7 @@ export const Creditionals = ({
             label={KDFM.USERNAME}
             placeholder={KDFM.ENTER_USERNAME}
             errors={errors}
+            required
           />
           <PasswordField
             name="password"
@@ -148,6 +156,7 @@ export const Creditionals = ({
             label={KDFM.PASSWORD}
             placeholder={KDFM.ENTER_PASSWORD}
             errors={errors}
+            required
           />
         </form>
       </Modal>
@@ -171,4 +180,6 @@ Creditionals.propTypes = {
   setSuccessModal: PropTypes.func,
   setSaveButtonEnable: PropTypes.bool,
   newregistryData: PropTypes.object,
+  setEditUsername: PropTypes.func,
+  setEditPassword: PropTypes.func,
 };

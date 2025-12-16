@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -17,12 +17,14 @@ import {
   AuthenticationActions,
   AuthenticationSelectors,
   GridActions,
+  RolesSelectors,
   UsersActions,
   UsersSelectors,
 } from '../../store';
 import { createUserApi, editUserDataApi } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import { ProfileUpload } from './ProfileUpload';
+import MultiselectRoles from '../../shared/FormInputs/components/MultiselectFieldRole.jsx';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -77,6 +79,12 @@ const FormSection = styled.div`
   // }
 `;
 
+const DivLabel = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+`;
 const StyledInputField = styled(InputField)`
   margin-bottom: 0.4rem;
 `;
@@ -91,9 +99,18 @@ export const AddUserModal = props => {
   const currentUser = state.currentUser;
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
   const userModalOpen = useSelector(UsersSelectors.getUserModalOpen);
+  const addUserCheck = useSelector(UsersSelectors.getAddNewUser);
   const userSchemaProvider = () => {
     return isEmpty(state?.selectedItem) ? userSchema : editUserSchema;
   };
+  const roles = useSelector(RolesSelectors.getRoles);
+  const ROLES_OPTIONS = useMemo(() => {
+    return roles?.map(ele => ({
+      label: ele?.name,
+      value: ele?.role_id,
+    }));
+  }, [roles]);
+
   const {
     register,
     reset,
@@ -118,6 +135,8 @@ export const AddUserModal = props => {
       selectedItem: null,
     });
     dispatch(UsersActions.setUserModalOpen(false));
+    reset(DEFAULT_VALUES);
+    dispatch(UsersActions.setAddNewUser(false));
   };
 
   const password = watch('password');
@@ -165,6 +184,27 @@ export const AddUserModal = props => {
   };
 
   const onSubmit = async data => {
+    if (addUserCheck) {
+      const rolesArr = data?.role && data?.role?.map(ele => ele?.value);
+
+      const formData = new FormData();
+      formData.append('first_name', data?.first_name);
+      formData.append('middle_name', data?.middle_name);
+      formData.append('last_name', data?.last_name);
+      formData.append('email', data?.email);
+      formData.append('phone', data?.phone || null);
+      formData.append('is_active', true);
+      formData.append('username', data?.username);
+      formData.append('role_ids', rolesArr);
+      if (data?.photo && data?.photo?.size > 0) {
+        formData.append('photo', data.photo);
+      } else if (state.selectedItem && !data.photo) {
+        formData.append('photo', null);
+      }
+      dispatch(UsersActions.createUserByDFM(formData));
+      reset(DEFAULT_VALUES);
+      return;
+    }
     const formData = createFormData(data);
 
     if (isEmpty(state.selectedItem)) {
@@ -188,12 +228,16 @@ export const AddUserModal = props => {
         localStorage.setItem(ACCESS_TOKEN, response.data.token);
       }
     }
+    reset(DEFAULT_VALUES);
   };
 
   useEffect(() => {
     if (state.userModal) {
-      if (isEmpty(state.selectedItem)) reset(DEFAULT_VALUES);
-      else reset(state.selectedItem);
+      if (isEmpty(state.selectedItem)) {
+        reset(DEFAULT_VALUES);
+      } else {
+        reset(state.selectedItem);
+      }
     }
   }, [reset, state.userModal, state.selectedItem]);
   const userModalTitleProvider = () => {
@@ -236,6 +280,23 @@ export const AddUserModal = props => {
             disabled={isFieldsDisabled()}
           />
         </ImageContainer>
+        <div className="d-flex justify-content-end mb-2">
+          {addUserCheck && (
+            <div className="col-4">
+              <DivLabel className="mb-2">Select Role</DivLabel>
+              <MultiselectRoles
+                enableCheckboxes
+                control={control}
+                name={`role`}
+                placeholder={'Select Role'}
+                options={ROLES_OPTIONS || []}
+                customOnChange={(hookFormOnChange, selected) => {
+                  hookFormOnChange(selected);
+                }}
+              />
+            </div>
+          )}
+        </div>
         <Continer>
           <FormWrapper>
             <FormTitle className="mb-0">User Information</FormTitle>
@@ -276,6 +337,7 @@ export const AddUserModal = props => {
                     errors={errors}
                     icon={<UserIcon />}
                     disabled={isFieldsDisabled()}
+                    required
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
@@ -304,7 +366,7 @@ export const AddUserModal = props => {
                     disabled={isFieldsDisabled()}
                   />
                 </div>
-                {currentUserData.role === 'superadmin' && (
+                {currentUserData.role === 'superadmin' && !addUserCheck && (
                   <>
                     {currentUserData?.id === state?.selectedItem?.id && (
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">

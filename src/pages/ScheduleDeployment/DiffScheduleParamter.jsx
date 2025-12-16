@@ -1,10 +1,11 @@
-import { isEmpty } from 'lodash';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { NoDataIcon } from '../../assets';
 import { SchedularSelectors } from '../../store/schedular';
+import { useSelector } from 'react-redux';
+import { theme } from '../../styles';
+import { NoDataIcon } from '../../assets';
+import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -192,6 +193,7 @@ const ParameterHeader = styled.div`
   border-radius: 4px;
 `;
 
+//
 const DiffScheduleParameter = ({
   parametersData,
   isFromDeploySummary = false,
@@ -322,10 +324,8 @@ const DiffScheduleParameter = ({
     </DataWrapper>
   );
 };
-
 DiffScheduleParameter.propTypes = {
   parametersData: PropTypes.array,
   isFromDeploySummary: PropTypes.bool,
 };
-
 export default DiffScheduleParameter;

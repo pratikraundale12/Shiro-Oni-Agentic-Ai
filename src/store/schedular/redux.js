@@ -224,7 +224,6 @@ const setListGroupMembers = (state, { payload }) => {
     listGroupMembers: payload,
   };
 };
-
 const setScheduleDeploymentDetails = (state, { payload }) => {
   return {
     ...state,

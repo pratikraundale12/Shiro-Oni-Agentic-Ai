@@ -20,12 +20,14 @@ import { history } from '../../helpers/history';
 import { InputField, Modal } from '../../shared';
 import {
   AuthenticationSelectors,
+  ClustersActions,
   ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { FlowValidationActions } from '../../store/flowValidation';
 import { SchedularActions } from '../../store/schedular/redux';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { theme } from '../../styles';
@@ -258,6 +260,29 @@ export const ListNamespaces = () => {
     handleSelect(item);
   };
 
+  const fetchingClusters = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusters')
+  );
+  const [hasTriedFetchingClusters, setHasTriedFetchingClusters] =
+    useState(false);
+  useEffect(() => {
+    if (!fetchingClusters) {
+      setHasTriedFetchingClusters(true);
+    }
+  }, [fetchingClusters]);
+
+  useEffect(() => {
+    if (
+      hasTriedFetchingClusters &&
+      !fetchingClusters &&
+      isEmpty(selectedCluster?.value)
+    ) {
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
+    }
+  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
+
   useEffect(() => {
     dispatch(SchedularActions.setScheduleFromList(false));
     dispatch(NamespacesActions.setdeployRegistryFlow(false));
@@ -286,6 +311,7 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setVersionListReduxData([]));
     dispatch(NamespacesActions.setAlreadyFetchedLsIdentifierForUpgrade([]));
     dispatch(NamespacesActions.setLocalServiceInUpgrade([]));
+    dispatch(FlowValidationActions.resetDeploymentFlowValidation());
     dispatch(NamespacesActions.setScheduleStartFlow(false));
   }, []);
 
@@ -691,6 +717,22 @@ export const ListNamespaces = () => {
       },
     });
   };
+
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  const gridPermissionsCanWrite = useSelector(
+    state => GridSelectors.getGridDataPermissions(state, 'namespaces')?.canWrite
+  );
+
+  useEffect(() => {
+    if (gridPermissionsCanWrite && enableTour) {
+      const timer = setTimeout(() => {
+        dispatch(ClustersActions.setTourStart(true));
+        dispatch(ClustersActions.setTourIndex(7));
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
+  }, [gridPermissionsCanWrite, enableTour, dispatch]);
 
   const handleDeleteClick = (item, e) => {
     setRemoveSearch(false);

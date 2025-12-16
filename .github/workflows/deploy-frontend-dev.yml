@@ -1,0 +1,51 @@
+name: Deploy Frontend (Dev)
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies and build
+        run: |
+          npm install
+          CI=false npm run build
+
+      - name: Deploy Build to Dev Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEV_SERVER_IP }}
+          username: ${{ secrets.DEV_SERVER_USER }}
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          source: 'build/*'
+          target: '/home/ubuntu/dfm-bundle/dist/client'
+
+      - name: Restart Staging Backend Service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_SERVER_IP }}
+          username: ${{ secrets.DEV_SERVER_USER }}
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/dfm-bundle
+            source ~/.bashrc
+            nexe -i dist/bundle.js -o dfm -t linux-x64-20.19.0 -r "dist/client/build/**/*" -r "dist/migrations/**/*" -r "dist/public/**/*" -r "dist/seeds/**/*" -r "dist/views/**/*" -r "ecosystem.config.js" -r "knexfile.js" -r "public.pem" -r "package.json" --build --verbose
+            cp -f dfm /home/ubuntu/dfm-binary-19march/ && rm dfm
+            sudo systemctl restart dfm.service 
+            if sudo systemctl is-active --quiet dfm.service; then
+              echo "Service 'dfm.service' is running successfully!"
+            else
+              echo "Service 'dfm.service' failed to start."
+            fi

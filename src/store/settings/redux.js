@@ -16,6 +16,16 @@ export const SettingsActions = {
   verifyEmail: createAction(`${prefix}verifyEmail`),
   verifyEmailSuccess: createAction(`${prefix}verifyEmailSuccess`),
   setIsEmailVerified: createAction(`${prefix}setIsEmailVerified`),
+  fetchKeycloakUsers: createAction(`${prefix}fetchKeycloakUsers`),
+  setkeycloakUserFetched: createAction(`${prefix}setkeycloakUserFetched`),
+  setkeycloakUserListModalOpen: createAction(
+    `${prefix}setkeycloakUserListModalOpen`
+  ),
+  assignKeycloakRolesToUsers: createAction(
+    `${prefix}assignKeycloakRolesToUsers`
+  ),
+  keycloakTestCredentials: createAction(`${prefix}keycloakTestCredentials`),
+  setDisplayFetchUserBtn: createAction(`${prefix}setDisplayFetchUserBtn`),
   setSettingsData: createAction(`${prefix}setSettingsData`),
 };
 
@@ -26,6 +36,9 @@ export const SETTING_INITIAL_STATE = {
   addNewValidationModalOpen: false,
   isDownloading: false,
   emailVerified: false,
+  keycloakUserFetched: [],
+  keycloakUserListModalOpen: false,
+  displayFetchUserBtn: false,
   settingsData: {},
 };
 
@@ -37,6 +50,10 @@ export const SettingsSelectors = {
     state.settings.addNewValidationModalOpen,
   getIsDownloading: state => state.settings.isDownloading,
   getEmailVerified: state => state.settings.emailVerified,
+  getKeycloakUserFetched: state => state.settings.keycloakUserFetched,
+  getkeycloakUserListModalOpen: state =>
+    state.settings.keycloakUserListModalOpen,
+  getdisplayFetchUserBtn: state => state.settings.displayFetchUserBtn,
   getSettingsData: state => state.settings.settingsData,
 };
 
@@ -80,6 +97,25 @@ const setSettingsData = (state, { payload }) => {
   };
 };
 
+const setkeycloakUserFetched = (state, { payload }) => {
+  return {
+    ...state,
+    keycloakUserFetched: payload,
+  };
+};
+const setkeycloakUserListModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    keycloakUserListModalOpen: payload,
+  };
+};
+const setDisplayFetchUserBtn = (state, { payload }) => {
+  return {
+    ...state,
+    displayFetchUserBtn: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
   builder
@@ -103,5 +139,11 @@ export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
     })
     .addCase(SettingsActions.verifyEmailSuccess, verifyEmailSuccess)
     .addCase(SettingsActions.setIsEmailVerified, setIsEmailVerified)
+    .addCase(SettingsActions.setkeycloakUserFetched, setkeycloakUserFetched)
+    .addCase(
+      SettingsActions.setkeycloakUserListModalOpen,
+      setkeycloakUserListModalOpen
+    )
+    .addCase(SettingsActions.setDisplayFetchUserBtn, setDisplayFetchUserBtn)
     .addCase(SettingsActions.setSettingsData, setSettingsData);
 });

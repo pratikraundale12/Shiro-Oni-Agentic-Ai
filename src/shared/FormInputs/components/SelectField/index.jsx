@@ -132,6 +132,7 @@ const SelectField = ({
   menuHeight = '150px',
   isFromAddNewService,
   sortAlphabetically = true,
+  isNifiVersion = false,
   ...props
 }) => {
   const animatedComponents = makeAnimated();
@@ -372,6 +373,13 @@ const SelectField = ({
                   MultiValueLabel: MultiValueLabel,
                 }),
                 DropdownIndicator,
+                ...(isNifiVersion && {
+                  SingleValue: ({ data, ...props }) => (
+                    <components.SingleValue {...props}>
+                      {data.value} (NiFi Version)
+                    </components.SingleValue>
+                  ),
+                }),
               }}
               {...props}
               onChange={selected => {
@@ -420,6 +428,7 @@ SelectField.propTypes = {
   handleCreateOption: PropTypes.func,
   menuHeight: PropTypes.string,
   sortAlphabetically: PropTypes.bool,
+  isNifiVersion: PropTypes.bool,
 };
 
 export default SelectField;

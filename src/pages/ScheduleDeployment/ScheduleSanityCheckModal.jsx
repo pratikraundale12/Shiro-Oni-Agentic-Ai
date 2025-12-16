@@ -162,7 +162,6 @@ const ScheduleSanityCheckModal = ({ fetchSchedule }) => {
           ? 'Run Sanity Check'
           : 'Re-run Sanity Check',
         tertiaryButtonSubmit: handleScheduleTertiaryButton,
-        tertiaryButtonDisable: true,
         tertiaryButtonIcon: <SanityCheckIcon />,
         variant: 'tertiary',
       }}

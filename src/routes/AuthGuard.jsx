@@ -118,6 +118,7 @@ const AuthGuard = () => {
           const payload = new FormData();
           payload.append('has_accepted_terms', true);
           dispatch(AuthenticationActions.updateTermsAndPolicies(payload));
+          dispatch(AuthenticationActions.setDfmTour(true));
         }}
         footerAlign="start"
         contentStyles={{ minWidth: '65%' }}

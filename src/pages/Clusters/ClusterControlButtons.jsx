@@ -1,0 +1,354 @@
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { ClustersActions, ClustersSelectors } from '../../store';
+import { Loader } from '../../components';
+import { TriangleIcons, SquareBoxIcon, RefreshIcon } from '../../assets';
+import styled from 'styled-components';
+import { theme } from '../../styles';
+
+const DataWrapper = styled.div`
+  width: 100%;
+  padding-top: 0px;
+  margin-top: 0px;
+  padding-left: 15px;
+`;
+
+const TitleText = styled.div`
+  font-family: Red Hat Display;
+  font-weight: 550;
+  font-size: 15px;
+  line-height: 100%;
+  letter-spacing: -0.5%;
+  text-transform: capitalize;
+`;
+
+const TextsvgDiv = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ActiveButtonDiv = styled.div`
+  height: 48px;
+  width: 48px;
+  max-width: 48px;
+  max-height: 48px;
+  min-height: 48px;
+  min-width: 48px;
+  border: 1px solid #dde4f0;
+  border-radius: 8px;
+  background-color: #f5f7fa;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: ${props => (props.disabled ? 0.5 : 1)};
+  &:hover {
+    border: 1px solid
+      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
+  }
+
+  & span {
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    font-family: ${props => props.theme.fontNato};
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 23px;
+    color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
+  }
+
+  svg path {
+    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
+  }
+`;
+
+const ClusterControlButtons = () => {
+  const dispatch = useDispatch();
+  const { id: clusterId } = useParams();
+
+  const [selectedMethod, setSelectedMethod] = useState();
+  const [startInitiated, setStartInitiated] = useState(false);
+  const [stopInitiated, setStopInitiated] = useState(false);
+  const [restartInitiated, setRestartInitiated] = useState(false);
+  const [action, setAction] = useState(null);
+  const [runRestartSTO, setRunRestartSTO] = useState(true);
+  const [runStartSTO, setRunStartSTO] = useState(true);
+  const [runStopSTO, setRunStopSTO] = useState(true);
+
+  const runningStatusData = useSelector(ClustersSelectors.getRunningStatusData);
+
+  const handleStartClick = () => {
+    setAction('start');
+    setStartInitiated(true);
+    setRunStartSTO(true);
+    dispatch(
+      ClustersActions.changeClusterActionState({
+        clusterId,
+        data: { action: 'start' },
+      })
+    );
+  };
+
+  const handleStopClick = () => {
+    setAction('stop');
+    setStopInitiated(true);
+    setRunStopSTO(true);
+    dispatch(
+      ClustersActions.changeClusterActionState({
+        clusterId,
+        data: { action: 'stop' },
+      })
+    );
+  };
+
+  const handleRestartClick = () => {
+    setAction('restart');
+    setRestartInitiated(true);
+    setRunRestartSTO(true);
+    dispatch(
+      ClustersActions.changeClusterActionState({
+        clusterId,
+        data: { action: 'restart' },
+      })
+    );
+  };
+  useEffect(() => {
+    dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
+  }, [dispatch, clusterId]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [dispatch, clusterId]);
+
+  useEffect(() => {
+    if (runningStatusData?.status?.isRunning) {
+      setSelectedMethod('start');
+    } else {
+      setSelectedMethod('stop');
+    }
+
+    if (runningStatusData?.status?.startInitiated) {
+      setStartInitiated(true);
+    } else {
+      if (action === 'start') {
+        setRunStartSTO(false);
+        if (runStartSTO) {
+          setTimeout(() => {
+            setStartInitiated(false);
+            setAction(null);
+          }, 200000);
+        }
+      } else {
+        setStartInitiated(false);
+      }
+    }
+
+    if (runningStatusData?.status?.stopInitiated) {
+      setStopInitiated(true);
+    } else {
+      if (action === 'stop') {
+        setRunStopSTO(false);
+        if (runStopSTO) {
+          setTimeout(() => {
+            setStopInitiated(false);
+            setAction(null);
+          }, 200000);
+        }
+      } else {
+        setStopInitiated(false);
+      }
+    }
+    if (runningStatusData?.status?.restartInitiated) {
+      setRestartInitiated(true);
+    } else {
+      if (action === 'restart') {
+        setRunRestartSTO(false);
+        if (runRestartSTO) {
+          setTimeout(() => {
+            setRestartInitiated(false);
+            setAction(null);
+          }, 200000);
+        }
+      } else {
+        setRestartInitiated(false);
+      }
+    }
+  }, [runningStatusData]);
+
+  return (
+    <>
+      <DataWrapper className="w-100">
+        <TitleText>Cluster Control</TitleText>
+        <div className="row mt-4 mb-4">
+          <TextsvgDiv className="d-flex col-2">
+            <ActiveButtonDiv className="div-btn-1 mr-2">
+              <ActiveButtonDiv
+                className="div-btn-1"
+                isActive={selectedMethod === 'start'}
+                activeColor="#58e715"
+                hoverColor="#58e715"
+                activeTextColor="#fff"
+                onClick={
+                  !(
+                    startInitiated ||
+                    stopInitiated ||
+                    restartInitiated ||
+                    selectedMethod === 'start'
+                  )
+                    ? handleStartClick
+                    : null
+                }
+                data-tooltip-id="start"
+                disabled={
+                  startInitiated ||
+                  stopInitiated ||
+                  restartInitiated ||
+                  selectedMethod === 'start'
+                }
+              >
+                <TriangleIcons color="#B5BDC8" />
+              </ActiveButtonDiv>
+            </ActiveButtonDiv>
+            <div className="mr-2">
+              {startInitiated ? 'Starting...' : 'Start Cluster'}
+            </div>
+          </TextsvgDiv>
+          <TextsvgDiv className="d-flex col-2">
+            <ActiveButtonDiv className="div-btn-2 mr-2">
+              <ActiveButtonDiv
+                className="div-btn-1"
+                isActive={selectedMethod === 'stop'}
+                activeColor="#c52b2b"
+                hoverColor="#c52b2b"
+                activeTextColor="#fff"
+                onClick={
+                  !(
+                    startInitiated ||
+                    stopInitiated ||
+                    restartInitiated ||
+                    selectedMethod === 'stop'
+                  )
+                    ? handleStopClick
+                    : null
+                }
+                data-tooltip-id="stop"
+                disabled={
+                  startInitiated ||
+                  stopInitiated ||
+                  restartInitiated ||
+                  selectedMethod === 'stop'
+                }
+              >
+                <SquareBoxIcon color="#B5BDC8" />
+              </ActiveButtonDiv>
+            </ActiveButtonDiv>
+            <div className="mr-2">
+              {stopInitiated ? 'Stopping...' : 'Stop Cluster'}
+            </div>
+          </TextsvgDiv>
+
+          <TextsvgDiv className="d-flex col-2">
+            <ActiveButtonDiv className="div-btn-2 mr-2">
+              <ActiveButtonDiv
+                className="div-btn-1"
+                activeTextColor="#fff"
+                onClick={() => {
+                  !(startInitiated || stopInitiated || restartInitiated)
+                    ? handleRestartClick()
+                    : null;
+                }}
+                disabled={startInitiated || stopInitiated || restartInitiated}
+              >
+                <RefreshIcon color={theme.colors.primary} />
+              </ActiveButtonDiv>
+            </ActiveButtonDiv>
+            <div>
+              {' '}
+              {restartInitiated ? 'Restarting Cluster...' : 'Restart Cluster'}
+            </div>
+          </TextsvgDiv>
+
+          {
+            <div className="col-3">
+              {(startInitiated || stopInitiated || restartInitiated) && (
+                <div className="row">
+                  <div className="col-2">
+                    <Loader size="lg" />
+                  </div>
+                  <TextsvgDiv className="col-10">
+                    {startInitiated
+                      ? 'Cluster is starting...'
+                      : stopInitiated
+                        ? 'Cluster is stopping...'
+                        : restartInitiated
+                          ? 'Cluster is restarting...'
+                          : 'Cluster is updating...'}
+                  </TextsvgDiv>
+                </div>
+              )}
+            </div>
+          }
+
+          <div
+            className="col-2 pe-2 d-flex align-items-center"
+            style={{
+              backgroundColor: '#F5F7FA',
+              borderRadius: '10px',
+              fontSize: '16px',
+              border: `1px solid ${theme.colors.primary}`,
+              color: '#444445',
+            }}
+          >
+            <div className="">Cluster State : </div> &nbsp;
+            {!(startInitiated || stopInitiated || restartInitiated) && (
+              <>
+                {selectedMethod === 'start' && (
+                  <div
+                    style={{
+                      color: 'green',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                    }}
+                  >
+                    Started
+                  </div>
+                )}
+                {selectedMethod === 'stop' && (
+                  <div
+                    style={{
+                      color: 'red',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                    }}
+                  >
+                    Stopped
+                  </div>
+                )}
+              </>
+            )}
+            {(startInitiated || stopInitiated || restartInitiated) && (
+              <div
+                style={{
+                  color: theme.colors.primary,
+                  fontSize: '16px',
+                  fontWeight: '600',
+                }}
+              >
+                Transition
+              </div>
+            )}
+          </div>
+        </div>
+      </DataWrapper>
+    </>
+  );
+};
+
+export default ClusterControlButtons;

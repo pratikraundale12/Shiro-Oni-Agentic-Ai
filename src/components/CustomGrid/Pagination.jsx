@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
 import { theme } from '../../styles';
 import { PAGINATION_ITEM_OPTIONS } from '../../constants';
-import { ClustersActions } from '../../store/clusters/redux';
+import { ClustersActions } from '../../store';
 import { useDispatch } from 'react-redux';
 
 const Container = styled.div`
@@ -88,7 +88,7 @@ const Pagination = ({
   setCurrentPage,
   itemsPerPage,
   onItemsPerPageChange,
-  setPageLoading,
+  setPageLoading = () => {},
 }) => {
   const dispatch = useDispatch();
   const totalPage = Math.ceil(count / itemsPerPage);
@@ -161,11 +161,11 @@ const Pagination = ({
 
   useEffect(() => {
     setPageLoading && setPageLoading(false);
-  }, [page]);
+  }, [page, setPageLoading]);
 
   useEffect(() => {
     dispatch(ClustersActions.setclusterListItems(itemsPerPage));
-  }, [itemsPerPage]);
+  }, [dispatch, itemsPerPage]);
   return (
     <Container>
       <div className="d-flex align-items-center gap-3">
@@ -183,7 +183,7 @@ const Pagination = ({
         <span>Items per page</span>
       </div>
       <Flex>
-        <StyledButton onClick={handlePrev} disabled={page === 1}>
+        <StyledButton onClick={handlePrev} disabled={page === 1} type="button">
           <GreaterArrowIcon color={theme.colors.white} />
         </StyledButton>
         {pageNumbers.map((number, index) => (
@@ -193,11 +193,16 @@ const Pagination = ({
             size="sm"
             variant="secondary"
             active={number === page}
+            type="button"
           >
             {number}
           </StyledButton>
         ))}
-        <StyledButton onClick={handleNext} disabled={page === totalPage}>
+        <StyledButton
+          onClick={handleNext}
+          disabled={page === totalPage}
+          type="button"
+        >
           <LessArrowIcon color={theme.colors.white} />
         </StyledButton>
       </Flex>

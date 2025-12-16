@@ -8,6 +8,7 @@ import { LoginIcon, LogoutIcon } from '../../../assets';
 import { CLUSTERS_TOKEN, CLUSTER_STATUS } from '../../../constants';
 import {
   AuthenticationActions,
+  AuthenticationSelectors,
   ClustersActions,
   DashboardActions,
   GridActions,
@@ -15,7 +16,6 @@ import {
 } from '../../../store';
 import { ClusterLoginModal } from '../../ClusterLoginModal';
 import { IconButton } from './AtionRender';
-import { isEmpty } from 'lodash';
 import { SchedularSelectors } from '../../../store/schedular';
 
 const EnableClusterText = styled.div`
@@ -38,16 +38,26 @@ const EnableClusterText = styled.div`
 export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
 
   const handleClusterAction = () => {
     if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
-      dispatch(
-        AuthenticationActions.setClusterLogin({
-          label: item.name,
-          value: item.id,
-        })
-      );
-      dispatch(ClustersActions.fetchClusters());
+      if (item?.is_certificate_based_service_account) {
+        dispatch(
+          ClustersActions.setclusterToLoginWithoutCred({
+            label: item.name,
+            value: item.id,
+          })
+        );
+      } else {
+        dispatch(
+          AuthenticationActions.setClusterLogin({
+            label: item.name,
+            value: item.id,
+          })
+        );
+        dispatch(ClustersActions.fetchClusters());
+      }
     } else if (item?.status === CLUSTER_STATUS.CONNECTED) {
       dispatch(
         GridActions.fetchGrid({
@@ -66,29 +76,54 @@ export const EnableClusterRender = ({ item }) => {
       dispatch(DashboardActions.fetchDashboardSuccess({ data: {} }));
 
       const clusterItem = localStorage.getItem('selected_cluster');
-      const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
-      const tokenToRemove =
-        !isEmpty(clustersToken) &&
-        clustersToken?.filter(token => token.id === item?.id);
-      const payload = { id: item?.id, token: tokenToRemove?.[0]?.token };
-      dispatch(ClustersActions.clusterLogout(payload));
-      if (clusterItem) {
-        const cluster = JSON.parse(clusterItem);
-        if (cluster.value === item.id) {
-          localStorage.removeItem('selected_cluster');
-          dispatch(
-            NamespacesActions.setSelectedCluster({
-              label: '',
-              value: '',
-            })
-          );
-        }
-      }
+      const clustersToken =
+        JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
 
-      // Remove the matching cluster from clustersToken
       const updatedClustersToken = clustersToken.filter(
         token => token.id !== item.id
       );
+
+      const tokenObjToRemove = clustersToken.find(
+        token => token.id === item?.id
+      );
+      if (tokenObjToRemove) {
+        dispatch(
+          ClustersActions.clusterLogout({
+            id: item?.id,
+            token: tokenObjToRemove.token,
+          })
+        );
+      }
+
+      if (clusterItem) {
+        const currentSelectedCluster = JSON.parse(clusterItem);
+
+        if (currentSelectedCluster.value === item.id) {
+          if (updatedClustersToken.length > 0) {
+            const nextCluster = updatedClustersToken[0];
+            const newSelection = {
+              label: nextCluster.name,
+              value: nextCluster.id,
+            };
+
+            localStorage.setItem(
+              'selected_cluster',
+              JSON.stringify(newSelection)
+            );
+
+            dispatch(NamespacesActions.setSelectedCluster(newSelection));
+          } else {
+            localStorage.removeItem('selected_cluster');
+            dispatch(
+              NamespacesActions.setSelectedCluster({
+                label: '',
+                value: '',
+              })
+            );
+          }
+        }
+      }
+
       localStorage.setItem(
         CLUSTERS_TOKEN,
         JSON.stringify(updatedClustersToken)
@@ -109,10 +144,20 @@ export const EnableClusterRender = ({ item }) => {
         <IconButton
           data-tooltip-id={`${item?.id}1`}
           disabled={item?.status === CLUSTER_STATUS.DEACTIVATED}
+          className="test-cluster"
+          onClick={() => {
+            if (enableTour) {
+              setTimeout(() => {
+                dispatch(ClustersActions.setTourIndex(3));
+              }, 500);
+            }
+          }}
         >
           {item?.status === CLUSTER_STATUS.DISCONNECTED ||
           item?.status === CLUSTER_STATUS.DEACTIVATED ? (
-            <LoginIcon />
+            <span>
+              <LoginIcon />
+            </span>
           ) : (
             <LogoutIcon color="#a51e1e" />
           )}

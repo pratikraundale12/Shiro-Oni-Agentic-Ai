@@ -20,7 +20,6 @@ const IconButton = styled.button`
     opacity: 0.4;
     cursor: not-allowed;
   }
-
   @media (max-width: 1025px) {
     min-width: 24px;
     min-height: 24px;
@@ -57,7 +56,7 @@ const Header = styled.div`
   align-items: center;
   padding: 10px 16px;
   background: rgba(255, 255, 255, 1);
-  height: 72px;
+  height: ${props => props.headerHeight};
   top: 273px;
   left: 290px;
   gap: 0px;
@@ -93,7 +92,8 @@ const Content = styled.div`
   gap: 0px;
   border-radius: 0px 0px 10px 10px;
   opacity: 0px;
-  background: rgba(224, 241, 241, 1);
+  background: ${({ isOpenBackgroundWhite }) =>
+    isOpenBackgroundWhite ? `#fff` : `rgba(224, 241, 241, 1)`};
 
   padding: 10px;
   animation: fadeIn 0.3s ease;
@@ -117,10 +117,12 @@ const Collapsible = ({
   toggleCollapsible,
   isAddBtnVisible = true,
   isAddBtnDisable = false,
+  isOpenBackgroundWhite = false,
+  headerHeight = '72px',
 }) => {
   return (
     <CollapsibleWrapper>
-      <Header>
+      <Header headerHeight={headerHeight}>
         <Title>{title}</Title>
         <div className="d-flex gap-3 w-70">
           {isAddBtnVisible && (
@@ -151,7 +153,11 @@ const Collapsible = ({
           </ToggleButton>
         </div>
       </Header>
-      {isTableOpen && <Content>{children}</Content>}
+      {isTableOpen && (
+        <Content isOpenBackgroundWhite={isOpenBackgroundWhite}>
+          {children}
+        </Content>
+      )}
     </CollapsibleWrapper>
   );
 };
@@ -165,6 +171,8 @@ Collapsible.propTypes = {
   toggleCollapsible: PropTypes.func,
   isAddBtnVisible: PropTypes.bool,
   isAddBtnDisable: PropTypes.bool,
+  isOpenBackgroundWhite: PropTypes.bool,
+  headerHeight: PropTypes.string,
 };
 
 export default Collapsible;

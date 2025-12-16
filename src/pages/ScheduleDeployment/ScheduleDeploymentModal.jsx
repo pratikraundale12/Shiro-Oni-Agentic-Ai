@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
-import { yupResolver } from '@hookform/resolvers/yup';
+import React, { useEffect, useState } from 'react';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { useForm, useWatch } from 'react-hook-form';
 import styled from 'styled-components';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import { toast } from 'react-toastify';
@@ -214,6 +214,7 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
     dispatch(SchedularActions.setSelectedSchedule({}));
     setScheduleErrors({});
   };
+
   useEffect(() => {
     if (
       selectedSchedule?.deployment_status &&
@@ -232,8 +233,6 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
     const payload = {
       schedularId: selectedSchedule?.id,
       scheduled_time: new Date(data?.scheduled_time).toISOString(),
-      version: data?.select_version,
-      deployment_status: activeButton,
     };
     const currentTime = new Date();
     const scheduledTime = new Date(data?.scheduled_time);
@@ -265,7 +264,6 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
         approver_ids: selectedSchedule?.approvers?.map(
           item => item.approver_id
         ),
-        select_version: selectedSchedule?.version,
       });
     } else {
       reset({

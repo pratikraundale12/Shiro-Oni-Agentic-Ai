@@ -234,7 +234,7 @@ export const ClusterAccess = () => {
       callback: () => {
         dispatch(RolesActions.setSelectedRole({}));
         dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
-        dispatch(PoliciesActions.fetchPoliciesSuccess({}));
+        dispatch(PoliciesActions.fetchPoliciesSuccess([]));
       },
     },
     { label: 'Cluster Management' },

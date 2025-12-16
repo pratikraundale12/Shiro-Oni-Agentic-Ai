@@ -25,11 +25,14 @@ import { history } from '../helpers/history';
 import { AddUserModal } from '../pages/Users/AddUserModal';
 import SessionExpiredLabel from '../shared/SessionExpiredLabel';
 import {
+  AiFlowGeneratorActions,
+  AiFlowGeneratorSelectors,
   AuthenticationActions,
   AuthenticationSelectors,
   ClustersActions,
   ClustersSelectors,
   GridActions,
+  LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
   PoliciesActions,
@@ -37,10 +40,13 @@ import {
   UsersActions,
 } from '../store';
 import { SchedularActions } from '../store/schedular';
-import { SettingsActions, SettingsSelectors } from '../store/settings';
+import { SettingsSelectors } from '../store/settings';
 import { useGlobalContext } from '../utils';
 import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';
+import { toast } from 'react-toastify';
+import DiscardFlowConfirmationModal from '../pages/AiFlowGenerator/DiscardFlowConfirmationModal';
+import { Tour } from './Apptour';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -218,12 +224,15 @@ const ProfileDropdown = () => {
   const [showMenu, setShowMenu] = useState(false);
   const { setState } = useGlobalContext();
   const menuRef = useRef(null);
-
+  // const flowGenrating = useSelector(state =>
+  //   LoadingSelectors.getLoading(state, 'generateFlowAPI')
+  // );
   const logoutFromKeycloak = async () => {
     const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
     const idToken = localStorage.getItem('keycloak_id_token');
     const keycloakUrl = storedConfig?.keycloak_url;
     const keycloakRealm = storedConfig?.keycloak_realm;
+
     if (!idToken) {
       console.error('No ID token found for logout');
       return;
@@ -289,6 +298,18 @@ const ProfileDropdown = () => {
     };
   }, []);
 
+  // const onProfileClick = () => {
+  //   if (flowGenrating) {
+  //     if (!toast.isActive('generating-flow')) {
+  //       toast.warning('Flow is generating please wait', {
+  //         toastId: 'generating-flow',
+  //       });
+  //     }
+  //     return;
+  //   }
+  //   setShowMenu(prev => !prev);
+  // };
+
   return (
     <ProfileContainer ref={menuRef}>
       <UserModal />
@@ -331,6 +352,17 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   const closeTab = () => {
     setDisplaySessionTab(false);
   };
+
+  const flowGenrating = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'generateFlowAPI')
+  );
+  const isAIFlowSaved = useSelector(
+    AiFlowGeneratorSelectors.getIsflowJsonSaved
+  );
+  const generatedFlow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  const [isAiFlowWarningModalOpen, setIsAiFlowWarningModalOpen] =
+    useState(false);
   useEffect(() => {
     if (!window.location.pathname.includes('/process-group')) {
       dispatch(
@@ -478,12 +510,28 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     return () => clearTimeout(timer);
   }, [licenseType, licenseExpireDate]);
 
-  const handleRoute = path => {
-    dispatch(AuthenticationActions.setRoute(path));
-    if (path === 'setting') {
-      dispatch(SettingsActions.fetchSettings());
+  const handleRoute = (path, skipWarning = false) => {
+    if (flowGenrating) {
+      if (!toast.isActive('generating-flow')) {
+        toast.warning('Flow is generating please wait', {
+          toastId: 'generating-flow',
+        });
+      }
+      return;
+    } else if (
+      !isAIFlowSaved &&
+      !skipWarning &&
+      !isEmpty(Object.keys(generatedFlow)) &&
+      typeof generatedFlow?.response === 'object'
+    ) {
+      setIsAiFlowWarningModalOpen(true);
+    } else {
+      setIsAiFlowWarningModalOpen(false);
+      dispatch(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
+      dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
+      dispatch(AuthenticationActions.setRoute(path));
+      history.push(`/${path}`);
     }
-    history.push(`/${path}`);
   };
 
   const displayTitle = routeVal => {
@@ -495,15 +543,15 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   return (
     <>
       <Container>
-        <Title isOpenSidebar={isOpenSidebar}>
+        <Title isOpenSidebar={isOpenSidebar} className="my-first-step">
           {isLoggedIn
             ? displayTitle(route)
             : currentRoute?.split('/')?.[2].replace(/-/g, ' ')}
         </Title>
-
+        {!location.pathname.includes('login') && enableTour && <Tour />}
         {isLoggedIn ? (
           <ButtonContainer>
-            <div className="d-none d-md-inline">
+            <div className="d-none d-md-inline ">
               <div className="d-flex">
                 {currentUser.role === 'superadmin' && (
                   <>
@@ -520,6 +568,14 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                     <IconCusterButton
                       id="cluster-icon-btn"
                       onClick={() => {
+                        if (flowGenrating) {
+                          if (!toast.isActive('generating-flow')) {
+                            toast.warning('Flow is generating please wait', {
+                              toastId: 'generating-flow',
+                            });
+                          }
+                          return;
+                        }
                         dispatch(AuthenticationActions.setClusterLogin(true));
                         dispatch(
                           ClustersActions.fetchClusters({ params: { page: 1 } })
@@ -554,6 +610,13 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
       </Container>
       {clusterLogin && <ClusterLoginModal />}
       {displaySessionTab && <SessionExpiredLabel closeTab={closeTab} />}
+      {isAiFlowWarningModalOpen && (
+        <DiscardFlowConfirmationModal
+          isDiscardFlowModalOpen={isAiFlowWarningModalOpen}
+          setIsDiscardFlowModalOpen={setIsAiFlowWarningModalOpen}
+          handleDiscardFlow={() => handleRoute('setting', true)}
+        />
+      )}
 
       {/* Tooltips */}
       <ReactTooltip

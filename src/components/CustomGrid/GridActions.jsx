@@ -41,6 +41,7 @@ import {
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { getButtonPermissions } from '../../helpers/permissions';
+import FlowAnalysis from '../../pages/FlowAnalysis/FlowAnalysis';
 import {
   Button,
   DateRangePickerInput,
@@ -50,16 +51,21 @@ import {
 import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
 import {
   AuthenticationSelectors,
+  ClustersActions,
   ClustersSelectors,
   DashboardActions,
   GridActions as GridSagsActions,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
+  RegistryActions,
   RolesActions,
   RolesSelectors,
+  UsersActions,
   UsersSelectors,
 } from '../../store';
+import { ActivityHistoryActions } from '../../store/activityHistory/redux';
+import { FlowValidationActions } from '../../store/flowValidation';
 import { GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
@@ -130,7 +136,7 @@ const StyledSelectField = styled(SelectField)`
   min-width: 8.5rem;
 
   &.entity-dropdown {
-    min-width: 10rem;
+    min-width: 12rem;
   }
 
   > div {
@@ -138,17 +144,14 @@ const StyledSelectField = styled(SelectField)`
   }
   /* Apply fixed width to dropdown options */
   .react-select__menu {
-    width: 175px;
   }
 
   .react-select__menu-list {
-    max-width: 175px;
     white-space: wrap;
     text-overflow: ellipsis;
   }
 
   .react-select__option {
-    max-width: 175px;
     word-break: break-all;
     overflow: hidden;
   }
@@ -222,15 +225,16 @@ const IconContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   border-radius: 4px;
   border: ${props =>
     props.active ? '1px solid #FF7A00' : '1px solid #dde4f0'};
   background-color: ${props => (props.active ? '#FF7A00' : '#fff')};
+  ${props => props.disabled && 'pointer-events: none;'}
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 `;
 
 export const GridActions = ({
-  title,
+  title = '',
   module,
   statusOptions,
   search,
@@ -254,6 +258,8 @@ export const GridActions = ({
   setSelectEntity,
   setSortingState,
   setCurrentPage,
+  isClusterLoggedIn = true,
+  is_kube_cluster = false,
   onItemsPerPageChange,
   scheduleType,
   setScheduleType,
@@ -261,6 +267,7 @@ export const GridActions = ({
   setSelectStatus,
   removeSearch = false,
   setIsExportReportOpen,
+  setRemoveSearch,
   viewMode = 'list_view',
   setViewMode = () => {},
 }) => {
@@ -277,7 +284,7 @@ export const GridActions = ({
   const { setState } = useGlobalContext();
   const [searchValue, setSearchValue] = useState('');
   useEffect(() => {
-    if (removeSearch && module === 'namespaces') {
+    if (removeSearch && (module === 'namespaces' || module === 'users')) {
       setSearchValue('');
     }
   }, [removeSearch]);
@@ -361,6 +368,23 @@ export const GridActions = ({
     setCurrentPage(1);
     onItemsPerPageChange(10);
 
+    if (module === 'clusters') {
+      setValue('is_active', null);
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module: 'clusters',
+          params: {
+            page: 1,
+            limit: 10,
+            ...(sortingState && {
+              sort: sortingState,
+            }),
+          },
+        })
+      );
+      setSortingState('name');
+    }
+
     if (module === 'namespaces' && viewMode === 'tree_view') {
       if (!selectedCluster?.value || isEmpty(selectedCluster?.value)) {
         return;
@@ -436,6 +460,12 @@ export const GridActions = ({
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
 
   useEffect(() => {
+    if (
+      (module === 'nodes' && !isClusterLoggedIn) ||
+      (module === 'nodes' && is_kube_cluster)
+    ) {
+      return;
+    }
     if (
       watchStatus ||
       selectedRange ||
@@ -544,6 +574,7 @@ export const GridActions = ({
     history.push('/process-group/DeployPage');
     dispatch(NamespacesActions.setdeployRegistryFlow(true));
   };
+
   const loadingNamespaces = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchDashboard')
   );
@@ -771,6 +802,10 @@ export const GridActions = ({
     dispatch(SchedularActions.setSelectedStatusState(watchStatus));
   }, [watchStatus]);
 
+  const handleAnalyzeClick = () => {
+    dispatch(FlowValidationActions.addNewAnalysisModalOpen(true));
+  };
+
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
   const handleExportReport = () => {
@@ -784,8 +819,7 @@ export const GridActions = ({
   return (
     <>
       <Flex className="flex-wrap gap-2">
-        <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
-        <FullPageLoader loading={loading} />
+        <FullPageLoader loading={loading || loadingNamespaces} />
         <Flex>
           <Title>
             {viewMode === 'tree_view' ? (
@@ -875,6 +909,26 @@ export const GridActions = ({
         )}
 
         <ButtonsContainer>
+          {['clusters'].includes(module) && (
+            <>
+              <RefreshIocn
+                onClick={handleRefresh}
+                data-tooltip-id={`tooltip-group-namespace-refresh`}
+              >
+                <RefreshIcon style={{ cursor: 'pointer' }} />
+              </RefreshIocn>
+              <ReactTooltip
+                id={`tooltip-group-namespace-refresh`}
+                place="left"
+                content={'Refresh'}
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
           {module === 'users' && (
             <DropdownContainer>
               <StyledSelectField
@@ -907,6 +961,24 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
+          {/*  */}
+          {module === 'registry' &&
+            userPermissions.includes(getButtonPermissions('registry')) && (
+              <Button
+                size="md"
+                onClick={() =>
+                  dispatch(RegistryActions.setIsAddRegistryModalOpen(true))
+                }
+              >
+                <div
+                  className="d-flex "
+                  style={{ fontSize: '14px', fontWeight: '750' }}
+                >
+                  <PlusCircleIcon height={20} width={20} color={'#fff'} />
+                  Add Registry
+                </div>
+              </Button>
+            )}
           {module === 'scheduler' && (
             <>
               {' '}
@@ -930,7 +1002,6 @@ export const GridActions = ({
               )}
             </>
           )}
-
           {module === 'users' && (
             <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
           )}
@@ -1020,15 +1091,36 @@ export const GridActions = ({
             userPermissions.includes(getButtonPermissions(module)) && (
               <Button
                 icon={<PlusCircleIcon width={16} height={16} color="white" />}
-                onClick={() => history.push(`/${module}/add`)}
+                onClick={() =>
+                  dispatch(ClustersActions.setIsAddorEditClusterModalOpen(true))
+                }
                 size="sm"
               >
                 {buttonText}
               </Button>
-            )}
+            )}{' '}
+          {module === 'users' && userPermissions.includes('add_user') && (
+            //
+            <Button
+              icon={<PlusCircleIcon width={16} height={16} color="white" />}
+              onClick={() => {
+                dispatch(UsersActions.setUserModalOpen(true));
+                dispatch(UsersActions.setAddNewUser(true));
+                setRemoveSearch(true);
+                setState(prevState => ({ ...prevState, search: null }));
+                setCurrentPage(1);
+                dispatch(SchedularActions.setSearchText(null));
+                setSearchValue('');
+              }}
+              size="sm"
+            >
+              Add User
+            </Button>
+          )}
           {userPermissions.includes(getButtonPermissions(module)) &&
             !userModalOpen && <Modal />}
         </ButtonsContainer>
+
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
             {module === 'namespaces' && (
@@ -1060,12 +1152,23 @@ export const GridActions = ({
                     size="md"
                     style={{ width: '84px' }}
                     onClick={handleClick}
+                    className="tour-process-group-deploy"
                   >
                     {KDFM.DEPLOY}
                   </Button>
                 )}
               </>
             )}
+            {module === 'namespaces' &&
+              location.pathname === '/flow-analysis' &&
+              selectedCluster?.value && (
+                <Button
+                  onClick={handleAnalyzeClick}
+                  disabled={isButtonDisabled}
+                >
+                  Flow Validation by ID
+                </Button>
+              )}
             {['scheduler'].includes(module) && (
               <>
                 <RefreshIocn
@@ -1200,6 +1303,9 @@ export const GridActions = ({
                 dispatch(NamespacesActions.setSelectedNamespace({}));
               }}
               data-tooltip-id={'tooltip-id-tree-view'}
+              disabled={
+                isEmpty(selectedCluster) || isEmpty(selectedCluster?.value)
+              }
             >
               <TreeIcon
                 stroke={viewMode === 'tree_view' ? '#fff' : '#444445'}
@@ -1246,4 +1352,5 @@ GridActions.propTypes = {
   setValue: PropTypes.func,
   onItemsPerPageChange: PropTypes.func.isRequired,
   setIsExportReportOpen: PropTypes.func,
+  setRemoveSearch: PropTypes.func,
 };

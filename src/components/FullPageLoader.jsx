@@ -31,17 +31,17 @@ const Text = styled.p`
   color: ${theme.colors.darker};
 `;
 
-export const FullPageLoader = ({ loading, text = KDFM.LOADING, ...props }) => {
+export const FullPageLoader = ({ loading, restartText = false, ...props }) => {
   if (!loading) return null;
   return (
     <Container {...props}>
       <Loader src={loader} alt="loader" />
-      <Text>{text}</Text>
+      <Text>{restartText ? 'Restarting...' : KDFM.LOADING}</Text>
     </Container>
   );
 };
 
 FullPageLoader.propTypes = {
-  loading: PropTypes.bool.isRequired,
-  text: PropTypes.string,
+  loading: PropTypes.bool,
+  restartText: PropTypes.bool,
 };

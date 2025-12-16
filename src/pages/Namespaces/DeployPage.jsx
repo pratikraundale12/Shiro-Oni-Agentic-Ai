@@ -19,6 +19,9 @@ import {
 } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
+  AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
@@ -187,10 +190,11 @@ function DeployPage() {
   const [successTest, setSuccessTest] = useState(false);
   const [proceedWithDispatch, setProceedWithDispatch] = useState(false);
   const formData = useSelector(NamespacesSelectors.getDeployFormData);
-  const keepParameters = useSelector(NamespacesSelectors.getKeepParameters);
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
+  const keepParameters = useSelector(NamespacesSelectors.getKeepParameters);
+
   const tableRef = useRef(null);
 
   const handleScrollOnClick = () => {
@@ -393,11 +397,12 @@ function DeployPage() {
 
   useEffect(() => {
     dispatch(
-      NamespacesActions.fetchRegistryData(
-        registrySelectedId ||
+      NamespacesActions.fetchRegistryData({
+        registriesId:
+          registrySelectedId ||
           defaultRegistryValue ||
-          registryDropdownOptions?.[0]?.value
-      )
+          registryDropdownOptions?.[0]?.value,
+      })
     );
     dispatch(SettingsActions.setSettingsData({}));
   }, [dispatch, registrySelectedId]);
@@ -474,6 +479,18 @@ function DeployPage() {
     dispatch(NamespacesActions.setVersionSelect(''));
     setSelectedVersion('');
   };
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  const stepIndex = useSelector(ClustersSelectors.getTourIndex);
+  if (enableTour) {
+    if (stepIndex != 8) {
+      setTimeout(() => {
+        setTimeout(() => {
+          dispatch(ClustersActions.setTourIndex(8));
+          dispatch(ClustersActions.setTourStart(true));
+        }, 50);
+      }, 300);
+    }
+  }
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryData')
@@ -487,6 +504,7 @@ function DeployPage() {
   const loadingfetchRegistryFlowDetails = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
   );
+
   return (
     <div>
       <FullPageLoader

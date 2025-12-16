@@ -20,7 +20,6 @@ function App() {
   const [isModal, setIsModal] = useState(false);
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-
   const updateNetworkStatus = () => {
     if (!navigator.onLine) {
       setIsModal(true);
@@ -66,6 +65,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
+
       <Provider store={store}>
         <GlobalProvider>
           <Routes />

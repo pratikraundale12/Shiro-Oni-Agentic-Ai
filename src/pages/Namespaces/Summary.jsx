@@ -29,6 +29,7 @@ import { Button, CheckboxField, Modal, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
+  AuthenticationSelectors,
   ClustersActions,
   ClustersSelectors,
   GridSelectors,
@@ -49,6 +50,7 @@ import { DuplicateScheduleModal } from './DuplicateScheduleModal';
 import NamespaceDeploy from './NamespaceDeploy';
 import SanityCheckDeployModal from './SanityCheckDeployModal';
 import Upgrade from './Upgrade';
+import { FlowValidationSelectors } from '../../store/flowValidation';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -559,6 +561,9 @@ const Summary = () => {
     registryAllDetails?.variablesData,
     variblesReduxData
   );
+  const validationResult = useSelector(
+    FlowValidationSelectors.getDeploymentFlowValidation
+  );
 
   const orignalParameterData = [
     ...(registryAllDetails?.parameterContextData?.inherited || []),
@@ -893,6 +898,7 @@ const Summary = () => {
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details', path: '/process-group/config-details' },
+    { label: 'Flow Validation', path: '/process-group/flow-validation' },
     { label: 'Summary' },
   ];
 
@@ -921,6 +927,7 @@ const Summary = () => {
           label: 'Configuration Details',
           path: '/process-group/config-details',
         },
+        { label: 'Flow Validation', path: '/process-group/flow-validation' },
         { label: 'Summary' },
       ];
 
@@ -966,7 +973,7 @@ const Summary = () => {
   };
 
   const handleBackClick = () => {
-    history.push('/process-group/config-details');
+    history.push('/process-group/flow-validation');
   };
 
   const [activeButton, setActiveButton] = useState(null);
@@ -975,9 +982,9 @@ const Summary = () => {
   const handleUpdateStatus = status => {
     const text =
       status === 'STOPPED'
-        ? 'stop'
+        ? 'stopped'
         : status === 'RUNNING'
-          ? 'start'
+          ? 'started'
           : status === 'ENABLED'
             ? 'enable'
             : status === 'DISABLED'
@@ -1082,6 +1089,7 @@ const Summary = () => {
 
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
+
   const handleUpgradeByRegistry = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -1136,6 +1144,7 @@ const Summary = () => {
         defaultRegistryValue ||
         registryDropdownOptions?.[0]?.value,
       namespaceId: checkDestCluster?.value,
+      validation_id: validationResult?.data?.validation_id,
       mode: 'deploy',
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       isScheduled: true,
@@ -1183,6 +1192,7 @@ const Summary = () => {
           defaultRegistryValue ||
           registryDropdownOptions?.[0]?.value,
         namespaceId: checkDestCluster?.value,
+        validation_id: validationResult?.data?.validation_id,
         mode: 'deploy',
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
         isScheduled: true,
@@ -1228,6 +1238,7 @@ const Summary = () => {
           registryDropdownOptions?.[0]?.value,
         bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
         namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
+        validation_id: validationResult?.data?.validation_id,
         payload: {
           namespaceId: checkDestCluster?.value,
           oldVariablesData: orignalVariables,
@@ -1294,6 +1305,7 @@ const Summary = () => {
         registryDropdownOptions?.[0]?.value,
       bucketId: selectedNameSpace?.bucketId || singleNamespaceData1?.bucketId,
       namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
+      validation_id: validationResult?.data?.validation_id,
       revert_local_changes: shouldRevertChanges,
       payload: {
         namespaceId: checkDestCluster?.value,
@@ -1431,7 +1443,7 @@ const Summary = () => {
   const providePrimaryTextForFlowConfirmationModal = () => {
     return checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy
       ? `Do you really want to ${confirmDialogue?.text}?`
-      : `Flow will be ${confirmDialogue?.text} after the ${isRegistryDeploy ? 'deploy' : 'upgrade'}?`;
+      : `Flow will be ${confirmDialogue?.text} after the ${isRegistryDeploy ? 'deployment' : 'upgrade'}?`;
   };
 
   const actionIcons = {
@@ -1465,7 +1477,18 @@ const Summary = () => {
     if (deployByRegistryFlow) return formDataRegistry?.selectedFlowName;
     return checkDestCluster?.name || formDataRegistry?.selectedFlowName;
   };
-
+  const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
+  const stepIndex = useSelector(ClustersSelectors.getTourIndex);
+  if (enableTour) {
+    if (stepIndex != 12) {
+      setTimeout(() => {
+        setTimeout(() => {
+          dispatch(ClustersActions.setTourIndex(12));
+          dispatch(ClustersActions.setTourStart(true));
+        }, 50);
+      }, 300);
+    }
+  }
   const selectedFlowNameProvider = getSelectedFlowName();
 
   // Helper to merge old and new variables for diff modal (only changed)
@@ -2326,12 +2349,12 @@ const Summary = () => {
                 : checkDestCluster?.version || 'N/A'
             }`}
             isFromDeploySummary={true}
-            parametersData={mergedParametersData}
-            variablesData={mergedVariablesData}
-            csData={mergedControllerServicesData}
+            parametersData={newParametersData}
+            variablesData={variblesReduxData}
+            csData={updatedLocalCsPayloadOnDeploy}
           />
         )}
-        <SanityCheckDeployModal />
+      <SanityCheckDeployModal />
       </MainContainer>
       <ModalWithIcon
         title={'Sanity Check Confirmation'}

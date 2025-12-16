@@ -44,6 +44,10 @@ const SearchContainer = styled.div`
     transform: translateY(-50%);
   }
 `;
+
+const StyledTableWrapper = styled.div`
+  height: auto;
+}`;
 const Search = styled.input`
   width: 100%;
   border-radius: 2px;
@@ -207,8 +211,10 @@ export const ListControllerService = () => {
   const fetchingClusters = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchClusters')
   );
+
   const [hasTriedFetchingClusters, setHasTriedFetchingClusters] =
     useState(false);
+
   useEffect(() => {
     if (!fetchingClusters) {
       setHasTriedFetchingClusters(true);
@@ -255,6 +261,17 @@ export const ListControllerService = () => {
     setIsEnableModalOpen(true);
   };
 
+  useEffect(() => {
+    if (
+      hasTriedFetchingClusters &&
+      !fetchingClusters &&
+      isEmpty(selectedCluster?.value)
+    ) {
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
+    }
+  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
   const handleDeleteClick = item => {
     setSelectedItemFromList(item);
     setIsDeleteModalOpen(true);
@@ -734,15 +751,16 @@ export const ListControllerService = () => {
         className={'mb-1'}
       />
       <AddControllerServiceModal />
-
-      <Table
-        showPagination={true}
-        data={filteredModulesData}
-        columns={COLUMNS}
-        controllerModule={true}
-        csList={true}
-        isResetNotRequired={isResetNotRequired}
-      />
+      <StyledTableWrapper>
+        <Table
+          showPagination={true}
+          data={filteredModulesData}
+          columns={COLUMNS}
+          controllerModule={true}
+          csList={true}
+          isResetNotRequired={isResetNotRequired}
+        />
+      </StyledTableWrapper>
       <ConfigControllerService
         isOpen={isListProprtyModel}
         onClose={handleCloseModal}

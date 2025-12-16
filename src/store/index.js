@@ -11,3 +11,8 @@ export { ClustersActions, ClustersSelectors } from './clusters';
 export { NamespacesActions, NamespacesSelectors } from './namespaces';
 export { RolesActions, RolesSelectors } from './roles';
 export { PoliciesActions, PoliciesSelectors } from './policies';
+export {
+  AiFlowGeneratorActions,
+  AiFlowGeneratorSelectors,
+} from './aiFlowGenerator';
+export { RegistryActions, RegistrySelectors } from './registry';

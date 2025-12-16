@@ -2,14 +2,20 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { CircleExclamationMarkIcon, ThreedotsIcon } from '../../../assets';
+import {
+  CircleExclamationMarkIcon,
+  DeleteSmallIcon,
+  NotePadIcon,
+  ThreedotsIcon,
+} from '../../../assets';
 import { CLUSTER_STATUS } from '../../../constants';
 import { Tooltip } from '../../../shared/Tooltip';
+import { AuthenticationSelectors } from '../../../store';
 import { theme } from '../../../styles';
 import { EnableClusterRender } from './EnableClusterRender';
-import { useSelector } from 'react-redux';
-import { AuthenticationSelectors } from '../../../store';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const ActionTd = styled.div`
   display: flex;
@@ -33,14 +39,13 @@ export const IconButton = styled.button`
     opacity: 0.4;
     cursor: not-allowed;
   }
-
   @media (max-width: 1025px) {
     min-width: 24px;
     min-height: 24px;
     border-width: 0.5px;
     & svg {
-      width: 24px;
-      height: 24px;
+      width: 12px;
+      height: 12px;
     }
   }
   &.pencil-icon-schedule-list {
@@ -101,63 +106,163 @@ const TooltipSecond = styled.div`
   gap: 8px;
 `;
 
-export const ActionRender = ({ handleMenuClick, item, children }) => {
+export const ActionRender = ({
+  handleMenuClick,
+  item,
+  children,
+  handleHardDeleteFailedAnsibleCluster = () => {},
+  handleOpenProgressModal = () => {},
+  handleClick = () => {},
+}) => {
   const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
   return (
     <ActionTd>
-      <IconButton
-        data-tooltip-id={item.id}
-        disabled={
-          item.status === CLUSTER_STATUS.DISCONNECTED || !item.is_active
-        }
-      >
-        <CircleExclamationMarkIcon color={theme.colors.border} />
-      </IconButton>
-
-      {!clusterLogin && <EnableClusterRender item={item} />}
-
-      <div className="position-relative">
-        <IconButton onClick={event => handleMenuClick(event, item)}>
-          <ThreedotsIcon />
-        </IconButton>
-        {children}
-      </div>
-      {item.status !== CLUSTER_STATUS.DISCONNECTED && item.is_active && (
-        <Tooltip
-          id={item.id}
-          styles={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            padding: '8px 12px',
-            boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
-            zIndex: 10000,
-          }}
+      {item?.process_initiated &&
+        item?.state == 'DRAFT' &&
+        (item?.created_by_ansible || item?.is_kube_cluster) && (
+          <span className="me-1">
+            <IconButton
+              data-tooltip-id={'ansible-logs-log-option'}
+              onClick={event => {
+                event.currentTarget.blur();
+                handleOpenProgressModal(item);
+              }}
+            >
+              {' '}
+              <NotePadIcon height="20" width="20" />
+            </IconButton>
+            <ReactTooltip
+              id={`ansible-logs-log-option`}
+              place="bottom"
+              effect="solid"
+              content={'View progress'}
+              style={{
+                width: '130px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+                zIndex: 10000,
+              }}
+            />
+          </span>
+        )}{' '}
+      {item?.is_kube_cluster && item?.state === 'FAILED' && (
+        <IconButton
+          onClick={() => handleClick('deleteKube', item.id, item)}
+          data-tooltip-id={'ansible-failed-delete-option'}
         >
-          <div>
-            <TooltipParent>
-              <ClusterDeatils>Cluster Details</ClusterDeatils>
-              <TooltipSecond>
-                <Connected>
-                  <Span />
-                  <Strong>Connected Nodes:</Strong>
-                </Connected>
-                <Number>
-                  {item.total_nodes === item.connected_nodes
-                    ? item.connected_nodes
-                    : `${item.connected_nodes}`}
-                </Number>
-              </TooltipSecond>
-              <TooltipSecond>
-                <Connected>
-                  <Span color="#A5D6A7" />
-                  <Strong>Total Nodes:</Strong>
-                </Connected>
-                <Number>{item.total_nodes}</Number>
-              </TooltipSecond>
-            </TooltipParent>
-          </div>
-        </Tooltip>
+          <DeleteSmallIcon color="red" />
+        </IconButton>
       )}
+      {item?.state !== 'DRAFT' &&
+        !(item?.is_kube_cluster && item?.state === 'FAILED') && (
+          <>
+            {!item?.process_intiated &&
+            item?.state == 'FAILED' &&
+            item?.created_by_ansible ? (
+              <>
+                <span className="me-1">
+                  <IconButton
+                    data-tooltip-id={'ansible-failed-log-option'}
+                    onClick={event => {
+                      event.currentTarget.blur();
+                      handleOpenProgressModal(item);
+                    }}
+                  >
+                    <NotePadIcon height="20" width="20" />
+                  </IconButton>
+                </span>
+                <IconButton
+                  onClick={() => handleHardDeleteFailedAnsibleCluster(item)}
+                  data-tooltip-id={'ansible-failed-delete-option'}
+                >
+                  <DeleteSmallIcon color="red" />
+                </IconButton>
+                <ReactTooltip
+                  id={`ansible-failed-delete-option`}
+                  place="bottom"
+                  effect="solid"
+                  content={'Delete Cluster'}
+                  style={{
+                    width: '125px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                    zIndex: 10000,
+                  }}
+                />
+                <ReactTooltip
+                  id={`ansible-failed-log-option`}
+                  place="bottom"
+                  effect="solid"
+                  content={'Check Failed Cluster'}
+                  style={{
+                    width: '170px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                    zIndex: 10000,
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <IconButton
+                  data-tooltip-id={item.id}
+                  disabled={
+                    item.status === CLUSTER_STATUS.DISCONNECTED ||
+                    !item.is_active
+                  }
+                >
+                  <CircleExclamationMarkIcon color={theme.colors.border} />
+                </IconButton>
+
+                {!clusterLogin && <EnableClusterRender item={item} />}
+
+                <div className="position-relative">
+                  <IconButton onClick={event => handleMenuClick(event, item)}>
+                    <ThreedotsIcon />
+                  </IconButton>
+                  {children}
+                </div>
+                {item.status !== CLUSTER_STATUS.DISCONNECTED &&
+                  item.is_active && (
+                    <Tooltip
+                      id={item.id}
+                      styles={{
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        padding: '8px 12px',
+                        boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+                        zIndex: 10000,
+                      }}
+                    >
+                      <div>
+                        <TooltipParent>
+                          <ClusterDeatils>Cluster Details</ClusterDeatils>
+                          <TooltipSecond>
+                            <Connected>
+                              <Span />
+                              <Strong>Connected Nodes:</Strong>
+                            </Connected>
+                            <Number>
+                              {item.total_nodes === item.connected_nodes
+                                ? item.connected_nodes
+                                : `${item.connected_nodes}`}
+                            </Number>
+                          </TooltipSecond>
+                          <TooltipSecond>
+                            <Connected>
+                              <Span color="#A5D6A7" />
+                              <Strong>Total Nodes:</Strong>
+                            </Connected>
+                            <Number>{item.total_nodes}</Number>
+                          </TooltipSecond>
+                        </TooltipParent>
+                      </div>
+                    </Tooltip>
+                  )}
+              </>
+            )}
+          </>
+        )}
     </ActionTd>
   );
 };
@@ -171,4 +276,7 @@ ActionRender.propTypes = {
   }).isRequired,
   ref: PropTypes.func,
   children: PropTypes.any,
+  handleHardDeleteFailedAnsibleCluster: PropTypes.func,
+  handleOpenProgressModal: PropTypes.func,
+  handleClick: PropTypes.func,
 };

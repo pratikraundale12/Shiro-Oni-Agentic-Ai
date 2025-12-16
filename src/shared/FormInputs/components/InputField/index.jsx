@@ -3,7 +3,7 @@ import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { hasError } from '../../../../helpers';
 import FieldErrorMessage from '../FieldErrorMessage';
 
@@ -74,6 +74,16 @@ const Container = styled.div`
       background: ${props => props.theme.colors.darkGrey3};
       cursor: not-allowed;
     }
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &[type='number'] {
+      -moz-appearance: textfield;
+    }
   }
 
   .icon {
@@ -101,6 +111,7 @@ const InputField = ({
   onKeyDown,
   defaultValue = null,
   isFromUserStory = false,
+  rightIconToolTipContent = '',
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -122,6 +133,7 @@ const InputField = ({
         error,
         [className]: className,
       })}
+      defaultValue={defaultValue}
     >
       {label && (
         <label>
@@ -143,7 +155,30 @@ const InputField = ({
           {...props}
           {...(isFunction(register) && register(name, { ...registerOptions }))}
         />
-        {rightIcon && <span className="icon">{rightIcon}</span>}
+        {rightIcon && (
+          <span
+            className="icon"
+            data-tooltip-id={`tooltip-group-input-${name}`}
+            style={{ cursor: 'pointer' }}
+          >
+            {rightIcon}
+          </span>
+        )}
+        {rightIcon && rightIconToolTipContent && (
+          <ReactTooltip
+            id={`tooltip-group-input-${name}`}
+            place="top"
+            content={rightIconToolTipContent}
+            style={{
+              // width: 'auto',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: '999',
+              maxWidth: '400px',
+              minWidth: 'fit-content',
+            }}
+          />
+        )}
       </div>
       <FieldErrorMessage
         errors={errors}
@@ -171,6 +206,7 @@ InputField.propTypes = {
   placeholder: PropTypes.string,
   defaultValue: PropTypes.string,
   isFromUserStory: PropTypes.bool,
+  rightIconToolTipContent: PropTypes.string,
 };
 
 export default InputField;

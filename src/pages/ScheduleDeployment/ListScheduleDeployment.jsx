@@ -1,6 +1,7 @@
 /*eslint-disable*/
 import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -97,8 +98,8 @@ const Item = styled.div`
 const List = styled.div`
   width: 175px;
   position: absolute;
-  top: 25%;
-  right: 100%;
+  top: ${({ posY }) => posY}px;
+  left: ${({ posX }) => posX - 67}px;
   z-index: 1000;
   background: ${props => props.theme.colors.white};
   box-shadow: 0px 0px 5px 0px ${props => props.theme.colors.shadow};
@@ -115,9 +116,26 @@ const List = styled.div`
   & > div:last-child {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
-    // width: 100%;
   }
 `;
+
+const DropdownPortal = ({ children }) => {
+  return ReactDOM.createPortal(children, document.body);
+};
+
+const adjustDropdownPosition = (x, y, dropdownWidth, dropdownHeight) => {
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  const adjustedX =
+    x + dropdownWidth > viewportWidth ? viewportWidth - dropdownWidth - 10 : x;
+  const adjustedY =
+    y + dropdownHeight > viewportHeight
+      ? viewportHeight - dropdownHeight - 10
+      : y;
+
+  return { x: adjustedX, y: adjustedY };
+};
 
 const NoapproverText = styled.div`
   font-family: 'Red Hat Display', sans-serif;
@@ -181,10 +199,6 @@ export const ListScheduleDeployment = () => {
     );
   };
 
-  const loading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchVersionData')
-  );
-
   const handleCancelModel = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setCancelScheduleModal(true));
@@ -199,7 +213,6 @@ export const ListScheduleDeployment = () => {
   const RejectIconRender = item => {
     return (
       <>
-        <FullPageLoader loading={loading} />
         <IconButton
           onClick={event => {
             handleCancelModel(item);
@@ -330,10 +343,19 @@ export const ListScheduleDeployment = () => {
   });
   const handleMenuClick = (event, item) => {
     event.stopPropagation();
+    const dropdownWidth = 165;
+    const dropdownHeight = 200;
+    const { x, y } = adjustDropdownPosition(
+      event.clientX,
+      event.clientY,
+      dropdownWidth,
+      dropdownHeight
+    );
+
     setMenuState({
       isVisible: true,
-      x: event.clientX,
-      y: event.clientY,
+      x,
+      y,
       row: item,
     });
   };
@@ -554,33 +576,35 @@ export const ListScheduleDeployment = () => {
             <ThreedotsIcon />
           </IconButton>
           {menuState?.isVisible && item?.id === menuState?.row?.id && (
-            <List ref={menuRef}>
-              <Item
-                onClick={event => {
-                  handleUserStoryModal(item);
-                  event.currentTarget.blur();
-                  handleCloseMenu();
-                }}
-              >
-                <IconButton>
-                  <OpenEyeIcon width={16} height={16} />
-                </IconButton>{' '}
-                &nbsp; Change Request
-              </Item>
-              <Item
-                onClick={event => {
-                  getDefSchedule(item);
-                  event.currentTarget.blur();
-                  handleCloseMenu();
-                }}
-                data-tooltip-id={`${`tooltip-group-diff-schedule`}`}
-              >
-                <IconButton>
-                  <DiffIcon />
-                </IconButton>{' '}
-                &nbsp; View Changes
-              </Item>
-            </List>
+            <DropdownPortal>
+              <List ref={menuRef} posX={menuState.x} posY={menuState.y}>
+                <Item
+                  onClick={event => {
+                    handleUserStoryModal(item);
+                    event.currentTarget.blur();
+                    handleCloseMenu();
+                  }}
+                >
+                  <IconButton>
+                    <OpenEyeIcon width={16} height={16} />
+                  </IconButton>{' '}
+                  &nbsp; Change Request
+                </Item>
+                <Item
+                  onClick={event => {
+                    getDefSchedule(item);
+                    event.currentTarget.blur();
+                    handleCloseMenu();
+                  }}
+                  data-tooltip-id={`${`tooltip-group-diff-schedule`}`}
+                >
+                  <IconButton>
+                    <DiffIcon />
+                  </IconButton>{' '}
+                  &nbsp; View Changes
+                </Item>
+              </List>
+            </DropdownPortal>
           )}
         </div>
       </ActionTd>

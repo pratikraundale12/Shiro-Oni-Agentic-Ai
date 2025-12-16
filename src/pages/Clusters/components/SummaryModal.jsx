@@ -17,7 +17,6 @@ import {
   createCluster,
   createRegistry,
   updateCluster,
-  // updateRegistry,
 } from '../../../store/index1';
 import { FullPageLoader } from '../../../components';
 import { isEmpty } from 'lodash';
@@ -119,6 +118,7 @@ export const SummaryModal = ({
   approverEnableForStartAndStop,
   tags,
   changeRequestEnable,
+  certificateOption,
   selectedRegistriesArray = [],
   registries,
   default_registry_data,
@@ -126,6 +126,12 @@ export const SummaryModal = ({
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const clusterData = useSelector(ClustersSelectors.getAddEditClusterData);
+  const certificateNodesData = useSelector(
+    ClustersSelectors.getTestCertificateNodes
+  );
+
+  const clusterTestResponse = useSelector(ClustersSelectors.getClusterFormData);
+
   const addRegistry = async () => {
     const data = {
       name: registryData?.registryName,
@@ -141,7 +147,9 @@ export const SummaryModal = ({
       toast.error(response.message);
     }
   };
-  const addCluster = async () => {
+
+  // eslint-disable-next-line no-unused-vars
+  const addCluster = async ({ registry_id }) => {
     const selectedRegistriesId = selectedRegistriesArray?.map(
       item => item?.value
     );
@@ -155,11 +163,32 @@ export const SummaryModal = ({
       approver_enable: approverEnable,
       start_stop_requires_approval: approverEnableForStartAndStop,
       change_request_enable: changeRequestEnable,
-      default_registry_id: default_registry_data || null,
+      default_registry_id:
+        default_registry_data?.value || default_registry_data || null,
       ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
-      ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
+      ...(clusterData?.metrics_url && {
+        metrics_url: clusterData.metrics_url,
+      }),
+      ...(clusterTestResponse?.clusterType && {
+        clusterType: clusterTestResponse?.clusterType,
+      }),
+      nodes:
+        certificateNodesData && certificateNodesData.length > 0
+          ? certificateNodesData
+          : [],
+      ...(clusterData?.service_account_certificate_password && {
+        service_account_certificate_password:
+          clusterData.service_account_certificate_password,
+      }),
+      ...(clusterData?.service_account_certificate && {
+        service_account_certificate: clusterData.service_account_certificate,
+      }),
+      is_certificate_based_service_account: certificateOption,
     };
+
+    // const response = await createCluster(formData); // createCluster must handle FormData
     const response = await createCluster(data);
+
     if (response?.status === 201) {
       setLoading(false);
       history.push('/clusters');
@@ -176,8 +205,8 @@ export const SummaryModal = ({
       item => item?.value
     );
     const payload = {
-      name: clusterData.clusterName,
-      nifi_url: clusterData.nifiUrl,
+      name: clusterData?.clusterName,
+      nifi_url: clusterData?.nifiUrl,
       tag: tags,
       notification_enable: notificationEnable,
       approver_enable: approverEnable,
@@ -186,6 +215,9 @@ export const SummaryModal = ({
       registry_ids: selectedRegistriesId,
       default_registry_id:
         default_registry_data?.value || default_registry_data || null,
+      has_custom_service_account: false,
+      is_certificate_based_service_account: certificateOption,
+      registry_id: registryData?.id,
     };
     const id = clusterId;
     const response = await updateCluster(id, payload);
@@ -481,6 +513,7 @@ SummaryModal.propTypes = {
   approverEnableForStartAndStop: PropTypes.bool,
   tags: PropTypes.string,
   changeRequestEnable: PropTypes.bool,
+  certificateOption: PropTypes.bool,
   selectedRegistriesArray: PropTypes.array,
   registries: PropTypes.array,
   default_registry_data: PropTypes.any,

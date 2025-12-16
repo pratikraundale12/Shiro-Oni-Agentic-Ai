@@ -61,14 +61,16 @@ const RadioInput = styled.input.attrs({ type: 'radio' })`
 `;
 
 const RadioField = ({ name, register, label, refName = null, ...props }) => {
+  const registrationProps =
+    typeof register === 'function' ? register(name) : {};
   return (
     <Wrapper ref={refName}>
       <RadioInput
         type="radio"
         name={name}
         id={label}
+        {...registrationProps}
         {...props}
-        {...(typeof register === 'function' && register(name))}
       />
       <StyledLabel htmlFor={label}>{label}</StyledLabel>
     </Wrapper>
@@ -77,7 +79,7 @@ const RadioField = ({ name, register, label, refName = null, ...props }) => {
 
 RadioField.propTypes = {
   name: PropTypes.string.isRequired,
-  register: PropTypes.func.isRequired,
+  register: PropTypes.func,
   label: PropTypes.string.isRequired,
   refName: PropTypes.string,
 };
