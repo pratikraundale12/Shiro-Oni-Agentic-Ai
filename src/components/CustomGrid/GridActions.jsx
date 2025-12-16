@@ -270,11 +270,12 @@ export const GridActions = ({
   setRemoveSearch,
   viewMode = 'list_view',
   setViewMode = () => {},
+  itemsPerPage,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
-  const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
+  // const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
   const accessType = useSelector(RolesSelectors.getAccessType);
   const userModalOpen = useSelector(UsersSelectors.getUserModalOpen);
   const roles = useSelector(RolesSelectors.getRoles);
@@ -375,7 +376,7 @@ export const GridActions = ({
           module: 'clusters',
           params: {
             page: 1,
-            limit: 10,
+            limit: itemsPerPage || 10,
             ...(sortingState && {
               sort: sortingState,
             }),
@@ -485,7 +486,7 @@ export const GridActions = ({
             clusterId,
             params: {
               page: 1,
-              limit: itemPerClusterList || 10,
+              limit: itemsPerPage || 10,
               id: scheduleToken,
               ...(search && { search: search }),
               ...(watchStatus &&
@@ -1350,7 +1351,11 @@ GridActions.propTypes = {
   selectedRole: PropTypes.string,
   sortingState: PropTypes.string,
   setValue: PropTypes.func,
+<<<<<<< HEAD
   onItemsPerPageChange: PropTypes.func.isRequired,
   setIsExportReportOpen: PropTypes.func,
   setRemoveSearch: PropTypes.func,
+=======
+  itemsPerPage: PropTypes.number,
+>>>>>>> b91913c50fea2d3690058f2faa0f5a27e4e3f33f
 };
