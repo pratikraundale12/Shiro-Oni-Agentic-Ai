@@ -36,7 +36,11 @@ export const FullPageLoader = ({ loading, restartText = false, ...props }) => {
   return (
     <Container {...props}>
       <Loader src={loader} alt="loader" />
-      <Text>{restartText ? 'Restarting...' : KDFM.LOADING}</Text>
+      <Text>
+        {restartText
+          ? 'The cluster is restarting and should take approximately 5 minutes...'
+          : KDFM.LOADING}
+      </Text>
     </Container>
   );
 };
