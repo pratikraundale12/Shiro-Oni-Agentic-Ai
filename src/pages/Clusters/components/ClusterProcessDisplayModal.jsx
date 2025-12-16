@@ -808,6 +808,7 @@ export const ClusterProcessDisplayModal = ({
   const closeModalDirect = () => {
     setIsProcessModalOpen(false);
     dispatch(ClustersActions.setProgressTrackingModalOpen(false));
+    dispatch(ClustersActions.setansibleClusterProgressData({}));
     setSelectedCluster({});
     dispatch(
       GridActions.fetchGrid({
