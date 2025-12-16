@@ -119,9 +119,10 @@ export const AddSSHModal = ({
   });
 
   useEffect(() => {
-    if (!isEmpty(selectedSSH) && data?.created_by_ansible) {
+    if (!isEmpty(selectedSSH?.port)) {
       setValue('hostIp', selectedSSH?.hostIp);
       setValue('port', selectedSSH?.port);
+      setValue('nifiLibPath', selectedSSH?.nifi_lib_path || ' ');
     }
   }, [selectedSSH]);
 
@@ -177,6 +178,9 @@ export const AddSSHModal = ({
       payload.append('username', formData?.username);
       payload.append('pemFile', formData?.file);
       payload.append('isPassword', false);
+      if (!isEmpty(formData?.nifiLibPath)) {
+        payload.append('nifiLibPath', formData?.nifiLibPath);
+      }
 
       const payloadData = {
         payload,
@@ -218,8 +222,10 @@ export const AddSSHModal = ({
 
   const inputsDisabled = () => {
     if (
-      (!isPrimaryBtnDisable || !isEmpty(selectedSSH)) &&
-      data?.created_by_ansible
+      !isPrimaryBtnDisable ||
+      !isEmpty(selectedSSH?.port)
+      //  &&
+      // data?.created_by_ansible
     ) {
       return true;
     } else if (data?.created_by_ansible) {
@@ -296,12 +302,16 @@ export const AddSSHModal = ({
                 name="nifiLibPath"
                 type="text"
                 label="Lib Path"
-                placeholder="Enter Lib Path"
-                required
+                placeholder={data?.created_by_ansible ? '' : 'Enter Lib Path'}
+                // required
                 register={register}
                 errors={errors}
                 icon={<DocumentTextIcon />}
-                disabled={!isPrimaryBtnDisable}
+                disabled={
+                  !isPrimaryBtnDisable ||
+                  data?.created_by_ansible ||
+                  inputsDisabled()
+                }
               />
             </div>
             <div className="col-6">
@@ -367,7 +377,7 @@ export const AddSSHModal = ({
                       name="file"
                       watch={watch}
                       control={control}
-                      required
+                      // required
                       rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
                       placeholder={KDFM.UPLOAD_PEM_FILE}
                       errors={errors}
