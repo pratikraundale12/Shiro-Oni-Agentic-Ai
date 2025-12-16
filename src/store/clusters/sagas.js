@@ -378,6 +378,7 @@ export function* associateClusterWithRegistry(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item?.id === payload?.clusterId
   );
+  const loggedInCluster = yield select(NamespacesSelectors.getSelectedCluster);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -400,6 +401,15 @@ export function* associateClusterWithRegistry(api, { payload }) {
     yield put(
       ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
     );
+    if (loggedInCluster?.value == payload?.clusterId) {
+      yield put(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
   } else {
     toast.error(response?.data?.message);
   }

@@ -223,12 +223,21 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setIsFailedClusterDeleteModalOpen(true));
   };
   const handleAnsibleClusterNiFiDeleteConfirmation = () => {
-    const selectedCluster = JSON.parse(
+    const selectedClusterLogged = JSON.parse(
       localStorage.getItem('selected_cluster')
     );
+
+    handleCloseMenu();
+    dispatch(
+      ClustersActions.deleteAnsibleClusterHard({
+        clusterId: selectedCluster?.id,
+        payload: { deleteType: 'nifi_uninstall' },
+      })
+    );
+    setSelectedCluster({});
     if (
       loggedInCluster?.value == selectedCluster?.id &&
-      selectedCluster?.id == selectedCluster?.value
+      selectedCluster?.id == selectedClusterLogged?.value
     ) {
       dispatch(
         NamespacesActions.setSelectedCluster({
@@ -238,14 +247,6 @@ export const ListClusters = () => {
       );
       localStorage.removeItem('selected_cluster');
     }
-    handleCloseMenu();
-    dispatch(
-      ClustersActions.deleteAnsibleClusterHard({
-        clusterId: selectedCluster?.id,
-        payload: { deleteType: 'nifi_uninstall' },
-      })
-    );
-    setSelectedCluster({});
   };
 
   const handleOpenProgressModal = item => {
