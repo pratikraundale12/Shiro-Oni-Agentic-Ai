@@ -38,6 +38,7 @@ import {
   GridActions,
   GridSelectors,
   NamespacesActions,
+  NamespacesSelectors,
 } from '../../store';
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
@@ -174,6 +175,8 @@ export const ListClusters = () => {
   );
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
+  const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -234,6 +237,10 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setIsFailedClusterDeleteModalOpen(true));
   };
   const handleAnsibleClusterNiFiDeleteConfirmation = () => {
+    const selectedClusterLogged = JSON.parse(
+      localStorage.getItem('selected_cluster')
+    );
+
     handleCloseMenu();
     dispatch(
       ClustersActions.deleteAnsibleClusterHard({
@@ -242,6 +249,18 @@ export const ListClusters = () => {
       })
     );
     setSelectedCluster({});
+    if (
+      loggedInCluster?.value == selectedCluster?.id &&
+      selectedCluster?.id == selectedClusterLogged?.value
+    ) {
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
   };
 
   const handleOpenProgressModal = item => {

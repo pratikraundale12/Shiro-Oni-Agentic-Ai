@@ -461,6 +461,7 @@ export function* associateClusterWithRegistry(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item?.id === payload?.clusterId
   );
+  const loggedInCluster = yield select(NamespacesSelectors.getSelectedCluster);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -483,6 +484,15 @@ export function* associateClusterWithRegistry(api, { payload }) {
     yield put(
       ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
     );
+    if (loggedInCluster?.value == payload?.clusterId) {
+      yield put(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
   } else {
     toast.error(response?.data?.message);
   }
@@ -798,7 +808,13 @@ export function* addNarFile(api, { payload }) {
     errorSection: 'addNarFile',
     loadingSection: 'addNarFile',
     apiMethod: api.addNarFile,
-    apiParams: [{ clusterId: payload?.id, payload: payload?.payload }],
+    apiParams: [
+      {
+        clusterId: payload?.id,
+        payload: payload?.payload,
+        restart: restartAfterUpload,
+      },
+    ],
   });
 
   if (response?.ok) {
@@ -949,10 +965,12 @@ export function* deleteClusterNarFile(api, { payload }) {
       {
         id: payload?.id,
         narId: payload?.narId,
+        restart: restartAfterUpload,
       },
     ],
   });
   if (response?.ok) {
+    toast.success(response?.data?.message || 'Deleted Successfully');
     if (restartAfterUpload) {
       yield put(
         ClustersActions.restartCluster({
@@ -990,6 +1008,7 @@ export function* deleteClusterDriverFile(api, { payload }) {
     ],
   });
   if (response?.ok) {
+    toast.success(response?.data?.message || 'Deleted Successfully');
     yield put(ClustersActions.fetchDriversList(payload?.id));
   } else {
     toast.error(response?.data?.message);
@@ -1091,6 +1110,7 @@ export function* deleteClusterScript(api, { payload }) {
     ],
   });
   if (response?.ok) {
+    toast.success(response?.data?.message || 'Deleted Successfully');
     yield put(ClustersActions.fetchScriptList(payload?.id));
   } else {
     toast.error(response?.data?.message);
