@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { SchedularSelectors } from '../../store/schedular';
 import { useSelector } from 'react-redux';
-import { theme } from '../../styles';
 import { NoDataIcon } from '../../assets';
 import { isEmpty } from 'lodash';
 
