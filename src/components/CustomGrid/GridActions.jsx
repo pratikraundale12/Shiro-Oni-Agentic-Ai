@@ -1351,11 +1351,8 @@ GridActions.propTypes = {
   selectedRole: PropTypes.string,
   sortingState: PropTypes.string,
   setValue: PropTypes.func,
-<<<<<<< HEAD
   onItemsPerPageChange: PropTypes.func.isRequired,
   setIsExportReportOpen: PropTypes.func,
   setRemoveSearch: PropTypes.func,
-=======
   itemsPerPage: PropTypes.number,
->>>>>>> b91913c50fea2d3690058f2faa0f5a27e4e3f33f
 };
