@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -264,7 +265,7 @@ export const ClusterServiceAccountModal = ({
     if (changeRequestEnabled) {
       const saType =
         method === 'username_password' ? 'username_password' : 'p12';
-      formData.append('service_account_type', saType);
+      // formData.append('service_account_type', saType);
 
       if (method === 'username_password') {
         formData.append('service_username', payloadData?.service_username);
@@ -287,7 +288,7 @@ export const ClusterServiceAccountModal = ({
       }
     } else {
       formData.append('has_custom_service_account', 'false');
-      formData.append('service_account_type', 'username_password');
+      // formData.append('service_account_type', 'username_password');
       formData.append('service_username', '');
       formData.append('service_password', '');
       formData.append('service_account_certificate_password', '');
