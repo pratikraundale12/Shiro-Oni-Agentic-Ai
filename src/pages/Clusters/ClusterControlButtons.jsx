@@ -6,6 +6,7 @@ import { Loader } from '../../components';
 import { TriangleIcons, SquareBoxIcon } from '../../assets';
 import styled from 'styled-components';
 import { theme } from '../../styles';
+import { toast } from 'react-toastify';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -143,6 +144,7 @@ const ClusterControlButtons = () => {
           setTimeout(() => {
             setStartInitiated(false);
             setAction(null);
+            toast.success('Cluster has started successfully');
           }, 200000);
         }
       } else {
@@ -159,6 +161,7 @@ const ClusterControlButtons = () => {
           setTimeout(() => {
             setStopInitiated(false);
             setAction(null);
+            toast.error('Cluster has stopped successfully');
           }, 200000);
         }
       } else {
