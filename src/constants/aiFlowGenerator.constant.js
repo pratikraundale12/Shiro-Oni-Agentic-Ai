@@ -138,7 +138,3 @@ export const NIFI_VERSIONS = [
   '2.2.0',
   '2.3.0',
 ];
-
-export const AGENTIC_AI_CONSTANTS = {
-  AGENTIC_AI: 'Agentic AI',
-};

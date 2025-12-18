@@ -5,6 +5,7 @@ export const MaximizeModalIcon = ({
   width = 18,
   height = 18,
   color = '#484848',
+  ...rest
 }) => (
   <svg
     width={width}
@@ -12,6 +13,7 @@ export const MaximizeModalIcon = ({
     viewBox="0 0 18 18"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    {...rest}
   >
     <g clipPath="url(#clip0_348_16938)">
       <path

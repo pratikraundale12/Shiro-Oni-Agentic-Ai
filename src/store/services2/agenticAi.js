@@ -1,18 +1,15 @@
 export const agenticAiAPI = api => {
-  const fetchSessionId = async clusterId => {
+  const fetchSessionId = async () => {
     try {
-      return await api.get(`/clusters/${clusterId}/conversation/session`);
+      return await api.get(`/conversation/session`);
     } catch (error) {
       return error?.response?.data;
     }
   };
 
-  const fetchMessageChatAi = async ({ clusterId, payload }) => {
+  const fetchMessageChatAi = async ({ payload }) => {
     try {
-      return await api.post(
-        `/clusters/${clusterId}/conversation/chat`,
-        payload
-      );
+      return await api.post(`/conversation/chat`, payload);
     } catch (error) {
       return error?.response?.data;
     }

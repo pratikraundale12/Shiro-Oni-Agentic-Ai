@@ -5,26 +5,12 @@ import { requestSaga } from '../helpers/request_sagas';
 import { AgenticAiActions } from './redux';
 import { toast } from 'react-toastify';
 
-export function* fetchSessionId(api, { payload }) {
-  console.log('Agentic ai session id api called');
-  // const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  // const clustersToken = JSON.parse(
-  //   localStorage.getItem(CLUSTERS_TOKEN) || '[]'
-  // );
-  // const selectedClusterToken = clustersToken.find(
-  //   item => item.id === selectedCluster?.value
-  // );
-
-  // if (api.headers) {
-  //   api.headers['x-cluster-id'] = selectedClusterToken?.id;
-  //   api.headers['x-cluster-token'] = selectedClusterToken?.token;
-  // }
-
+export function* fetchSessionId(api) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchSessionId',
     loadingSection: 'fetchSessionId',
     apiMethod: api.fetchSessionId,
-    apiParams: [payload],
+    apiParams: [],
     // successAction: AgenticAiActions.getSessionIdSuccess,
   });
   if (response.ok) {
@@ -38,7 +24,6 @@ export function* fetchSessionId(api, { payload }) {
 }
 
 export function* fetchMessageChatAi(api, { payload }) {
-  console.log('Agentic ai message chat api called');
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -46,7 +31,6 @@ export function* fetchMessageChatAi(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
-  const clusterId = selectedClusterToken?.id;
 
   if (!api.fetchMessageChatAi) {
     console.error('fetchMessageChatAi is undefined!');
@@ -54,21 +38,19 @@ export function* fetchMessageChatAi(api, { payload }) {
   }
 
   if (api.headers) {
-    api.headers['x-cluster-id'] = selectedClusterToken?.id;
-    api.headers['x-cluster-token'] = selectedClusterToken?.token;
+    api.headers['x-cluster-id'] = selectedClusterToken?.id ?? '';
+    api.headers['x-cluster-token'] = selectedClusterToken?.token ?? '';
   }
 
-  const serviceCallArgument = {
-    clusterId: clusterId,
-    payload: payload,
-  };
-
   const response = yield call(requestSaga, {
-    // errorSection: AiFlowGeneratorActions.messageChatAiFailure,
+    errorSection: 'fetchMessageChatAi',
     loadingSection: 'fetchMessageChatAi',
     apiMethod: api.fetchMessageChatAi,
-    apiParams: [serviceCallArgument],
-    // successAction is not needed if we handle dispatch manually below
+    apiParams: [
+      {
+        payload: payload,
+      },
+    ],
   });
 
   if (response.ok || response?.data?.status) {

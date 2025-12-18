@@ -79,8 +79,6 @@ import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 import ClusterSetupNewConfigKubernetes from '../pages/Clusters/components/ClusterconfigForKubernetes.jsx';
-import { AgenticAI } from '../pages/AgenticAI/AgenticAI .jsx';
-// import ClusterSetupNewConfigKubernetes from '../pages/Clusters/components/ClusterSetupNewConfigKubernetes.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -250,18 +248,6 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <AiFlowGenerator />,
-      },
-    ],
-    permission: 'view_genai',
-  },
-  {
-    name: KDFM.AGENTIC_AI,
-    path: 'agentic-ai',
-    icon: GenAiIcon,
-    pages: [
-      {
-        path: '',
-        component: <AgenticAI />,
       },
     ],
     permission: 'view_genai',

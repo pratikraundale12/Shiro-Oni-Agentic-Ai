@@ -1,26 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Modal } from '../../shared';
 import { AgenticAI } from './AgenticAI ';
-import { FullScreenIcon, MiniScreenIcon } from '../../assets';
+import { MaximizeModalIcon, MinimizeModalIcon } from '../../assets';
 import { theme } from '../../styles';
+import { KDFM } from '../../constants';
+import { AgenticAiActions, AgenticAiSelectors } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ContentWrapper = styled.div`
-  /* Ensures AgenticAI fills the modal content area and enables its internal scrolling */
   height: 100%;
   display: flex;
   flex-direction: column;
 `;
 
-const FullScreen = styled(FullScreenIcon)`
+const MaximizeModal = styled(MaximizeModalIcon)`
   padding: 5px;
   border-radius: 50%;
   border: 1px solid ${theme.colors.border};
   background: ${theme.colors.white};
 `;
 
-const MiniScreen = styled(MiniScreenIcon)`
+const MinimizeModal = styled(MinimizeModalIcon)`
   padding: 5px;
   border-radius: 50%;
   border: 1px solid ${theme.colors.border};
@@ -28,24 +30,27 @@ const MiniScreen = styled(MiniScreenIcon)`
 `;
 
 export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const dispatch = useDispatch();
+  const isFullscreen = useSelector(
+    AgenticAiSelectors.getAgenticAiModalFullScreen
+  );
 
   const toggleFullScreen = () => {
-    setIsFullscreen(prev => !prev);
+    dispatch(AgenticAiActions.setAgenticAiModalFullScreen(!isFullscreen));
   };
   return (
     <Modal
-      title="Agentic AI Chatbot"
+      title={`${KDFM.AGENTIC_AI_MODAL_TITLE}`}
       isOpen={isOpen}
       onRequestClose={() => {
         onRequestClose();
-        setIsFullscreen(false);
+        dispatch(AgenticAiActions.setAgenticAiModalFullScreen(!isFullscreen));
       }}
       primaryButtonText=""
       secondaryButtonText=""
       onSubmit={() => {
         onRequestClose();
-        setIsFullscreen(false);
+        dispatch(AgenticAiActions.setAgenticAiModalFullScreen(!isFullscreen));
       }}
       contentStyles={{
         inset: isFullscreen ? 'auto 0 0 auto' : 'auto 20px 90px auto',
@@ -60,8 +65,9 @@ export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
       }}
       formClass={'h-100'}
       isAdditionalIcon={true}
-      additionalIcon={isFullscreen ? <MiniScreen /> : <FullScreen />}
+      additionalIcon={isFullscreen ? <MinimizeModal /> : <MaximizeModal />}
       onAdditionalIconClick={toggleFullScreen}
+      noPadding={true}
     >
       <ContentWrapper>
         <AgenticAI />

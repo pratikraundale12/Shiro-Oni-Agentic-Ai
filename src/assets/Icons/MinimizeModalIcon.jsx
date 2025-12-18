@@ -5,6 +5,7 @@ export const MinimizeModalIcon = ({
   width = 18,
   height = 18,
   color = 'black',
+  ...rest
 }) => (
   <svg
     width={width}
@@ -12,6 +13,7 @@ export const MinimizeModalIcon = ({
     viewBox="0 0 14 14"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    {...rest}
   >
     <path
       fillRule="evenodd"

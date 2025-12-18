@@ -298,111 +298,6 @@ export function* validateFlowJson(api, { payload }) {
   }
 }
 
-export function* fetchSessionId(api, { payload }) {
-  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const clustersToken = JSON.parse(
-    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
-  );
-  const selectedClusterToken = clustersToken.find(
-    item => item.id === selectedCluster?.value
-  );
-
-  if (api.headers) {
-    api.headers['x-cluster-id'] = selectedClusterToken?.id;
-    api.headers['x-cluster-token'] = selectedClusterToken?.token;
-  }
-
-  const response = yield call(requestSaga, {
-    errorSection: 'fetchSessionId',
-    loadingSection: 'fetchSessionId',
-    apiMethod: api.fetchSessionId,
-    apiParams: [payload],
-    successAction: AiFlowGeneratorActions.getSessionIdSuccess,
-  });
-  if (response.ok) {
-    yield put(AiFlowGeneratorActions.setSessionId(response?.data?.session_id));
-  } else {
-    yield put(AiFlowGeneratorActions.setSessionIdError(response?.data));
-    toast.error(
-      response?.message || response?.data?.message || 'Failed to get session id'
-    );
-  }
-}
-
-export function* fetchMessageChatAi(api, { payload }) {
-  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const clustersToken = JSON.parse(
-    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
-  );
-  const selectedClusterToken = clustersToken.find(
-    item => item.id === selectedCluster?.value
-  );
-  const clusterId = selectedClusterToken?.id;
-
-  if (!api.fetchMessageChatAi) {
-    console.error('fetchMessageChatAi is undefined!');
-    return;
-  }
-
-  if (api.headers) {
-    api.headers['x-cluster-id'] = selectedClusterToken?.id;
-    api.headers['x-cluster-token'] = selectedClusterToken?.token;
-  }
-
-  const serviceCallArgument = {
-    clusterId: clusterId,
-    payload: payload,
-  };
-
-  const response = yield call(requestSaga, {
-    // errorSection: AiFlowGeneratorActions.messageChatAiFailure,
-    loadingSection: 'fetchMessageChatAi',
-    apiMethod: api.fetchMessageChatAi,
-    apiParams: [serviceCallArgument],
-    // successAction is not needed if we handle dispatch manually below
-  });
-
-  if (response.ok || response?.data?.status) {
-    try {
-      const resContent = response?.data?.message?.content;
-      if (resContent) {
-        yield put(
-          AiFlowGeneratorActions.setMessageChatAi({ message: resContent })
-        );
-      } else {
-        yield put(
-          AiFlowGeneratorActions.setMessageChatAi({
-            message: 'Received successful but empty response from AI.',
-          })
-        );
-      }
-    } catch (error) {
-      console.error('Response Handling Error:', error?.message);
-      toast.error('Failed to process the server response format.');
-      yield put(
-        AiFlowGeneratorActions.setMessageChatAiError({
-          message: error?.message || 'Processing response failed.',
-        })
-      );
-    }
-  } else {
-    let errorMessage =
-      'Unable process the generation of the flow. Please try again!';
-
-    if (response?.data?.message?.detail) {
-      errorMessage = response.data.message.detail;
-    } else if (typeof response?.data?.message === 'string') {
-      errorMessage = response.data.message;
-    }
-    if (typeof errorMessage === 'object') {
-      errorMessage = JSON.stringify(errorMessage);
-    }
-    yield put(
-      AiFlowGeneratorActions.setMessageChatAiError({ message: errorMessage })
-    );
-    toast.error(errorMessage);
-  }
-}
 export function* aiFlowGeneratorSagas(api) {
   yield all([
     takeLatest(AiFlowGeneratorActions.fetchDefaultRecentFlows, action =>
@@ -431,12 +326,6 @@ export function* aiFlowGeneratorSagas(api) {
     ),
     takeLatest(AiFlowGeneratorActions.validateFlowJson, action =>
       validateFlowJson(api, action)
-    ),
-    takeLatest(AiFlowGeneratorActions.fetchSessionId, action =>
-      fetchSessionId(api, action)
-    ),
-    takeLatest(AiFlowGeneratorActions.fetchMessageChatAi, action =>
-      fetchMessageChatAi(api, action)
     ),
   ]);
 }

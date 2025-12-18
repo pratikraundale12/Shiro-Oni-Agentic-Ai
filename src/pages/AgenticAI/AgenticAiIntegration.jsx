@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { AuthenticationSelectors } from '../../store';
+import { AgenticAiActions, AuthenticationSelectors } from '../../store';
 import { AgenticAIModal } from './AgenticAIModal';
 import { AgenticAiButton } from '../../shared';
 
@@ -18,11 +18,13 @@ const ChatbotWrapper = styled.div`
 `;
 
 export const AgenticAiIntegration = () => {
+  const dispatch = useDispatch();
   const isLoggedIn = useSelector(AuthenticationSelectors.getIsLoggedIn);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   const onChatbotClick = () => {
     setIsChatModalOpen(prev => !prev);
+    dispatch(AgenticAiActions.setAgenticAiModalFullScreen(false));
   };
 
   if (!isLoggedIn) {
