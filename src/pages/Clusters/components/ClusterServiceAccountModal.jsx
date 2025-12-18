@@ -230,34 +230,35 @@ export const ClusterServiceAccountModal = ({
   useEffect(() => {
     checkForChanges();
   }, [watchAllFields, changeRequestEnabled, method]);
-
-  const handleSave = async () => {
+  const handleSave = async payloadData => {
     const formData = new FormData();
 
-    formData.append('name', clusterData.clusterName);
-    formData.append('nifi_url', clusterData.nifiUrl);
+    formData.append('name', data?.name);
+    formData.append('nifi_url', data?.nifi_url);
 
-    if (clusterData.registryId) {
-      formData.append('registry_id', clusterData.registryId);
+    // if (data?.registry_ids) {
+    //   formData.append('registry_id', data?.registry_ids);
+    // }
+
+    if (data?.logs_url) {
+      formData.append('logs_url', data?.logs_url);
     }
 
-    if (clusterData.logs_url) {
-      formData.append('logs_url', clusterData.logs_url);
+    if (data?.metrics_url) {
+      formData.append('metrics_url', data?.metrics_url);
     }
 
-    if (clusterData.metrics_url) {
-      formData.append('metrics_url', clusterData.metrics_url);
-    }
-
-    formData.append('tag', tags);
-    formData.append(
-      'notification_enable',
-      clusterData.notification_enable || false
-    );
-    formData.append('approver_enable', clusterData.approver_enable || false);
+    formData.append('tag', data?.tag);
+    formData.append('notification_enable', data?.notification_enable || false);
+    formData.append('approver_enable', data?.approver_enable || false);
     formData.append(
       'change_request_enable',
-      clusterData.change_request_enable || false
+      data?.change_request_enable || false
+    );
+    // formData.append('default_registry_id', data?.default_registry?.id);
+    formData.append(
+      'start_stop_requires_approval',
+      data?.start_stop_requires_approval
     );
 
     if (changeRequestEnabled) {
@@ -266,8 +267,8 @@ export const ClusterServiceAccountModal = ({
       formData.append('service_account_type', saType);
 
       if (method === 'username_password') {
-        formData.append('service_username', watch('service_username'));
-        formData.append('service_password', watch('service_password'));
+        formData.append('service_username', payloadData?.service_username);
+        formData.append('service_password', payloadData?.service_password);
         formData.append('has_custom_service_account', 'true');
         formData.append('service_account_certificate_password', '');
         formData.append('service_account_certificate', '');
@@ -442,11 +443,11 @@ export const ClusterServiceAccountModal = ({
             </Button>
           </div>
         </FlexWrapper>
-        {(checkError || addError || updateError) && (
+        {/* {(checkError || addError || updateError) && (
           <p className="text-danger mt-2">
             {checkError || addError || updateError}
           </p>
-        )}
+        )} */}
       </Container>
     </>
   );

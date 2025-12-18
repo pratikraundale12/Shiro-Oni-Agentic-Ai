@@ -424,7 +424,7 @@ export const Add = () => {
         approver_enable: approverEnable,
         start_stop_requires_approval: approverEnableForStartAndStop,
         change_request_enable: changeRequestEnable,
-        registry_ids: selectedRegistriesId,
+        // registry_ids: selectedRegistriesId,
         has_custom_service_account: data?.has_custom_service_account,
         is_certificate_based_service_account: certificateOption
           ? 'true'
@@ -440,7 +440,8 @@ export const Add = () => {
         ...(selectedRegistriesId && {
           registry_ids: selectedRegistriesId,
         }),
-        default_registry_id: data?.default_registry?.id,
+
+        // default_registry_id: data?.default_registry?.id,
       };
       const id = clusterId;
       const response = await updateCluster(id, payload);
