@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { ClustersActions, ClustersSelectors } from '../../store';
 import { Loader } from '../../components';
-import { TriangleIcons, SquareBoxIcon, RefreshIcon } from '../../assets';
+import { TriangleIcons, SquareBoxIcon } from '../../assets';
 import styled from 'styled-components';
 import { theme } from '../../styles';
 
@@ -104,17 +104,17 @@ const ClusterControlButtons = () => {
     );
   };
 
-  const handleRestartClick = () => {
-    setAction('restart');
-    setRestartInitiated(true);
-    setRunRestartSTO(true);
-    dispatch(
-      ClustersActions.changeClusterActionState({
-        clusterId,
-        data: { action: 'restart' },
-      })
-    );
-  };
+  // const handleRestartClick = () => {
+  //   setAction('restart');
+  //   setRestartInitiated(true);
+  //   setRunRestartSTO(true);
+  //   dispatch(
+  //     ClustersActions.changeClusterActionState({
+  //       clusterId,
+  //       data: { action: 'restart' },
+  //     })
+  //   );
+  // };
   useEffect(() => {
     dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
   }, [dispatch, clusterId]);
@@ -254,7 +254,7 @@ const ClusterControlButtons = () => {
             </div>
           </TextsvgDiv>
 
-          <TextsvgDiv className="d-flex col-2">
+          {/* <TextsvgDiv className="d-flex col-2">
             <ActiveButtonDiv className="div-btn-2 mr-2">
               <ActiveButtonDiv
                 className="div-btn-1"
@@ -273,7 +273,8 @@ const ClusterControlButtons = () => {
               {' '}
               {restartInitiated ? 'Restarting Cluster...' : 'Restart Cluster'}
             </div>
-          </TextsvgDiv>
+          </TextsvgDiv> */}
+          <div className="col-2"></div>
 
           {
             <div className="col-3">

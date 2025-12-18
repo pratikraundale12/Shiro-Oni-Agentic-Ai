@@ -442,6 +442,7 @@ export const Add = () => {
         ...(selectedRegistriesId && {
           registry_ids: selectedRegistriesId,
         }),
+        default_registry_id: data?.default_registry?.id,
       };
       const id = clusterId;
       const response = await updateCluster(id, payload);

@@ -264,7 +264,7 @@ export const Grid = ({
     scheduler: 'No Schedulers Available',
     nodes: isClusterLoggedIn
       ? 'No Nodes Available!'
-      : 'No Nodes Available Login to Cluster First',
+      : 'No nodes available. Please log in to the cluster first.',
     registry: 'No Registry Available',
   };
 
@@ -582,7 +582,7 @@ export const Grid = ({
             setState(prevState => ({ ...prevState, eventModal: false }))
           }
           size="md"
-          primaryButtonText={KDFM.CONTINUE}
+          primaryButtonText={KDFM.BACK}
           onSubmit={() =>
             setState(prevState => ({ ...prevState, eventModal: false }))
           }
