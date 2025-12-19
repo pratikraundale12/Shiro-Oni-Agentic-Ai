@@ -484,7 +484,10 @@ export function* associateClusterWithRegistry(api, { payload }) {
     yield put(
       ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
     );
-    if (loggedInCluster?.value == payload?.clusterId) {
+    if (
+      loggedInCluster?.value == payload?.clusterId &&
+      payload?.created_by_ansible
+    ) {
       yield put(
         NamespacesActions.setSelectedCluster({
           label: '',
@@ -530,6 +533,7 @@ export function* upgradeAnsibleCluster(api, { payload }) {
   }
 }
 export function* updateNodesAnsibleCluster(api, { payload }) {
+  const loggedInCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const response = yield call(requestSaga, {
     errorSection: 'updateNodesAnsibleCluster',
     loadingSection: 'updateNodesAnsibleCluster',
@@ -543,6 +547,15 @@ export function* updateNodesAnsibleCluster(api, { payload }) {
     yield put(
       ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
     );
+    if (loggedInCluster?.value == payload?.clusterId) {
+      yield put(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
   } else {
     toast.error(response?.data?.error);
   }

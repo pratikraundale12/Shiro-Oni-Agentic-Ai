@@ -146,6 +146,7 @@ export const ClusterRegistryAssociationModal = ({
       ClustersActions.associateClusterWithRegistry({
         payload,
         clusterId: selectedCluster?.id,
+        created_by_ansible: selectedCluster?.created_by_ansible,
       })
     );
   };
