@@ -8,7 +8,12 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { ClustersActions, ClustersSelectors } from '../../../store';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../../store';
 const PrimaryText = styled.h5`
   color: ${props => props.theme.colors.darker};
   font-family: ${props => props.theme.fontNato};
@@ -28,7 +33,7 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(ClustersSelectors.getisOpenDeleteKubeClusterModal);
   const [unInstallNiFi, setUninstallNiFi] = useState(false);
-
+  const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const schemaEKS = yup.object().shape({
     aws_region: yup.string().required('AWS Region is required'),
     aws_access_key_id: yup.string().required('AWS Access Key Id is required'),
@@ -59,6 +64,21 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
   });
 
   const deleteCluster = data => {
+    const selectedCluster = JSON.parse(
+      localStorage.getItem('selected_cluster')
+    );
+    if (
+      loggedInCluster?.value == deleteKubeClusterData?.id &&
+      deleteKubeClusterData?.id == selectedCluster?.value
+    ) {
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
     if (deleteKubeClusterData?.cluster_type === 'ec2') {
       const payload = {
         clusterIdToDelete: deleteKubeClusterData?.id,
@@ -95,6 +115,7 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
   const onRequestClose = () => {
     dispatch(ClustersActions.setIsOpenDeleteKubeClusterModal(false));
     reset();
+    setUninstallNiFi(false);
   };
   return (
     <>

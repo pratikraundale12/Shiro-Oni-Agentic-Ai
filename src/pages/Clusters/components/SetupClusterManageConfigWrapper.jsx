@@ -20,7 +20,9 @@ import {
   DeleteSmallIcon,
   PencilIcon,
   PlusCircleIcon,
+  SmallSearchIcon,
 } from '../../../assets';
+import { theme } from '../../../styles';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -52,6 +54,33 @@ const ActionTd = styled.div`
   gap: 6px;
   padding-right: 10px;
 `;
+const SearchContainer = styled.div`
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
+`;
+const Search = styled.input`
+  width: 100%;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
+
+  &:focus-visible {
+    outline: none;
+  }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
+`;
 const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   const dispatch = useDispatch();
   const congigListData = useSelector(ClustersSelectors.getConfigNameList);
@@ -77,7 +106,13 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
     dispatch(ClustersActions.setkubeCofigToEdit(configItem));
     history.push('/clusters/add-new-config');
   };
-
+  const [searchText, setSearchText] = useState('');
+  const filteredListKube = kubeConfigList?.filter(item =>
+    item?.config_name?.toLowerCase()?.includes(searchText?.toLowerCase())
+  );
+  const filteredListVM = congigListData?.filter(item =>
+    item?.config_name?.toLowerCase()?.includes(searchText?.toLowerCase())
+  );
   const createClusterVisKubernetes = useSelector(
     ClustersSelectors.getCreateClusterMethod
   );
@@ -284,11 +319,35 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
             </div>
           </div>
           <div className="ms-3 me-3">
+            <SearchContainer>
+              <SmallSearchIcon
+                width={18}
+                height={18}
+                color={theme.colors.darkGrey1}
+              />
+              <Search
+                type="search"
+                value={searchText}
+                placeholder={'Search Configuration'}
+                onChange={e => {
+                  const value = e.target.value;
+                  setSearchText(value);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }
+                }}
+              />
+            </SearchContainer>
+          </div>
+          <div className="ms-3 me-3">
             <Table
               data={
                 createClusterVisKubernetes === 'VM'
-                  ? congigListData
-                  : kubeConfigList
+                  ? filteredListVM
+                  : filteredListKube
               }
               columns={
                 createClusterVisKubernetes === 'VM' ? COLUMNS : KUBE_COLUMNS

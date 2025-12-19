@@ -144,6 +144,7 @@ export const SSHDetailsTabSection = ({ data }) => {
         nifiLibPath: '',
         port: item?.port,
         ssh_key_name: item?.ssh_key_name,
+        nifi_lib_path: item?.nifi_lib_path,
       }));
       setSshItem(formattedData);
     }
@@ -169,7 +170,6 @@ export const SSHDetailsTabSection = ({ data }) => {
           {data?.created_by_ansible && (
             <CheckboxField
               name={`check-${item?.id}`}
-              // label="Do you want to add same data in all nodes?"
               checked={checkboxClicked(item)}
               onChange={e => handleCheckClick(e.target.checked, item)}
             />
@@ -189,7 +189,13 @@ export const SSHDetailsTabSection = ({ data }) => {
       label: 'File',
       renderCell: item => <span>{item?.ssh_key_name || '-'}</span>,
       resize: true,
-      width: '35%',
+      width: '20%',
+    },
+    {
+      label: 'Lib Path',
+      renderCell: item => <span>{item?.nifi_lib_path || '-'}</span>,
+      resize: true,
+      width: '15%',
     },
     {
       label: 'Username',
