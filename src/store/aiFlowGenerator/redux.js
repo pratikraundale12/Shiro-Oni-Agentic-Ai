@@ -65,12 +65,6 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   isFlowValidatedSuccessfully: false,
   isFlowErrorModalOpen: false,
   isFlowJsonSaved: false,
-
-  sessionId: {} || null,
-  sessionIdError: {},
-
-  messageChatAi: {},
-  messageChatAiError: {},
 };
 
 /* ------------- SELECTORS ------------------ */
