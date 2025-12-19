@@ -1,6 +1,8 @@
 export const NAMESPACE_CONSTANTS = {
   NAMESPACE: 'Process Group', // TODO: change it to Process Group
   NAMESPACE_LIST: 'Process Group List',
+  NAMESPACE_TREE_VIEW: 'Process Group Tree View',
+  NO_PROCESS_GROUP: 'No Process Group Available',
   DEPLOY_NAMESPACE: 'Deploy Process Group',
   UPGRADE_NAMESPACE: 'Upgrade Process Group',
   NAMESPACE_ID: 'Process Group ID',
@@ -63,4 +65,20 @@ export const NAMESPACE_CONSTANTS = {
   PARAMETER_ADDED: 'Parameter have been added successfully',
   VARIABLE_EDITED: 'Variable have been updated successfully',
   VARIABLE_ADDED: 'Variable have been added successfully',
+  INVALID_PROCESSOR_DETAILS: 'Invalid Processor Details',
+  PROCESSOR_ID: 'Processor ID',
+  PROCESSOR_NAME: 'Processor Name',
+  ERROR_MESSAGE: 'Error Message',
+  NO_INVALID_PROCESSORS: 'No Invalid Processors Found',
+
+  // Loading text constants
+  LOADING_DEPLOYING_FLOW: 'Deploying Flow...',
+  LOADING_UPGRADING_FLOW: 'Upgrading Flow...',
+  LOADING_DOWNGRADING_FLOW: 'Downgrading Flow...',
+  LOADING_SCHEDULE_DEPLOYING_FLOW: 'Schedule Deploying Flow...',
+  LOADING_SCHEDULE_UPGRADING_FLOW: 'Schedule Upgrading Flow...',
+  LOADING_SCHEDULE_DOWNGRADING_FLOW: 'Schedule Downgrading Flow...',
+  LOADING_SCHEDULE_STARTING_FLOW: 'Schedule Starting Flow...',
+  LOADING_SCHEDULE_STOPPING_FLOW: 'Schedule Stopping Flow...',
+  LOADING_UPDATING_FLOW_STATUS: 'Updating Flow Status...',
 };

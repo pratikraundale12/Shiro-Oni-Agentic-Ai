@@ -1,21 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-export const TickIconWithCircle = ({ width = 33, height = 33 }) => {
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 33 33"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle cx="16.5" cy="16.5" r={16} fill="white" stroke="#DDE4F0" />
-      <path
-        d="M14.3331 19.6427L21.9934 11.9824L23.1719 13.1609L14.3331 21.9997L9.02979 16.6965L10.2083 15.518L14.3331 19.6427Z"
-        fill="#0CBF59"
-      />
-    </svg>
-  );
+
+export const TickIconWithCircle = ({
+  height = 18,
+  width = 18,
+  stroke = '#06C270',
+  ...rest
+}) => (
+  <svg
+    width={width}
+    height={height}
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...rest}
+  >
+    <path
+      d="M5.99967 14.6666H9.99967C13.333 14.6666 14.6663 13.3333 14.6663 9.99992V5.99992C14.6663 2.66659 13.333 1.33325 9.99967 1.33325H5.99967C2.66634 1.33325 1.33301 2.66659 1.33301 5.99992V9.99992C1.33301 13.3333 2.66634 14.6666 5.99967 14.6666Z"
+      stroke={stroke}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.16699 7.99995L7.05366 9.88661L10.8337 6.11328"
+      stroke={stroke}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+TickIconWithCircle.propTypes = {
+  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  stroke: PropTypes.string,
 };
 TickIconWithCircle.propTypes = {
   width: PropTypes.number,

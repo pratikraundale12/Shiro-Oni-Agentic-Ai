@@ -42,6 +42,8 @@ const ClusterNavigationTab = ({
   setNewRegistry,
   isRegistryDetailDisable,
   data,
+  setClusterFormData = () => {},
+  certificateOption
 }) => {
   const dispatch = useDispatch();
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -62,6 +64,7 @@ const ClusterNavigationTab = ({
         onClick={() => {
           setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
           setNewRegistry(false);
+          setClusterFormData();
         }}
       >
         {KDFM.CLUSTER_DETAILS}

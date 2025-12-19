@@ -1,23 +1,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const OpenLinkIcon = ({ color = '#FF7A00' }) => {
+export const OpenLinkIcon = ({
+  width = '16',
+  height = '16',
+  color = '#FF7A00',
+}) => {
   return (
     <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
+      width={width}
+      height={height}
+      viewBox="0 0 17 17"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M6.33333 3V4.66667H2.16667V13.8333H11.3333V9.66667H13V14.6667C13 15.1269 12.6269 15.5 12.1667 15.5H1.33333C0.8731 15.5 0.5 15.1269 0.5 14.6667V3.83333C0.5 3.3731 0.8731 3 1.33333 3H6.33333ZM15.5 0.5V7.16667H13.8333L13.8333 3.34417L7.33925 9.83925L6.16074 8.66075L12.6541 2.16667H8.83333V0.5H15.5Z"
-        fill={color}
+        d="M8.71387 8.28893L14.1805 2.82227"
+        stroke={color}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14.7127 5.48809V2.28809H11.5127"
+        stroke={color}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7.37988 2.28809H6.04655C2.71322 2.28809 1.37988 3.62142 1.37988 6.95475V10.9548C1.37988 14.2881 2.71322 15.6214 6.04655 15.6214H10.0465C13.3799 15.6214 14.7132 14.2881 14.7132 10.9548V9.62142"
+        stroke={color}
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
 };
 
 OpenLinkIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
   color: PropTypes.string,
 };

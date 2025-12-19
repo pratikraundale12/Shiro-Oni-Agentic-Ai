@@ -5,7 +5,12 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { ArrowIcon, NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
+import {
+  NoDataIcon,
+  PencilIcon,
+  RefrenceIcon,
+  RightDirectionIcon,
+} from '../../assets';
 import {
   EnhancedTextRender,
   FullPageLoader,
@@ -26,11 +31,6 @@ import AddParameterContext from './AddParameterContext';
 import Collapsible from './Collapsible';
 import RefreshModal from './RefreshModal';
 
-const ArrowButton = styled.button`
-  background-color: white;
-  border-radius: 50%;
-  border: 1px solid grey;
-`;
 const DataWrapper = styled.div`
   width: 100%;
   height: 596px;
@@ -67,6 +67,7 @@ const ParameterContext = ({
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   isParameterContextOpen,
+  fromSummaryDetails = false,
 }) => {
   const [selectedParentContextId, setSelectedParentContextId] = useState('');
   const dispatch = useDispatch();
@@ -86,6 +87,9 @@ const ParameterContext = ({
   );
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
+  );
+  const pcEditLoading = useSelector(
+    NamespacesSelectors.getParameterEditingAction
   );
 
   const copyParameterDetailsData =
@@ -214,11 +218,11 @@ const ParameterContext = ({
     {
       label: 'Referencing Component',
       renderCell: item => (
-        <div className="text-center">
+        <div className="text-center d-flex align-items-center justify-content-center">
           {!isEmpty(item?.referencingComponents) && (
             <>
-              <button
-                className="border-0 bg-white"
+              <IconButton
+                type="button"
                 onClick={event => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
@@ -227,8 +231,8 @@ const ParameterContext = ({
                 data-tooltip-id={`Reference-${item?.id}`}
                 aria-label="Reference"
               >
-                <RefrenceIcon />
-              </button>
+                <RefrenceIcon color="black" />
+              </IconButton>
               <ReactTooltip
                 id={`Reference-${item?.id}`}
                 place="left"
@@ -278,7 +282,10 @@ const ParameterContext = ({
                   dispatch(
                     NamespacesActions.setParameterContextItem({
                       ...item,
-                      value: item?.sensitive ? null : item?.value,
+                      value:
+                        item?.sensitive === true || item?.sensitive === 'true'
+                          ? null
+                          : item?.value,
                       check: item?.value === '' ? true : false,
                     })
                   );
@@ -296,10 +303,10 @@ const ParameterContext = ({
                 }
               }}
             >
-              {<PencilIcon color="black" />}
+              {<PencilIcon color="black" height={18} width={18} />}
             </IconButton>
           ) : (
-            <ArrowButton
+            <IconButton
               type="button"
               onClick={() => {
                 if (canWrite) {
@@ -315,13 +322,15 @@ const ParameterContext = ({
                 }
               }}
             >
-              <ArrowIcon />
-            </ArrowButton>
+              <RightDirectionIcon color="black" height={18} width={18} />
+            </IconButton>
           )}
         </div>
       ),
     },
   ];
+  const uniqueDataSortedParameter = uniqBy(newlyAddParameters, 'name');
+
   const handleSaveParameterContext = async () => {
     if (!newlyAddParameters) return;
     const uniqueDataSorted = uniqBy(newlyAddParameters, 'name');
@@ -330,13 +339,10 @@ const ParameterContext = ({
         modifiedPayloadData: [...uniqueDataSorted],
       })
     );
+    dispatch(NamespacesActions.setParameterEditingAction(true));
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
     setIsParameterContextOpen({ isOpen: false, schedule: false });
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
-    setTimeout(() => {
-      dispatch(NamespacesActions.setNamespaceSummaryLoadingState(false));
-      dispatch(NamespacesActions.fetchParameterContext());
-    }, 1000);
     setSelectedParentContextId('');
     if (isParentEdit?.parent) {
       dispatch(
@@ -381,7 +387,7 @@ const ParameterContext = ({
         setTableStateData(updatedData);
       }
     } else if (schedularFromList) {
-      const updatedData = schduleParameterData.map(copyItem => {
+      const updatedData = schduleParameterData?.map(copyItem => {
         const match = newlyAddParameters.find(
           newItem => newItem.name.toLowerCase() === copyItem.name.toLowerCase()
         );
@@ -424,9 +430,10 @@ const ParameterContext = ({
       return a?.parentParameterId - b?.parentParameterId;
     });
   };
+
   return (
     <>
-      <FullPageLoader loading={pcLoading} />
+      <FullPageLoader loading={pcLoading || pcEditLoading} />
       <DataWrapper>
         <ScrollSetGrey className="scroll-set-grey pe-1">
           {tableStateData && tableStateData.length > 0 ? (
@@ -452,7 +459,11 @@ const ParameterContext = ({
                 className="w-auto mt-2"
                 size="sm"
                 onClick={handleSaveParameterContext}
-                disabled={!canWrite}
+                disabled={
+                  fromSummaryDetails
+                    ? isEmpty(uniqueDataSortedParameter)
+                    : !canWrite
+                }
               >
                 Save
               </Button>
@@ -494,6 +505,7 @@ ParameterContext.propTypes = {
   setNewlyAddedParameterContext: PropTypes.func.isRequired,
   isParameterContextOpen: PropTypes.object,
   parameterContextId: PropTypes.string,
+  fromSummaryDetails: PropTypes.bool,
 };
 
 export default ParameterContext;

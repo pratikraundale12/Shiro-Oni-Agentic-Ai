@@ -1,11 +1,11 @@
 /*eslint-disable*/
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useForm } from 'react-hook-form';
 import { OpenLinkIcon } from '../../assets';
-import { IconButton, Table } from '../../components';
+import { FullPageLoader, IconButton, Table } from '../../components';
 import { Modal } from '../../shared';
 import {
   ActivityHistoryActions,
@@ -13,6 +13,8 @@ import {
 } from '../../store/activityHistory';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { DiffModalScheduleList } from '../ScheduleDeployment/DiffModalSchedule';
+import { LoadingSelectors, NamespacesActions } from '../../store';
+import SanityCheckAuditLogReportModal from '../Namespaces/SanityCheckAuditLogReportModal';
 
 export const InfoModalActivityHistory = () => {
   const dispatch = useDispatch();
@@ -22,6 +24,7 @@ export const InfoModalActivityHistory = () => {
     dispatch(ActivityHistoryActions.setIsInfoModalOpen(false));
   };
   const { handleSubmit } = useForm();
+  const [isSanityCheckModalOpen, setIsSanitCheckModalOpen] = useState(false);
   const renderItems = item => {
     if (item.url) {
       return (
@@ -43,7 +46,7 @@ export const InfoModalActivityHistory = () => {
         </span>
       );
     } else {
-      return <span> {item?.value || 'N/A'}</span>;
+      return <span dangerouslySetInnerHTML={{ __html: item?.value || 'N/A' }} />;
     }
   };
   const COLUMNS = [
@@ -76,11 +79,22 @@ export const InfoModalActivityHistory = () => {
   const handleConfigrationDetails = () => {
     dispatch(SchedularActions.setIsDiffModalOpen(true));
     dispatch(SchedularActions.setSelectedSchedule(null));
-    dispatch(SchedularActions.fetchDiffScheduleData(selectedItem?.schedule_id));
+    dispatch(SchedularActions.fetchDiffScheduleData({ schedule_id: selectedItem?.schedule_id, event: selectedItem?.event }));
   };
-
+  const handleSanityCheck = () => {
+    dispatch(
+      NamespacesActions.fetchSanityReportAuditLog(
+        selectedItem?.sanity_record_id
+      )
+    );
+    setIsSanitCheckModalOpen(true);
+  };
+  const sanityLogLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchSanityReportAuditLog')
+  );
   return (
     <>
+      <FullPageLoader loading={sanityLogLoading} />
       <Modal
         isOpen={isModalOpen}
         onRequestClose={handleSubmit(onRequestClose)}
@@ -90,6 +104,22 @@ export const InfoModalActivityHistory = () => {
         contentStyles={{ minWidth: '60%' }}
         footerAlign="center"
       >
+        {selectedItem?.sanity_record_id && (
+          <div
+            style={{
+              textAlign: 'right',
+              marginBottom: '16px',
+              color: '#FF7A00',
+              textDecoration: 'none',
+              cursor: 'pointer',
+              display: 'inline-block',
+            }}
+            className="d-flex justify-content-end"
+            onClick={handleSanityCheck}
+          >
+            Sanity Check Report
+          </div>
+        )}
         {selectedItem?.schedule_id && (
           <div style={{ textAlign: 'right', marginBottom: '16px' }}>
             <a
@@ -140,6 +170,10 @@ export const InfoModalActivityHistory = () => {
         )}
       </Modal>
       <DiffModalScheduleList />
+      <SanityCheckAuditLogReportModal
+        isSanityCheckModalOpen={isSanityCheckModalOpen}
+        setIsSanitCheckModalOpen={setIsSanitCheckModalOpen}
+      />
     </>
   );
 };

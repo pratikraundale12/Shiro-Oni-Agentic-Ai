@@ -16,24 +16,25 @@ const BreadcrumbContainer = styled.div`
 
 const BreadcrumbItem = styled.span`
   cursor: pointer;
+  display: flex;
+  align-items: center;
 
-  &::after {
-    content: '>';
-    padding: 0 8px;
-    text-decoration: none;
+  span {
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
-  &:last-child::after {
-    content: '';
-  }
-
-  &:last-child {
+  &:last-child span {
     color: #ff7a00;
   }
+`;
 
-  &:hover {
-    text-decoration: underline;
-  }
+const BreadcrumbSeparator = styled.span`
+  padding: 0 8px;
+  user-select: none;
+  pointer-events: none;
+  text-decoration: none;
 `;
 
 const MODULES = [
@@ -43,8 +44,16 @@ const MODULES = [
   'upgrade',
   'ldap',
   'path',
+  'role_permission',
 ];
-const Breadcrumb = ({ module, path, onClick, fromDetailPage = false }) => {
+const Breadcrumb = ({
+  module,
+  path,
+  onClick,
+  fromDetailPage = false,
+  setRemoveSearch = () => {},
+  activeSidebarItem = {},
+}) => {
   const dispatch = useDispatch();
   const breadcrumbs = useSelector(state =>
     GridSelectors.getGridBreadcrumb(state, module)
@@ -55,15 +64,25 @@ const Breadcrumb = ({ module, path, onClick, fromDetailPage = false }) => {
       value.callback();
     }
     if (module === 'namespaces') {
+      setRemoveSearch(true);
+
       dispatch(NamespacesActions.setSelectedNamespace(value));
       dispatch(NamespacesActions.setSelectedNameSpaceForDetail(value));
       if (fromDetailPage) {
         history.push(`/process-group`);
       }
-    } else if (module === 'destNamespaces')
+    } else if (module === 'destNamespaces') {
       dispatch(NamespacesActions.setSelectedDestNamespace(value));
-    else if (onClick && module === 'ldap') onClick(value.label);
-    else history.push(value.path);
+    } else if (onClick && module === 'ldap') onClick(value.label);
+    else if (module === 'role_permission') {
+      dispatch(
+        NamespacesActions.setSelectedNamespace({
+          label: value ? value?.label : activeSidebarItem?.name,
+          value: value ? value?.value : activeSidebarItem?.id,
+        })
+      );
+      dispatch(NamespacesActions.fetchNamespaces());
+    } else history.push(value.path);
   };
 
   if (!MODULES.includes(module)) return null;
@@ -77,7 +96,10 @@ const Breadcrumb = ({ module, path, onClick, fromDetailPage = false }) => {
           id={module + breadcrumb?.label}
           onClick={() => handleClick(breadcrumb)}
         >
-          {breadcrumb.label}
+          <span>{breadcrumb.label}</span>
+          {index !== data.length - 1 && (
+            <BreadcrumbSeparator>&gt;</BreadcrumbSeparator>
+          )}
         </BreadcrumbItem>
       ))}
     </BreadcrumbContainer>
@@ -89,6 +111,8 @@ Breadcrumb.propTypes = {
   path: PropTypes.arrayOf(PropTypes.shape({})),
   onClick: PropTypes.func,
   fromDetailPage: PropTypes.bool,
+  setRemoveSearch: PropTypes.func,
+  activeSidebarItem: PropTypes.object,
 };
 
 export default Breadcrumb;

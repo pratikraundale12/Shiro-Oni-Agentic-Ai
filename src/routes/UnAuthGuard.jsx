@@ -3,7 +3,12 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { DfmCollapsedIcon, KsolvesDataFlowIcon, LoginIcon } from '../assets';
+import {
+  DfmCollapsedIcon,
+  KsolvesDataFlowIcon,
+  LoginIcon,
+  TermsOfUseIcon,
+} from '../assets';
 import { CollapseSidebarIconLeft } from '../assets/Icons/CollapseSidebarIconLeft';
 import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRight';
 import { PolicyIcon } from '../assets/Icons/PolicyIcon';
@@ -13,6 +18,7 @@ import { PrivacyPolicy } from '../pages/PolicyAndTermsOfUse/PrivacyPolicy';
 import { TermsOfUse } from '../pages/PolicyAndTermsOfUse/TermsOfUse';
 import { SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const MainContainer = styled.div`
   width: 100%;
@@ -52,7 +58,7 @@ export const UNAUTHROUTES_MENU = [
   {
     name: 'Terms of use',
     path: '/policy/terms-of-use',
-    icon: PolicyIcon,
+    icon: TermsOfUseIcon,
     pages: [
       {
         path: '',
@@ -125,12 +131,23 @@ const UnAuthGuard = () => {
         <button
           className="btn btn-toggle d-none d-lg-block"
           onClick={() => handleToggleSidebar()}
+          data-tooltip-id={`tooltip-open-close-sidebar`}
         >
           {isToggleSidebar ? (
             <CollapseSidebarIconRight />
           ) : (
             <CollapseSidebarIconLeft />
           )}
+          <ReactTooltip
+            id={`tooltip-open-close-sidebar`}
+            place="left"
+            content={isToggleSidebar ? 'Open sidebar' : 'Close sidebar'}
+            style={{
+              width: '120px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
         </button>
         {getImage()}
         <List className="sidebar-navigation">

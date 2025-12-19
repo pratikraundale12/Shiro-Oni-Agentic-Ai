@@ -1,11 +1,13 @@
-// sagas.js
 import { toast } from 'react-toastify';
-import { all, call, takeLatest } from 'redux-saga/effects';
+import { all, call, takeLatest, put, select } from 'redux-saga/effects';
 import { changeFavicon } from '../../helpers';
 import { fetchDashboard } from '../dashboard';
-import { fetchGrid } from '../grid';
+import { fetchGrid, GridActions } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SettingsActions } from './redux';
+import { history } from '../../helpers/history';
+import { UsersActions, UsersSelectors } from '../users';
+import { showErrorToast } from '../../utils/toastControl';
 
 export function* createSettings(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -17,34 +19,46 @@ export function* createSettings(api, { payload }) {
   });
 
   if (response.ok) {
+    yield put(SettingsActions.setIsEmailVerified(false));
     if (payload.favicon) changeFavicon(URL.createObjectURL(payload.favicon));
     if (payload.title) document.title = payload.title;
     toast.success('Settings updated successfully.');
-    // yield put(RolesActions.permissionModal());
-    // yield call(api, { payload: { module: 'fetchSettingsSuccess' } });
   } else {
     toast.error(response?.message || response?.data?.message);
   }
 }
 
 export function* fetchSettings(api) {
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'fetchSettings',
     loadingSection: 'fetchSettings',
     apiMethod: api.fetchSettings,
     apiParams: [{ params: {} }],
     successAction: SettingsActions.fetchSettingsSuccess,
   });
+  if (response.ok && response.data) {
+    yield put(SettingsActions.setSettingsData(response.data));
+  } else {
+    const message = response?.message || response?.data?.message;
+    if (message) {
+      showErrorToast(message);
+    }
+  }
 }
 
 export function* downloadLogsZip(api, { payload }) {
-  const response = yield call(api.downloadLogsZip, { payload });
+  const { toastId, ...rest } = payload;
+  yield put(SettingsActions.downloadLogsRequest());
+
+  const response = yield call(api.downloadLogsZip, { payload: rest });
 
   if (response.ok && response.data) {
     const noLogs = response.headers?.['x-no-logs'] === 'true';
 
     if (noLogs) {
-      toast.info('No data available for the given Range.');
+      toast.dismiss(toastId);
+      toast.info('No data available for given date range.');
+      yield put(SettingsActions.downloadLogsFailure());
     } else {
       const blob = new Blob([response.data], {
         type: 'application/zip',
@@ -69,9 +83,12 @@ export function* downloadLogsZip(api, { payload }) {
       }
 
       toast.success('Logs downloaded successfully.');
+      yield put(SettingsActions.downloadLogsSuccess());
     }
   } else {
+    toast.dismiss(toastId);
     toast.error(response?.data?.error || 'Failed to download logs.');
+    yield put(SettingsActions.downloadLogsFailure());
   }
 }
 
@@ -82,11 +99,123 @@ export function* refreshSetting(api) {
   yield call(fetchDashboard, api, { payload: { refresh: true } });
 }
 
+export function* verifyEmail(api, payload) {
+  const response = yield call(requestSaga, {
+    errorSection: 'verifyEmail',
+    loadingSection: 'verifyEmail',
+    apiMethod: api.verifyEmail,
+    successAction: SettingsActions.verifyEmailSuccess,
+    apiParams: [
+      {
+        to_email: payload?.payload?.to_email,
+        changedSmtpData: payload?.payload?.changedSmtpData,
+      },
+    ],
+  });
+
+  if (response.ok) {
+    toast.success(
+      'Verification email sent successfully. SMTP details are verified, you can proceed with saving the settings.'
+    );
+  } else {
+    yield put(SettingsActions.setIsEmailVerified(false));
+    toast.error(
+      response?.message ||
+        response?.data?.message ||
+        'Failed to send verification email.'
+    );
+  }
+}
+
+export function* fetchKeycloakUsers(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchKeycloakUsers',
+    loadingSection: 'fetchKeycloakUsers',
+    apiMethod: api.fetchKeycloakUsers,
+    apiParams: [{ payload: payload }],
+  });
+
+  if (response.ok) {
+    toast.success('Fetched successfully');
+    yield put(SettingsActions.setkeycloakUserFetched(response?.data?.data));
+    yield put(SettingsActions.setkeycloakUserListModalOpen(true));
+  } else {
+    toast.error(response.data.message);
+  }
+}
+
+export function* assignKeycloakRolesToUsers(api, { payload }) {
+  let isSingleRoleUpdate = false;
+  let users = [];
+  if (payload?.isSingleRoleUpdate) {
+    isSingleRoleUpdate = true;
+  }
+  if (payload?.users) {
+    users = payload.users;
+  }
+  const userEditRoleModalOpen = yield select(
+    UsersSelectors.getUserRoleEditModalOpen
+  );
+  const updatedPayload = isSingleRoleUpdate ? users : payload;
+  const response = yield call(requestSaga, {
+    errorSection: 'assignKeycloakRolesToUsers',
+    loadingSection: 'assignKeycloakRolesToUsers',
+    apiMethod: isSingleRoleUpdate
+      ? api.updateRoleOfUsers
+      : api.assignKeycloakRolesToUsers,
+    apiParams: [{ payload: updatedPayload }],
+  });
+
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield put(SettingsActions.setkeycloakUserListModalOpen(false));
+    if (userEditRoleModalOpen) {
+      yield put(
+        GridActions.fetchGrid({
+          module: 'users',
+          params: { page: 1, limit: 10 },
+        })
+      );
+    } else {
+      yield call(history.push, '/user-management');
+    }
+    yield put(UsersActions.setuserRoleEditModalOpen(false));
+  } else {
+    toast.error(response.data.message);
+  }
+}
+export function* keycloakTestCredentials(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'keycloakTestCredentials',
+    loadingSection: 'keycloakTestCredentials',
+    apiMethod: api.keycloakTestCredentials,
+    apiParams: [{ payload: payload }],
+  });
+
+  if (response.ok) {
+    toast.success(response?.data?.message || 'Tested successfully');
+    yield put(SettingsActions.setDisplayFetchUserBtn(true));
+  } else {
+    toast.error(response.data.message);
+  }
+}
 export function* settingsSagas(api) {
   yield all([
     takeLatest(SettingsActions.createSettings, createSettings, api),
     takeLatest(SettingsActions.fetchSettings, fetchSettings, api),
     takeLatest(SettingsActions.refreshSetting, refreshSetting, api),
     takeLatest(SettingsActions.downloadLogsZip, downloadLogsZip, api),
+    takeLatest(SettingsActions.verifyEmail, verifyEmail, api),
+    takeLatest(SettingsActions.fetchKeycloakUsers, fetchKeycloakUsers, api),
+    takeLatest(
+      SettingsActions.assignKeycloakRolesToUsers,
+      assignKeycloakRolesToUsers,
+      api
+    ),
+    takeLatest(
+      SettingsActions.keycloakTestCredentials,
+      keycloakTestCredentials,
+      api
+    ),
   ]);
 }

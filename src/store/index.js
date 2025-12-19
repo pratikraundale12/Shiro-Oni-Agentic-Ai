@@ -2,7 +2,7 @@ export {
   AuthenticationActions,
   AuthenticationSelectors,
 } from './authentication';
-// export { ErrorsActions, ErrorsSelectors } from './helpers/error_redux';
+export { ErrorsActions, ErrorsSelectors } from './helpers/error_redux';
 export { LoadingActions, LoadingSelectors } from './helpers/loading_redux';
 export { GridActions, GridSelectors } from './grid';
 export { DashboardActions, DashboardSelectors } from './dashboard';

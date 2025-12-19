@@ -154,6 +154,7 @@ const PemUploadField = ({
   validExtensionsArray = ['.pem', '.pfx', '.p12', '.jks'],
   acceptString = '.pem,.pfx,.p12,.jks',
   errorText = 'PEM,JKS or PFX',
+  disabled = false,
   ...props
 }) => {
   const [fileName, setFileName] = useState('');
@@ -171,7 +172,7 @@ const PemUploadField = ({
   };
 
   const handleClickInput = () => {
-    if (fileInputRef.current) {
+    if (fileInputRef.current && !disabled) {
       fileInputRef.current.click();
     }
   };
@@ -231,6 +232,7 @@ const PemUploadField = ({
                 placeholder={placeholder}
                 value={fileName || ''}
                 readOnly
+                disabled={disabled}
                 onKeyDown={handleKeyDown}
                 {...props}
               />
@@ -281,6 +283,7 @@ PemUploadField.propTypes = {
   control: PropTypes.object.isRequired,
   setValue: PropTypes.func,
   onKeyDown: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 export default PemUploadField;

@@ -7,13 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import * as Yup from 'yup';
-import {
-  LinkIcon,
-  PlusCircleIcon,
-  QRIcons,
-  TagIcon,
-  TodoIcon,
-} from '../../assets';
+import { LinkIcon, PlusCircleIcon, QRIcons, TagIcon } from '../../assets';
 import { FullPageLoader } from '../../components';
 import { Table } from '../../components/CustomGrid/Table';
 import {
@@ -74,7 +68,6 @@ const InputFieldFlex = styled.div`
   display: flex;
 `;
 
-// Use SmallButton to adjust button size
 const StyledButton = styled(Button)`
   width: auto;
   padding-top: 14px;
@@ -201,12 +194,14 @@ const IconTag = styled.span`
   justify-content: center;
   background-color: #f5f7fa;
 `;
+
 const TagItem = styled.div`
   background-color: rgb(218, 216, 216);
   display: flex;
   padding: 0.5em 0.75em;
   border-radius: 20px;
 `;
+
 const CloseButton = styled.span`
   padding-top: 3px;
   height: 20px;
@@ -221,11 +216,13 @@ const CloseButton = styled.span`
   font-size: 18px;
   cursor: pointer;
 `;
+
 const CharacterCount = styled.span`
   display: inline-block;
   white-space: nowrap;
   overflow: hidden;
 `;
+
 const TagLable = styled.label`
   font-size: 14px;
   font-weight: 600;
@@ -234,28 +231,50 @@ const TagLable = styled.label`
 `;
 
 export const schemaForm1 = Yup.object().shape({
-  url: Yup.string().required('LDAP URL is required'),
-  loginDn: Yup.string().required('Login DN is required'),
-  password: Yup.string().required('Password is required'),
+  url: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .required('LDAP URL is required'),
+  loginDn: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .required('Login DN is required'),
+  password: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .required('Password is required'),
 });
 
 // Schema for the second form
 export const schemaForm2 = Yup.object().shape({
-  baseDn: Yup.string().required('Base DN is required'),
-  groupDn: Yup.string().required('Groups DN is required'),
-  userDn: Yup.string().required('Users DN is required'),
-  userUniqueIdentifier: Yup.string().required(
-    'User Unique Identifier is required'
-  ),
-  groupUniqueIdentifier: Yup.string().required(
-    'Group Unique Identifier is required'
-  ),
-  usernameIdentifier: Yup.string().required('Username Identifier is required'),
+  baseDn: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .required('Base DN is required'),
+  groupDn: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .required('Groups DN is required'),
+  userDn: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .required('Users DN is required'),
+  userUniqueIdentifier: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .required('User Unique Identifier is required'),
+  groupUniqueIdentifier: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .required('Group Unique Identifier is required'),
+  usernameIdentifier: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .required('Username Identifier is required'),
+  filter: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .nullable(),
+  scope: Yup.string()
+    .transform(value => value?.trim?.() || value)
+    .nullable(),
 });
+
 const breadcrumbData = [
   { label: 'LDAP Configuration Fields' },
   { label: 'LDAP Group List' },
 ];
+
 export const LdapConfig = () => {
   const [secondFormState, setSecondFormState] = useState(false);
   const [createMappingShow, setCreatMappingShow] = useState(false);
@@ -266,32 +285,65 @@ export const LdapConfig = () => {
   const [syncUsers, setSyncUsers] = useState(false);
   const [loading, setLoading] = useState(false);
   const [existingMappingArray, setExistingMappingArray] = useState([]);
+  const [tags, setTags] = useState([]);
+
   const dispatch = useDispatch();
   const roles = useSelector(RolesSelectors.getRoles);
   const ldapGroup = useSelector(RolesSelectors.getLdapGroup);
   const displayList = useSelector(RolesSelectors.getDiplayData);
   const settingData = useSelector(SettingsSelectors.getSettings);
   const { ldapEnabled } = settingData || {};
-  const [tags, setTags] = useState([]);
   const currentGroup = useSelector(RolesSelectors.getSelectedLdapGroup);
+  const loadings = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'ldapGroups')
+  );
+
+  // Form 1 setup with automatic trimming
+  const form1Methods = useForm({
+    resolver: yupResolver(schemaForm1),
+  });
+
   const {
     register: registerForm1,
     handleSubmit: handleSubmitForm1,
     formState: { errors: errorsForm1 },
     reset: reset1,
     watch,
-  } = useForm({
-    resolver: yupResolver(schemaForm1),
+    setValue: setValue1,
+  } = form1Methods;
+
+  // Form 2 setup with automatic trimming
+  const form2Methods = useForm({
+    resolver: yupResolver(schemaForm2),
   });
+
   const {
     control,
     register: registerForm2,
     handleSubmit: handleSubmitForm2,
     formState: { errors: errorsForm2 },
     reset: reset2,
-  } = useForm({
-    resolver: yupResolver(schemaForm2),
-  });
+    setValue: setValue2,
+  } = form2Methods;
+
+  const createTrimRegister =
+    (register, setValue) =>
+    (name, options = {}) => {
+      return {
+        ...register(name, options),
+        onBlur: e => {
+          const trimmedValue = e.target.value?.trim?.();
+          if (trimmedValue !== undefined && trimmedValue !== e.target.value) {
+            setValue(name, trimmedValue);
+          }
+          options.onBlur?.(e);
+        },
+      };
+    };
+
+  const trimRegisterForm1 = createTrimRegister(registerForm1, setValue1);
+  const trimRegisterForm2 = createTrimRegister(registerForm2, setValue2);
+
   const onChange = (data, option) => {
     const updatedData = ldapGroup.map(item => {
       if (item.ldap_group_name === data.name) {
@@ -315,6 +367,7 @@ export const LdapConfig = () => {
     }
     dispatch(RolesActions.updateLdapGroup(updatedData));
   };
+
   const EVENTCOLUMNS = [
     {
       label: 'LDAP Groups',
@@ -337,11 +390,13 @@ export const LdapConfig = () => {
 
   const onSubmitForm1 = async data => {
     setLoading(true);
+    // Values are already trimmed by Yup transform
     setTestFormData({
       url: data.url,
       password: data.password,
       loginDn: data.loginDn,
     });
+
     const payload = {
       url: data.url,
       password: data.password,
@@ -359,6 +414,7 @@ export const LdapConfig = () => {
       setLoading(false);
     }
   };
+
   const getExistingMap = async () => {
     const responseMap = await getExistingMapping();
     if (responseMap?.status === 200) {
@@ -368,6 +424,7 @@ export const LdapConfig = () => {
       toast.error(responseMap?.message || responseMap?.data?.message);
     }
   };
+
   useEffect(() => {
     if (!displayList) {
       getExistingMap();
@@ -387,21 +444,28 @@ export const LdapConfig = () => {
       dispatch(RolesActions.fetchRoles());
       if (response?.data?.ldapEnabled) {
         reset1({
-          url: response?.data?.url,
-          password: response?.data?.password,
-          loginDn: response?.data?.loginDn,
+          url: response?.data?.url || '',
+          password: response?.data?.password || '',
+          loginDn: response?.data?.loginDn || '',
         });
         reset2({
-          baseDn: response?.data?.baseDn,
-          groupDn: response?.data?.groupDn,
-          userDn: response?.data?.userDn,
-          userUniqueIdentifier: response?.data?.userUniqueIdentifier,
-          groupUniqueIdentifier: response?.data?.groupUniqueIdentifier,
-          filter: response?.data?.filter,
-          scope: response?.data?.scope,
-          groupObjectClass: response?.data?.groupObjectClass,
-          usernameIdentifier: response?.data?.usernameIdentifier,
+          baseDn: response?.data?.baseDn || '',
+          groupDn: response?.data?.groupDn || '',
+          userDn: response?.data?.userDn || '',
+          userUniqueIdentifier: response?.data?.userUniqueIdentifier || '',
+          groupUniqueIdentifier: response?.data?.groupUniqueIdentifier || '',
+          filter: response?.data?.filter || '',
+          scope: response?.data?.scope || '',
+          groupObjectClass: response?.data?.groupObjectClass || [],
+          usernameIdentifier: response?.data?.usernameIdentifier || '',
         });
+        if (response?.data?.groupObjectClass) {
+          setTags(
+            Array.isArray(response.data.groupObjectClass)
+              ? response.data.groupObjectClass
+              : [response.data.groupObjectClass]
+          );
+        }
       } else {
         reset1({
           url: response?.data?.url || '',
@@ -419,6 +483,13 @@ export const LdapConfig = () => {
           groupObjectClass: response?.data?.groupObjectClass || [],
           usernameIdentifier: response?.data?.usernameIdentifier || '',
         });
+        if (response?.data?.groupObjectClass) {
+          setTags(
+            Array.isArray(response.data.groupObjectClass)
+              ? response.data.groupObjectClass
+              : [response.data.groupObjectClass]
+          );
+        }
       }
     } else {
       toast.error(response?.message || response?.data?.message);
@@ -449,9 +520,6 @@ export const LdapConfig = () => {
 
     dispatch(RolesActions.fetchLdap({ ...payload }));
   };
-  const loadings = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'ldapGroups')
-  );
 
   const onSubmit = async () => {
     setLoading(true);
@@ -497,8 +565,9 @@ export const LdapConfig = () => {
       value: 'base',
     },
   ];
+
   const handleKeyDown = e => {
-    const value = e.target.value.trim();
+    const value = e.target.value?.trim?.() || '';
 
     if (e.key === 'Enter' || e.key === ',' || (e.type === 'blur' && value)) {
       if (tags.length >= 5) {
@@ -506,11 +575,12 @@ export const LdapConfig = () => {
         e.target.value = '';
         return;
       }
-      if (!tags.includes(value)) {
+      if (value && !tags.includes(value)) {
         setTags([...tags, value]);
         e.target.value = '';
-      } else {
+      } else if (value && tags.includes(value)) {
         toast.error('Tag already exists');
+        e.target.value = '';
       }
     } else if (e.key === 'Backspace' && !value) {
       removeTag(tags[tags.length - 1]);
@@ -533,9 +603,6 @@ export const LdapConfig = () => {
       {loading && <FullPageLoader loading={loading} />}
       <Heading>
         <Flex>
-          <ImageContainer>
-            <TodoIcon width={22} height={24} />
-          </ImageContainer>
           <Title>LDAP Configuration Fields</Title>
         </Flex>
       </Heading>
@@ -546,10 +613,10 @@ export const LdapConfig = () => {
               <InputField
                 name="url"
                 type="text"
-                register={registerForm1}
+                register={trimRegisterForm1}
                 label="LDAP URL"
                 errors={errorsForm1}
-                placeholder="Enter your LDAP URL"
+                placeholder="Enter Your LDAP URL"
                 icon={<LinkIcon />}
                 disabled={!ldapEnabled}
                 required
@@ -559,10 +626,10 @@ export const LdapConfig = () => {
               <InputField
                 name="loginDn"
                 type="text"
-                register={registerForm1}
+                register={trimRegisterForm1}
                 label="Login DN"
                 errors={errorsForm1}
-                placeholder="Enter your Login DN"
+                placeholder="Enter Your Login DN"
                 icon={<QRIcons />}
                 disabled={!ldapEnabled}
                 required
@@ -572,7 +639,7 @@ export const LdapConfig = () => {
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <PasswordField
                 name="password"
-                register={registerForm1}
+                register={trimRegisterForm1}
                 errors={errorsForm1}
                 watch={watch}
                 required
@@ -598,10 +665,10 @@ export const LdapConfig = () => {
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
                 name="baseDn"
-                register={registerForm2}
+                register={trimRegisterForm2}
                 type="text"
                 label="Base DN"
-                placeholder="Enter your Base DN"
+                placeholder="Enter Your Base DN"
                 icon={<QRIcons />}
                 disabled={!secondFormState || !ldapEnabled}
                 errors={errorsForm2}
@@ -611,10 +678,10 @@ export const LdapConfig = () => {
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
                 name="groupDn"
-                register={registerForm2}
+                register={trimRegisterForm2}
                 type="text"
                 label="Groups DN"
-                placeholder="Enter your Groups DN"
+                placeholder="Enter Your Groups DN"
                 icon={<QRIcons />}
                 disabled={!secondFormState || !ldapEnabled}
                 errors={errorsForm2}
@@ -625,9 +692,9 @@ export const LdapConfig = () => {
               <InputField
                 name="userDn"
                 type="text"
-                register={registerForm2}
+                register={trimRegisterForm2}
                 label="Users DN"
-                placeholder="Enter your Users DN"
+                placeholder="Enter Your Users DN"
                 icon={<QRIcons />}
                 disabled={!secondFormState || !ldapEnabled}
                 errors={errorsForm2}
@@ -638,7 +705,7 @@ export const LdapConfig = () => {
               <InputField
                 name="userUniqueIdentifier"
                 type="text"
-                register={registerForm2}
+                register={trimRegisterForm2}
                 label="User Unique Identifier"
                 placeholder="Enter User Identifier"
                 icon={<QRIcons />}
@@ -652,7 +719,7 @@ export const LdapConfig = () => {
               <InputField
                 name="groupUniqueIdentifier"
                 type="text"
-                register={registerForm2}
+                register={trimRegisterForm2}
                 label="Group Unique Identifier"
                 placeholder="Enter Group Identifier"
                 icon={<QRIcons />}
@@ -686,7 +753,6 @@ export const LdapConfig = () => {
                   onKeyDown={handleKeyDown}
                   placeholder={tags.length === 0 ? 'Group Object Class' : ''}
                   disabled={!secondFormState || !ldapEnabled}
-                  register={registerForm2}
                   onBlur={handleKeyDown}
                   aria-label="Group Object Class"
                 />
@@ -696,7 +762,7 @@ export const LdapConfig = () => {
               <InputField
                 name="usernameIdentifier"
                 type="text"
-                register={registerForm2}
+                register={trimRegisterForm2}
                 label="Username identifier"
                 placeholder="Enter Username identifier"
                 icon={<QRIcons />}
@@ -709,7 +775,7 @@ export const LdapConfig = () => {
               <InputField
                 name="filter"
                 type="text"
-                register={registerForm2}
+                register={trimRegisterForm2}
                 label={
                   <>
                     Filter <em>ex: (|(cn=admin)(cn=developer))</em>
@@ -766,9 +832,8 @@ export const LdapConfig = () => {
               module="ldap"
             />
             <SyncButton
-              icon={<PlusCircleIcon width={16} height={16} color="black" />}
+              icon={<PlusCircleIcon width={16} height={16} color="#fff" />}
               onClick={handleOpenAddModal}
-              variant="secondary"
               size="sm"
             >
               Add New Role

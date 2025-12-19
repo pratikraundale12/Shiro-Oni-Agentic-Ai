@@ -390,7 +390,9 @@ export const SSOLoginSettings = () => {
                       <InputField
                         name="azure_redirect_uri"
                         register={register}
-                        icon={<ExportIcon color="#444445" />}
+                        icon={
+                          <ExportIcon color="#444445" height={20} width={20} />
+                        }
                         label="Azure Redirect URI"
                         placeholder="Enter Redirect URI"
                         errors={errors}
@@ -418,7 +420,9 @@ export const SSOLoginSettings = () => {
                       <InputField
                         name="keycloak_url"
                         register={register}
-                        icon={<ExportIcon color="#444445" />}
+                        icon={
+                          <ExportIcon color="#444445" height={20} width={20} />
+                        }
                         label="URL"
                         placeholder="Enter URL"
                         errors={errors}
@@ -429,13 +433,16 @@ export const SSOLoginSettings = () => {
                       <InputField
                         name="keycloak_realm"
                         register={register}
-                        icon={<ExportIcon color="#444445" />}
+                        icon={
+                          <ExportIcon color="#444445" height={20} width={20} />
+                        }
                         label="Realm"
                         placeholder="Enter Realm"
                         errors={errors}
                         required
                       />
                     </div>
+                    {/* <KeycloakCredentialSection /> */}
                   </InputFields>
                 </>
               )}

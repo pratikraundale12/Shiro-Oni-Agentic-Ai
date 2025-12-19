@@ -5,9 +5,31 @@ export const settingsAPI = api => {
     api.post('/logs/download-zip', payload, {
       responseType: 'blob',
     });
+  const verifyEmail = ({ to_email, changedSmtpData }) =>
+    api.post('/verify-email', {
+      to_email: to_email,
+      changedSmtpData: changedSmtpData,
+    });
+  const fetchKeycloakUsers = ({ payload }) => {
+    return api.post(`/keycloack-users`, payload);
+  };
+  const assignKeycloakRolesToUsers = ({ payload }) => {
+    return api.post(`/assign-roles`, payload);
+  };
+  const updateRoleOfUsers = ({ payload }) => {
+    return api.post(`/update-roles`, payload);
+  };
+  const keycloakTestCredentials = ({ payload }) => {
+    return api.post(`/keycloack-test-connection`, payload);
+  };
   return {
     createSettings,
     fetchSettings,
     downloadLogsZip,
+    verifyEmail,
+    fetchKeycloakUsers,
+    assignKeycloakRolesToUsers,
+    keycloakTestCredentials,
+    updateRoleOfUsers,
   };
 };

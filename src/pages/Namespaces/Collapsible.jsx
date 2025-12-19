@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-// import { IconButton } from '../../components';
 import { DownArrowIcon, UpArrowIcon, PlusCircleIcon } from '../../assets';
 import PropTypes from 'prop-types';
 import { Button } from '../../shared';
@@ -26,8 +25,8 @@ const IconButton = styled.button`
     min-height: 24px;
     border-width: 0.5px;
     & svg {
-      width: 12px;
-      height: 12px;
+      width: 24px;
+      height: 24px;
     }
   }
   &.pencil-icon-schedule-list {
@@ -42,7 +41,6 @@ const IconButton = styled.button`
     }
   }
 `;
-
 const CollapsibleWrapper = styled.div`
   width: 100%;
   border-radius: 8px;
@@ -133,6 +131,7 @@ const Collapsible = ({
               icon={<PlusCircleIcon width={16} height={16} color="white" />}
               onClick={onBtnClick}
               size="sm"
+              type="button"
             >
               {btnText}
             </Button>

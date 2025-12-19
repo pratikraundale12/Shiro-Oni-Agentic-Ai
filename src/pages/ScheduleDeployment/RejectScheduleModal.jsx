@@ -43,7 +43,7 @@ const Schema = yup.object().shape({
     .max(150, 'Reason cannot exceed 150 characters'),
 });
 
-export const RejectScheduleModal = () => {
+export const RejectScheduleModal = ({ onConfirm }) => {
   const dispatch = useDispatch();
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const rejectApproval = useSelector(SchedularSelectors.getCancelScheduleModal);
@@ -79,6 +79,7 @@ export const RejectScheduleModal = () => {
     };
     dispatch(SchedularActions.rejectScheduleDeployment(payload));
     reset();
+    if (onConfirm) onConfirm();
   };
 
   return (
@@ -124,6 +125,7 @@ export const RejectScheduleModal = () => {
 };
 
 RejectScheduleModal.propTypes = {
+  onConfirm: PropTypes.func,
   icon: PropTypes.elementType.isRequired,
   primaryText: PropTypes.string,
   secondaryText: PropTypes.string,

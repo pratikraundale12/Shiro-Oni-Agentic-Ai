@@ -172,7 +172,7 @@ const ParameterContextTab = () => {
           {!isEmpty(item?.referencingComponents) && (
             <>
               <button
-                className="border-0 bg-white"
+                className="border-0 rounded-circle"
                 onClick={() => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
@@ -180,7 +180,9 @@ const ParameterContextTab = () => {
                 data-tooltip-id={`Reference-${item?.id}`}
                 aria-label="Reference"
               >
-                <RefrenceIcon />
+                <IconButton>
+                  <RefrenceIcon />
+                </IconButton>
               </button>
               <ReactTooltip
                 id={`Reference-${item?.id}`}
@@ -197,7 +199,6 @@ const ParameterContextTab = () => {
         </div>
       ),
     },
-
     {
       renderCell: item => (
         <div
@@ -207,9 +208,20 @@ const ParameterContextTab = () => {
             onClick={() => {
               handleEditClick(item);
             }}
+            data-tooltip-id={`Edit-${item?.id}`}
           >
-            {<PencilIcon color="black" />}
+            {<PencilIcon />}
           </IconButton>
+          <ReactTooltip
+            id={`Edit-${item?.id}`}
+            place="left"
+            content="Edit"
+            style={{
+              width: 'auto',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
         </div>
       ),
     },

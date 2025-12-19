@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { InvalidProcessorIcon, TodoIcon } from '../../assets';
+import {
+  ControllerServicesIcon,
+  InvalidProcessorIcon,
+  ParameterContextIcon,
+  ScheduleDetailsIcon,
+  TodoIcon,
+  TreeIcon,
+  VariablesIcon,
+} from '../../assets';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -15,11 +23,15 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { SchedularSelectors } from '../../store/schedular/redux.js';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux.js';
 import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import ParameterContextTab from './ParameterContextTab';
 import ScheduleDeploymentTab from './ScheduleDetailsPage.jsx';
 import VariableTab from './VariableTab';
+import TreeViewNamespaces from './TreeViewNamespaces.jsx';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -100,8 +112,39 @@ const TabContent = styled.div`
   padding: 0px 0.5rem;
   border-radius: 0.25rem;
 `;
+
+const IconContentV2 = styled.div`
+  display: inline;
+  margin-right: 6px;
+
+  svg path {
+    transition: stroke 0.3s;
+  }
+
+  ${Tab}:hover & svg path {
+    stroke: rgba(255, 122, 0, 1);
+  }
+`;
+
+const TabLabelWithIcon = styled.div`
+  position: relative;
+  display: inline-block;
+  padding-right: 16px; /* give space for the icon */
+`;
+
+const TopRightIcon = styled.div`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+`;
+
 const ConfigDetailsPage = () => {
   const dispatch = useDispatch();
+
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+
   const breadcrumbDataOnDeploy = [
     {
       label: KDFM.NIFI_FLOW,
@@ -114,17 +157,33 @@ const ConfigDetailsPage = () => {
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
-  const breadcrumbDataOnUpgrade = [
-    {
-      label: KDFM.NIFI_FLOW,
-      path: '/process-group',
-      callback: () => {
-        dispatch(NamespacesActions.setSelectedNamespace({}));
-      },
-    },
-    { label: 'Flow Details', path: '/process-group/flow-details' },
-    { label: 'Configuration Details' },
-  ];
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+  const scheduleFlowType = useSelector(NamespacesSelectors.getScheduleFlowType);
+  const selectedNameSpace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const breadcrumbDataOnUpgrade = scheduleStartFlow
+    ? [
+        {
+          label: 'Process Group Details',
+          path: `/process-group/${selectedNameSpace?.id}`,
+        },
+        { label: 'Configuration Details' },
+      ]
+    : [
+        {
+          label: KDFM.NIFI_FLOW,
+          path: '/process-group',
+          callback: () => {
+            dispatch(NamespacesActions.setSelectedNamespace({}));
+          },
+        },
+        { label: 'Flow Details', path: '/process-group/flow-details' },
+        { label: 'Configuration Details' },
+      ];
+
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
@@ -146,6 +205,10 @@ const ConfigDetailsPage = () => {
   let type = '';
   if (versionSelected?.version > singleNameSpace?.version) {
     type = 'upgrade';
+  } else if (scheduleFlowType === 'RUNNING') {
+    type = 'start';
+  } else if (scheduleFlowType === 'STOPPED') {
+    type = 'stop';
   } else {
     type = 'downgrade';
   }
@@ -153,10 +216,12 @@ const ConfigDetailsPage = () => {
   const formattedType =
     type.charAt(0).toUpperCase() + type.slice(1) + ' Process Group';
 
+  const registryAllDetails = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    dispatch(NamespacesActions.setSelectedNamespace({}));
-    history.push('/process-group');
   };
   useEffect(() => {
     if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
@@ -165,11 +230,14 @@ const ConfigDetailsPage = () => {
   }, [scheduleDeploymentFlow, scheduleUpgradeFromList]);
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
-  const selectedNameSpace = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
   const handleBackClick = () => {
-    history.push('/process-group/flow-details');
+    if (scheduleStartFlow === true) {
+      history.push(`/process-group/${selectedNameSpace?.id}`);
+      dispatch(SchedularActions.setScheduleFromList(false));
+    } else {
+      history.push('/process-group/flow-details');
+    }
+
     setScheduleDeployTime(null);
     dispatch(NamespacesActions.setScheduleTimeByRegistry(null));
   };
@@ -256,6 +324,16 @@ const ConfigDetailsPage = () => {
             setActiveButton={setActiveButton}
           />
         );
+      case KDFM.TREE_VIEW:
+        return (
+          <TreeViewNamespaces
+            data={registryAllDetails?.treeData?.tree || {}}
+            width={1600}
+            height={610}
+            // hideRootNode={true}
+            enableHoverApi={!isUpgrade ? true : false}
+          />
+        );
       default:
         return null;
     }
@@ -322,15 +400,25 @@ const ConfigDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {scheduleDeploymentFlow || scheduleUpgradeFromList
-              ? 'Schedule '
-              : ''}
-            {!isUpgrade ? formattedType : KDFM.DEPLOY_NAMESPACE}
-          </MainTitleHfour>{' '}
+            {scheduleStartFlow ? (
+              scheduleFlowType === 'RUNNING' ? (
+                'Schedule Start Flow'
+              ) : scheduleFlowType === 'STOPPED' ? (
+                'Schedule Stop Flow'
+              ) : null
+            ) : (
+              <>
+                {scheduleDeploymentFlow || scheduleUpgradeFromList
+                  ? 'Schedule '
+                  : ''}
+                {!isUpgrade ? formattedType : KDFM.DEPLOY_NAMESPACE}
+              </>
+            )}
+          </MainTitleHfour>
           :
           <MainTitleHfour className="mb-0">
             {!isUpgrade
-              ? selectedNameSpace.label
+              ? selectedNameSpace?.label
               : formDataRegistry?.selectedFlowName}
           </MainTitleHfour>
         </MainTitleDiv>
@@ -351,6 +439,15 @@ const ConfigDetailsPage = () => {
               onClick={() => handleSetTab(KDFM.SCHEDULE_DETAILS)}
               className="nav-item"
             >
+              <IconContentV2 className="nav-item">
+                <ScheduleDetailsIcon
+                  color={
+                    activeTab === `${KDFM.SCHEDULE_DETAILS}`
+                      ? '#FF7A00'
+                      : '#444445'
+                  }
+                />
+              </IconContentV2>
               {KDFM.SCHEDULE_DETAILS}{' '}
             </Tab>
           )}
@@ -359,6 +456,15 @@ const ConfigDetailsPage = () => {
             onClick={() => handleSetTab(KDFM.PARAMETER_CONTEXT)}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <ParameterContextIcon
+                color={
+                  activeTab === `${KDFM.PARAMETER_CONTEXT}`
+                    ? '#FF7A00'
+                    : '#444445'
+                }
+              />
+            </IconContentV2>
             {KDFM.PARAMETER_CONTEXT}
           </Tab>
           <Tab
@@ -366,6 +472,13 @@ const ConfigDetailsPage = () => {
             onClick={() => handleSetTab(KDFM.VARIABLES)}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <VariablesIcon
+                color={
+                  activeTab === `${KDFM.VARIABLES}` ? '#FF7A00' : '#444445'
+                }
+              />
+            </IconContentV2>
             {KDFM.VARIABLES}{' '}
           </Tab>
           <Tab
@@ -373,7 +486,39 @@ const ConfigDetailsPage = () => {
             onClick={() => handleSetTab(KDFM.CONTROLLER_SERVICE)}
             className="nav-item"
           >
-            {KDFM.CONTROLLER_SERVICE}{' '}
+            <IconContentV2 className="nav-item">
+              <ControllerServicesIcon
+                color={
+                  activeTab === `${KDFM.CONTROLLER_SERVICE}`
+                    ? '#FF7A00'
+                    : '#444445'
+                }
+              />
+            </IconContentV2>
+            <TabLabelWithIcon>
+              {KDFM.CONTROLLER_SERVICE}
+              {registryDetailsData?.hasInvalidControllerService > 0 && (
+                <TopRightIcon>
+                  <InvalidProcessorIcon width={12} height={12} />
+                </TopRightIcon>
+              )}
+            </TabLabelWithIcon>
+          </Tab>
+          <Tab
+            active={activeTab === KDFM.TREE_VIEW}
+            onClick={() => handleSetTab(KDFM.TREE_VIEW)}
+            className="nav-item"
+          >
+            <IconContentV2 className="nav-item">
+              <TreeIcon
+                width={20}
+                height={20}
+                stroke={
+                  activeTab === `${KDFM.TREE_VIEW}` ? '#FF7A00' : '#444445'
+                }
+              />
+            </IconContentV2>
+            {KDFM.TREE_VIEW}
           </Tab>
         </TabWrapper>
         <TabContent>{renderContent()}</TabContent>

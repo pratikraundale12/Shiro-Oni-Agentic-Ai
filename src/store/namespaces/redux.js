@@ -10,6 +10,10 @@ export const NamespacesActions = {
   setFlowPath: createAction(`${prefix}setFlowPath`),
   fetchNamespaces: createAction(`${prefix}fetchNamespaces`),
   fetchNamespacesSuccess: createAction(`${prefix}fetchNamespacesSuccess`),
+  fetchLocalChanges: createAction(`${prefix}fetchLocalChanges`),
+  fetchLocalChangesSuccess: createAction(`${prefix}fetchLocalChangesSuccess`),
+  deleteNamespace: createAction(`${prefix}deleteNamespace`),
+  deleteNamespaceSuccess: createAction(`${prefix}deleteNamespaceSuccess`),
   setSelectedDestCluster: createAction(`${prefix}setSelectedDestCluster`),
   setSelectedDestNamespace: createAction(`${prefix}setSelectedDestNamespace`),
   fetchDestNamespaces: createAction(`${prefix}fetchDestNamespaces`),
@@ -212,6 +216,69 @@ export const NamespacesActions = {
   setLocalServiceInUpgrade: createAction(`${prefix}setLocalServiceInUpgrade`),
   setUserStory: createAction(`${prefix}setUserStory`),
   setChangeRequest: createAction(`${prefix}setChangeRequest`),
+  setParameterEditingAction: createAction(`${prefix}setParameterEditingAction`),
+  fetchSanityCheckSummaryData: createAction(
+    `${prefix}fetchSanityCheckSummaryData`
+  ),
+  setSanityCheckDetailSectionData: createAction(
+    `${prefix}setSanityCheckDetailSectionData`
+  ),
+  setSanityCheckAtDeploy: createAction(`${prefix}setSanityCheckAtDeploy`),
+  setSanityCheckDeployModalOpen: createAction(
+    `${prefix}setSanityCheckDeployModalOpen`
+  ),
+  revertLocalChanges: createAction(`${prefix}revertLocalChanges`),
+  revertLocalChangesSuccess: createAction(`${prefix}revertLocalChangesSuccess`),
+  setShouldRevertChanges: createAction(`${prefix}setShouldRevertChanges`),
+  setLocalChangesModalOpen: createAction(`${prefix}setLocalChangesModalOpen`),
+  setLocalChangesModalType: createAction(`${prefix}setLocalChangesModalType`),
+  setRevertConfirmationModalOpen: createAction(
+    `${prefix}setRevertConfirmationModalOpen`
+  ),
+  fetchInvalidProcessorDetails: createAction('FETCH_INVALID_PROCESSOR_DETAILS'),
+  fetchInvalidProcessorDetailsSuccess: createAction(
+    'FETCH_INVALID_PROCESSOR_DETAILS_SUCCESS'
+  ),
+  fetchSanityReportAuditLog: createAction(`${prefix}fetchSanityReportAuditLog`),
+  setSanityReportAuditData: createAction(`${prefix}setSanityReportAuditData`),
+  setDisplaySanityCheckCleanModal: createAction(
+    `${prefix}setDisplaySanityCheckCleanModal`
+  ),
+  fetchDeleteNamespaceDetails: createAction('FETCH_DELETE_NAMESPACE_DETAILS'),
+  fetchDeleteNamespaceDetailsSuccess: createAction(
+    'FETCH_DELETE_NAMESPACE_DETAILS_SUCCESS'
+  ),
+  fetchNamespaceDetails: createAction('FETCH_NAMESPACE_DETAILS'),
+  fetchLastSanityReport: createAction(`${prefix}fetchLastSanityReport`),
+  fetchLastSanityReportSuccess: createAction(
+    `${prefix}fetchLastSanityReportSuccess`
+  ),
+  setScheduleStartFlow: createAction(`${prefix}setScheduleStartFlow`),
+  setScheduleFlowType: createAction(`${prefix}setScheduleFlowType`),
+  refreshControllerService: createAction(`${prefix}refreshControllerService`),
+  refreshControllerServiceSuccess: createAction(
+    `${prefix}refreshControllerServiceSuccess`
+  ),
+  setCsPermissions: createAction(`${prefix}setCsPermissions`),
+  setKeepParameters: createAction(`${prefix}setKeepParameters`),
+  fetchServiceDefinition: createAction(`${prefix}fetchServiceDefinition`),
+  fetchServiceDefinitionSuccess: createAction(
+    `${prefix}fetchServiceDefinitionSuccess`
+  ),
+  fetchServiceDefinitionFailure: createAction(
+    `${prefix}fetchServiceDefinitionFailure`
+  ),
+  setSelectedRegistryOnDeploy: createAction(
+    `${prefix}setSelectedRegistryOnDeploy`
+  ),
+  fetchNamespacesDownload: createAction(`${prefix}fetchNamespacesDownload`),
+  fetchNamespacesDownloadSuccess: createAction(
+    `${prefix}fetchNamespacesDownloadSuccess`
+  ),
+  fetchNamespaceVersion: createAction(`${prefix}fetchNamespaceVersion`),
+  fetchNamespaceVersionSuccess: createAction(
+    `${prefix}fetchNamespaceVersionSuccess`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -224,6 +291,7 @@ export const NAMESPACES_INITIAL_STATE = {
     breadcrumb: [],
     data: [],
   },
+  localChanges: [],
   deployByRegistryFlow: true,
   selectedDestCluster: null,
   selectedDestNamespace: null,
@@ -319,6 +387,30 @@ export const NAMESPACES_INITIAL_STATE = {
   localServiceInUpgrade: [],
   userStory: '',
   changeRequest: null,
+  parameterEditingAction: false,
+  sanityCheckDetailSectionData: [],
+  sanityCheckAtDeploy: false,
+  sanityCheckDeployModalOpen: false,
+  revertLocalChanges: [],
+  shouldRevertChanges: false,
+  localChangesModalOpen: false,
+  localChangesModalType: null,
+  revertConfirmationModalOpen: false,
+  invalidProcessorDetails: [],
+  sanityReportAuditData: {},
+  displaySanityCheckCleanModal: false,
+  deleteNamespaceDetails: {},
+  scheduleStartFlow: false,
+  scheduleFlowType: null,
+  lastSanityReportData: {},
+  csPermissions: {},
+  keepParameterForDeploy: true,
+  serviceDefinition: null,
+  serviceDefinitionLoading: false,
+  serviceDefinitionError: null,
+  selectedRegistryOnDeploy: null,
+  clusterNamespacesDownload: {},
+  clusterNamespacesVersion: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -326,6 +418,7 @@ export const NamespacesSelectors = {
   getSelectedCluster: state => state.namespaces.selectedCluster,
   getSelectedNamespace: state => state.namespaces.selectedNamespace,
   getNamespaces: state => state.namespaces.clusterNamespaces.data,
+  getLocalChanges: state => state.namespaces.localChanges,
   getSelectedDestCluster: state => state.namespaces.selectedDestCluster,
   getSelectedDestNamespace: state => state.namespaces.selectedDestNamespace,
   getDestNamespaces: state => state.namespaces.destClusterNamespaces.data,
@@ -430,7 +523,41 @@ export const NamespacesSelectors = {
   getLocalServiceInUpgrade: state => state.namespaces.localServiceInUpgrade,
   getUserStory: state => state.namespaces.userStory,
   getChangeRequest: state => state.namespaces.changeRequest,
+  getParameterEditingAction: state => state.namespaces.parameterEditingAction,
+  getSanityCheckDetailSectionData: state =>
+    state.namespaces.sanityCheckDetailSectionData,
+  getSanityCheckAtDeploy: state => state.namespaces.sanityCheckAtDeploy,
+  getSanityCheckDeployModalOpen: state =>
+    state.namespaces.sanityCheckDeployModalOpen,
+  getRevertLoaclChanges: state => state.namespaces.revertLocalChanges,
+  getShouldRevertChanges: state => state.namespaces.shouldRevertChanges,
+  getLocalChangesModalOpen: state => state.namespaces.localChangesModalOpen,
+  getLocalChangesModalType: state => state.namespaces.localChangesModalType,
+  getRevertConfirmationModalOpen: state =>
+    state.namespaces.revertConfirmationModalOpen,
+  getInvalidProcessorDetails: state => state.namespaces.invalidProcessorDetails,
+  getSanityReportAuditData: state => state.namespaces.sanityReportAuditData,
+  getDisplaySanityCheckCleanModal: state =>
+    state.namespaces.displaySanityCheckCleanModal,
+  getDeleteNamespaceDetails: state => state.namespaces.deleteNamespaceDetails,
+  getScheduleStartFlow: state => state.namespaces.scheduleStartFlow,
+  getScheduleFlowType: state => state.namespaces.scheduleFlowType,
+  getLastSanityReportData: state => state.namespaces.lastSanityReportData,
+  getRefreshedControllerService: state =>
+    state.namespaces.refreshedControllerService,
+  getCsPermissions: state => state.namespaces.csPermissions,
+  getKeepParameters: state => state.namespaces.keepParameterForDeploy,
+  getServiceDefinition: state => state.namespaces.serviceDefinition,
+  getServiceDefinitionLoading: state =>
+    state.namespaces.serviceDefinitionLoading,
+  getServiceDefinitionError: state => state.namespaces.serviceDefinitionError,
+  getNamespacesAllData: state => state.namespaces.clusterNamespaces,
+  getSelectedRegistryOnDeploy: state =>
+    state.namespaces.selectedRegistryOnDeploy,
+  getNamespacesDownload: state => state.namespaces.clusterNamespacesDownload,
+  getNamespacesVersion: state => state.namespaces.clusterNamespacesVersion,
 };
+
 /* ------------- REDUCERS ------------------- */
 const setSelectedCluster = (state, { payload }) => {
   return {
@@ -1009,8 +1136,180 @@ const setChangeRequest = (state, { payload }) => {
     changeRequest: payload,
   };
 };
+const setParameterEditingAction = (state, { payload }) => {
+  return {
+    ...state,
+    parameterEditingAction: payload,
+  };
+};
+const setSanityCheckDetailSectionData = (state, { payload }) => {
+  return {
+    ...state,
+    sanityCheckDetailSectionData: payload,
+  };
+};
+const setSanityCheckAtDeploy = (state, { payload }) => {
+  return {
+    ...state,
+    sanityCheckAtDeploy: payload,
+  };
+};
+const setSanityCheckDeployModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    sanityCheckDeployModalOpen: payload,
+  };
+};
 
-//
+const fetchLocalChangesSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    localChanges: payload,
+  };
+};
+
+const revertLocalChangesSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    revertLocalChanges: payload,
+  };
+};
+
+const setShouldRevertChanges = (state, { payload }) => {
+  return {
+    ...state,
+    shouldRevertChanges: payload,
+  };
+};
+
+const setLocalChangesModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    localChangesModalOpen: payload,
+  };
+};
+
+const setLocalChangesModalType = (state, { payload }) => {
+  return {
+    ...state,
+    localChangesModalType: payload,
+  };
+};
+
+const setRevertConfirmationModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    revertConfirmationModalOpen: payload,
+  };
+};
+const deleteNamespaceSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    deletedNamespace: payload,
+  };
+};
+
+const fetchInvalidProcessorDetailsSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    invalidProcessorDetails: payload,
+  };
+};
+const setSanityReportAuditData = (state, { payload }) => {
+  return {
+    ...state,
+    sanityReportAuditData: payload,
+  };
+};
+const setDisplaySanityCheckCleanModal = (state, { payload }) => {
+  return {
+    ...state,
+    displaySanityCheckCleanModal: payload,
+  };
+};
+
+const fetchDeleteNamespaceDetailsSuccess = (state, { payload }) => {
+  state.deleteNamespaceDetails = payload;
+};
+
+const setScheduleStartFlow = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleStartFlow: payload,
+  };
+};
+
+const setScheduleFlowType = (state, { payload }) => {
+  state.scheduleFlowType = payload;
+};
+
+const fetchLastSanityReportSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    lastSanityReportData: payload,
+  };
+};
+
+const refreshControllerServiceSuccess = (state, { payload }) => {
+  const { data } = payload;
+  return {
+    ...state,
+    refreshedControllerService: { data },
+  };
+};
+
+const setCsPermissions = (state, { payload }) => {
+  return {
+    ...state,
+    csPermissions: payload,
+  };
+};
+const setKeepParameters = (state, { payload }) => {
+  return {
+    ...state,
+    keepParameterForDeploy: payload,
+  };
+};
+
+const fetchServiceDefinitionSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    serviceDefinition: payload,
+    serviceDefinitionLoading: false,
+    serviceDefinitionError: null,
+  };
+};
+
+const fetchServiceDefinitionFailure = (state, { payload }) => {
+  return {
+    ...state,
+    serviceDefinition: null,
+    serviceDefinitionLoading: false,
+    serviceDefinitionError: payload,
+  };
+};
+
+const setSelectedRegistryOnDeploy = (state, { payload }) => {
+  return {
+    ...state,
+    selectedRegistryOnDeploy: payload,
+  };
+};
+
+const fetchNamespacesDownloadSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    clusterNamespacesDownload: payload,
+  };
+};
+
+const fetchNamespaceVersionSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    clusterNamespacesVersion: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1024,6 +1323,11 @@ export const namespacesReducer = createReducer(
       .addCase(NamespacesActions.setSelectedNamespace, setSelectedNamespace)
       .addCase(NamespacesActions.setFlowPath, setFlowPath)
       .addCase(NamespacesActions.fetchNamespacesSuccess, fetchNamespacesSuccess)
+      .addCase(
+        NamespacesActions.fetchLocalChangesSuccess,
+        fetchLocalChangesSuccess
+      )
+      .addCase(NamespacesActions.deleteNamespaceSuccess, deleteNamespaceSuccess)
       .addCase(NamespacesActions.setSelectedDestCluster, setSelectedDestCluster)
       .addCase(
         NamespacesActions.setSelectedDestNamespace,
@@ -1240,6 +1544,84 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setLocalServiceInUpgrade,
         setLocalServiceInUpgrade
+      )
+      .addCase(
+        NamespacesActions.setParameterEditingAction,
+        setParameterEditingAction
+      )
+      .addCase(
+        NamespacesActions.setSanityCheckDetailSectionData,
+        setSanityCheckDetailSectionData
+      )
+      .addCase(NamespacesActions.setSanityCheckAtDeploy, setSanityCheckAtDeploy)
+      .addCase(
+        NamespacesActions.setSanityCheckDeployModalOpen,
+        setSanityCheckDeployModalOpen
+      )
+      .addCase(
+        NamespacesActions.revertLocalChangesSuccess,
+        revertLocalChangesSuccess
+      )
+      .addCase(NamespacesActions.setShouldRevertChanges, setShouldRevertChanges)
+      .addCase(
+        NamespacesActions.setLocalChangesModalOpen,
+        setLocalChangesModalOpen
+      )
+      .addCase(
+        NamespacesActions.setLocalChangesModalType,
+        setLocalChangesModalType
+      )
+      .addCase(
+        NamespacesActions.setRevertConfirmationModalOpen,
+        setRevertConfirmationModalOpen
+      )
+      .addCase(
+        NamespacesActions.fetchInvalidProcessorDetailsSuccess,
+        fetchInvalidProcessorDetailsSuccess
+      )
+      .addCase(
+        NamespacesActions.setSanityReportAuditData,
+        setSanityReportAuditData
+      )
+      .addCase(
+        NamespacesActions.setDisplaySanityCheckCleanModal,
+        setDisplaySanityCheckCleanModal
+      )
+      .addCase(
+        NamespacesActions.fetchDeleteNamespaceDetailsSuccess,
+        fetchDeleteNamespaceDetailsSuccess
+      )
+      .addCase(
+        NamespacesActions.fetchLastSanityReportSuccess,
+        fetchLastSanityReportSuccess
+      )
+      .addCase(NamespacesActions.setScheduleStartFlow, setScheduleStartFlow)
+      .addCase(NamespacesActions.setScheduleFlowType, setScheduleFlowType)
+      .addCase(NamespacesActions.setCsPermissions, setCsPermissions)
+      .addCase(
+        NamespacesActions.refreshControllerServiceSuccess,
+        refreshControllerServiceSuccess
+      )
+      .addCase(NamespacesActions.setKeepParameters, setKeepParameters)
+      .addCase(
+        NamespacesActions.fetchServiceDefinitionSuccess,
+        fetchServiceDefinitionSuccess
+      )
+      .addCase(
+        NamespacesActions.setSelectedRegistryOnDeploy,
+        setSelectedRegistryOnDeploy
+      )
+      .addCase(
+        NamespacesActions.fetchServiceDefinitionFailure,
+        fetchServiceDefinitionFailure
+      )
+      .addCase(
+        NamespacesActions.fetchNamespacesDownloadSuccess,
+        fetchNamespacesDownloadSuccess
+      )
+      .addCase(
+        NamespacesActions.fetchNamespaceVersionSuccess,
+        fetchNamespaceVersionSuccess
       );
   }
 );

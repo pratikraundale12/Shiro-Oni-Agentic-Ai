@@ -15,6 +15,7 @@ import {
   AuthenticationSelectors,
   ClustersActions,
   ClustersSelectors,
+  DashboardActions,
   GridActions,
   NamespacesActions,
   NamespacesSelectors,
@@ -25,11 +26,25 @@ import { FullPageLoader } from './FullPageLoader';
 
 const clusterSchema = yup.object().shape({
   cluster_id: yup.string().required('Cluster is required'),
-  username: yup.string().required('Username is required'),
-  password: yup.string().required('Password is required'),
+  username: yup.string().when('is_certificate_based_service_account', {
+    is: false,
+    then: schema => schema.required('Username is required'),
+    otherwise: schema => schema.notRequired(),
+  }),
+  password: yup.string().when('is_certificate_based_service_account', {
+    is: false,
+    then: schema => schema.required('Password is required'),
+    otherwise: schema => schema.notRequired(),
+  }),
+  is_certificate_based_service_account: yup.boolean(),
 });
 
-const DEFAULT_VALUES = { cluster_id: '', username: '', password: '' };
+const DEFAULT_VALUES = {
+  cluster_id: '',
+  username: '',
+  password: '',
+  is_certificate_based_service_account: false,
+};
 
 export const ClusterLoginModal = () => {
   const dispatch = useDispatch();
@@ -73,22 +88,38 @@ export const ClusterLoginModal = () => {
   const selectedClusterData = sortedClusters.find(
     cluster => cluster.value === clusterId
   );
+  // Set is_certificate_based_service_account in form state
+  useEffect(() => {
+    setValue(
+      'is_certificate_based_service_account',
+      !!selectedClusterData?.is_certificate_based_service_account
+    );
+  }, [selectedClusterData, setValue]);
+
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
 
   const isFieldsDisabled = selectedClusterData?.status === 'Connected';
 
   const onSubmit = async data => {
+    dispatch(DashboardActions.setResetNamespaceOption(true));
     setLoading(true);
     const clusterData = JSON.parse(
       localStorage.getItem(CLUSTERS_TOKEN) || '[]'
     );
 
-    const payload = {
-      cluster_id: data?.cluster_id,
-      username: data?.username,
-      password: data?.password,
-    };
+    let payload;
+    if (selectedClusterData?.is_certificate_based_service_account) {
+      payload = {
+        cluster_id: data?.cluster_id,
+      };
+    } else {
+      payload = {
+        cluster_id: data?.cluster_id,
+        username: data?.username,
+        password: data?.password,
+      };
+    }
     try {
       const response = await getClusterToken(payload);
       if (response.cluster_id) {
@@ -128,7 +159,7 @@ export const ClusterLoginModal = () => {
           );
           dispatch(NamespacesActions.checkDestCluster());
         }
-        dispatch(AuthenticationActions.setClusterLogin());
+        dispatch(AuthenticationActions.setClusterLogin(false));
         toast.success('The cluster is now enabled successfully');
 
         reset(DEFAULT_VALUES);
@@ -157,7 +188,6 @@ export const ClusterLoginModal = () => {
         }
       } else {
         toast.error(response.message || 'Error while getting data');
-
         setLoading(false);
       }
     } catch (error) {
@@ -172,14 +202,21 @@ export const ClusterLoginModal = () => {
   };
 
   useEffect(() => {
-    if (isObject(clusterLogin)) {
-      setValue('cluster_id', clusterLogin.value);
+    // Try to use clusterLogin.value, otherwise fallback to selectedCluster.value
+    let clusterIdToSet = '';
+    if (isObject(clusterLogin) && clusterLogin.value) {
+      clusterIdToSet = clusterLogin.value;
+    } else if (isObject(selectedCluster) && selectedCluster.value) {
+      clusterIdToSet = selectedCluster.value;
     }
-
+    if (clusterIdToSet) {
+      setValue('cluster_id', clusterIdToSet);
+    }
     return () => reset(DEFAULT_VALUES);
-  }, [clusterLogin, setValue, reset]);
+  }, [clusterLogin, selectedCluster, setValue, reset]);
 
   const onSwitchCluster = () => {
+    dispatch(DashboardActions.setResetNamespaceOption(true));
     if (window.location.pathname.includes('/process-group')) {
       window.location.reload();
       history.push('/process-group');
@@ -212,7 +249,7 @@ export const ClusterLoginModal = () => {
       cluster => cluster?.id == getValues()?.cluster_id
     )?.name;
 
-    dispatch(AuthenticationActions.setClusterLogin());
+    dispatch(AuthenticationActions.setClusterLogin(false));
     toast.success('Cluster Enabled Successfully');
     dispatch(
       NamespacesActions.setSelectedCluster({
@@ -238,7 +275,9 @@ export const ClusterLoginModal = () => {
       <Modal
         title="Enable Cluster"
         isOpen={isObject(clusterLogin) || clusterLogin}
-        onRequestClose={() => dispatch(AuthenticationActions.setClusterLogin())}
+        onRequestClose={() =>
+          dispatch(AuthenticationActions.setClusterLogin(false))
+        }
         size="sm"
         loading={loading}
         secondaryButtonText="Back"
@@ -246,7 +285,7 @@ export const ClusterLoginModal = () => {
         primaryButtonDisabled={selectedCluster?.value == clusterId}
         onSubmit={isFieldsDisabled ? onSwitchCluster : handleSubmit(onSubmit)}
         footerAlign="start"
-        contentStyles={{ minWidth: '30%' }}
+        contentStyles={{ maxWidth: '30%', maxHeight: '50%' }}
         primaryButtonProps={{ id: 'enable-cluster-submit-btn' }}
       >
         <SelectField
@@ -257,33 +296,40 @@ export const ClusterLoginModal = () => {
           icon={<ClusterIcon />}
           errors={errors}
           options={sortedClusters}
-          defaultValue={clusterLogin}
           placeholder="Select Cluster"
           required
           disabled={isObject(clusterLogin)}
           showCircleIcon={true}
         />
+        {selectedClusterData?.is_certificate_based_service_account && (
+          <div style={{ height: '100px' }}></div>
+        )}
 
-        <InputField
-          name="username"
-          type="text"
-          label="Username"
-          placeholder="Enter your Username"
-          register={register}
-          errors={errors}
-          icon={<UserIcon />}
-          required={!isFieldsDisabled}
-          disabled={isFieldsDisabled}
-        />
-        <PasswordField
-          name="password"
-          register={register}
-          errors={errors}
-          watch={watch}
-          required={!isFieldsDisabled}
-          label="Password"
-          disabled={isFieldsDisabled}
-        />
+        {/* Only show Username and Password if not certificate based */}
+        {!selectedClusterData?.is_certificate_based_service_account && (
+          <>
+            <InputField
+              name="username"
+              type="text"
+              label="Username"
+              placeholder="Enter Your Username"
+              register={register}
+              errors={errors}
+              icon={<UserIcon />}
+              required={!isFieldsDisabled}
+              disabled={isFieldsDisabled}
+            />
+            <PasswordField
+              name="password"
+              register={register}
+              errors={errors}
+              watch={watch}
+              required={!isFieldsDisabled}
+              label="Password"
+              disabled={isFieldsDisabled}
+            />
+          </>
+        )}
       </Modal>
     </>
   );

@@ -58,6 +58,25 @@ const ClusterSummaryNavigationTab = ({
           {KDFM.CLUSTER_SUMMARY}
         </div>
       </NavButton>
+
+      {state?.is_kube_cluster && state?.isRegistrySecured && (
+        <NavButton
+          active={activeTab === 'registry_cert'}
+          onClick={() => {
+            setActiveTab('registry_cert');
+          }}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <NotePadIcon
+              color={activeTab === 'registry_cert' ? '#FF7A00' : '#444445'}
+              width={22}
+              height={22}
+            />
+            Registry
+          </div>
+        </NavButton>
+      )}
+
       {createdByAnsible && (
         <NavButton
           active={activeTab === 'status'}

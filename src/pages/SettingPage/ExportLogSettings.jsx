@@ -4,7 +4,11 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { LogDocumentIcon, FileDownloadIcon } from '../../assets';
+import {
+  LogDocumentIcon,
+  FileDownloadIcon,
+  SingleMonthDateRangeIcon,
+} from '../../assets';
 
 import { Button, SelectField, ModalWithIcon } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
@@ -42,7 +46,7 @@ const ButtonText = styled.div`
 
 const StyledSaveButton = styled(Button)`
   padding-top: 10px;
-  margin-top: 30px;
+  margin-top: 11px;
   padding-bottom: 10px;
   height: 50px;
   width: 150px;
@@ -65,6 +69,7 @@ export const ExportLogSettings = () => {
 
   const dispatch = useDispatch();
   const settingData = useSelector(SettingsSelectors.getSettings);
+  const isDownloading = useSelector(SettingsSelectors.getIsDownloading);
   const [selectedDate, setSelectedDate] = useState([]);
   const [isLogsModalOpen, setIsLogsModalOpen] = useState(false);
   const isDownloadEnabled = !!watch('logs_type');
@@ -84,6 +89,21 @@ export const ExportLogSettings = () => {
     const logsType = watch('logs_type');
     const [startDate, endDate] = selectedDate || [];
 
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const normalize = date =>
+      new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    if (
+      (startDate && normalize(startDate) > today) ||
+      (endDate && normalize(endDate) > today)
+    ) {
+      toast.error(
+        'The selected date range includes future dates. Please choose a valid range.'
+      );
+      return;
+    }
+
     const formatDate = date => {
       const options = { month: 'short', day: '2-digit', year: 'numeric' };
       return (
@@ -101,7 +121,10 @@ export const ExportLogSettings = () => {
       payload.from = formatDate(startDate);
       payload.to = formatDate(endDate);
     }
-    dispatch(SettingsActions.downloadLogsZip(payload));
+    const toastId = toast.info(
+      'We are currently preparing your download. It will be ready momentarily. Thank you for your patience.'
+    );
+    dispatch(SettingsActions.downloadLogsZip({ ...payload, toastId }));
     setIsLogsModalOpen(false);
     setSelectedDate([]);
     setValue('logs_type', '');
@@ -132,6 +155,7 @@ export const ExportLogSettings = () => {
               <StyledDateRangePickerInput
                 value={selectedDate}
                 handleChange={handleChange}
+                DateRangeIcon={SingleMonthDateRangeIcon}
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -154,7 +178,7 @@ export const ExportLogSettings = () => {
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 d-flex align-items-center">
               <StyledSaveButton
                 type="button"
-                disabled={!isDownloadEnabled}
+                disabled={!isDownloadEnabled || isDownloading}
                 onClick={() => setIsLogsModalOpen(true)}
               >
                 <ButtonText>Download Logs</ButtonText>
@@ -169,7 +193,7 @@ export const ExportLogSettings = () => {
         primaryButtonText="Confirm"
         secondaryButtonText="Cancel"
         icon={<FileDownloadIcon height={125} width={125} color="#444445" />}
-        primaryText="Are you sure you want to Proceed with the Download?"
+        primaryText="Are you sure you want to proceed with the download?"
         secondaryText="If Yes, Please click on the Confirm Button."
         isOpen={isLogsModalOpen}
         onSubmit={handleDownloadLogs}

@@ -11,7 +11,6 @@ import {
   GreenRightCircleIcon,
   // PlusCircleIcon,
   SmallSearchIcon,
-  TodoIcon,
 } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { history } from '../../helpers/history';
@@ -39,10 +38,6 @@ const Flex = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-`;
-
-const ImageContainer = styled.div`
-  margin-bottom: 0.8rem;
 `;
 
 const ButtonsContainer = styled(Flex)`
@@ -179,7 +174,6 @@ const EXCLUDE_EDIT_PERMISSION = [
 ];
 const EXCLUDE_DELETE_PERMISSION = [
   'cluster',
-  'namespace',
   'permission',
   'ldap',
   'history',
@@ -249,6 +243,13 @@ export const ModuleAccess = () => {
     policies.length > 0 &&
     policies?.filter(element =>
       ['view_cluster', 'add_cluster'].includes(element?.name)
+    );
+
+  const namespacePolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['view_namespace', 'delete_namespace'].includes(element?.name)
     );
 
   const viewClusterPolicy =
@@ -348,6 +349,11 @@ export const ModuleAccess = () => {
     policies?.filter(element =>
       ['view_data_inventory'].includes(element?.name)
     );
+  const viewNamespacePolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element => ['view_namespace'].includes(element?.name));
+
   const clusterSetupPolicy =
     policies &&
     policies.length > 0 &&
@@ -496,6 +502,7 @@ export const ModuleAccess = () => {
     ];
     const clusterSetupPolicy = ['add_cluster_setup'];
 
+    const namespacePolicy = ['delete_namespace'];
     handlePolicyCheck(controllerPolicies, 'view_controller_services');
     handlePolicyCheck(userPolicies, 'view_user');
     handlePolicyCheck(clusterPolicies, 'view_cluster');
@@ -504,8 +511,10 @@ export const ModuleAccess = () => {
     handlePolicyCheck(genAiPolicies, 'view_genai');
     handlePolicyCheck(dataInventoryPolicy, 'view_data_inventory');
     handlePolicyCheck(registryPolicies, 'view_registry');
+    handlePolicyCheck(namespacePolicy, 'view_namespace');
     handlePolicyCheck(clusterSetupPolicy, 'view_cluster_setup');
   };
+
   const handleChange = (checked, value) => {
     if (isEmpty(selectedRole)) {
       toast.error('Please select a role');
@@ -520,6 +529,7 @@ export const ModuleAccess = () => {
       [viewGenAiPolicy?.[0]?.id]: genAiPolicy,
       [viewDataInventoryPolicy?.[0]?.id]: dataInventoryPolicy,
       [viewRegistryPolicy?.[0]?.id]: registryPolicy,
+      [viewNamespacePolicy?.[0]?.id]: namespacePolicy,
       [viewClusterSetupPolicy?.[0]?.id]: clusterSetupPolicy,
     };
 
@@ -644,9 +654,6 @@ export const ModuleAccess = () => {
     <>
       <Flex>
         <Flex>
-          <ImageContainer>
-            <TodoIcon width={22} height={24} />
-          </ImageContainer>
           <Title>DFM Role Management</Title>
         </Flex>
         <ButtonsContainer>

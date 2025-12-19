@@ -10,11 +10,18 @@ import {
   FlashCutIcon,
   FlashIcon,
   RefrenceIcon,
+  RefreshIcon,
   SettingSmallIcon,
   SmallSearchIcon,
   TriangleExclamationMarkIcon,
 } from '../../assets';
-import { FullPageLoader, Table, TextRender } from '../../components';
+import {
+  FullPageLoader,
+  IconButton,
+  Spinner,
+  Table,
+  TextRender,
+} from '../../components';
 import { ModalWithIcon, FieldErrorMessage } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -137,9 +144,27 @@ export const ListControllerService = () => {
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const dispatch = useDispatch();
-  const listData = useSelector(
-    NamespacesSelectors?.getRootControllerServiceNamespace
+  const controllerServicesList = useSelector(
+    NamespacesSelectors.getRootControllerServiceNamespace
   );
+  const [listData, setListData] = useState(
+    useSelector(NamespacesSelectors?.getRootControllerServiceNamespace)
+  );
+  useEffect(() => {
+    setListData(controllerServicesList);
+  }, [controllerServicesList]);
+  const refreshedControllerService = useSelector(
+    NamespacesSelectors.getRefreshedControllerService
+  );
+  useEffect(() => {
+    setListData(prevList =>
+      prevList.map(item =>
+        item.id === refreshedControllerService?.data?.id
+          ? refreshedControllerService?.data
+          : item
+      )
+    );
+  }, [refreshedControllerService]);
   const [refreshItem, setRefreshItem] = useState(null);
 
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
@@ -168,6 +193,7 @@ export const ListControllerService = () => {
   const [search, setSearch] = useState('');
   const [searchText, setSearchText] = useState('');
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
+  const [refreshingRowId, setRefreshingRowId] = useState(null);
   const filteredModulesData = listData?.filter(
     module =>
       module?.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -191,7 +217,9 @@ export const ListControllerService = () => {
 
   useEffect(() => {
     if (!isEmpty(stateChangeResponse)) {
-      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
+      dispatch(
+        NamespacesActions.getControllerServiceList({ is_from_pg_details: true })
+      );
     }
   }, [stateChangeResponse]);
 
@@ -223,7 +251,9 @@ export const ListControllerService = () => {
       })
     );
     setTimeout(() => {
-      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
+      dispatch(
+        NamespacesActions.getControllerServiceList({ is_from_pg_details: true })
+      );
     }, 500);
     setIsDeleteModalOpen(false);
     setIsResetNotRequired(true);
@@ -238,6 +268,17 @@ export const ListControllerService = () => {
   const permissions = singleNamespaceData?.permissions;
   const { canWrite } = permissions || {};
 
+  const handleRefreshClick = item => {
+    setRefreshingRowId(item.id);
+    const result = dispatch(
+      NamespacesActions.refreshControllerService({ controllerId: item?.id })
+    );
+    if (result && typeof result.finally === 'function') {
+      result.finally(() => setRefreshingRowId(null));
+    } else {
+      setTimeout(() => setRefreshingRowId(null), 1000);
+    }
+  };
   const COLUMNS = [
     {
       label: 'Name',
@@ -336,8 +377,7 @@ export const ListControllerService = () => {
           {(!isEmpty(item?.referencingComponents?.controllerService) ||
             !isEmpty(item?.referencingComponents?.processors)) && (
             <>
-              <button
-                className="border-0 bg-white"
+              <IconButton
                 onClick={event => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
@@ -347,7 +387,7 @@ export const ListControllerService = () => {
                 aria-label="Referencing"
               >
                 <RefrenceIcon />
-              </button>
+              </IconButton>
               <ReactTooltip
                 id={`Referencing-${item?.id}`}
                 place="left"
@@ -374,11 +414,10 @@ export const ListControllerService = () => {
           item?.state === 'DISABLING' ||
           (item?.state === 'DISABLED' && item?.validationStatus === 'INVALID');
         return (
-          <>
+          <div className="d-flex justify-content-center align-items-center gap-1">
             {controllerPermissions.includes('edit_controller_services') && (
               <>
-                <button
-                  className="border-0 bg-white"
+                <IconButton
                   onClick={event => {
                     handleSettingClick(item);
                     event.currentTarget.blur();
@@ -407,13 +446,12 @@ export const ListControllerService = () => {
                   }}
                 >
                   <SettingSmallIcon />
-                </button>
+                </IconButton>
               </>
             )}
             {
               <>
-                <button
-                  className="border-0 bg-white ms-1"
+                <IconButton
                   onClick={event => {
                     handleEnableClick(item);
                     event.currentTarget.blur();
@@ -433,11 +471,11 @@ export const ListControllerService = () => {
                   }}
                 >
                   {item?.state !== 'DISABLED' ? (
-                    <FlashCutIcon />
+                    <FlashCutIcon height={20} width={20} />
                   ) : (
                     <FlashIcon />
                   )}
-                </button>
+                </IconButton>
               </>
             }
             {item?.state != 'ENABLED' &&
@@ -445,8 +483,7 @@ export const ListControllerService = () => {
               item?.state != 'DISABLING' &&
               controllerPermissions.includes('delete_controller_services') && (
                 <>
-                  <button
-                    className="border-0 bg-white ms-1"
+                  <IconButton
                     onClick={event => {
                       handleDeleteClick(item);
                       event.currentTarget.blur();
@@ -461,10 +498,39 @@ export const ListControllerService = () => {
                     }}
                   >
                     <DeleteSmallIcon color="black" height="28" />
-                  </button>
+                  </IconButton>
                 </>
               )}
-          </>
+            {(item?.state === 'ENABLING' || item?.state === 'DISABLING') && (
+              <>
+                <IconButton
+                  className={`ms-1 ${refreshingRowId === item?.id ? 'mt-2' : ''}`}
+                  onClick={event => {
+                    handleRefreshClick(item);
+                    event.currentTarget.blur();
+                  }}
+                  data-tooltip-id={'Refresh'}
+                  disabled={refreshingRowId === item.id}
+                >
+                  {refreshingRowId === item.id ? (
+                    <Spinner size={20} color={theme.colors.primary} />
+                  ) : (
+                    <RefreshIcon color="black" height="28" />
+                  )}
+                </IconButton>
+                <ReactTooltip
+                  id={'Refresh'}
+                  place="left"
+                  content={'Refresh'}
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
+          </div>
         );
       },
       width: '10%',
@@ -473,33 +539,45 @@ export const ListControllerService = () => {
   ];
 
   useEffect(() => {
-    dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
+    dispatch(
+      NamespacesActions.getControllerServiceList({ is_from_pg_details: true })
+    );
     setSearch('');
     setSearchErrorMsg({});
     setSearchText('');
   }, [dispatch, selectedCluster]);
 
   const handleSettingClick = item => {
-    const filteredData =
-      !isEmpty(item?.properties) &&
-      item?.properties?.filter(
-        item =>
-          isEmpty(item?.dependencies) ||
-          item?.dependencies?.every(dep =>
-            item?.properties?.some(
-              obj =>
-                obj?.name === dep?.propertyName &&
-                dep?.dependentValues?.includes(obj?.value)
-            )
+    const filteredData = isEmpty(item?.properties)
+      ? []
+      : item?.properties
+          ?.filter(
+            item =>
+              isEmpty(item?.dependencies) ||
+              item?.dependencies?.every(dep =>
+                item?.properties?.some(
+                  obj =>
+                    obj?.name === dep?.propertyName &&
+                    dep?.dependentValues?.includes(obj?.value)
+                )
+              )
           )
-      );
+          .map(item => ({
+            ...item,
+            old_val: item?.value,
+          }));
     setListPropertTableData(filteredData);
-    setReferenceListPropertyTableData(item?.properties);
+    const properties = item?.properties?.map(item => ({
+      ...item,
+      old_val: item?.value,
+    }));
+    setReferenceListPropertyTableData(properties);
     setSelectedItemFromList(item);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
   const handleCloseModal = () => {
+    setUpdatedData([]);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
   };
 
@@ -614,7 +692,7 @@ export const ListControllerService = () => {
           setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
           setUpdatedData={setUpdatedData}
           updatedData={updatedData}
-          isFromControllerServiceTab={false}
+          isFromControllerServieTab={false}
           setReferenceListPropertyTableData={setReferenceListPropertyTableData}
         />
         <PropertyDropdownModal

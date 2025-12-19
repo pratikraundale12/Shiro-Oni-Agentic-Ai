@@ -36,6 +36,9 @@ const PropertyDropdownModal = ({
   isFromControllerServiceTab = false,
 }) => {
   const dispatch = useDispatch();
+  const checkDestCluster = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const [addNewProperty, setAddNewProperty] = useState(false);
   const [isRefParams, setIsRefParams] = useState(false);
   const [proprtyOptionsArray, setPropertyOptionsArray] = useState([
@@ -64,6 +67,7 @@ const PropertyDropdownModal = ({
   const isModalOpen = useSelector(
     NamespacesSelectors.getAddPropertyDropdownModal
   );
+
   useEffect(() => {
     const updatedOptions =
       selectedPropertyToEdit?.allowableValues?.map(element => ({
@@ -80,16 +84,38 @@ const PropertyDropdownModal = ({
   const newPropertyToAdd = useSelector(
     NamespacesSelectors.getNewProprtyToAddControllerService
   );
+
   const newResponseAddedProperty = useSelector(
     NamespacesSelectors.getResponseNewAddedProperty
   );
+
   const propertyOptionOnDeploy = useSelector(
     NamespacesSelectors.getPropertyOptionOnDeploy
   );
-  const optionsToNewPropertyAdd = newPropertyToAdd?.map(element => ({
+
+  const serviceDefinition = useSelector(
+    NamespacesSelectors.getServiceDefinition
+  );
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+
+  const extractedProperties = serviceDefinition?.properties?.filter(
+    prop => prop?.name === selectedPropertyToEdit?.name
+  );
+
+  // change data here
+  const optionsToNewPropertyAdd =
+    extractedProperties?.[0]?.serviceImplementation?.map(element => ({
+      value: element?.name,
+      label: element?.name,
+    }));
+
+  const optionsToNewPropertyAddNewService = newPropertyToAdd?.map(element => ({
     value: element?.name,
     label: element?.name,
   }));
+
   const [propertyOptionsDeploy, setPropertyOptionsDeploy] = useState([
     { value: '', label: 'No value set' },
   ]);
@@ -101,43 +127,83 @@ const PropertyDropdownModal = ({
       id: element?.id,
     }));
 
-    setPropertyOptionsDeploy(prevArray => {
-      const mergedArray = [...prevArray, ...options];
-      const uniqueArray = Array.from(
-        new Map(mergedArray.map(item => [item.id, item])).values()
-      );
-      return uniqueArray;
-    });
-  }, [propertyOptionOnDeploy]);
+    const updatedOptions =
+      selectedPropertyToEdit?.allowableValues?.map(element => ({
+        value: element?.allowableValue?.value,
+        label: element?.allowableValue?.displayName,
+        id: element?.allowableValue?.value,
+      })) ?? [];
+
+    if (options.length > 0) {
+      setPropertyOptionsDeploy(prevArray => {
+        const mergedArray = [...prevArray, ...options];
+        const uniqueArray = Array.from(
+          new Map(mergedArray.map(item => [item.id, item])).values()
+        );
+
+        return uniqueArray;
+      });
+    } else {
+      setPropertyOptionsDeploy([
+        { value: '', label: 'No value set' },
+        ...updatedOptions,
+      ]);
+    }
+  }, [propertyOptionOnDeploy, selectedPropertyToEdit?.allowableValues]);
+
+  useEffect(() => {
+    setPropertyOptionsDeploy([{ value: '', label: 'No value set' }]);
+  }, []);
 
   const handleClose = () => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(false));
+    setPropertyOptionsDeploy([{ value: '', label: 'No value set' }]);
   };
   const { handleSubmit, control, watch, reset } = useForm({});
   const selectedNewValue = watch('newService');
   const selectedProperty = watch('value');
 
   const handleFormSubmit = data => {
+    const regex = /^[a-zA-Z\s'-]+$/;
+    const isAlphabet = regex.test(data.value);
+    const selectedName = proprtyOptionsArray.find(
+      element => element.value === data.value
+    )?.label;
+    const selectedNameOnDeploy = propertyOptionsDeploy.find(
+      element => element.id === data.value
+    )?.label;
+    const selectedNameOnNewAddService = propertyOptionsDeploy.find(
+      element => element.id === data.value
+    )?.name;
+    const selectedId =
+      proprtyOptionsArray.find(element => element.value === data.value)?.id ||
+      propertyOptionsDeploy.find(element => element.value === data.value)?.id;
     setUpdatedData(() => [
       ...filterData,
       {
         name: selectedPropertyToEdit.name,
-        value: data.value === '' ? null : data.value,
+        value: data.value === '' ? null : !isAlphabet ? data.value : selectedId,
         sensitive: false,
-        dropDownName: selectedName,
+        dropDownName:
+          selectedName ?? selectedNameOnDeploy ?? selectedNameOnNewAddService,
       },
     ]);
 
-    const selectedName = proprtyOptionsArray.find(
-      element => element.value === data.value
-    )?.label;
     setListPropertTableData(prevData =>
       prevData.map(item =>
         item.name === selectedPropertyToEdit.name
           ? {
               ...item,
-              value: data.value === '' ? null : data.value,
-              dropDownName: selectedName,
+              value:
+                data.value === ''
+                  ? null
+                  : !isAlphabet
+                    ? data.value
+                    : selectedId,
+              dropDownName:
+                selectedName ??
+                selectedNameOnDeploy ??
+                selectedNameOnNewAddService,
               empty_string_set: false,
             }
           : item
@@ -149,8 +215,16 @@ const PropertyDropdownModal = ({
           item.name === selectedPropertyToEdit.name
             ? {
                 ...item,
-                value: data.value === '' ? null : data.value,
-                dropDownName: selectedName,
+                value:
+                  data.value === ''
+                    ? null
+                    : !isAlphabet
+                      ? data.value
+                      : selectedId,
+                dropDownName:
+                  selectedName ??
+                  selectedNameOnDeploy ??
+                  selectedNameOnNewAddService,
                 empty_string_set: false,
               }
             : item
@@ -158,34 +232,60 @@ const PropertyDropdownModal = ({
       );
     }
     toast.success(KDFM.PROPERTY_EDITED);
+    dispatch(NamespacesActions.setResponseNewAddedProprty(null));
     handleClose();
   };
 
   const handleNewService = () => {
-    const selectedObject = newPropertyToAdd.find(
+    const selectedObject = extractedProperties?.[0]?.serviceImplementation.find(
       element => element.name === selectedNewValue
     );
+    const selectedObjectNewService = newPropertyToAdd.find(
+      element => element.name === selectedNewValue
+    );
+
+    const selectedPayload = isFromExternalService
+      ? selectedObjectNewService
+      : selectedObject && !isEmpty(selectedObject)
+        ? selectedObject
+        : selectedObjectNewService;
+
     selectedNewValue !== null &&
       dispatch(
-        NamespacesActions.addControllerServicePropertyByDropdown(selectedObject)
+        NamespacesActions.addControllerServicePropertyByDropdown(
+          selectedPayload
+        )
       );
     setAddNewProperty(false);
   };
+
   useEffect(() => {
     if (isModalOpen) {
-      dispatch(
-        NamespacesActions.getNewPropertyControllerServiceUpdated(
-          selectedPropertyToEdit
-        )
-      );
-      {
-        selectedPropertyToEdit?.add &&
-          dispatch(
-            NamespacesActions.getNewPropertyControllerService(
-              selectedPropertyToEdit
-            )
-          );
+      const payload = {
+        selectedPropertyToEdit,
+        isFromExternalService: isFromExternalService,
+        type: selectedPropertyToEdit?.type,
+        serviceImplementation:
+          extractedProperties?.[0]?.serviceImplementation || [],
+      };
+
+      // Only add namespaceId if checkDestCluster?.value exists
+      if (checkDestCluster?.value) {
+        payload.namespaceId = checkDestCluster.value;
       }
+
+      dispatch(
+        NamespacesActions.getNewPropertyControllerServiceUpdated(payload)
+      );
+
+      if (selectedPropertyToEdit?.add) {
+        dispatch(
+          NamespacesActions.getNewPropertyControllerService(
+            selectedPropertyToEdit
+          )
+        );
+      }
+
       setAddNewProperty(false);
       setIsRefParams(false);
     }
@@ -241,6 +341,7 @@ const PropertyDropdownModal = ({
       ? selecetdData?.value?.replace(/^#\{(.+)\}$/, '$1')
       : '';
   };
+
   return (
     <div>
       <Modal
@@ -309,9 +410,10 @@ const PropertyDropdownModal = ({
                   name="value"
                   size="sm"
                   options={
-                    !isUpgrade ||
-                    isFromExternalService ||
-                    !selectedPropertyToEdit?.add
+                    (!isUpgrade ||
+                      isFromExternalService ||
+                      !selectedPropertyToEdit?.add) &&
+                    scheduleStartFlow === true
                       ? proprtyOptionsArray
                       : propertyOptionsDeploy
                   }
@@ -363,7 +465,14 @@ const PropertyDropdownModal = ({
                 <StyledSelectField
                   name="newService"
                   size="sm"
-                  options={optionsToNewPropertyAdd}
+                  options={
+                    isFromExternalService
+                      ? optionsToNewPropertyAddNewService
+                      : optionsToNewPropertyAdd &&
+                          optionsToNewPropertyAdd.length > 0
+                        ? optionsToNewPropertyAdd
+                        : optionsToNewPropertyAddNewService
+                  }
                   control={control}
                   placeholder="Select Service"
                   backgroundColor={theme.colors.lightGrey}

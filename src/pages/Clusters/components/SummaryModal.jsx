@@ -17,10 +17,11 @@ import {
   createCluster,
   createRegistry,
   updateCluster,
-  updateRegistry,
 } from '../../../store/index1';
 import { FullPageLoader } from '../../../components';
 import { isEmpty } from 'lodash';
+import { LockIcon } from '../../../assets';
+import { theme } from '../../../styles';
 
 const ClusterDetailsContainer = styled.div`
   background-color: #f5f7fa;
@@ -34,6 +35,7 @@ const Row = styled.div`
   display: flex;
   flex-wrap: wrap;
   width: 100%;
+  flex-direction: column;
 `;
 
 const Flex = styled.div`
@@ -113,8 +115,13 @@ export const SummaryModal = ({
   edit,
   notificationEnable,
   approverEnable,
+  approverEnableForStartAndStop,
   tags,
   changeRequestEnable,
+  certificateOption,
+  selectedRegistriesArray = [],
+  registries,
+  default_registry_data,
 }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -141,22 +148,45 @@ export const SummaryModal = ({
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const addCluster = async ({ registry_id }) => {
+    const selectedRegistriesId = selectedRegistriesArray?.map(
+      item => item?.value
+    );
+
     const data = {
       name: clusterData?.clusterName,
       nifi_url: clusterData?.nifiUrl,
-      registry_id: registry_id,
+      registry_ids: selectedRegistriesId,
       tag: tags,
       notification_enable: notificationEnable,
       approver_enable: approverEnable,
+      start_stop_requires_approval: approverEnableForStartAndStop,
       change_request_enable: changeRequestEnable,
+      default_registry_id:
+        default_registry_data?.value || default_registry_data || null,
       ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
-      ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
-      nodes: certificateNodesData || [],
+      ...(clusterData?.metrics_url && {
+        metrics_url: clusterData.metrics_url,
+      }),
       ...(clusterTestResponse?.clusterType && {
         clusterType: clusterTestResponse?.clusterType,
       }),
+      nodes:
+        certificateNodesData && certificateNodesData.length > 0
+          ? certificateNodesData
+          : [],
+      ...(clusterData?.service_account_certificate_password && {
+        service_account_certificate_password:
+          clusterData.service_account_certificate_password,
+      }),
+      ...(clusterData?.service_account_certificate && {
+        service_account_certificate: clusterData.service_account_certificate,
+      }),
+      is_certificate_based_service_account: certificateOption,
     };
+
+    // const response = await createCluster(formData); // createCluster must handle FormData
     const response = await createCluster(data);
 
     if (response?.status === 201) {
@@ -170,36 +200,27 @@ export const SummaryModal = ({
     }
   };
 
-  const editRegistryData = async () => {
-    const payload = {
-      name: registryData.registryName,
-      registry_url: registryData.registryUrl,
-    };
-    const id = registry_id;
-    const response = await updateRegistry(id, payload);
-    if (response?.id) {
-      setLoading(false);
-      toast.success(response.message);
-      history.push('/clusters');
-    } else {
-      setLoading(false);
-      toast.error(response.message);
-    }
-  };
-
   const editClusterData = async () => {
-    const formdata = new FormData();
-    formdata.append('name', clusterData.clusterName);
-    formdata.append('nifi_url', clusterData.nifiUrl);
-    formdata.append('tag', tags);
-    formdata.append('notification_enable', notificationEnable);
-    formdata.append('approver_enable', approverEnable);
-    formdata.append('change_request_enable', changeRequestEnable);
-    formdata.append('has_custom_service_account', false);
-    formdata.append('registry_id', registryData.id);
-
+    const selectedRegistriesId = selectedRegistriesArray?.map(
+      item => item?.value
+    );
+    const payload = {
+      name: clusterData?.clusterName,
+      nifi_url: clusterData?.nifiUrl,
+      tag: tags,
+      notification_enable: notificationEnable,
+      approver_enable: approverEnable,
+      start_stop_requires_approval: approverEnableForStartAndStop,
+      change_request_enable: changeRequestEnable,
+      registry_ids: selectedRegistriesId,
+      default_registry_id:
+        default_registry_data?.value || default_registry_data || null,
+      has_custom_service_account: false,
+      is_certificate_based_service_account: certificateOption,
+      registry_id: registryData?.id,
+    };
     const id = clusterId;
-    const response = await updateCluster(id, formdata);
+    const response = await updateCluster(id, payload);
     if (response?.id) {
       const cluster = localStorage.getItem('selected_cluster');
 
@@ -225,7 +246,9 @@ export const SummaryModal = ({
         }
       }
 
-      await editRegistryData();
+      setLoading(false);
+      toast.success('Cluster updated successfully');
+      history.push('/clusters');
     } else {
       setLoading(false);
       toast.error(response.message);
@@ -243,6 +266,41 @@ export const SummaryModal = ({
     }
   };
 
+  const partialIds = selectedRegistriesArray.map(item => item.value);
+
+  const selectedRegistriesWithAllData = registries.reduce((acc, item) => {
+    if (partialIds.includes(item.value)) {
+      acc.push({
+        ...item,
+        isDefault: item.value === default_registry_data,
+      });
+    }
+    return acc;
+  }, []);
+
+  const registriesToDisplay = {
+    title: KDFM.REGISTRY_DETAILS,
+    entityNameLabel: KDFM.REGISTRY_NAME,
+    entityNameValue: 'N/A',
+    entityUrlLabel: KDFM.REGISTRY_URL,
+    entityUrlValue: 'N/A',
+    tooltipContent: 'Copy Registry URL',
+    tooltipId: 'registry-url-tooltip-id',
+    isMultipleData: true,
+    elements:
+      (!isEmpty(selectedRegistriesWithAllData) &&
+        selectedRegistriesWithAllData?.map(ele => ({
+          name: ele?.label,
+          url: (ele?.registryUrl || ele?.registry_url)?.includes(
+            '/nifi-registry'
+          )
+            ? ele?.registryUrl || ele?.registry_url
+            : `${ele?.registryUrl || ele?.registry_url}/nifi-registry`,
+          isDefault: ele.isDefault,
+        }))) ||
+      [],
+  };
+
   const renderData = [
     {
       title: KDFM.CLUSTER_DETAILS,
@@ -255,19 +313,7 @@ export const SummaryModal = ({
       tooltipContent: 'Copy Cluster URL',
       tooltipId: 'cluster-url-tooltip-id',
     },
-    {
-      title: KDFM.REGISTRY_DETAILS,
-      entityNameLabel: KDFM.REGISTRY_NAME,
-      entityNameValue: registryData?.registryName || registryData?.name,
-      entityUrlLabel: KDFM.REGISTRY_URL,
-      entityUrlValue: (
-        registryData?.registryUrl || registryData?.registry_url
-      )?.includes('/nifi-registry')
-        ? registryData?.registryUrl || registryData?.registry_url
-        : `${registryData?.registryUrl || registryData?.registry_url}/nifi-registry`,
-      tooltipContent: 'Copy Registry URL',
-      tooltipId: 'registry-url-tooltip-id',
-    },
+    ...[registriesToDisplay],
     ...(!isEmpty(clusterData?.metrics_url)
       ? [
           {
@@ -311,53 +357,140 @@ export const SummaryModal = ({
           {renderData.map(data => (
             <ClusterDetailsContainer key={data?.title}>
               <DetailsTitle>{data?.title}</DetailsTitle>
-              <Row>
-                <Col>
-                  <Info width="50%">
-                    <Title>{data?.entityNameLabel}</Title>
-                    <ClusterName>{data?.entityNameValue}</ClusterName>
-                  </Info>
-                  <Info width={data?.width || '40%'}>
-                    <Title>{data?.entityUrlLabel}</Title>
-                    <Flex className="d-flex align-items-center">
-                      <TextEllipses
-                        linkMaxWidth={data?.linkMaxWidth || '16rem'}
-                        data-tooltip-id={data?.entityUrlValue}
-                      >
-                        {data?.entityUrlValue}
-                      </TextEllipses>
-                      <span data-tooltip-id={data?.tooltipId}>
-                        <CopyToClipboard
-                          className="copy-button"
-                          copyItem={data?.entityUrlValue}
+              {data?.isMultipleData ? (
+                <>
+                  <Row>
+                    <Col>
+                      <Info width="50%">
+                        <Title>{data?.entityNameLabel}</Title>
+                      </Info>
+                      <Info width={data?.width || '40%'}>
+                        <Title>{data?.entityUrlLabel}</Title>
+                      </Info>
+                    </Col>
+
+                    {/*  */}
+                    {data?.elements?.map(ele => (
+                      <Col key={ele?.id || ele?.name}>
+                        <Info width="50%">
+                          <ClusterName>
+                            {ele?.name} &nbsp;
+                            {ele?.isDefault && (
+                              <>
+                                <span data-tooltip-id={`default-registry`}>
+                                  <LockIcon
+                                    color={theme.colors.primary}
+                                    width={20}
+                                    height={20}
+                                  />
+                                </span>
+                                <ReactTooltip
+                                  id={`default-registry`}
+                                  place="right"
+                                  effect="solid"
+                                  content={'Default Registry'}
+                                  style={{
+                                    width: '140px',
+                                    whiteSpace: 'normal',
+                                    wordWrap: 'break-word',
+                                    zIndex: 10000,
+                                  }}
+                                />
+                              </>
+                            )}
+                          </ClusterName>
+                        </Info>
+                        <Info width={data?.width || '40%'}>
+                          <Flex className="d-flex align-items-center">
+                            <TextEllipses
+                              linkMaxWidth={data?.linkMaxWidth || '16rem'}
+                              data-tooltip-id={ele?.url}
+                            >
+                              {ele?.url}
+                            </TextEllipses>
+                            <span data-tooltip-id={data?.tooltipId}>
+                              <CopyToClipboard
+                                className="copy-button"
+                                copyItem={ele?.url}
+                              />
+                            </span>
+                            <ReactTooltip
+                              id={data?.tooltipId}
+                              place="bottom"
+                              effect="solid"
+                              content={data?.tooltipContent}
+                              style={{
+                                width: '120px',
+                                whiteSpace: 'normal',
+                                wordWrap: 'break-word',
+                                zIndex: 10000,
+                              }}
+                            />
+                            <ReactTooltip
+                              id={ele?.url}
+                              content={ele?.url}
+                              place="bottom-start"
+                              style={{
+                                fontSize: '12px',
+                                maxWidth: '20rem',
+                                textAlign: 'center',
+                              }}
+                            />
+                          </Flex>
+                        </Info>
+                      </Col>
+                    ))}
+                  </Row>
+                </>
+              ) : (
+                <Row>
+                  <Col>
+                    <Info width="50%">
+                      <Title>{data?.entityNameLabel}</Title>
+                      <ClusterName>{data?.entityNameValue}</ClusterName>
+                    </Info>
+                    <Info width={data?.width || '40%'}>
+                      <Title>{data?.entityUrlLabel}</Title>
+                      <Flex className="d-flex align-items-center">
+                        <TextEllipses
+                          linkMaxWidth={data?.linkMaxWidth || '16rem'}
+                          data-tooltip-id={data?.entityUrlValue}
+                        >
+                          {data?.entityUrlValue}
+                        </TextEllipses>
+                        <span data-tooltip-id={data?.tooltipId}>
+                          <CopyToClipboard
+                            className="copy-button"
+                            copyItem={data?.entityUrlValue}
+                          />
+                        </span>
+                        <ReactTooltip
+                          id={data?.tooltipId}
+                          place="bottom"
+                          effect="solid"
+                          content={data?.tooltipContent}
+                          style={{
+                            width: '120px',
+                            whiteSpace: 'normal',
+                            wordWrap: 'break-word',
+                            zIndex: 10000,
+                          }}
                         />
-                      </span>
-                      <ReactTooltip
-                        id={data?.tooltipId}
-                        place="bottom"
-                        effect="solid"
-                        content={data?.tooltipContent}
-                        style={{
-                          width: '120px',
-                          whiteSpace: 'normal',
-                          wordWrap: 'break-word',
-                          zIndex: 10000,
-                        }}
-                      />
-                      <ReactTooltip
-                        id={data?.entityUrlValue}
-                        content={data?.entityUrlValue}
-                        place="bottom-start"
-                        style={{
-                          fontSize: '12px',
-                          maxWidth: '20rem',
-                          textAlign: 'center',
-                        }}
-                      />
-                    </Flex>
-                  </Info>
-                </Col>
-              </Row>
+                        <ReactTooltip
+                          id={data?.entityUrlValue}
+                          content={data?.entityUrlValue}
+                          place="bottom-start"
+                          style={{
+                            fontSize: '12px',
+                            maxWidth: '20rem',
+                            textAlign: 'center',
+                          }}
+                        />
+                      </Flex>
+                    </Info>
+                  </Col>
+                </Row>
+              )}
             </ClusterDetailsContainer>
           ))}
         </ModalBody>
@@ -377,6 +510,11 @@ SummaryModal.propTypes = {
   edit: PropTypes.bool,
   notificationEnable: PropTypes.bool,
   approverEnable: PropTypes.bool,
+  approverEnableForStartAndStop: PropTypes.bool,
   tags: PropTypes.string,
   changeRequestEnable: PropTypes.bool,
+  certificateOption: PropTypes.bool,
+  selectedRegistriesArray: PropTypes.array,
+  registries: PropTypes.array,
+  default_registry_data: PropTypes.any,
 };

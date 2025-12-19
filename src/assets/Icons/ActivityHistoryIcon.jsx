@@ -10,13 +10,55 @@ export const ActivityHistoryIcon = ({
     <svg
       width={width}
       height={height}
-      viewBox="0 0 20 20"
       fill="none"
+      viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M17 20H3C1.34315 20 0 18.6569 0 17V1C0 0.44772 0.44772 0 1 0H15C15.5523 0 16 0.44772 16 1V13H20V17C20 18.6569 18.6569 20 17 20ZM16 15V17C16 17.5523 16.4477 18 17 18C17.5523 18 18 17.5523 18 17V15H16ZM14 18V2H2V17C2 17.5523 2.44772 18 3 18H14ZM4 5H12V7H4V5ZM4 9H12V11H4V9ZM4 13H9V15H4V13Z"
-        fill={color}
+        d="M21.9292 6.76099L18.5592 20.291C18.3192 21.301 17.4192 22.001 16.3792 22.001H3.23915C1.72915 22.001 0.649169 20.5209 1.09917 19.0709L5.30916 5.55103C5.59916 4.61103 6.46917 3.96094 7.44917 3.96094H19.7492C20.6992 3.96094 21.4892 4.54094 21.8192 5.34094C22.0092 5.77094 22.0492 6.26099 21.9292 6.76099Z"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+      />
+      <path
+        d="M16 22H20.78C22.07 22 23.08 20.91 22.99 19.62L22 6"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.67969 6.38049L10.7197 2.06055"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16.3809 6.39075L17.3209 2.05078"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7.69922 12H15.6992"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.69922 16H14.6992"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

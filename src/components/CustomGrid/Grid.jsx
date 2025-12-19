@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import { getTheme } from '@table-library/react-table-library/baseline';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
@@ -30,6 +31,7 @@ import { UrlRender } from './CellRenders';
 import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
 import { Table } from './Table';
+import TreeViewWrapper from '../../pages/Namespaces/TreeViewWrapper';
 import ClusterControlButtons from '../../pages/Clusters/ClusterControlButtons';
 import KubeClusterPodsAndMetrics from '../../pages/Clusters/components/ClusterKubePodsAndMetrics';
 
@@ -127,6 +129,17 @@ export const Grid = ({
   setSortingState,
   createdByAnsible = false,
   is_kube_cluster = false,
+  setDownloadModalOpen,
+  isDownloadModalOpen,
+  removeSearch,
+  setIsExportReportOpen,
+  selectEvent,
+  setSelectEvent,
+  selectEntity,
+  setSelectEntity,
+  selectStatus,
+  setSelectStatus,
+  setRemoveSearch,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -161,9 +174,12 @@ export const Grid = ({
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedRole, setSelectedRole] = useState(null);
   const [clusterSelectedValue, setClusterSelectedValue] = useState(null);
-  const [selectEvent, setSelectEvent] = useState(null);
-  const [selectEntity, setSelectEntity] = useState(null);
+  // const [selectEvent, setSelectEvent] = useState(null);
+  // const [selectEntity, setSelectEntity] = useState(null);
   const registryNodesData = useSelector(ClustersSelectors.getRegistryNodesData);
+  const [scheduleType, setScheduleType] = useState(null);
+  const [viewMode, setViewMode] = useState('list_view'); // 'list_view' | 'tree_view'
+
   const activeTabClusterView = useSelector(ClustersSelectors.getclusterViewTab);
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
@@ -248,7 +264,7 @@ export const Grid = ({
     scheduler: 'No Schedulers Available',
     nodes: isClusterLoggedIn
       ? 'No Nodes Available!'
-      : 'No Nodes Available Login to Cluster First',
+      : 'No nodes available. Please log in to the cluster first.',
     registry: 'No Registry Available',
   };
 
@@ -313,13 +329,26 @@ export const Grid = ({
               clusterSelectedValue?.label !== 'All' && {
                 clusterName: clusterSelectedValue?.label,
               }),
-            ...(location?.pathname?.includes('activity-history') &&
-              selectEvent?.value !== 'all' && {
-                event: selectEvent?.value,
+            ...(location?.pathname?.includes('schedule-deployment') &&
+              scheduleType?.value !== 'all' && {
+                type: scheduleType?.value,
               }),
             ...(location?.pathname?.includes('activity-history') &&
-              selectEntity?.value !== 'all' && {
-                entity: selectEntity?.value,
+              selectEvent &&
+              selectEvent.length > 0 && {
+                event: selectEvent.map(event => event.value).join(','),
+              }),
+
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEntity &&
+              selectEntity.length > 0 && {
+                entity: selectEntity.map(entity => entity.value).join(','),
+              }),
+
+            ...(location?.pathname?.includes('activity-history') &&
+              selectStatus &&
+              selectStatus.length > 0 && {
+                status: selectStatus.map(status => status.value).join(','),
               }),
 
             ...(location?.pathname?.match(
@@ -358,13 +387,26 @@ export const Grid = ({
             clusterSelectedValue?.label !== 'All' && {
               clusterName: clusterSelectedValue?.label,
             }),
-          ...(location?.pathname?.includes('activity-history') &&
-            selectEvent?.value !== 'all' && {
-              event: selectEvent?.value,
+          ...(location?.pathname?.includes('schedule-deployment') &&
+            scheduleType?.value !== 'all' && {
+              type: scheduleType?.value,
             }),
           ...(location?.pathname?.includes('activity-history') &&
-            selectEntity?.value !== 'all' && {
-              entity: selectEntity?.value,
+            selectEvent &&
+            selectEvent.length > 0 && {
+              event: selectEvent.map(event => event.value).join(','),
+            }),
+
+          ...(location?.pathname?.includes('activity-history') &&
+            selectEntity &&
+            selectEntity.length > 0 && {
+              entity: selectEntity.map(entity => entity.value).join(','),
+            }),
+
+          ...(location?.pathname?.includes('activity-history') &&
+            selectStatus &&
+            selectStatus.length > 0 && {
+              status: selectStatus.map(status => status.value).join(','),
             }),
 
           ...(location?.pathname?.match(
@@ -400,6 +442,8 @@ export const Grid = ({
     selectEvent,
     selectEntity,
     itemsPerPage,
+    scheduleToken,
+    selectStatus,
   ]);
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
@@ -434,7 +478,7 @@ export const Grid = ({
       ? filterClusterView(DATA)
       : DATA;
   useEffect(() => {
-    if (isEmpty(TABLE_DATA?.nodes)) {
+    if (isEmpty(TABLE_DATA?.nodes) && currentPage !== 1) {
       setCurrentPage(1);
     }
   }, [TABLE_DATA]);
@@ -475,6 +519,7 @@ export const Grid = ({
         <ClusterRegistryContainer className="row">
           {createdByAnsible && <ClusterControlButtons />}
           <ClusterDetail
+            displayFullWidth 
             data={{
               name: registryNodesData?.cluster?.name,
               nifi_url: registryNodesData?.cluster?.nifi_url,
@@ -483,22 +528,33 @@ export const Grid = ({
               registryNodesData?.cluster?.registry?.registry_url
             )}
           />
-          {registryNodesData?.cluster?.registry?.registry_url && (
-            <RegistryDetail
-              data={{
-                name: registryNodesData?.cluster?.registry?.name,
-                registry_url:
-                  registryNodesData?.cluster?.registry?.registry_url,
-              }}
-              handleCert={() =>
-                dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true))
+        </ClusterRegistryContainer>
+        <ClusterRegistryContainer className="row">
+          {registryNodesData?.cluster?.registry?.length > 0 &&
+            is_kube_cluster && (
+              <RegistryDetail
+                displayFullWidth
+                data={
+                registryNodesData?.cluster?.registry
               }
-              showRegistryDownload={
-                registryNodesData?.cluster?.registry?.is_kube_registry &&
-                registryNodesData?.cluster?.registry?.id
-              }
-            />
-          )}
+                handleCert={() =>
+                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true))
+                }
+                showRegistryDownload={
+                  registryNodesData?.cluster?.registry?.[0]?.is_kube_registry &&
+                  registryNodesData?.cluster?.registry?.[0]?.id
+                }
+              />
+            )}
+          {registryNodesData?.cluster?.registry?.length > 0 &&
+            !is_kube_cluster && (
+              <RegistryDetail
+                displayFullWidth
+                data={registryNodesData?.cluster?.registry}
+                handleCert={() => {}}
+                showRegistryDownload={false}
+              />
+            )}
         </ClusterRegistryContainer>
         <ClusterRegistryContainer className="row">
           {registryNodesData?.cluster?.metrics_url && (
@@ -526,7 +582,7 @@ export const Grid = ({
             setState(prevState => ({ ...prevState, eventModal: false }))
           }
           size="md"
-          primaryButtonText={KDFM.CONTINUE}
+          primaryButtonText={KDFM.BACK}
           onSubmit={() =>
             setState(prevState => ({ ...prevState, eventModal: false }))
           }
@@ -595,49 +651,73 @@ export const Grid = ({
           selectEntity={selectEntity}
           setSelectEntity={setSelectEntity}
           setSortingState={setSortingState}
+          setSelectStatus={setSelectStatus}
+          selectStatus={selectStatus}
           setCurrentPage={setCurrentPage}
           isClusterLoggedIn={isClusterLoggedIn}
           is_kube_cluster={is_kube_cluster}
           itemsPerPage={itemsPerPage}
+          onItemsPerPageChange={setItemsPerPage}
+          scheduleType={scheduleType}
+          setScheduleType={setScheduleType}
+          isDownloadModalOpen={isDownloadModalOpen}
+          setDownloadModalOpen={setDownloadModalOpen}
+          removeSearch={removeSearch}
+          setIsExportReportOpen={setIsExportReportOpen}
+          setRemoveSearch={setRemoveSearch}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
         />
       )}
-      {is_kube_cluster && <div className="mt-4"></div>}
-      {module === 'nodes' &&
-        !loading &&
-        !isEmpty(registryNodesData?.cluster?.name) && (
-          <>{getRegistryNodesData()}</>
-        )}
-      <div className="mb-2 ps-1">
-        <Breadcrumb module={module} />
-      </div>
-      {tableDispaly(module, activeTabClusterView) && (
-        <TableContainer
-          module={module}
-          fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
-        >
-          {loading || isEmpty(TABLE_DATA?.nodes) ? (
-            getLoader()
-          ) : (
-            <CompactTable
-              data={TABLE_DATA}
-              columns={columns}
-              theme={tableTheme}
-              layout={{ custom: true }}
-              // sort={sort}
+      {module === 'namespaces' && viewMode === 'tree_view' ? (
+        <>
+          <TreeViewWrapper
+            hideRootNode={false}
+            enableHoverApi={true}
+            enableSearch={true}
+            showPathInSuggestions={true}
+          />
+        </>
+      ) : (
+        <>
+          {module === 'nodes' &&
+            !loading &&
+            !isEmpty(registryNodesData?.cluster?.name) && (
+              <>{getRegistryNodesData()}</>
+            )}
+          <div className="mb-2 ps-1">
+            <Breadcrumb module={module} />
+          </div>
+          {tableDispaly(module, activeTabClusterView) && (
+            <TableContainer
+              module={module}
+              fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
+            >
+              {loading || isEmpty(TABLE_DATA?.nodes) ? (
+                getLoader()
+              ) : (
+                <CompactTable
+                  data={TABLE_DATA}
+                  columns={columns}
+                  theme={tableTheme}
+                  layout={{ custom: true }}
+                  // sort={sort}
+                />
+              )}
+            </TableContainer>
+          )}
+          {gridCount >= 10 && (
+            <Pagination
+              page={currentPage}
+              setCurrentPage={setCurrentPage}
+              count={gridCount ?? 0}
+              prev={prev}
+              next={next}
+              itemsPerPage={itemsPerPage}
+              onItemsPerPageChange={setItemsPerPage}
             />
           )}
-        </TableContainer>
-      )}
-      {gridCount >= 10 && (
-        <Pagination
-          page={currentPage}
-          setCurrentPage={setCurrentPage}
-          count={gridCount ?? 0}
-          prev={prev}
-          next={next}
-          itemsPerPage={itemsPerPage}
-          onItemsPerPageChange={setItemsPerPage}
-        />
+        </>
       )}
     </Container>
   );
@@ -672,4 +752,17 @@ Grid.propTypes = {
   setSortingState: PropTypes.func,
   createdByAnsible: PropTypes.bool,
   is_kube_cluster: PropTypes.bool,
+  scheduleType: PropTypes.string,
+  setScheduleType: PropTypes.func,
+  setDownloadModalOpen: PropTypes.func,
+  isDownloadModalOpen: PropTypes.bool,
+  removeSearch: PropTypes.bool,
+  setIsExportReportOpen: PropTypes.func,
+  selectEntity: PropTypes.string,
+  setSelectEntity: PropTypes.func,
+  selectStatus: PropTypes.string,
+  setSelectStatus: PropTypes.func,
+  selectEvent: PropTypes.string,
+  setSelectEvent: PropTypes.func,
+  setRemoveSearch: PropTypes.func,
 };

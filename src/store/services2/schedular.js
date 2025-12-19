@@ -11,12 +11,16 @@ export const schedularAPI = api => {
   const rejectScheduleDeployment = ({ schedularId, payload = {} }) =>
     api.post(`/cancel-scheduled/${schedularId}`, payload);
 
-  const fetchDiffScheduleData = ({ schedularId }) =>
-    api.get(`/diff-schedule-deployment/${schedularId}`);
+  const fetchDiffScheduleData = ({ schedularId, event }) =>
+    event !== ''
+      ? api.get(`/diff-schedule-deployment/${schedularId}/${event}`)
+      : api.get(`/diff-schedule-deployment/${schedularId}`);
   const fetchGroupUserData = ({ groupId }) =>
     api.get(`/group-users/${groupId}`);
   const fetchScheduleDeploymentDetails = ({ schedularId }) =>
     api.get(`/schedule-deployment-details/${schedularId}`);
+  const scheduleSanityAndDeploy = ({ schedularId, clusterId }) =>
+    api.get(`/cluster/${clusterId}/schedule-sanity-and-deploy/${schedularId}`);
   return {
     fetchSchedular,
     createScheduleDeployment,
@@ -26,5 +30,6 @@ export const schedularAPI = api => {
     fetchDiffScheduleData,
     fetchGroupUserData,
     fetchScheduleDeploymentDetails,
+    scheduleSanityAndDeploy,
   };
 };

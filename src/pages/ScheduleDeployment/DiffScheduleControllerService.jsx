@@ -22,6 +22,7 @@ const ScrollSetGrey = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
 `;
+
 const PgHead = styled.div`
   font-family: Red Hat Display;
   font-size: 20px;
@@ -32,12 +33,14 @@ const PgHead = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 `;
+
 const GreyBoxNamespace = styled.div`
   background-color: #f5f7fa;
   padding: 5px 10px 0px 10px;
   border-radius: 15px;
   padding: 20px 15px 20px 15px;
 `;
+
 const TileHeader = styled.div`
   font-family: Red Hat Display;
   font-size: 17px;
@@ -48,6 +51,7 @@ const TileHeader = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 `;
+
 const TileItem = styled.div`
   font-family: Red Hat Display;
   font-size: 16px;
@@ -57,6 +61,7 @@ const TileItem = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 `;
+
 const NoDataText = styled.div`
   color: ${props => props.theme.colors.lightGrey3};
   font-family: ${props => props.theme.fontNato};
@@ -154,6 +159,8 @@ const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
             </div>
           );
         })}
+
+        {/* No data condition - check the selected data source */}
         {isEmpty(data) && (
           <div className="d-flex flex-column align-items-center mt-5">
             <NoDataIcon width={130} />
@@ -164,8 +171,10 @@ const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
     </DataWrapper>
   );
 };
+
 DiffScheduleCS.propTypes = {
   isFromDeploySummary: PropTypes.bool,
   csData: PropTypes.array,
 };
+
 export default DiffScheduleCS;

@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
 import { theme } from '../../styles';
 import { PAGINATION_ITEM_OPTIONS } from '../../constants';
-import { useDispatch } from 'react-redux';
 import { ClustersActions } from '../../store';
+import { useDispatch } from 'react-redux';
 
 const Container = styled.div`
   display: flex;
@@ -22,7 +22,7 @@ const Flex = styled.div`
 
 const StyledButton = styled.button`
   height: 2rem;
-  width: 2rem;
+  min-width: 2rem;
   border-radius: 4px;
   border: ${props =>
     props.active
@@ -36,6 +36,10 @@ const StyledButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &:hover {
     background-color: ${theme.colors.primary};
@@ -84,7 +88,7 @@ const Pagination = ({
   setCurrentPage,
   itemsPerPage,
   onItemsPerPageChange,
-  setPageLoading,
+  setPageLoading = () => {},
 }) => {
   const dispatch = useDispatch();
   const totalPage = Math.ceil(count / itemsPerPage);
@@ -157,12 +161,11 @@ const Pagination = ({
 
   useEffect(() => {
     setPageLoading && setPageLoading(false);
-  }, [page]);
+  }, [page, setPageLoading]);
 
   useEffect(() => {
     dispatch(ClustersActions.setclusterListItems(itemsPerPage));
-  }, [itemsPerPage]);
-
+  }, [dispatch, itemsPerPage]);
   return (
     <Container>
       <div className="d-flex align-items-center gap-3">
@@ -180,7 +183,7 @@ const Pagination = ({
         <span>Items per page</span>
       </div>
       <Flex>
-        <StyledButton onClick={handlePrev} disabled={page === 1}>
+        <StyledButton onClick={handlePrev} disabled={page === 1} type="button">
           <GreaterArrowIcon color={theme.colors.white} />
         </StyledButton>
         {pageNumbers.map((number, index) => (
@@ -190,11 +193,16 @@ const Pagination = ({
             size="sm"
             variant="secondary"
             active={number === page}
+            type="button"
           >
             {number}
           </StyledButton>
         ))}
-        <StyledButton onClick={handleNext} disabled={page === totalPage}>
+        <StyledButton
+          onClick={handleNext}
+          disabled={page === totalPage}
+          type="button"
+        >
           <LessArrowIcon color={theme.colors.white} />
         </StyledButton>
       </Flex>

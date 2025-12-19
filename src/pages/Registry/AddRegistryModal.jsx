@@ -13,6 +13,7 @@ import {
   ModalWithRightBtn,
   PasswordField,
   RadioSelectField,
+  CheckboxField,
 } from '../../shared';
 import { FullPageLoader } from '../../components';
 import {
@@ -24,7 +25,9 @@ import {
   CurvedLockIcon,
   CurvedProfileIcon,
   DocumentTextIcon,
+  InfoIcon,
 } from '../../assets';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -64,7 +67,6 @@ export const AddRegistryModal = ({ hostToEdit }) => {
     RegistrySelectors.getRegistrySelectedData
   );
 
-  const isPrimaryBtnDisable = !testSuccess;
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'testRegistry')
   );
@@ -136,7 +138,17 @@ export const AddRegistryModal = ({ hostToEdit }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues : {
+      is_registry_authenticated: true,
+      methodForCredentials: 'password',
+    },
   });
+
+  const watchMethodCredentials = watch('methodForCredentials');
+  const isAuthenticated = watch('is_registry_authenticated');
+  const formData = watch();
+
+  const isPrimaryBtnDisable = isAuthenticated ? !testSuccess : false;
 
   const onRequestClose = () => {
     dispatch(RegistryActions.setIsAddRegistryModalOpen(false));
@@ -161,8 +173,6 @@ export const AddRegistryModal = ({ hostToEdit }) => {
       setValue('nifi_url', selectedRegistry?.registry_url);
     }
   }, [selectedRegistry]);
-  const watchMethodCredentials = watch('methodForCredentials');
-  const formData = watch();
 
   const handleTestSubmit = data => {
     const payload = new FormData();
@@ -216,17 +226,21 @@ export const AddRegistryModal = ({ hostToEdit }) => {
         secondaryButtonText="Back"
         primaryButtonDisabled={
           isEmpty(selectedRegistry)
-            ? isPrimaryBtnDisable
+            ? isAuthenticated
+              ? !testSuccess
+              : !formData?.name?.trim() || !formData?.nifi_url?.trim()
             : !hasChanges()
         }
         contentStyles={{ minWidth: '40%', height: '60%' }}
         footerAlign="start"
-        tertiaryButton={true}
+        tertiaryButton={isAuthenticated}
         tertiaryButtonConfig={{
           tertiaryButtonTest: 'Test Credentials',
           tertiaryButtonSubmit: handleSubmit(handleTestSubmit),
           tertiaryButtonDisable:
-            !isPrimaryBtnDisable || !isEmpty(selectedRegistry),
+            !isAuthenticated ||
+            !isPrimaryBtnDisable ||
+            !isEmpty(selectedRegistry),
         }}
       >
         <Container
@@ -244,7 +258,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
               register={register}
               errors={errors}
               icon={<DocumentTextIcon />}
-              disabled={!isPrimaryBtnDisable}
+              disabled={!isEmpty(selectedRegistry) && !isPrimaryBtnDisable}
             />
           </div>
           <div className="row">
@@ -257,97 +271,125 @@ export const AddRegistryModal = ({ hostToEdit }) => {
               register={register}
               errors={errors}
               icon={<DocumentTextIcon />}
-              disabled={!isPrimaryBtnDisable || !isEmpty(selectedRegistry)}
+              disabled={!isEmpty(selectedRegistry) && !isPrimaryBtnDisable}
             />
           </div>
-          <div
-            style={{
-              cursor: !isEmpty(selectedRegistry) ? 'not-allowed' : 'pointer',
-              pointerEvents: !isEmpty(selectedRegistry) ? 'none' : 'auto',
-            }}
-          >
-            <div
-              className=" d-flex justify-content-end "
+          <div className="mb-3 d-flex gap-2 align-items-center">
+            <CheckboxField
+              name="is_registry_authenticated"
+              label="Authenticated"
+              register={register}
+              defaultChecked={true}
+            />
+            <div data-tooltip-id="registry-auth-tooltip">
+              <InfoIcon />
+            </div>
+            <ReactTooltip
+              id="registry-auth-tooltip"
+              place="right"
+              content="Enable this option if authentication is required for your Registry URL"
               style={{
-                pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
-                cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+                backgroundColor: '#333',
+                padding: '8px 12px',
+                fontSize: '14px',
+                borderRadius: '4px',
+                zIndex: 9999,
+              }}
+            />
+          </div>
+
+          {isAuthenticated && (
+            <div
+              style={{
+                cursor: !isEmpty(selectedRegistry) ? 'not-allowed' : 'pointer',
+                pointerEvents: !isEmpty(selectedRegistry) ? 'none' : 'auto',
               }}
             >
-              <RadioSelectField
-                name="methodForCredentials"
-                options={OPTIONS}
-                register={register}
-                defaultValue={'password'}
-                disabled={!isPrimaryBtnDisable || !isEmpty(selectedRegistry)}
-              />
-            </div>
+              <div
+                className=" d-flex justify-content-end "
+                style={{
+                  pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
+                  cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
+                }}
+              >
+                <RadioSelectField
+                  name="methodForCredentials"
+                  options={OPTIONS}
+                  register={register}
+                  defaultValue={'password'}
+                  disabled={!isPrimaryBtnDisable || !isEmpty(selectedRegistry)}
+                />
+              </div>
 
-            {(isEmpty(watchMethodCredentials) ||
-              watchMethodCredentials === 'password') && (
-              <>
-                {' '}
-                <div className="row">
-                  <InputField
-                    name="username"
-                    type="text"
-                    label="User Name"
-                    placeholder="Enter Your User Name"
-                    required
-                    register={register}
-                    errors={errors}
-                    icon={<CurvedProfileIcon />}
-                    disabled={
-                      !isPrimaryBtnDisable || !isEmpty(selectedRegistry)
-                    }
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="row">
-              <PasswordField
-                name="password"
-                register={register}
-                watch={watch}
-                label="Password"
-                icon={<CurvedLockIcon />}
-                placeholder="Enter Your Password"
-                disableToggle={false}
-                errors={errors}
-                disabled={!isPrimaryBtnDisable || !isEmpty(selectedRegistry)}
-              />{' '}
-            </div>
-
-            {watchMethodCredentials === 'privatekey' && (
-              <>
-                <span
-                  style={{
-                    pointerEvents:
-                      !isPrimaryBtnDisable || !isEmpty(selectedRegistry)
-                        ? 'none'
-                        : 'auto',
-                    cursor:
-                      !isPrimaryBtnDisable || !isEmpty(selectedRegistry)
-                        ? 'not-allowed'
-                        : 'pointer',
-                  }}
-                >
-                  <ModalContainer>
-                    <PemUploadField
-                      name="pfxFile"
-                      watch={watch}
-                      control={control}
+              {(isEmpty(watchMethodCredentials) ||
+                watchMethodCredentials === 'password') && (
+                <>
+                  {' '}
+                  <div className="row">
+                    <InputField
+                      name="username"
+                      type="text"
+                      label="User Name"
+                      placeholder="Enter Your User Name"
                       required
-                      rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                      placeholder={'Upload PFX file'}
+                      register={register}
                       errors={errors}
-                      label="PFX file"
+                      icon={<CurvedProfileIcon />}
+                      disabled={
+                        !isPrimaryBtnDisable || !isEmpty(selectedRegistry)
+                      }
                     />
-                  </ModalContainer>
-                </span>
-              </>
-            )}
-          </div>
+                  </div>
+                </>
+              )}
+
+              <div className="row">
+                <PasswordField
+                  name="password"
+                  register={register}
+                  watch={watch}
+                  label="Password"
+                  icon={<CurvedLockIcon />}
+                  placeholder="Enter Your Password"
+                  disableToggle={false}
+                  errors={errors}
+                  disabled={!isPrimaryBtnDisable || !isEmpty(selectedRegistry)}
+                />{' '}
+              </div>
+
+              {watchMethodCredentials === 'privatekey' && (
+                <>
+                  <span
+                    style={{
+                      pointerEvents:
+                        !isPrimaryBtnDisable || !isEmpty(selectedRegistry)
+                          ? 'none'
+                          : 'auto',
+                      cursor:
+                        !isPrimaryBtnDisable || !isEmpty(selectedRegistry)
+                          ? 'not-allowed'
+                          : 'pointer',
+                    }}
+                  >
+                    <ModalContainer>
+                      <PemUploadField
+                        name="pfxFile"
+                        watch={watch}
+                        control={control}
+                        required
+                        rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                        placeholder={'Upload PFX file'}
+                        errors={errors}
+                        label="PFX file"
+                      />
+                    </ModalContainer>
+                  </span>
+                </>
+              )}
+            </div>
+          )}
         </Container>
       </ModalWithRightBtn>
     </>

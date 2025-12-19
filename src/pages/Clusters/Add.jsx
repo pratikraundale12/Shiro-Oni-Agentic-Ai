@@ -20,17 +20,20 @@ import {
   NamespacesActions,
 } from '../../store';
 import {
+  // createRegistry,
   getOneRegistry,
   getRegistryList,
   testCluster,
   testRegistry,
   updateCluster,
 } from '../../store/apis';
+import { AuthenticationSelectors } from '../../store/authentication';
 import { Certificate } from './components/Certificate';
 import CertificateTextDisplay from './components/CertificateTextDisplay';
 import ClusterCheckBoxSection from './components/ClusterCheckboxSection';
 import ClusterFieldsForm from './components/ClusterFieldsForm';
 import ClusterNavigationTab from './components/ClusterNavigationTab';
+import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
 import ClusterTagInput from './components/ClusterTagInput';
 import ClusterTestSection from './components/ClusterTestSection';
 import { Creditionals } from './components/Creditionals';
@@ -39,12 +42,12 @@ import RegistryFormSection from './components/RegistryFormSection';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
-import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
-import { AuthenticationSelectors } from '../../store/authentication';
 import { ClusterCustomProcessor } from './components/ClusterCustomProcessor';
 import { SSHDetailsTabSection } from './components/SSHDetailsTabSection';
 import { DriversCluster } from './components/DriversClusters';
 import { FlowGzTabSection } from './components/FlowGzSection';
+import RegistryMultiSelect from '../../shared/FormInputs/components/RegistryMultiSelectField';
+
 import { createRegistry } from '../../store/index1';
 import { ClusterCustomScript } from './components/ClusterCustomScript';
 const Wrapper = styled.div`
@@ -127,7 +130,13 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-
+const LabelSelect = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+  margin-bottom: 18px;
+`;
 export const Add = () => {
   const [activeTab, setActiveTab] = useState(CLUSTER_MODULE_TABS.CLUSTER);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
@@ -141,37 +150,58 @@ export const Add = () => {
   const [openSummary, setOpenSummary] = useState(false);
   const [failedTestMessage, setFailedTestMessage] = useState('');
   const [registries, setRegistries] = useState([]);
+
   const location = useLocation();
   const dispatch = useDispatch();
   const { state: data } = location.state || {};
+
   const [tags, setTags] = useState(data?.tag || '');
   const [clusterData, setClusterData] = useState({
     clusterName: data?.name || '',
     nifiUrl: data?.nifi_url || '',
     metrics_url: data?.metrics_url || '',
     logs_url: data?.logs_url || '',
+    service_account_certificate: data?.service_account_certificate || '',
+    service_account_certificate_password:
+      data?.service_account_certificate_password || '',
   });
   const [clusterId, setClusterId] = useState(data?.id);
+  const [editUsername, setEditUsername] = useState('');
+  const [editPassword, setEditPassword] = useState('');
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'clusters')
   );
+
   const [saveButtonEnable, setSaveButtonEnable] = useState(true);
   const [error, setError] = useState('');
   const filteredGridData = gridData.filter(item => {
+    if (location?.pathname === '/clusters/add') {
+      return true;
+    }
     return item?.nifi_url !== data?.nifi_url;
   });
 
   const hostToEdit = clusterData?.clusterName || clusterId;
 
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
-  const isSuperAdmin = currentUserData?.role === 'superadmin';
+  const clusterDataRedux = useSelector(ClustersSelectors.getAddEditClusterData);
+  // Add this state to track if it's a copy operation
+  const [isCopyOperation, setIsCopyOperation] = useState(false);
 
+  const isSuperAdmin = currentUserData?.role === 'superadmin';
   const ClusterSchema = yup.object().shape({
     clusterName: yup
       .string()
-      .min(3, 'Cluster Name must be at least 3 characters long')
-      .max(30, 'Cluster Name must be at most 30 characters long')
-      .required('Cluster Name is required')
+      .required('Cluster name is required')
+      .test(
+        'no-only-spaces',
+        'Cluster name cannot be only spaces and must be 3-50 characters long',
+        function (value) {
+          if (typeof value !== 'string') return false;
+          const trimmed = value.trim().replace(/\s+/g, ' ');
+          return trimmed.length >= 3 && trimmed.length <= 50;
+        }
+      )
       .test(
         'unique-cluster-name',
         'Cluster name already exists',
@@ -184,8 +214,17 @@ export const Add = () => {
       ),
     nifiUrl: yup
       .string()
-      .url('Enter a valid NiFi URL')
       .required('NiFi URL is required')
+      .test('is-valid-url', 'Enter a valid NiFi URL', function (value) {
+        if (!value) return false;
+        const trimmedValue = value.trim();
+        try {
+          new URL(trimmedValue);
+          return true;
+        } catch {
+          return false;
+        }
+      })
       .test('unique-registry-url', 'Cluster already exists', function (value) {
         const val = value?.trim?.() || '';
         if (!val) return true;
@@ -201,9 +240,17 @@ export const Add = () => {
   const RegistrySchema = yup.object().shape({
     registryName: yup
       .string()
+      .required('Registry Name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Registry Name cannot start or end with spaces',
+        value => {
+          if (!value) return false;
+          return value === value.trim();
+        }
+      )
       .min(3, 'Registry Name must be at least 3 characters long')
       .max(30, 'Registry Name must be at most 30 characters long')
-      .required('Registry Name is required')
       .test(
         'unique-registry-name',
         'Registry name already exists',
@@ -217,8 +264,21 @@ export const Add = () => {
       ),
     registryUrl: yup
       .string()
-      .url('Enter a valid Registry URL')
-      .required('NiFi URL is required')
+      .required('NiFi Registry URL is required')
+      .test(
+        'is-valid-url',
+        'Enter a valid NiFi Registry URL',
+        function (value) {
+          if (!value) return false;
+          const trimmedValue = value.trim();
+          try {
+            new URL(trimmedValue);
+            return true;
+          } catch {
+            return false;
+          }
+        }
+      )
       .test(
         'unique-registry-urls',
         'Registry already exists',
@@ -229,6 +289,24 @@ export const Add = () => {
           );
         }
       ),
+    default_registry: yup
+      .string()
+      .required('Default Registry is required')
+      .test(
+        'default-registry-in-selected',
+        'Default registry must be one of the selected registries',
+        function (value) {
+          if (!value) return false;
+          const selectedRegistries = this.parent.registry;
+          if (!selectedRegistries || selectedRegistries.length === 0)
+            return false;
+          return selectedRegistries.some(registry => registry.value === value);
+        }
+      ),
+    registry: yup
+      .array()
+      .min(1, 'At least one registry must be selected')
+      .required('Registry selection is required'),
   });
 
   useEffect(() => {
@@ -257,6 +335,14 @@ export const Add = () => {
   const [approverEnable, setApproverEnable] = useState(
     data?.approver_enable || false
   );
+
+  const [approverEnableForStartAndStop, setApproverEnableForStartAndStop] =
+    useState(data?.start_stop_requires_approval || false);
+
+  const [certificateOption, setCertificateOption] = useState(
+    data?.is_certificate_based_service_account || false
+  );
+
   const [changeRequestEnable, setChangeRequestApproverEnable] = useState(
     data?.change_request_enable || false
   );
@@ -268,6 +354,17 @@ export const Add = () => {
       ? ClusterSchema
       : RegistrySchema;
   };
+  const [testCertificateFile, setTestCertificateFile] = useState('');
+  const [testCertificatePassword, setTestCertificatePassword] = useState('');
+  const [testCertificateFileForRegistry, setTestCertificateFileForRegistry] =
+    useState('');
+  const [uploadFileatEditTime, setUploadFileatEditTime] = useState(false);
+  const [
+    testCertificatePasswordForRegistry,
+    setTestCertificatePasswordForRegistry,
+  ] = useState('');
+  const [registeryCertificateOption, setRegisteryCertificateOption] =
+    useState(false);
   useEffect(() => {
     if (!approverEnable) {
       setChangeRequestApproverEnable(false);
@@ -279,6 +376,7 @@ export const Add = () => {
     watch,
     register,
     reset,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -286,32 +384,36 @@ export const Add = () => {
     mode: 'all',
     reValidateMode: 'onChange',
   });
-
-  const selectedRegistryId = watch('registry');
-  const handleBack = () => {
-    setIsCertificateOpen(false);
-    setIsCredOpen(false);
-    setTestSuccess(false);
-    setDataFill(false);
-    setIsEditDetails(false);
-
-    setTest(true);
-    if (activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry) {
-      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
-      setNewRegistry(false);
-    } else if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
-      history.push('/clusters');
-    } else if (activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT) {
-      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
-    } else {
-      setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
-    }
+  const formStateData = watch();
+  const newRegistryDataFromWatch = {
+    registry: formStateData?.registryName,
+    url: formStateData?.registryUrl,
   };
 
+  const selectedRegistryId = watch('registry');
+  const selectedDefalutRegistryId = watch('default_registry');
+
+  // Clear default registry if it's not in the selected registries
+  useEffect(() => {
+    if (selectedRegistryId && selectedDefalutRegistryId) {
+      const isDefaultRegistryInSelected = selectedRegistryId.some(
+        registry => registry?.value === selectedDefalutRegistryId
+      );
+
+      if (!isDefaultRegistryInSelected) {
+        setValue('default_registry', '');
+      }
+    }
+  }, [selectedRegistryId, selectedDefalutRegistryId, setValue]);
+
   const editClusterData = async () => {
+    const selectedRegistriesId = formStateData?.registry?.map(
+      item => item?.value
+    );
+
     try {
       const payload = {
-        name: clusterData?.clusterName,
+        name: (clusterData?.clusterName || '').trim(),
         nifi_url: clusterData?.nifiUrl,
         logs_url: isEmpty(clusterData?.logs_url) ? null : clusterData?.logs_url,
         metrics_url: isEmpty(clusterData?.metrics_url)
@@ -320,10 +422,27 @@ export const Add = () => {
         tag: tags,
         notification_enable: notificationEnable,
         approver_enable: approverEnable,
+        start_stop_requires_approval: approverEnableForStartAndStop,
         change_request_enable: changeRequestEnable,
-        has_custom_service_account: false,
-      };
+        // registry_ids: selectedRegistriesId,
+        has_custom_service_account: data?.has_custom_service_account,
+        is_certificate_based_service_account: certificateOption
+          ? 'true'
+          : 'false',
+        ...(testCertificateFile && {
+          service_account_certificate: testCertificateFile,
+        }),
+        ...(testCertificatePassword && {
+          service_account_certificate_password: testCertificatePassword,
+        }),
+        service_username: data?.service_username,
+        service_password: data?.service_password,
+        ...(selectedRegistriesId && {
+          registry_ids: selectedRegistriesId,
+        }),
 
+        // default_registry_id: data?.default_registry?.id,
+      };
       const id = clusterId;
       const response = await updateCluster(id, payload);
 
@@ -419,6 +538,45 @@ export const Add = () => {
     'tags',
     'is_registry_authenticated',
   ]);
+  useEffect(() => {
+    if (
+      !isEmpty(clusterData?.clusterName) ||
+      !isEmpty(clusterData?.nifiUrl) ||
+      !isEmpty(clusterData?.metrics_url) ||
+      !isEmpty(clusterData?.logs_url)
+    ) {
+      dispatch(ClustersActions.addEditClusterData(clusterData));
+    }
+  }, [clusterData]);
+
+  const setClusterFormData = () => {
+    reset({
+      clusterName: clusterDataRedux?.clusterName,
+      metrics_url: clusterDataRedux?.metrics_url || '',
+      logs_url: clusterDataRedux?.logs_url || '',
+      nifiUrl: clusterDataRedux?.nifiUrl,
+    });
+  };
+  const handleBack = () => {
+    setIsCertificateOpen(false);
+    setIsCredOpen(false);
+    setTestSuccess(false);
+    setDataFill(false);
+    setIsEditDetails(false);
+
+    setTest(true);
+    if (activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry) {
+      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
+      setNewRegistry(false);
+    } else if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
+      history.push('/clusters');
+    } else if (activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT) {
+      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
+    } else {
+      setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
+      setClusterFormData();
+    }
+  };
 
   const checkDuplicate = filteredGridData?.some(
     reg => reg.nifi_url === watchedFields?.[1]
@@ -446,13 +604,18 @@ export const Add = () => {
         clusterName !== clusterData.clusterName ||
         nifiUrl !== clusterData.nifiUrl ||
         logs_url !== clusterData.logs_url ||
-        metrics_url !== clusterData.metrics_url
+        metrics_url !== clusterData.metrics_url ||
+        testCertificateFile !== clusterData.service_account_certificate ||
+        testCertificatePassword !==
+          clusterData.service_account_certificate_password
       ) {
         setClusterData({
           clusterName: clusterName || '',
           nifiUrl: nifiUrl || '',
           metrics_url: metrics_url || '',
           logs_url: logs_url || '',
+          service_account_certificate: testCertificateFile || '',
+          service_account_certificate_password: testCertificatePassword || '',
         });
       }
     } else if (
@@ -468,6 +631,10 @@ export const Add = () => {
         setRegistryData({
           registryName: registryName || '',
           registryUrl: registryUrl || '',
+          is_registry_authenticated: watchedFields?.[7] || true,
+          service_account_certificate: testCertificateFileForRegistry || '',
+          service_account_certificate_password:
+            testCertificatePasswordForRegistry || '',
         });
       }
     }
@@ -494,6 +661,8 @@ export const Add = () => {
     registryName,
     registryUrl,
     activeTab,
+    testCertificateFile,
+    testCertificatePassword,
     newRegistry,
     isEditDetails,
     data?.id,
@@ -501,24 +670,45 @@ export const Add = () => {
     registryData,
   ]);
 
+  const selectedOptions =
+    !isEmpty(registries) &&
+    !isEmpty(data) &&
+    registries
+      ?.filter(item => data?.registry_ids.includes(item.value))
+      .map(item => ({
+        label: item.label,
+        value: item.value,
+      }));
+
   useEffect(() => {
     if (
-      data?.registry_id ||
+      (data?.registry_ids && registries && selectedOptions) ||
       data?.created_by_ansible ||
       data?.is_kube_cluster
     ) {
       reset({
-        registry: data?.registry_id || '',
-        clusterName: clusterData?.clusterName,
-        metrics_url: clusterData?.metrics_url || '',
-        logs_url: clusterData?.logs_url || '',
-        nifiUrl: clusterData?.nifiUrl,
+        registry: selectedOptions || data?.registry_ids || [],
+        clusterName: clusterData?.clusterName || data?.name,
+        metrics_url: clusterData?.metrics_url || data?.metrics_url || '',
+        logs_url: clusterData?.logs_url || data?.logs_url || '',
+        nifiUrl: clusterData?.nifiUrl || data?.nifi_url,
         registryName: registryData?.name,
         registryUrl: registryData?.registry_url || '',
       });
+
+      // Set default registry value using setValue
+      if (data?.default_registry?.id) {
+        setValue('default_registry', data?.default_registry?.id);
+      }
+
       setClusterId(data?.id);
+
+      // Check if it's a copy operation (data exists but no id)
+      if (!data?.id && data?.name) {
+        setIsCopyOperation(true);
+      }
     }
-  }, [reset, activeTab, newRegistry]);
+  }, [activeTab, newRegistry, registries, data, setValue]);
 
   const fetchRegistry = async () => {
     try {
@@ -528,17 +718,10 @@ export const Add = () => {
         value: item.id,
         registry_url: item?.registry_url,
       }));
+
       setRegistries(names);
     } catch (error) {
-      console.error('Failed to fetch registries:', error);
-    }
-  };
-  const fetchRegistryDetails = async () => {
-    try {
-      const response = await getOneRegistry(selectedRegistryId);
-      setRegistryData(response);
-    } catch (error) {
-      console.error('Failed to fetch registry details:', error);
+      toast.error(error?.response?.data?.message);
     }
   };
 
@@ -562,26 +745,26 @@ export const Add = () => {
     }
   }, [activeTab]);
 
-  useEffect(() => {
-    if (selectedRegistryId && noRegistryAPIcall()) {
-      fetchRegistryDetails();
-    }
-  }, [registries, selectedRegistryId, activeTab, newRegistry]);
-
   const handleRegistry = () => {
-    if (
-      registryURLs?.data?.includes(registryData?.registry_url) ||
-      sortRegisrtyURL.includes(registryData?.registry_url)
-    ) {
-      setIsCertificateOpen(false);
-      setIsCredOpen(false);
-      setTestSuccess(false);
-      setTest(true);
-      setOpenSummary(true);
-    } else {
-      toast.error('This registry do not  exist!');
+    // Check form validation errors for default_registry
+    if (errors.default_registry) {
+      toast.error(errors.default_registry.message);
+      return;
     }
+
+    // Validate that a default registry is selected
+    if (!selectedDefalutRegistryId) {
+      toast.error('Please select a default registry before continuing');
+      return;
+    }
+
+    setIsCertificateOpen(false);
+    setIsCredOpen(false);
+    setTestSuccess(false);
+    setTest(true);
+    setOpenSummary(true);
   };
+
   function handleKeyDown(e) {
     const value = inputValue;
     if (e.key === 'Backspace') {
@@ -647,6 +830,10 @@ export const Add = () => {
       //this code needs to updateee for edit functionality
       payload.append('name', registryData?.registryName || registryData.name);
       payload.append(
+        'is_registry_authenticated',
+        registryData?.is_registry_authenticated
+      );
+      payload.append(
         'nifi_url',
         registryData?.registryUrl || registryData.registry_url
       );
@@ -670,7 +857,9 @@ export const Add = () => {
       data?.tag === tags &&
       data?.approver_enable === approverEnable &&
       data?.notification_enable === notificationEnable &&
-      data?.change_request_enable === changeRequestEnable
+      data?.change_request_enable === changeRequestEnable &&
+      data?.start_stop_requires_approval === approverEnableForStartAndStop &&
+      data?.is_certificate_based_service_account === certificateOption
     );
   };
 
@@ -680,20 +869,52 @@ export const Add = () => {
     } else {
       setSaveButtonEnable(false);
     }
-  }, [data, tags, approverEnable, notificationEnable, changeRequestEnable]);
+  }, [
+    data,
+    tags,
+    approverEnable,
+    notificationEnable,
+    changeRequestEnable,
+    approverEnableForStartAndStop,
+    certificateOption,
+  ]);
+  // Also update the handleTitleProvider function to handle copy operation
   const handleTitleProvider = data => {
-    if (data) {
+    if (data && location?.pathname === '/clusters/edit') {
       return `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`;
+    } else if (isCopyOperation) {
+      return 'Add New Cluster Details';
     } else {
       return 'Add New Cluster Details';
     }
   };
+  // Update the isRegistryDetailDisable function
   const isRegistryDetailDisable = () => {
-    return (
-      clusterId &&
-      (watchedFields?.[1] !== data?.nifi_url ||
+    // For edit mode (existing cluster with ID)
+    if (clusterId && !isCopyOperation) {
+      return (
+        watchedFields?.[1] !== data?.nifi_url ||
         watchedFields?.[0] !== data?.name ||
-        !checkEditSave())
+        !checkEditSave()
+      );
+    }
+
+    // For copy operation or add new cluster
+    if (isCopyOperation || (!clusterId && data)) {
+      return (
+        !watchedFields?.[0] || // clusterName is empty
+        !watchedFields?.[1] || // nifiUrl is empty
+        hasValidationErrors() || // has form validation errors
+        !testSuccess // cluster test not successful
+      );
+    }
+
+    // For completely new cluster (no data at all)
+    return (
+      !watchedFields?.[0] || // clusterName is empty
+      !watchedFields?.[1] || // nifiUrl is empty
+      hasValidationErrors() || // has form validation errors
+      !testSuccess // cluster test not successful
     );
   };
 
@@ -726,8 +947,10 @@ export const Add = () => {
 
   const isSaveDisabled = () =>
     isFieldValuesUnchanged() && checkEditSave() && saveButtonEnable;
-
   const isDisabled = () => {
+    if (!isEmpty(data) && uploadFileatEditTime) {
+      return false;
+    }
     if (!watchedFields?.[7] && activeTab === 'registry') {
       return false;
     }
@@ -741,6 +964,45 @@ export const Add = () => {
     return isTestInvalid();
   };
 
+  const handleNewRgistrySave = async () => {
+    const formData = new FormData();
+
+    formData.append('name', formStateData?.registryName || '');
+    formData.append(
+      'is_registry_authenticated',
+      formStateData?.is_registry_authenticated
+    );
+    formData.append('registry_url', formStateData?.registryUrl || '');
+    formData.append(
+      'is_certificate_based_service_account',
+      registeryCertificateOption
+    );
+
+    if (testCertificateFileForRegistry) {
+      formData.append(
+        'service_account_certificate',
+        testCertificateFileForRegistry
+      );
+    }
+
+    if (testCertificatePasswordForRegistry) {
+      formData.append(
+        'service_account_certificate_password',
+        testCertificatePasswordForRegistry
+      );
+    }
+
+    const response = await createRegistry(formData); // Make sure your API expects FormData
+
+    if (response?.status === 201) {
+      fetchRegistry();
+    } else {
+      toast.error(response.message);
+    }
+
+    handleBack();
+  };
+
   return (
     <Wrapper>
       <Title title={handleTitleProvider(data)} />
@@ -751,6 +1013,8 @@ export const Add = () => {
           setNewRegistry={setNewRegistry}
           isRegistryDetailDisable={isRegistryDetailDisable()}
           data={data}
+          setClusterFormData={setClusterFormData}
+          certificateOption={certificateOption}
         />
 
         {activeTab === CLUSTER_MODULE_TABS.CLUSTER && (
@@ -775,22 +1039,32 @@ export const Add = () => {
               setApproverEnable={setApproverEnable}
               setChangeRequestApproverEnable={setChangeRequestApproverEnable}
               setNotificationEnable={setNotificationEnable}
+              setApproverEnableForStartAndStop={
+                setApproverEnableForStartAndStop
+              }
               changeRequestEnable={changeRequestEnable}
               notificationEnable={notificationEnable}
-            />
-            <ClusterTestSection
-              test={test}
-              setIsCertificateOpen={setIsCertificateOpen}
-              testSuccess={testSuccess}
-              dataFill={dataFill}
-              checkDuplicate={checkDuplicate}
-              checkDuplicateName={checkDuplicateName}
-              setIsCredOpen={setIsCredOpen}
-              testData={testData}
-              watchedFields={watchedFields}
+              approverEnableForStartAndStop={approverEnableForStartAndStop}
+              certificateOption={certificateOption}
+              setCertificateOption={setCertificateOption}
               data={data}
             />
-            {testSuccess && !successModal && (
+            {
+              <ClusterTestSection
+                test={test}
+                certificateOption={certificateOption}
+                setIsCertificateOpen={setIsCertificateOpen}
+                testSuccess={testSuccess}
+                dataFill={dataFill}
+                checkDuplicate={checkDuplicate}
+                checkDuplicateName={checkDuplicateName}
+                setIsCredOpen={setIsCredOpen}
+                testData={testData}
+                watchedFields={watchedFields}
+                data={data}
+              />
+            }
+            {testSuccess && !successModal && !certificateOption && (
               <CertificateTextDisplay
                 clusterModule={true}
                 activeTab={activeTab}
@@ -802,13 +1076,30 @@ export const Add = () => {
 
         {activeTab === CLUSTER_MODULE_TABS.REGISTRY && !newRegistry && (
           <FormContainer>
-            <SelectField
-              control={control}
-              name="registry"
-              label={KDFM.REGISTRY_NAME}
-              options={registries}
-              icon={<QRIcons />}
-            />
+            <div className="w-100 mb-4 row">
+              <div className="col-lg-8">
+                <LabelSelect>Select Registry</LabelSelect>
+                <RegistryMultiSelect
+                  enableCheckboxes
+                  control={control}
+                  name="registry"
+                  placeholder={'Select Registry'}
+                  options={registries}
+                />
+              </div>
+              <div className="col-lg-4">
+                <SelectField
+                  label="Default Registry"
+                  name="default_registry"
+                  control={control}
+                  // icon={<LogDocumentIcon color="#444445" />}
+                  errors={errors}
+                  options={selectedRegistryId}
+                  placeholder="Select Default Registry"
+                  required={true}
+                />
+              </div>
+            </div>
             <ORText style={{ textAlign: 'center' }}>OR</ORText>
             <div>
               <StyledButton
@@ -857,6 +1148,9 @@ export const Add = () => {
               clusterId={clusterId}
               registryData={registryData}
               watchedFields={watchedFields}
+              isCertificateUser={certificateOption}
+              registeryCertificateOption={registeryCertificateOption}
+              setRegisteryCertificateOption={setRegisteryCertificateOption}
             />
           </FormContainer>
         )}
@@ -907,18 +1201,40 @@ export const Add = () => {
           <Button variant="secondary" onClick={handleBack}>
             {KDFM.BACK}
           </Button>
-          {showSubmitButtonOnCluster() && (
-            <Button onClick={handleSubmit(onSubmit)} disabled={isDisabled()}>
-              {giveSubmitButtonText()}
-            </Button>
-          )}
-          {showRegistryContiueButton() && (
+          {showSubmitButtonOnCluster() &&
+            !(activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry) && (
+              <Button onClick={handleSubmit(onSubmit)} disabled={isDisabled()}>
+                {giveSubmitButtonText()}
+              </Button>
+            )}
+          {showRegistryContiueButton() &&
+            !(activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry) && (
+              <Button
+                id="registry-details-continue-btn"
+                onClick={handleRegistry}
+                disabled={
+                  isCopyOperation
+                    ? false
+                    : !isEmpty(data)
+                      ? JSON.stringify(data?.registry_ids?.sort()) ===
+                          JSON.stringify(
+                            selectedRegistryId?.map(item => item?.value).sort()
+                          ) &&
+                        selectedDefalutRegistryId === data?.default_registry?.id
+                      : isEmpty(selectedRegistryId) ||
+                        !selectedDefalutRegistryId
+                }
+              >
+                {KDFM.CONTINUE}
+              </Button>
+            )}
+          {activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry && (
             <Button
               id="registry-details-continue-btn"
-              onClick={handleRegistry}
-              disabled={!selectedRegistryId}
+              onClick={handleNewRgistrySave}
+              disabled={isDisabled()}
             >
-              {KDFM.CONTINUE}
+              {KDFM.SAVE}
             </Button>
           )}
         </div>
@@ -932,6 +1248,14 @@ export const Add = () => {
         clusterData={clusterData}
         registryData={registryData}
         setSuccessModal={setSuccessModal}
+        setTestCertificateFile={setTestCertificateFile}
+        setTestCertificatePassword={setTestCertificatePassword}
+        setTestCertificatePasswordForRegistry={
+          setTestCertificatePasswordForRegistry
+        }
+        setTestCertificateFileForRegistry={setTestCertificateFileForRegistry}
+        data={data}
+        setUploadFileatEditTime={setUploadFileatEditTime}
       />
       <Creditionals
         isCredOpen={isCredOpen}
@@ -943,6 +1267,10 @@ export const Add = () => {
         registryData={registryData}
         setSuccessModal={setSuccessModal}
         setSaveButtonEnable={setSaveButtonEnable}
+        newregistryData={newRegistryDataFromWatch}
+        // Pass setters for username and password
+        setEditUsername={setEditUsername}
+        setEditPassword={setEditPassword}
       />
       <SummaryModal
         clusterData={clusterData}
@@ -955,7 +1283,12 @@ export const Add = () => {
         notificationEnable={notificationEnable}
         approverEnable={approverEnable}
         changeRequestEnable={changeRequestEnable}
+        approverEnableForStartAndStop={approverEnableForStartAndStop}
         tags={tags}
+        certificateOption={certificateOption}
+        selectedRegistriesArray={formStateData?.registry}
+        default_registry_data={selectedDefalutRegistryId}
+        registries={registries}
       />
       {successModal && (
         <SuccessTestModal
@@ -965,6 +1298,7 @@ export const Add = () => {
           text="Your configuration test was successful.
            Continue with the next steps."
           title="Testing Successful"
+          activeTab={activeTab}
         />
       )}
       <FailedTestModal

@@ -14,6 +14,7 @@ import {
 } from '../../store/flowValidation';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import Collapsible from '../Namespaces/Collapsible';
+import { ActivityHistorySelectors } from '../../store/activityHistory';
 
 // Styled Components
 const FlowcompareStyled = styled.div`
@@ -127,8 +128,8 @@ const DiffModalFlowValidation = () => {
 
   const currentData = validationResult?.data;
   const reportvalidationDetails =
-    details?.FlowAnalysisReport[0]?.report_json || {};
-
+    details?.FlowAnalysisReport?.[0]?.report_json || {};
+  const selectedData = useSelector(ActivityHistorySelectors.getSelectedItem);
   // Effects
   useEffect(() => {
     dispatch(FlowValidationActions.ruleScopeFetch({}));
@@ -138,7 +139,9 @@ const DiffModalFlowValidation = () => {
   useEffect(() => {
     if (selectedValidation === 'user validation') {
       dispatch(
-        SchedularActions.fetchScheduleDeploymentDetails(selectedSchedule?.id)
+        SchedularActions.fetchScheduleDeploymentDetails(
+          selectedSchedule?.id || selectedData?.schedule_id
+        )
       );
     }
   }, [dispatch, selectedSchedule?.id, selectedValidation]);
@@ -147,12 +150,13 @@ const DiffModalFlowValidation = () => {
   const handleValidateFlow = () => {
     dispatch(
       FlowValidationActions.validateRules({
-        clusterId: selectedSchedule?.cluster_id,
-        namespaceId: selectedSchedule?.namespace_id,
+        clusterId: selectedSchedule?.cluster_id || selectedData?.cluster_id,
+        namespaceId:
+          selectedSchedule?.namespace_id || selectedData?.namespace_id,
         data: {
           generateVarList: false,
           rulesForValidation: ruleIds,
-          scheduleId: selectedSchedule?.id,
+          scheduleId: selectedSchedule?.id || selectedData?.schedule_id,
         },
       })
     );
@@ -190,7 +194,7 @@ const DiffModalFlowValidation = () => {
     if (selectedValidation === 'admin validation') {
       return validationResult?.data?.tableBody || [];
     }
-    return details?.FlowAnalysisReport[0]?.report_json?.tableBody || [];
+    return details?.FlowAnalysisReport?.[0]?.report_json?.tableBody || [];
   };
 
   const tableBody = getTableBody();
@@ -261,6 +265,7 @@ const DiffModalFlowValidation = () => {
       </>
     );
   };
+  //
 
   return (
     <FlowcompareStyled>
@@ -306,7 +311,6 @@ const DiffModalFlowValidation = () => {
           </div>
         </div>
       )}
-
       {selectedValidation === 'admin validation' &&
         renderValidationContent(currentData)}
       {selectedValidation === 'user validation' &&

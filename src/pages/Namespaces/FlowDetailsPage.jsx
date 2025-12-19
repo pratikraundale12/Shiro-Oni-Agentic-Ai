@@ -1,8 +1,12 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
+import * as Yup from 'yup';
 import {
   CanvasXIcon,
   CanvasYIcon,
@@ -19,7 +23,7 @@ import RightIcon from '../../assets/Icons/RightIcon';
 import { FullPageLoader, Table } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, InputField } from '../../shared';
+import { Button, CheckboxField, InputField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   AuthenticationSelectors,
@@ -33,11 +37,9 @@ import {
 import { SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
+import LocalChangesModal from './LocalChangesModal';
 import RectangleGraph from './birdEyeViewGraph';
-import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
-import { isEmpty } from 'lodash';
+import { SettingsActions } from '../../store/settings';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -184,6 +186,13 @@ const ProcessorIconDiv = styled.div`
   padding-right: 1.5rem;
 `;
 
+const RevertlocalChangesCheckbox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: fit-content;
+`;
+
 const FlowDetailsPage = () => {
   const dispatch = useDispatch();
   const registryAllDetails = useSelector(
@@ -193,10 +202,23 @@ const FlowDetailsPage = () => {
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
+
+  const registryDropdownOptions = registryData.map(item => ({
+    label: item?.name,
+    value: item?.nifiRegistryId,
+    default_registry_id: item?.is_default,
+    url: item?.url,
+  }));
+
+  const defaultRegistry = registryDropdownOptions.find(
+    item => item.default_registry_id === true
+  );
+  const defaultRegistryUrl = defaultRegistry?.url || '';
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
@@ -205,6 +227,9 @@ const FlowDetailsPage = () => {
   );
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
+  );
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
   );
   const userStoryValue = useSelector(NamespacesSelectors.getUserStory);
   const changeRequestValue = useSelector(NamespacesSelectors.getChangeRequest);
@@ -218,6 +243,12 @@ const FlowDetailsPage = () => {
   const [xStateCoordinate, setXStateCoordiate] = useState(null);
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
   const tableRef = useRef(null);
+  const shouldRevertChanges = useSelector(
+    NamespacesSelectors.getShouldRevertChanges
+  );
+  const registrySelectedId = useSelector(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
+  );
 
   useEffect(() => {
     if (isUpgrade) {
@@ -253,11 +284,13 @@ const FlowDetailsPage = () => {
       x:
         storedXcord ||
         xStateCoordinate ||
-        registryDetailsData?.position?.[0]?.x,
+        registryDetailsData?.position?.[0]?.x ||
+        0,
       y:
         storedYcord ||
         yStateCoordinate ||
-        registryDetailsData?.position?.[0]?.y,
+        registryDetailsData?.position?.[0]?.y ||
+        0,
       width: 384,
       height: 176,
       color: theme.colors.primary,
@@ -335,10 +368,16 @@ const FlowDetailsPage = () => {
     if (isUpgrade) {
       history.push('/process-group/config-details');
     } else {
-      if (selectedVersion === selectedNameSpace?.version) {
-        {
-          toast.info('The selected version is already deployed.');
-        }
+      if (scheduleStartFlow) {
+        dispatch(
+          NamespacesActions.fetchRegistryFlowDetails({
+            bucketId: selectedNameSpace?.bucketId,
+            flowId: selectedNameSpace?.flowId,
+            version: selectedVersion,
+          })
+        );
+      } else if (selectedVersion === selectedNameSpace?.version) {
+        toast.info('The selected version is already deployed.');
       } else {
         dispatch(
           NamespacesActions.fetchRegistryFlowDetails({
@@ -347,7 +386,6 @@ const FlowDetailsPage = () => {
             version: selectedVersion,
           })
         );
-        history.push('/process-group/config-details');
       }
     }
   };
@@ -365,6 +403,10 @@ const FlowDetailsPage = () => {
   };
 
   const handleRowClick = item => {
+    if (scheduleStartFlow) {
+      toast.info('Version selection is disabled in schedule start flow');
+      return;
+    }
     setSelectedVersion(item?.version);
     dispatch(NamespacesActions.setVersionSelect({ version: item?.version }));
     if (item?.version !== selectedVersion) {
@@ -428,6 +470,11 @@ const FlowDetailsPage = () => {
   const loadingVersion = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchVersionData')
   );
+
+  const loadingRevertChanges = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'revertLocalChanges')
+  );
+
   const enableTour = useSelector(AuthenticationSelectors.getDfmTour);
   const stepIndex = useSelector(ClustersSelectors.getTourIndex);
   if (enableTour) {
@@ -459,17 +506,18 @@ const FlowDetailsPage = () => {
     selectedNameSpace?.state === 'STALE' ||
     selectedNameSpace?.state === 'UP_TO_DATE';
 
-  const isButtonDisabled = versionListData?.versionList?.length === 1;
+  const isButtonDisabled =
+    versionListData?.versionList?.length === 1 && !scheduleStartFlow;
 
   useEffect(() => {
-    if (!isUpgrade) {
+    if (!isUpgrade && !scheduleStartFlow) {
       if (versionListData?.versionList?.length === 1) {
         toast.info(
           "This process group can't be upgraded as there is only one version available"
         );
       }
     }
-  }, [versionListData?.versionList, isUpgrade]);
+  }, [versionListData?.versionList, isUpgrade, scheduleStartFlow]);
   const schemaForStoryAndChangeRequest = Yup.object().shape({
     change_request: Yup.string()
       .trim()
@@ -517,10 +565,21 @@ const FlowDetailsPage = () => {
     }
   }, [dispatch, change_request_var]);
 
+  const localRegistryIdArr = registryData?.filter(
+    item =>
+      item?.nifiRegistryId ===
+      (selectedNameSpace?.registryId || registrySelectedId)
+  );
+
+  useEffect(() => {
+    dispatch(SettingsActions.setSettingsData({}));
+  }, [dispatch]);
+
   return (
     <div>
-      <FullPageLoader loading={loadingregistry || loadingVersion} />
-
+      <FullPageLoader
+        loading={loadingregistry || loadingVersion || loadingRevertChanges}
+      />
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>
@@ -587,6 +646,7 @@ const FlowDetailsPage = () => {
                 />
               </ColXlSix>
             )}
+
             <ColXlTwo className={`${isUpgrade ? 'col-lg-3' : 'col-lg-3'}`}>
               <InputField
                 name="currentVersion"
@@ -622,6 +682,9 @@ const FlowDetailsPage = () => {
                         yStateCoordinate ||
                         selectedNameSpace?.position?.y
                       }
+                      referenceDataArray={
+                        versionListData?.graphData?.data || []
+                      }
                     />
                   }
                 </ColLgSix>
@@ -636,7 +699,8 @@ const FlowDetailsPage = () => {
                         value={
                           storedXcord ||
                           xStateCoordinate ||
-                          selectedNameSpace?.position?.x
+                          selectedNameSpace?.position?.x ||
+                          0
                         }
                         icon={<CanvasXIcon />}
                         onChange={e => handleXCoordinateChangeInput(e)}
@@ -651,7 +715,8 @@ const FlowDetailsPage = () => {
                         value={
                           storedYcord ||
                           yStateCoordinate ||
-                          selectedNameSpace?.position?.y
+                          selectedNameSpace?.position?.y ||
+                          0
                         }
                         icon={<CanvasYIcon />}
                         onChange={e => handleYCoordinateChangeInput(e)}
@@ -710,7 +775,9 @@ const FlowDetailsPage = () => {
                     label={KDFM.NIFI_URL}
                     placeholder={KDFM.ENTER_NIFI_URL}
                     value={
-                      registryAllDetails?.nifi_url || registryData?.nifiUrl
+                      registryAllDetails?.nifi_url ||
+                      registryData?.nifiUrl ||
+                      versionListData?.graphData?.nifiUrl
                     }
                     icon={<LinkIcon />}
                     disabled
@@ -722,7 +789,13 @@ const FlowDetailsPage = () => {
                     type="text"
                     label={KDFM.REGISTRY_URL}
                     placeholder={KDFM.ENTER_REGISTRY_URL}
-                    value={registryData?.url}
+                    value={
+                      selectedNameSpace?.registryUrl ||
+                      registryData?.url ||
+                      localRegistryIdArr?.[0]?.url ||
+                      registryDropdownOptions?.[0]?.url ||
+                      defaultRegistryUrl
+                    }
                     icon={<LinkIcon />}
                     disabled
                   />
@@ -740,6 +813,7 @@ const FlowDetailsPage = () => {
                   selectedVersion,
                   handleRadioChange,
                   handleRowClick,
+                  disabled: scheduleStartFlow,
                 })}
               />
             </>
@@ -753,13 +827,78 @@ const FlowDetailsPage = () => {
           </Button>
           <Button
             id="process-group-flow-details-continue-btn"
-            disabled={isUpgrade ? false : !isStateStale || isButtonDisabled}
+            disabled={
+              isUpgrade
+                ? false
+                : (!isStateStale || isButtonDisabled) &&
+                  (!scheduleUpgradeFromList || !shouldRevertChanges)
+            }
             onClick={handleSubmit(handleScrollOnClick)}
           >
             Continue
           </Button>
         </BottomButtonDiv>
+        <BottomButtonDiv className="btn-div d-flex">
+          {!isUpgrade && !isStateStale && (
+            <div>
+              <div
+                style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
+              >
+                {scheduleDeploymentFlow || scheduleUpgradeFromList ? (
+                  <RevertlocalChangesCheckbox
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      minWidth: 'fit-content',
+                    }}
+                  >
+                    <CheckboxField
+                      name="check"
+                      label="Revert Local Changes"
+                      checked={shouldRevertChanges}
+                      onChange={e =>
+                        dispatch(
+                          NamespacesActions.setShouldRevertChanges(
+                            e.target.checked
+                          )
+                        )
+                      }
+                    />
+                  </RevertlocalChangesCheckbox>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      dispatch(
+                        NamespacesActions.setLocalChangesModalType('revert')
+                      );
+                      dispatch(
+                        NamespacesActions.setLocalChangesModalOpen(true)
+                      );
+                    }}
+                  >
+                    Revert Local Changes
+                  </Button>
+                )}
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    dispatch(
+                      NamespacesActions.setLocalChangesModalType('show')
+                    );
+                    dispatch(NamespacesActions.setLocalChangesModalOpen(true));
+                  }}
+                >
+                  Show Local Changes
+                </Button>
+              </div>
+            </div>
+          )}
+        </BottomButtonDiv>
       </BottomButton>
+
+      {/* Add Local Changes Modal */}
+      <LocalChangesModal />
     </div>
   );
 };

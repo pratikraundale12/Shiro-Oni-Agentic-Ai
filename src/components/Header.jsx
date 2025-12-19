@@ -3,6 +3,7 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   ClusterIcon,
@@ -14,6 +15,7 @@ import {
 import {
   API_URL,
   CLUSTERS_TOKEN,
+  KDFM,
   LICENSE_DATE_ISO_FORMAT,
   LICENSE_EXPIRE_PROMPT_DAYS,
   LICENSE_TYPE,
@@ -223,13 +225,15 @@ const ProfileDropdown = () => {
   const [showMenu, setShowMenu] = useState(false);
   const { setState } = useGlobalContext();
   const menuRef = useRef(null);
-  const flowGenrating = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'generateFlowAPI')
-  );
+  // const flowGenrating = useSelector(state =>
+  //   LoadingSelectors.getLoading(state, 'generateFlowAPI')
+  // );
   const logoutFromKeycloak = async () => {
     const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
     const idToken = localStorage.getItem('keycloak_id_token');
     const keycloakUrl = storedConfig?.keycloak_url;
+    const keycloakRealm = storedConfig?.keycloak_realm;
+
     if (!idToken) {
       console.error('No ID token found for logout');
       return;
@@ -242,7 +246,7 @@ const ProfileDropdown = () => {
     localStorage.removeItem('keycloak_state_val');
 
     const logoutUrl =
-      `${keycloakUrl}/realms/DFM-DEV/protocol/openid-connect/logout?` +
+      `${keycloakUrl}/realms/${keycloakRealm}/protocol/openid-connect/logout?` +
       `id_token_hint=${idToken}&` +
       `post_logout_redirect_uri=${API_URL}/login`;
 
@@ -295,22 +299,26 @@ const ProfileDropdown = () => {
     };
   }, []);
 
-  const onProfileClick = () => {
-    if (flowGenrating) {
-      if (!toast.isActive('generating-flow')) {
-        toast.warning('Flow is generating please wait', {
-          toastId: 'generating-flow',
-        });
-      }
-      return;
-    }
-    setShowMenu(prev => !prev);
-  };
+  // const onProfileClick = () => {
+  //   if (flowGenrating) {
+  //     if (!toast.isActive('generating-flow')) {
+  //       toast.warning('Flow is generating please wait', {
+  //         toastId: 'generating-flow',
+  //       });
+  //     }
+  //     return;
+  //   }
+  //   setShowMenu(prev => !prev);
+  // };
 
   return (
     <ProfileContainer ref={menuRef}>
       <UserModal />
-      <ProfileButton type="button" onClick={onProfileClick} title="Profile">
+      <ProfileButton
+        type="button"
+        onClick={() => setShowMenu(prev => !prev)}
+        data-tooltip-id="profile-tooltip"
+      >
         <ProfileRender url={currentUser?.photo} />
         <ProfileInfo>
           <Name className="text-truncate">{`${currentUser?.first_name || ''} ${currentUser?.middle_name || ''} ${currentUser?.last_name || ''}`}</Name>
@@ -389,9 +397,9 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     ) {
       dispatch(RolesActions.setSelectedRole({}));
       dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
-    }
-    if (location.pathname !== '/controller-service') {
-      dispatch(NamespacesActions.getRootControllerServiceNamespace([]));
+      dispatch(RolesActions.fetchClusterUsersSuccess([]));
+      dispatch(RolesActions.setPoliciesAndActionsData({}));
+      dispatch(RolesActions.fetchClusterNiFiPoliciesSuccess([]));
     }
   }, [dispatch, GridActions, window?.location?.pathname]);
 
@@ -550,7 +558,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                   <>
                     <IconButton
                       onClick={() => handleRoute('setting')}
-                      title="Settings"
+                      data-tooltip-id="settings-tooltip"
                     >
                       <SettingSmallIcon />
                     </IconButton>
@@ -574,15 +582,19 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                           ClustersActions.fetchClusters({ params: { page: 1 } })
                         );
                       }}
-                      title="Cluster"
+                      data-tooltip-id="cluster-tooltip"
                     >
                       <ClusterIcon />
-                      {selectedCluster?.label && (
-                        <NameDiv>
-                          <StatusDiv /> {selectedCluster.label}
-                        </NameDiv>
-                      )}
-                      {selectedCluster?.label && <DownArrowIcon />}
+                      <NameDiv>
+                        {selectedCluster?.label ? (
+                          <>
+                            <StatusDiv /> {selectedCluster.label}
+                          </>
+                        ) : (
+                          `${KDFM.SELECT_CLUSTER}`
+                        )}
+                      </NameDiv>
+                      <DownArrowIcon />
                     </IconCusterButton>
                   )}
                 {/* <IconButton>
@@ -607,6 +619,32 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
         />
       )}
       {isLoggedIn && <AgenticAiIntegration />}
+
+      {/* Tooltips */}
+      <ReactTooltip
+        id="profile-tooltip"
+        place="bottom"
+        content="Profile"
+        style={{
+          zIndex: 9999,
+        }}
+      />
+      <ReactTooltip
+        id="settings-tooltip"
+        place="bottom"
+        content="Settings"
+        style={{
+          zIndex: 9999,
+        }}
+      />
+      <ReactTooltip
+        id="cluster-tooltip"
+        place="bottom"
+        content="Cluster"
+        style={{
+          zIndex: 9999,
+        }}
+      />
     </>
   );
 };

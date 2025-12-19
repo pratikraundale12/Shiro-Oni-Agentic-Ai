@@ -68,14 +68,6 @@ export const clustersAPI = api => {
     return api.post(`/clusters/${clusterId}/associate-registry`, payload);
   };
 
-  const createClusterServiceAcc = ({ payload }) => {
-    return api.post(`/clusters`, payload);
-  };
-
-  const updateClusterServiceAcc = ({ clusterId, payload }) => {
-    return api.patch(`/clusters/${clusterId}`, payload);
-  };
-
   const fetchAnsibleClusterData = ({ clusterId }) => {
     return api.get(`/clusters/${clusterId}/get-edit-details`);
   };
@@ -133,6 +125,13 @@ export const clustersAPI = api => {
   };
   const fetchDriversList = ({ clusterId }) => {
     return api.get(`/clusters/${clusterId}/drivers-list`);
+  };
+
+  const createClusterServiceAcc = ({ payload }) => {
+    return api.post(`/clusters`, payload);
+  };
+  const updateClusterServiceAcc = ({ clusterId, payload }) => {
+    return api.patch(`/clusters/${clusterId}`, payload);
   };
 
   const fetchMasterHostNodesList = ({ payload }) => {
@@ -223,14 +222,14 @@ export const clustersAPI = api => {
     fetchRunningStatusCluster,
     fetchClusterMetrics,
     associateClusterWithRegistry,
-    createClusterServiceAcc,
-    updateClusterServiceAcc,
     fetchAnsibleClusterData,
     upgradeAnsibleCluster,
     updateNodesAnsibleCluster,
     deleteAnsibleClusterHard,
     fetchAnsibleCLusterProcessData,
     fetchAllConfigPropertiesWithValue,
+    createClusterServiceAcc,
+    updateClusterServiceAcc,
     testMultipleNodes,
     updateMultipleNodeswithSSH,
     fetchSSHstatus,

@@ -25,6 +25,8 @@ const Container = styled.div`
   height: 100%;
   background-color: #f7f7f7;
   position: relative;
+  border-radius: 0 0 16px 16px;
+  overflow: hidden;
 `;
 
 const ContentArea = styled.div`

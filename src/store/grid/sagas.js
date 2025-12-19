@@ -1,5 +1,4 @@
 import { isEmpty } from 'lodash';
-import { toast } from 'react-toastify';
 import { all, call, debounce, put, select } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, DEBOUNCE_DELAY } from '../../constants';
 import { DashboardActions } from '../dashboard';
@@ -8,6 +7,7 @@ import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { SchedularSelectors } from '../schedular/redux';
 import { GridActions } from './redux';
 import { ClustersActions } from '../clusters';
+import { showErrorToast } from '../../utils/toastControl';
 
 export function* fetchGrid(
   api,
@@ -164,8 +164,12 @@ export function* fetchGrid(
   if (module === 'clusters') {
     yield* handleForClusterModule();
   }
+
   const handleError = response => {
-    toast.error(response?.message || response?.data?.message);
+    const message = response?.message || response?.data?.message;
+    if (message) {
+      showErrorToast(message);
+    }
   };
 
   function* handleResponse(response, module) {

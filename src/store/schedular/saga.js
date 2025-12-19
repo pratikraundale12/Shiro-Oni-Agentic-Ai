@@ -6,6 +6,7 @@ import { AuthenticationActions } from '../authentication';
 import { GridActions, fetchGrid } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularActions, SchedularSelectors } from './redux';
+import { NamespacesActions } from '../namespaces';
 
 export function* createScheduleDeployment(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -69,6 +70,8 @@ export function* editScheduleDeployment(api, { payload }) {
       GridActions.fetchGrid({
         module: 'scheduler',
         params: {
+          page: 1,
+          limit: 10,
           ...(search && { search }),
           ...(statusData &&
             statusData !== 'all' && {
@@ -101,6 +104,8 @@ export function* editScheduleByRegistry(api, { payload }) {
       GridActions.fetchGrid({
         module: 'scheduler',
         params: {
+          page: 1,
+          limit: 10,
           ...(search && { search }),
           ...(statusData &&
             statusData !== 'all' && {
@@ -116,7 +121,7 @@ export function* editScheduleByRegistry(api, { payload }) {
     // yield put(SchedularActions.setScheduleSelectRange([]));
     toast.success(response?.data?.message);
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 
@@ -139,6 +144,8 @@ export function* rejectScheduleDeployment(api, { payload }) {
       GridActions.fetchGrid({
         module: 'scheduler',
         params: {
+          page: 1,
+          limit: 10,
           ...(search && { search }),
           ...(statusData &&
             statusData !== 'all' && {
@@ -152,7 +159,7 @@ export function* rejectScheduleDeployment(api, { payload }) {
       })
     );
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 
@@ -161,12 +168,12 @@ export function* fetchDiffScheduleData(api, { payload }) {
     errorSection: 'fetchDiffScheduleData',
     loadingSection: 'fetchDiffScheduleData',
     apiMethod: api.fetchDiffScheduleData,
-    apiParams: [{ schedularId: payload }],
+    apiParams: [{ schedularId: payload?.schedule_id, event: payload?.event }],
   });
   if (response.ok) {
     yield put(SchedularActions.setDiffAllData(response?.data));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* fetchGroupUserData(api, { payload }) {
@@ -193,7 +200,33 @@ export function* fetchScheduleDeploymentDetails(api, { payload }) {
   if (response.ok) {
     yield put(SchedularActions.setScheduleDeploymentDetails(response?.data));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* scheduleSanityAndDeploy(api, { payload }) {
+  const selectedSchedule = yield select(SchedularSelectors.getSelectedSchedule);
+  const response = yield call(requestSaga, {
+    errorSection: 'scheduleSanityAndDeploy',
+    loadingSection: 'scheduleSanityAndDeploy',
+    apiMethod: api.scheduleSanityAndDeploy,
+    apiParams: [payload],
+  });
+  if (response.ok) {
+    yield put(SchedularActions.setSanityAndDeployStatus(response?.data));
+    toast.success(
+      response?.data?.message ||
+        'Successfully performed sanity check and deployment'
+    );
+
+    yield put(
+      NamespacesActions.fetchSanityReportAuditLog(
+        response?.data?.id || selectedSchedule?.last_sanity_check_id
+      )
+    );
+  } else {
+    toast.error(response?.data?.message);
+    yield put(SchedularActions.setSanityAndDeployStatus(null));
   }
 }
 
@@ -228,6 +261,11 @@ export function* schedularSagas(api) {
     takeLatest(
       SchedularActions.fetchScheduleDeploymentDetails,
       fetchScheduleDeploymentDetails,
+      api
+    ),
+    takeLatest(
+      SchedularActions.scheduleSanityAndDeploy,
+      scheduleSanityAndDeploy,
       api
     ),
   ]);

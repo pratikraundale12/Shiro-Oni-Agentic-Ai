@@ -84,6 +84,7 @@ export const Modal = ({
     tertiaryButtonSubmit: () => null,
     tertiaryButtonDisable: false,
     tertiaryButtonLoading: false,
+    tertiaryButtonIcon: null, // Added icon support
   },
   tertiaryButtonLoading,
   thirdVarint = false,
@@ -95,6 +96,7 @@ export const Modal = ({
   additionalBtnClick = () => null,
   primaryBtnSize,
   formClass,
+  clickOutsideToClose = true,
 }) => {
   const primaryButtonSize = primaryBtnSize
     ? primaryBtnSize
@@ -144,7 +146,7 @@ export const Modal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={styleObject}
-      shouldCloseOnOverlayClick={false}
+      shouldCloseOnOverlayClick={clickOutsideToClose}
     >
       <form
         className={`d-flex flex-column overflow-auto ${formClass ? formClass : ''}  cluster-login-modal-111 `}
@@ -263,4 +265,5 @@ Modal.propTypes = {
   additionalBtnDisabled: PropTypes.bool,
   primaryBtnSize: PropTypes.string,
   formClass: PropTypes.string,
+  clickOutsideToClose: PropTypes.bool,
 };

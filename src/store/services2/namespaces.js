@@ -39,6 +39,7 @@ export const namespacesAPI = api => {
     localOnly,
     use_service_account,
     is_from_toggle,
+    is_from_pg_details = false,
   }) => {
     const url =
       namespaceId &&
@@ -58,7 +59,11 @@ export const namespacesAPI = api => {
                 !is_from_toggle &&
                 window?.location?.pathname != '/controller-service'
               ? `controller-services/${clusterId}/namespace?use_service_account=true`
-              : `controller-services/${clusterId}/namespace`;
+              : is_from_pg_details &&
+                  namespaceId &&
+                  window?.location?.pathname != '/controller-service'
+                ? `controller-services/${clusterId}/namespace/${namespaceId}`
+                : `controller-services/${clusterId}/namespace`;
     return api.get(url);
   };
 
@@ -220,9 +225,15 @@ export const namespacesAPI = api => {
       `/controller-services/${clusterId}/service-type?type=${type}&group=${group}&artifact=${artifact}&version=${version}`
     );
 
-  const getNewPropertyControllerServiceUpdated = ({ clusterId, serviceName }) =>
+  const getNewPropertyControllerServiceUpdated = ({
+    clusterId,
+    serviceName,
+    namespaceId,
+  }) =>
     api.get(
-      `/${clusterId}/controller-service-types?serviceName=${serviceName}`
+      `/${clusterId}/controller-service-types?serviceName=${serviceName}${
+        namespaceId ? `&namespaceId=${namespaceId}` : ''
+      }`
     );
 
   const addControllerServicePropertyByDropdown = ({
@@ -287,14 +298,15 @@ export const namespacesAPI = api => {
   const fetchRegistryFlowDetails = ({
     clusterId,
     namespaceId,
+    registriesId,
     bucketId,
     flowId,
     version,
     isUpgrade = false,
   }) => {
     const URL = isUpgrade
-      ? `/upgrade/${clusterId}/namespaceId/${namespaceId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`
-      : `/exports/${clusterId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`;
+      ? `/upgrade/${clusterId}/namespaceId/${namespaceId}/registries/${registriesId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`
+      : `/exports/${clusterId}/registries/${registriesId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`;
     return api.get(URL);
   };
   const fetchDuplicateScheduleData = ({ flowId }) => {
@@ -310,6 +322,79 @@ export const namespacesAPI = api => {
     return api.get(
       `controller-services/${clusterId}/service/${controllerId}/descriptor?propertyName=${propertyName}&sensitive=${sensitive || false}`
     );
+  };
+
+  const fetchSanityCheckSummaryData = ({ namespaceId }) => {
+    return api.get(`namespace/${namespaceId}/sanity-check`);
+  };
+  const fetchLocalChanges = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/local-changes`
+    );
+  };
+
+  const revertLocalChanges = ({ clusterId, namespaceId }) => {
+    return api.post(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/revert-local-changes`
+    );
+  };
+
+  const deleteNamespace = ({ clusterId, namespaceId }) => {
+    return api.delete(`/clusters/${clusterId}/namespace/${namespaceId}`);
+  };
+
+  const getInvalidProcessorDetails = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespace/${namespaceId}/invalid-processors`
+    );
+  };
+  const fetchSanityReportAuditLog = ({ recordId }) => {
+    return api.get(`sanity-report/${recordId}`);
+  };
+
+  const getDeleteNamespaceDetails = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/namespace-details`
+    );
+  };
+
+  const fetchLastSanityReport = ({ namespaceId }) => {
+    return api.get(`/last-sanity-report/${namespaceId}`);
+  };
+
+  const refreshControllerService = ({ clusterId, controllerId }) =>
+    api.get(`controller-services/${clusterId}/service/${controllerId}`);
+
+  const getServiceDefinition = ({
+    group,
+    artifact,
+    version,
+    type,
+    instanceIdentifier,
+    properties,
+  }) => {
+    const queryParams = new URLSearchParams();
+
+    if (group) queryParams.append('group', group);
+    if (artifact) queryParams.append('artifact', artifact);
+    if (version) queryParams.append('version', version);
+    if (type) queryParams.append('type', type);
+    if (instanceIdentifier)
+      queryParams.append('instanceIdentifier', instanceIdentifier);
+    const queryString = queryParams.toString();
+
+    const url = queryString
+      ? `/get-service-definition?${queryString}`
+      : '/get-service-definition';
+
+    return api.post(url, { properties });
+  };
+
+  const fetchNamespacesDownload = ({ clusterId, namespaceId }) =>
+    api.get(`clusters/${clusterId}/download/${namespaceId}`);
+
+  const fetchNamespaceVersion = ({ clusterId, namespaceId }) => {
+    return api.get(`/versions/${clusterId}/namespace/${namespaceId}`);
   };
 
   return {
@@ -347,5 +432,17 @@ export const namespacesAPI = api => {
     fetchRegistryFlowDetails,
     fetchDuplicateScheduleData,
     fetchAddPropertyToAdd,
+    fetchSanityCheckSummaryData,
+    fetchLocalChanges,
+    revertLocalChanges,
+    deleteNamespace,
+    getInvalidProcessorDetails,
+    fetchSanityReportAuditLog,
+    getDeleteNamespaceDetails,
+    fetchLastSanityReport,
+    refreshControllerService,
+    getServiceDefinition,
+    fetchNamespacesDownload,
+    fetchNamespaceVersion,
   };
 };

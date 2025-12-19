@@ -176,6 +176,7 @@ const KubeClusterPodsAndMetrics = () => {
     }, 30000);
     return () => clearInterval(interval);
   }, [activeTab, state?.nodeClusterId, dispatch]);
+  
   const handleRestart = () => {
     dispatch(ClustersActions.setrestartClusterAfterAction(false));
     dispatch(

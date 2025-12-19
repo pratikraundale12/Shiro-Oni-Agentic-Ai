@@ -66,6 +66,7 @@ const PropertyDiv = styled.div`
   .react-select__control {
     padding-top: 10px;
     padding-bottom: 10px;
+    min-height: 48px;
   }
 `;
 
@@ -88,17 +89,9 @@ const NoDataText = styled.div`
 `;
 
 const RadioContainer = styled.div`
+  word-break: break-word;
   > div {
     margin: 0px;
-  }
-`;
-
-const InputContainer = styled.div`
-  > div {
-    margin: 0px;
-  }
-  > div > div {
-    margin-top: 0px !important;
   }
 `;
 
@@ -106,6 +99,15 @@ const InfoIconDiv = styled.div`
   position: absolute;
   left: 90px;
   top: -4px;
+`;
+
+const StyledValueInputWrapper = styled.div`
+  .wrapper {
+    margin-top: 0 !important;
+  }
+  div {
+    margin-bottom: 0;
+  }
 `;
 
 // Validation Schemas
@@ -146,17 +148,17 @@ const ConditionRow = React.memo(
       ((totalConditions === 2 && index === 0) ||
         (totalConditions > 2 && index < totalConditions - 1));
 
+    const hasDynamicInput =
+      condition.condition_property &&
+      fetchPropertyData?.data?.find(
+        prop => prop.propName === condition.condition_property
+      )?.dynamic_input;
+
     return (
-      <Fragment>
+      <div className="d-flex align-items-center gap-3 mb-3 position-relative">
         <div
-          className={
-            condition.condition_property &&
-            fetchPropertyData?.data?.find(
-              prop => prop.propName === condition.condition_property
-            )?.dynamic_input
-              ? 'col-xl-3 col-md-4'
-              : 'col-md-3'
-          }
+          className="flex-fill"
+          style={{ minWidth: '200px', maxWidth: '250px' }}
         >
           <SelectField
             name={`condition_property_${index}`}
@@ -186,43 +188,37 @@ const ConditionRow = React.memo(
                   }
                 : {}
             }
+            className="mb-0"
           />
         </div>
-        {condition.condition_property &&
-          fetchPropertyData?.data?.find(
-            prop => prop.propName === condition.condition_property
-          )?.dynamic_input && (
-            <InputContainer className="col-xl-2 col-md-4">
-              <InputField
-                name={`sub_condition_property${index}`}
-                icon={<NewLinkIcon />}
-                placeholder="Enter value"
-                value={condition?.sub_condition_property || ''}
-                onChange={e =>
-                  handleSubConditionProperty(index, e.target.value)
-                }
-                control={control}
-                errors={
-                  conditionsErrors[index]
-                    ? {
-                        [`sub_condition_property_${index}`]:
-                          conditionsErrors[index]?.sub_condition_property,
-                      }
-                    : {}
-                }
-              />
-            </InputContainer>
-          )}
+
+        {hasDynamicInput && (
+          <div
+            className="flex-fill"
+            style={{ minWidth: '180px', maxWidth: '220px' }}
+          >
+            <InputField
+              name={`sub_condition_property${index}`}
+              icon={<NewLinkIcon />}
+              placeholder="Enter value"
+              value={condition?.sub_condition_property || ''}
+              onChange={e => handleSubConditionProperty(index, e.target.value)}
+              control={control}
+              errors={
+                conditionsErrors[index]
+                  ? {
+                      [`sub_condition_property_${index}`]:
+                        conditionsErrors[index]?.sub_condition_property,
+                    }
+                  : {}
+              }
+            />
+          </div>
+        )}
 
         <div
-          className={
-            condition.condition_property &&
-            fetchPropertyData?.data?.find(
-              prop => prop.propName === condition.condition_property
-            )?.dynamic_input
-              ? 'col-xl-2 col-md-4'
-              : 'col-md-3'
-          }
+          className="flex-fill"
+          style={{ minWidth: '140px', maxWidth: '180px' }}
         >
           <PropertyDiv>
             <SelectField
@@ -243,46 +239,39 @@ const ConditionRow = React.memo(
                     }
                   : {}
               }
+              className="mb-0"
             />
           </PropertyDiv>
         </div>
-        <InputContainer
-          className={
-            condition.condition_property &&
-            fetchPropertyData?.data?.find(
-              prop => prop.propName === condition.condition_property
-            )?.dynamic_input
-              ? 'col-xl-2 col-md-4'
-              : 'col-md-3'
-          }
+
+        <div
+          className="flex-fill"
+          style={{ minWidth: '180px', maxWidth: '220px' }}
         >
-          <InputField
-            name={`condition_value_${index}`}
-            icon={<NewLinkIcon />}
-            value={condition?.condition_value || ''}
-            onChange={e => handleConditionValueChange(index, e.target.value)}
-            control={control}
-            placeholder="Enter value"
-            errors={
-              conditionsErrors[index]
-                ? {
-                    [`condition_value_${index}`]:
-                      conditionsErrors[index]?.condition_value,
-                  }
-                : {}
-            }
-          />
-        </InputContainer>
+          <StyledValueInputWrapper>
+            <InputField
+              name={`condition_value_${index}`}
+              icon={<NewLinkIcon />}
+              value={condition?.condition_value || ''}
+              onChange={e => handleConditionValueChange(index, e.target.value)}
+              control={control}
+              placeholder="Enter value"
+              errors={
+                conditionsErrors[index]
+                  ? {
+                      [`condition_value_${index}`]:
+                        conditionsErrors[index]?.condition_value,
+                    }
+                  : {}
+              }
+            />
+          </StyledValueInputWrapper>
+        </div>
+
         {showJoinOperator && (
           <div
-            className={
-              condition.condition_property &&
-              fetchPropertyData?.data?.find(
-                prop => prop.propName === condition.condition_property
-              )?.dynamic_input
-                ? 'col-xl-2 col-md-4'
-                : 'col-md-2'
-            }
+            className="flex-fill"
+            style={{ minWidth: '100px', maxWidth: '130px' }}
           >
             <SelectField
               name={`condition_join_${index}`}
@@ -302,20 +291,32 @@ const ConditionRow = React.memo(
                     }
                   : {}
               }
+              className="mb-0"
             />
           </div>
         )}
+
         {selectedItem?.deletable && (
-          <div className="col-md-1 d-flex align-items-center">
+          <div className="d-flex align-items-center ms-2">
             <button
-              onClick={() => handleDeleteCondition(index)}
+              type="button"
+              onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleDeleteCondition(index);
+              }}
               className="btn btn-link p-0"
+              style={{ lineHeight: 1 }}
             >
-              <DeleteSmallIcon color="#FF7A00" />
+              <DeleteSmallIcon color="#FF7A00" width={20} height={20} />
             </button>
           </div>
         )}
-      </Fragment>
+
+        {!showJoinOperator && selectedItem?.deletable && (
+          <div style={{ width: '130px', flexShrink: 0 }}></div>
+        )}
+      </div>
     );
   }
 );
@@ -850,7 +851,7 @@ const FlowValidationModal = () => {
 
   return (
     <Modal
-      title={selectedItem?.header || ''}
+      title={`Validation Rule: ${selectedItem?.header}` || ''}
       isOpen={isFlowValidationModalOpen}
       onRequestClose={handleCloseModal}
       size="md"
@@ -1097,7 +1098,7 @@ const FlowValidationModal = () => {
                     />
                     {item?.name}
                   </RadioContainer>
-                  <button onClick={() => handleDelete(item?.id)}>
+                  <button type="button" onClick={() => handleDelete(item?.id)}>
                     {selectedItem?.deletable === true && (
                       <DeleteSmallIcon color="#FF7A00" />
                     )}

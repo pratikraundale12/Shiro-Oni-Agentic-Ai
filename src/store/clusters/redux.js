@@ -129,6 +129,11 @@ export const ClustersActions = {
   setClusterSetupSelectedNiFiVersion: createAction(
     `${prefix}setClusterSetupSelectedNiFiVersion`
   ),
+  setCopyClusterModalOpen: createAction(`${prefix}setCopyClusterModalOpen`),
+  setCopyClusterData: createAction(`${prefix}setCopyClusterData`),
+  setclusterToLoginWithoutCred: createAction(
+    `${prefix}setclusterToLoginWithoutCred`
+  ),
   testMultipleNodes: createAction(`${prefix}testMultipleNodes`),
   updateMultipleNodeswithSSH: createAction(
     `${prefix}updateMultipleNodeswithSSH`
@@ -232,6 +237,9 @@ export const CLUSTERS_INITIAL_STATE = {
   registryNodesData: {},
   healthMetricsData: {},
   runningStatusData: {},
+  isCopyClusterModalOpen: false,
+  copyClusterData: null,
+  originalClusterName: null,
   // Service-account credential check
   checkingServiceAccount: false,
   checkServiceAccountError: null,
@@ -257,6 +265,7 @@ export const CLUSTERS_INITIAL_STATE = {
   clusterListItems: 10,
   allConfigPropertiesAndValue: {},
   clusterSetupSelectedNiFiVersion: null,
+  clusterToLoginWithoutCred: {},
   multiNodesTestResults: {},
   testCertificateNodes: [],
   sshAddedStatus: {},
@@ -311,6 +320,9 @@ export const ClustersSelectors = {
   getRegistryNodesData: state => state.clusters.registryNodesData,
   getHealthMetricsData: state => state.clusters.healthMetricsData,
   getRunningStatusData: state => state.clusters.runningStatusData,
+  getIsCopyClusterModalOpen: state => state.clusters.isCopyClusterModalOpen,
+  getCopyClusterData: state => state.clusters.copyClusterData,
+  getOriginalClusterName: state => state.clusters.originalClusterName,
   // service-account credential check
   isCheckingServiceAccount: state => state.clusters.checkingServiceAccount,
   getServiceAccountCheckError: state => state.clusters.checkServiceAccountError,
@@ -347,6 +359,8 @@ export const ClustersSelectors = {
     state.clusters.allConfigPropertiesAndValue,
   getClusterSetupSelectedNiFiVersion: state =>
     state.clusters.clusterSetupSelectedNiFiVersion,
+  getclusterToLoginWithoutCred: state =>
+    state.clusters.clusterToLoginWithoutCred,
   getmultiNodesTestResults: state => state.clusters.multiNodesTestResults,
   getTestCertificateNodes: state => state.clusters.testCertificateNodes,
   getsshAddedStatus: state => state.clusters.sshAddedStatus,
@@ -655,6 +669,23 @@ const setLastVisitedTab = (state, { payload }) => {
     lastVisitedTab: payload,
   };
 };
+const setCopyClusterModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isCopyClusterModalOpen: payload,
+    ...(payload === false && {
+      copyClusterData: null,
+      originalClusterName: null,
+    }),
+  };
+};
+
+const setCopyClusterData = (state, { payload }) => ({
+  ...state,
+  copyClusterData: payload?.data ?? null,
+  originalClusterName: payload?.originalName ?? null,
+});
+
 const setclusterListItems = (state, { payload }) => {
   return {
     ...state,
@@ -764,6 +795,14 @@ const setTourStart = (state, { payload }) => {
     tourStart: payload,
   };
 };
+
+const setclusterToLoginWithoutCred = (state, { payload }) => {
+  return {
+    ...state,
+    clusterToLoginWithoutCred: payload,
+  };
+};
+
 const setKubePods = (state, { payload }) => {
   return {
     ...state,
@@ -968,6 +1007,12 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setClusterSetupSelectedNiFiVersion,
         setClusterSetupSelectedNiFiVersion
+      )
+      .addCase(ClustersActions.setCopyClusterModalOpen, setCopyClusterModalOpen)
+      .addCase(ClustersActions.setCopyClusterData, setCopyClusterData)
+      .addCase(
+        ClustersActions.setclusterToLoginWithoutCred,
+        setclusterToLoginWithoutCred
       )
       .addCase(
         ClustersActions.setMultiNodesTestResults,

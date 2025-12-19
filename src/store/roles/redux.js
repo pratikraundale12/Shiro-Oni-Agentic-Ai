@@ -31,6 +31,28 @@ export const RolesActions = {
     `${prefix}setInActiveUserIdModelOpen`
   ),
   setSelectedLdapGroup: createAction(`${prefix}setSelectedLdapGroup`),
+  fetchClusterUsers: createAction(`${prefix}fetchClusterUsers`),
+  fetchClusterUsersSuccess: createAction(`${prefix}fetchClusterUsersSuccess`),
+  fetchClusterUserGroups: createAction(`${prefix}fetchClusterUserGroups`),
+  fetchClusterUserGroupsSuccess: createAction(
+    `${prefix}fetchClusterUserGroupsSuccess`
+  ),
+  fetchClusterNiFiPolicies: createAction(`${prefix}fetchClusterNiFiPolicies`),
+  fetchClusterNiFiPoliciesSuccess: createAction(
+    `${prefix}fetchClusterNiFiPoliciesSuccess`
+  ),
+  fetchClusterNiFiAccessPolicies: createAction(
+    `${prefix}fetchClusterNiFiAccessPolicies`
+  ),
+  fetchFlowPolicyDetails: createAction(`${prefix}fetchFlowPolicyDetails`),
+  fetchFlowPolicyDetailsSuccess: createAction(
+    `${prefix}fetchFlowPolicyDetailsSuccess`
+  ),
+  fetchPoliciesandActions: createAction(`${prefix}fetchPoliciesandActions`),
+  setPoliciesAndActionsData: createAction(`${prefix}setPoliciesAndActionsData`),
+  updateClusterPermissionsAndActions: createAction(
+    `${prefix}updateClusterPermissionsAndActions`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -49,6 +71,11 @@ export const ROLES_INITIAL_STATE = {
   inactiveUserId: '',
   inActiveUserIdModelOpen: false,
   selectedLdapGroup: [],
+  clusterUsers: [],
+  clusterUserGroups: [],
+  clusterNiFiPolicies: [],
+  flowPolicyDetails: [],
+  policiesAndActionsData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -69,6 +96,11 @@ export const RolesSelectors = {
   getInActiveUserId: state => state.roles.inactiveUserId,
   getInActiveUserIdModelOpen: state => state.roles.inActiveUserIdModelOpen,
   getSelectedLdapGroup: state => state.roles.selectedLdapGroup,
+  getClusterUsers: state => state.roles.clusterUsers,
+  getClusterUserGroups: state => state.roles.clusterUserGroups,
+  getClusterNiFiPolicies: state => state.roles.clusterNiFiPolicies,
+  getFlowPolicyDetails: state => state.roles.flowPolicyDetails,
+  getPoliciesAndActionsData: state => state.roles.policiesAndActionsData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -182,6 +214,39 @@ const setSelectedLdapGroup = (state, { payload }) => {
   };
 };
 
+const fetchClusterUsersSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    clusterUsers: payload.data || payload,
+  };
+};
+
+const fetchClusterUserGroupsSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    clusterUserGroups: payload.data || payload,
+  };
+};
+
+const fetchClusterNiFiPoliciesSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    clusterNiFiPolicies: payload.data || payload,
+  };
+};
+const setPoliciesAndActionsData = (state, { payload }) => {
+  return {
+    ...state,
+    policiesAndActionsData: payload.data || payload,
+  };
+};
+
+const fetchFlowPolicyDetailsSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    flowPolicyDetails: payload.data || payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
   builder
@@ -205,5 +270,19 @@ export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
       RolesActions.setInActiveUserIdModelOpen,
       setInActiveUserIdModelOpen
     )
-    .addCase(RolesActions.setSelectedLdapGroup, setSelectedLdapGroup);
+    .addCase(RolesActions.setSelectedLdapGroup, setSelectedLdapGroup)
+    .addCase(RolesActions.fetchClusterUsersSuccess, fetchClusterUsersSuccess)
+    .addCase(
+      RolesActions.fetchClusterUserGroupsSuccess,
+      fetchClusterUserGroupsSuccess
+    )
+    .addCase(
+      RolesActions.fetchClusterNiFiPoliciesSuccess,
+      fetchClusterNiFiPoliciesSuccess
+    )
+    .addCase(
+      RolesActions.fetchFlowPolicyDetailsSuccess,
+      fetchFlowPolicyDetailsSuccess
+    )
+    .addCase(RolesActions.setPoliciesAndActionsData, setPoliciesAndActionsData);
 });

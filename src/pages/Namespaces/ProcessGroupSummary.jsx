@@ -2,12 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { TodoIcon } from '../../assets';
+import {
+  AuditLogIcon,
+  ControllerServicesIcon,
+  FlowControlIcon,
+  ParameterContextIcon,
+  SanityCheckIcon,
+  SummaryIcon,
+  VariablesIcon,
+} from '../../assets';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
+  ClustersActions,
+  ClustersSelectors,
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
@@ -19,6 +29,8 @@ import ListControllerService from './ListControllerServiceNamespace';
 import ListVariables from './Listvariables';
 import ParameterContext from './ParameterContext';
 import SummaryDetails from './SummaryDetails';
+import SanityVerifictionReport from './SanityVerifictionReport';
+import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -38,14 +50,6 @@ const MainTitleHfour = styled.h4`
   text-transform: capitalize;
   @media screen and (max-width: 1400px) {
     font-size: 16px !important;
-  }
-`;
-const ImageContainer = styled.div`
-  margin-bottom: 0.5rem;
-  @media screen and (max-width: 1400px) {
-    & svg {
-      height: 20px;
-    }
   }
 `;
 
@@ -115,6 +119,32 @@ const BreadcrumbItem = styled.span`
   }
 `;
 
+const IconContent = styled.div`
+  display: inline;
+  margin-right: 6px;
+
+  svg path {
+    transition: stroke 0.3s;
+  }
+
+  ${Tab}:hover & svg path {
+    fill: rgba(255, 122, 0, 1);
+  }
+`;
+
+const IconContentV2 = styled.div`
+  display: inline;
+  margin-right: 6px;
+
+  svg path {
+    transition: stroke 0.3s;
+  }
+
+  ${Tab}:hover & svg path {
+    stroke: rgba(255, 122, 0, 1);
+  }
+`;
+
 const ConfigDetailsPage = () => {
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
@@ -142,6 +172,20 @@ const ConfigDetailsPage = () => {
     GridSelectors.getGridBreadcrumb(state, 'namespaces')
   );
 
+  const selectedClusterMethod = useSelector(
+    NamespacesSelectors.getSelectedCluster
+  );
+  useEffect(() => {
+    if (!isEmpty(selectedClusterMethod?.value)) {
+      dispatch(ClustersActions.fetchClusters());
+    }
+  }, [dispatch, selectedClusterMethod]);
+  const clusters_new_list = useSelector(ClustersSelectors.getAllClustersList);
+  const matchedCluster = clusters_new_list.find(
+    cluster => cluster.id === selectedClusterMethod?.value
+  );
+  const hasSanityCheckAccess = matchedCluster?.view_sanity_check;
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'singleNamespaceData')
   );
@@ -160,6 +204,7 @@ const ConfigDetailsPage = () => {
             isAddParameterContextOpen={isAddParameterContextOpen}
             isParameterContextOpen={isParameterContextOpen}
             setIsParameterContextOpen={setIsParameterContextOpen}
+            fromSummaryDetails={true}
           />
         );
       case KDFM.VARIABLES:
@@ -175,6 +220,8 @@ const ConfigDetailsPage = () => {
 
       case 'Audit Log':
         return <AuditLog />;
+      case 'Sanity Verification Report':
+        return <SanityVerifictionReport />;
       default:
         return null;
     }
@@ -196,9 +243,6 @@ const ConfigDetailsPage = () => {
       </BreadcrumbContainer>
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
-          <ImageContainer>
-            <TodoIcon />
-          </ImageContainer>
           <MainTitleHfour className="mb-0">
             {KDFM.PROCESS_GROUP_DETAILS} : &nbsp;
             {singleNamespaceData?.name || ''}
@@ -212,6 +256,11 @@ const ConfigDetailsPage = () => {
             onClick={() => setActiveTab('Summary')}
             className="nav-item"
           >
+            <IconContent className="nav-item">
+              <SummaryIcon
+                color={activeTab === 'Summary' ? '#FF7A00' : '#444445'}
+              />
+            </IconContent>
             {KDFM.SUMMARY}
           </Tab>
           <Tab
@@ -219,6 +268,11 @@ const ConfigDetailsPage = () => {
             onClick={() => setActiveTab('Flow Control')}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <FlowControlIcon
+                color={activeTab === 'Flow Control' ? '#FF7A00' : '#444445'}
+              />
+            </IconContentV2>
             Flow Control
           </Tab>
           <Tab
@@ -236,6 +290,15 @@ const ConfigDetailsPage = () => {
             }}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <ParameterContextIcon
+                color={
+                  activeTab === `${KDFM.PARAMETER_CONTEXT}`
+                    ? '#FF7A00'
+                    : '#444445'
+                }
+              />
+            </IconContentV2>
             {KDFM.PARAMETER_CONTEXT}
           </Tab>
           <Tab
@@ -243,6 +306,13 @@ const ConfigDetailsPage = () => {
             onClick={() => setActiveTab(KDFM.VARIABLES)}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <VariablesIcon
+                color={
+                  activeTab === `${KDFM.VARIABLES}` ? '#FF7A00' : '#444445'
+                }
+              />
+            </IconContentV2>
             {KDFM.VARIABLES}
           </Tab>
           <Tab
@@ -250,6 +320,15 @@ const ConfigDetailsPage = () => {
             onClick={() => setActiveTab(KDFM.CONTROLLER_SERVICE)}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <ControllerServicesIcon
+                color={
+                  activeTab === `${KDFM.CONTROLLER_SERVICE}`
+                    ? '#FF7A00'
+                    : '#444445'
+                }
+              />
+            </IconContentV2>
             {KDFM.CONTROLLER_SERVICE}{' '}
           </Tab>
           <Tab
@@ -257,8 +336,34 @@ const ConfigDetailsPage = () => {
             onClick={() => setActiveTab('Audit Log')}
             className="nav-item"
           >
+            <IconContentV2 className="nav-item">
+              <AuditLogIcon
+                color={activeTab === 'Audit Log' ? '#FF7A00' : '#444445'}
+              />
+            </IconContentV2>
             Audit Log
           </Tab>
+
+          {hasSanityCheckAccess === true && (
+            <Tab
+              active={activeTab === 'Sanity Verification Report'}
+              onClick={() => setActiveTab('Sanity Verification Report')}
+              className="nav-item"
+            >
+              <IconContentV2 className="nav-item">
+                <SanityCheckIcon
+                  height="20"
+                  width="20"
+                  color={
+                    activeTab === 'Sanity Verification Report'
+                      ? '#FF7A00'
+                      : '#444445'
+                  }
+                />
+              </IconContentV2>
+              Sanity Verification Report
+            </Tab>
+          )}
         </TabWrapper>
         <TabContent>{renderContent()}</TabContent>
       </GreyBoxNamespace>

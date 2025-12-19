@@ -12,6 +12,12 @@ export const SchedularActions = {
   setRejectScheduleModal: createAction(`${prefix}setRejectScheduleModal`),
   setApproveScheduleModal: createAction(`${prefix}setApproveScheduleModal`),
   setTokenScheduleModal: createAction(`${prefix}setTokenScheduleModal`),
+  setIsSanityCheckScheduleModalOpen: createAction(
+    `${prefix}setIsSanityCheckScheduleModalOpen`
+  ),
+  setIsSuccessSanityCheckModalOpen: createAction(
+    `${prefix}setIsSuccessSanityCheckModalOpen`
+  ),
   createScheduleDeployment: createAction(`${prefix}createScheduleDeployment`),
   editScheduleDeployment: createAction(`${prefix}editScheduleDeployment`),
   checkApproverToken: createAction(`${prefix}checkApproverToken`),
@@ -36,6 +42,11 @@ export const SchedularActions = {
   setScheduleDeploymentDetails: createAction(
     `${prefix}setScheduleDeploymentDetails`
   ),
+  scheduleSanityAndDeploy: createAction(`${prefix}scheduleSanityAndDeploy`),
+  setSanityAndDeployStatus: createAction(`${prefix}setSanityAndDeployStatus`),
+  setIsScheduleSanityCheckModalOpen: createAction(
+    `${prefix}setIsScheduleSanityCheckModalOpen`
+  ),
 };
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
@@ -47,6 +58,8 @@ export const SCHEDULAR_INITIAL_STATE = {
   rejectScheduleModal: false,
   approveScheduleModal: false,
   tokenScheduleModal: false,
+  isSanityCheckScheduleModalOpen: false,
+  isSuccessSanityCheckModalOpen: false,
   scheduleFromList: false,
   scheduleSelectRange: [],
   isDiffModalOpen: false,
@@ -59,6 +72,8 @@ export const SCHEDULAR_INITIAL_STATE = {
   isGroupListModalOpen: false,
   listGroupMembers: [],
   scheduleDeploymentDetails: null,
+  sanityAndDeployStatus: null,
+  isScheduleSanityCheckModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -71,6 +86,10 @@ export const SchedularSelectors = {
   getRejectScheduleModal: state => state.schedular.rejectScheduleModal,
   getApproveScheduleModal: state => state.schedular.approveScheduleModal,
   getTokenScheduleModal: state => state.schedular.tokenScheduleModal,
+  getIsSanityCheckModalOpen: state =>
+    state.schedular.isSanityCheckScheduleModalOpen,
+  getIsSuccessSanityCheckModalOpen: state =>
+    state.schedular.isSuccessSanityCheckModalOpen,
   getScheduleFromList: state => state.schedular.scheduleFromList,
   getScheduleSelectRange: state => state.schedular.scheduleSelectRange,
   getIsDiffModalOpen: state => state.schedular.isDiffModalOpen,
@@ -84,6 +103,9 @@ export const SchedularSelectors = {
   getListGroupMembers: state => state.schedular.listGroupMembers,
   getScheduleDeploymentDetails: state =>
     state.schedular.scheduleDeploymentDetails,
+  getSanityAndDeployStatus: state => state.schedular.sanityAndDeployStatus,
+  getIsScheduleSanityCheckModalOpen: state =>
+    state.schedular.isScheduleSanityCheckModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -209,6 +231,34 @@ const setScheduleDeploymentDetails = (state, { payload }) => {
   };
 };
 
+const setIsSanityCheckScheduleModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isSanityCheckScheduleModalOpen: payload,
+  };
+};
+
+const setIsSuccessSanityCheckModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isSuccessSanityCheckModalOpen: payload,
+  };
+};
+
+const setSanityAndDeployStatus = (state, { payload }) => {
+  return {
+    ...state,
+    sanityAndDeployStatus: payload,
+  };
+};
+
+const setIsScheduleSanityCheckModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isScheduleSanityCheckModalOpen: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const schedularReducer = createReducer(
   SCHEDULAR_INITIAL_STATE,
@@ -225,6 +275,14 @@ export const schedularReducer = createReducer(
         setApproveScheduleModal
       )
       .addCase(SchedularActions.setTokenScheduleModal, setTokenScheduleModal)
+      .addCase(
+        SchedularActions.setIsSanityCheckScheduleModalOpen,
+        setIsSanityCheckScheduleModalOpen
+      )
+      .addCase(
+        SchedularActions.setIsSuccessSanityCheckModalOpen,
+        setIsSuccessSanityCheckModalOpen
+      )
       .addCase(SchedularActions.setScheduleFromList, setScheduleFromList)
       .addCase(SchedularActions.setScheduleSelectRange, setScheduleSelectRange)
       .addCase(SchedularActions.setIsDiffModalOpen, setIsDiffModalOpen)
@@ -248,6 +306,14 @@ export const schedularReducer = createReducer(
       .addCase(
         SchedularActions.setScheduleDeploymentDetails,
         setScheduleDeploymentDetails
+      )
+      .addCase(
+        SchedularActions.setSanityAndDeployStatus,
+        setSanityAndDeployStatus
+      )
+      .addCase(
+        SchedularActions.setIsScheduleSanityCheckModalOpen,
+        setIsScheduleSanityCheckModalOpen
       );
   }
 );
