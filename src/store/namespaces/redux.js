@@ -279,8 +279,10 @@ export const NamespacesActions = {
   fetchNamespaceVersionSuccess: createAction(
     `${prefix}fetchNamespaceVersionSuccess`
   ),
+  setDefaultRegistrySelected: createAction(
+    `${prefix}setDefaultRegistrySelected`
+  ),
 };
-
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -411,6 +413,7 @@ export const NAMESPACES_INITIAL_STATE = {
   selectedRegistryOnDeploy: null,
   clusterNamespacesDownload: {},
   clusterNamespacesVersion: {},
+  defaultRegistrySelected: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -556,6 +559,7 @@ export const NamespacesSelectors = {
     state.namespaces.selectedRegistryOnDeploy,
   getNamespacesDownload: state => state.namespaces.clusterNamespacesDownload,
   getNamespacesVersion: state => state.namespaces.clusterNamespacesVersion,
+  getdefaultRegistrySelected: state => state.namespaces.defaultRegistrySelected,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1310,6 +1314,13 @@ const fetchNamespaceVersionSuccess = (state, { payload }) => {
   };
 };
 
+const setDefaultRegistrySelected = (state, { payload }) => {
+  return {
+    ...state,
+    defaultRegistrySelected: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1622,6 +1633,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.fetchNamespaceVersionSuccess,
         fetchNamespaceVersionSuccess
+      )
+      .addCase(
+        NamespacesActions.setDefaultRegistrySelected,
+        setDefaultRegistrySelected
       );
   }
 );

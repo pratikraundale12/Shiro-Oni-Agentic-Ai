@@ -405,6 +405,13 @@ function DeployPage() {
       })
     );
     dispatch(SettingsActions.setSettingsData({}));
+    dispatch(
+      NamespacesActions.setDefaultRegistrySelected(
+        registrySelectedId ||
+          defaultRegistryValue ||
+          registryDropdownOptions?.[0]?.value
+      )
+    );
   }, [dispatch, registrySelectedId]);
 
   const hasRunOnce = useRef(false);
