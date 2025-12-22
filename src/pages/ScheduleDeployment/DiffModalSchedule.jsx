@@ -168,13 +168,15 @@ export const DiffModalScheduleList = props => {
             >
               {KDFM.CONTROLLER_SERVICE}{' '}
             </Tab>
-            <Tab
-              active={activeTab === 'Flow Validation'}
-              onClick={() => handleSetTab('Flow Validation')}
-              className="nav-item"
-            >
-              Flow Validation{' '}
-            </Tab>
+            {!isFromDeploySummary && (
+              <Tab
+                active={activeTab === 'Flow Validation'}
+                onClick={() => handleSetTab('Flow Validation')}
+                className="nav-item"
+              >
+                Flow Validation{' '}
+              </Tab>
+            )}
             {/* Conditionally render Local Changes tab */}
             {!isFromDeploySummary && (
               <Tab
