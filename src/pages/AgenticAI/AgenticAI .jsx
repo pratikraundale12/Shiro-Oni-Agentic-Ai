@@ -541,7 +541,7 @@ export const AgenticAI = () => {
             )}
           </Avatar>
           <span style={{ fontWeight: 'bold', marginRight: '10px' }}>
-            {isUser ? KDFM.YOU : KDFM.DATA_FLOW_MANAGER}
+            {isUser ? KDFM.YOU : KDFM.DFM_AI_AGENT}
           </span>
           <span>{item?.time ?? formattedTime()}</span>
         </MessageHeader>

@@ -6,4 +6,5 @@ export const AGENTIC_AI_CONSTANTS = {
     'DFM AI AGENT can make mistakes. Check our Terms & Conditions.',
   PROMPT_PLACEHOLDER: 'Message DFM Agent...',
   MAX_CHAR_LIMIT: 2000,
+  DFM_AI_AGENT: 'DFM AI Agent',
 };
