@@ -121,7 +121,7 @@ export function* editScheduleByRegistry(api, { payload }) {
     // yield put(SchedularActions.setScheduleSelectRange([]));
     toast.success(response?.data?.message);
   } else {
-    toast.error(response?.data?.message);
+    toast.error(response?.data?.message || response?.data?.error);
   }
 }
 
