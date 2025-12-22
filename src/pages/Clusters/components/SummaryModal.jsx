@@ -266,7 +266,7 @@ export const SummaryModal = ({
     }
   };
 
-  const partialIds = selectedRegistriesArray.map(item => item.value);
+  const partialIds = selectedRegistriesArray?.map(item => item?.value);
 
   const selectedRegistriesWithAllData = registries.reduce((acc, item) => {
     if (partialIds.includes(item.value)) {
