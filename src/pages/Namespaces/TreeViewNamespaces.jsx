@@ -240,6 +240,7 @@ const TreeViewNamespaces = ({
     y: 0,
   });
   const zoomRef = useRef(null);
+  const activeHoverIdRef = useRef(null);
   const [currentZoom, setCurrentZoom] = useState(1);
   const dispatch = useDispatch();
   const namespacesVersion = useSelector(
@@ -251,6 +252,7 @@ const TreeViewNamespaces = ({
 
   useEffect(() => {
     if (loadingNamespacesVersion) {
+      if (!activeHoverIdRef.current) return;
       setTooltip(prev => ({
         ...prev,
         visible: true,
@@ -275,6 +277,7 @@ const TreeViewNamespaces = ({
       return; // wait until loading finishes
     }
     if (!namespacesVersion) return;
+    if (activeHoverIdRef.current !== namespacesVersion?.id) return;
     const dataForBox = {
       name: namespacesVersion?.name ?? '',
       version:
@@ -638,8 +641,15 @@ const TreeViewNamespaces = ({
         .on('click', (event, d) => {
           d.children = d.children ? null : d._children;
           update(event, d);
-        })
-        // Add tooltip events to the entire node group
+        });
+
+      nodeEnter
+        .append('circle')
+        .attr('r', 2)
+        .attr('fill', d => getNodeColor(d))
+        .attr('stroke', d => getNodeColor(d))
+        .attr('stroke-width', 10)
+        // Add tooltip events to the circle only
         .on('mouseover', function (event, d) {
           const nodeId = d?.data?.instanceIdentifier || '';
           if (
@@ -647,16 +657,12 @@ const TreeViewNamespaces = ({
             d?.data?.isProcessor !== true &&
             !d.__hoverCalled
           ) {
+            activeHoverIdRef.current = nodeId;
             d.__hoverCalled = true;
             dispatch(
-              NamespacesActions.fetchNamespaceVersion({
-                namespaceId: nodeId,
-              })
+              NamespacesActions.fetchNamespaceVersion({ namespaceId: nodeId })
             );
 
-            const name = d.data.name || '';
-            //   if (name.length > 15) {
-            // condittion to only show tooltip over larger name process groups
             setTooltip({
               visible: false,
               content: null,
@@ -666,28 +672,13 @@ const TreeViewNamespaces = ({
           }
         })
         .on('mousemove', function (event) {
-          setTooltip(prev => ({
-            ...prev,
-            x: event.pageX,
-            y: event.pageY,
-          }));
+          setTooltip(prev => ({ ...prev, x: event.pageX, y: event.pageY }));
         })
         .on('mouseout', function (event, d) {
-          setTooltip({
-            visible: false,
-            content: null,
-            x: 0,
-            y: 0,
-          });
+          activeHoverIdRef.current = null;
+          setTooltip({ visible: false, content: null, x: 0, y: 0 });
           d.__hoverCalled = false;
         });
-
-      nodeEnter
-        .append('circle')
-        .attr('r', 2)
-        .attr('fill', d => getNodeColor(d))
-        .attr('stroke', d => getNodeColor(d))
-        .attr('stroke-width', 10);
 
       // Text positioning: center text below node
       nodeEnter

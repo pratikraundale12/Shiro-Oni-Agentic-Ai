@@ -65,12 +65,6 @@ const FlowAnalysis = () => {
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   useEffect(() => {
-    if (!selectedCluster?.value) {
-      toast.info('Please login to the cluster.');
-    }
-  }, [selectedCluster]);
-
-  useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
   }, []);
 
