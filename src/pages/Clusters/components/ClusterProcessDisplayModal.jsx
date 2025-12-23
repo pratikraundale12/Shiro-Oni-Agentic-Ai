@@ -100,7 +100,10 @@ const CreationModelKubeStepsEC2 = [
     step: 'Checking if NiFi installation files are present',
     status: 'completed',
   },
-  { step: 'Reading NiFi configuration settings', status: 'completed' },
+  {
+    step: 'Reading NiFi configuration settings',
+    status: 'completed',
+  },
   {
     step: 'Checking connection details for remote server',
     status: 'completed',
@@ -109,7 +112,10 @@ const CreationModelKubeStepsEC2 = [
     step: 'Checking if required tools are installed on remote server',
     status: 'completed',
   },
-  { step: 'Setting up workspace on remote server', status: 'completed' },
+  {
+    step: 'Setting up workspace on remote server',
+    status: 'completed',
+  },
   {
     step: 'Packaging Helm chart for remote deployment',
     status: 'completed',
@@ -118,7 +124,10 @@ const CreationModelKubeStepsEC2 = [
     step: 'Setting up cluster connection on remote server',
     status: 'completed',
   },
-  { step: 'Ensure namespace nifi', status: 'completed' },
+  {
+    step: 'Ensure namespace nifi',
+    status: 'completed',
+  },
   {
     step: 'Installing local-path provisioner and setting default StorageClass',
     status: 'completed',
@@ -127,8 +136,22 @@ const CreationModelKubeStepsEC2 = [
     step: 'Installing remote cluster security certificate manager',
     status: 'completed',
   },
-  { step: 'Deploying remote cluster NiFi application', status: 'completed' },
-  { step: 'Collect NiFi pods/services (remote)', status: 'completed' },
+  {
+    step: 'Deploying remote cluster NiFi application',
+    status: 'completed',
+  },
+  {
+    step: 'Ensuring metrics-server with insecure TLS flag (remote)',
+    status: 'completed',
+  },
+  {
+    step: 'Ensuring pvc-exporter Helm release (remote)',
+    status: 'completed',
+  },
+  {
+    step: 'Collect NiFi pods/services (remote)',
+    status: 'completed',
+  },
 ];
 
 const CreationModelKubeStepsAKS = [
