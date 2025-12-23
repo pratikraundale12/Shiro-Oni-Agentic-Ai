@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button, ModalWithIcon } from '../../../shared';
+import { Button, Modal } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { isEmpty } from 'lodash';
@@ -11,8 +11,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader, Table } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
-import { DeleteDustbinIcon, DeleteSmallIcon } from '../../../assets';
-import { LoadingSelectors } from '../../../store';
+import { DeleteDustbinIcon, DeleteSmallIcon, InfoIcon } from '../../../assets';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../../store';
+import { theme } from '../../../styles';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -67,6 +72,7 @@ export const DriversCluster = ({ data }) => {
   );
 
   const driverList = useSelector(ClustersSelectors.getDriversList);
+  const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   const {
     watch,
@@ -83,14 +89,46 @@ export const DriversCluster = ({ data }) => {
   };
 
   const handleDeleteConfirm = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(false));
     dispatch(
       ClustersActions.deleteClusterDriverFile({
         id: selectedDriver?.clusterId,
         driverId: selectedDriver?.id,
+        restart: false,
       })
     );
     setSelectedDriver({});
     setIsDeleteModalOpen(false);
+  };
+  const handleDeleteandRestartConfirm = () => {
+    dispatch(ClustersActions.setrestartClusterAfterAction(true));
+    dispatch(
+      ClustersActions.deleteClusterDriverFile({
+        id: selectedDriver?.clusterId,
+        driverId: selectedDriver?.id,
+        restart: true,
+      })
+    );
+    setSelectedDriver({});
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleRestart = () => {
+    dispatch(
+      ClustersActions.restartCluster({
+        id: data?.id,
+        payload: {},
+      })
+    );
+    if (loggedInCluster?.value == data?.id) {
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+      localStorage.removeItem('selected_cluster');
+    }
   };
   const COLUMNS = [
     {
@@ -143,7 +181,10 @@ export const DriversCluster = ({ data }) => {
 
   return (
     <>
-      <FullPageLoader loading={loading || loading2 || loading3 || loading4} />
+      <FullPageLoader
+        loading={loading || loading2 || loading3 || loading4}
+        restartText={loading2}
+      />
 
       <Container>
         <div className="row mb-3">
@@ -169,7 +210,6 @@ export const DriversCluster = ({ data }) => {
             </div>
           </>
         </div>
-
         <FlexWrapper>
           <div className="" style={{ display: 'flex', gap: '1rem' }}>
             <Button
@@ -178,22 +218,52 @@ export const DriversCluster = ({ data }) => {
               onClick={handleSubmit(handleUpload)}
             >
               Upload
+            </Button>{' '}
+            <Button type="button" variant="primary" onClick={handleRestart}>
+              Restart
             </Button>
+          </div>
+          <div
+            className="col-10 d-flex align-items-center ms-2"
+            style={{
+              fontWeight: '500',
+              fontSize: '16px',
+              color: theme.colors.primary,
+            }}
+          >
+            <InfoIcon color={theme.colors.primary} /> &nbsp; The cluster restart
+            will take approximately 5 minutes.
           </div>
         </FlexWrapper>
         <div className="mt-2">
           <Table data={driverList || []} columns={COLUMNS} />
         </div>
-        <ModalWithIcon
+        <Modal
           title={`Delete Driver`}
-          primaryButtonText={'Delete'}
-          secondaryButtonText="Cancel"
-          icon={<DeleteDustbinIcon />}
           isOpen={isDeleteModalOpen}
           onRequestClose={() => setIsDeleteModalOpen(false)}
-          primaryText={`Are you sure you want to delete?`}
+          size="sm"
+          loading={loading}
+          secondaryButtonText="Back"
+          primaryButtonText={'Delete'}
           onSubmit={handleDeleteConfirm}
-        />
+          footerAlign="center"
+          tertiaryButton={true}
+          tertiaryButtonConfig={{
+            tertiaryButtonTest: 'Delete and Retsart',
+            tertiaryButtonSubmit: handleDeleteandRestartConfirm,
+          }}
+        >
+          <div className="d-flex justify-content-center ">
+            <DeleteDustbinIcon />
+          </div>
+          <div
+            className="d-flex justify-content-center mt-2"
+            style={{ fontWeight: '700', fontSize: '20px' }}
+          >
+            Are you sure you want to delete?
+          </div>
+        </Modal>
       </Container>
     </>
   );
