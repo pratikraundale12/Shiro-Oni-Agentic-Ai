@@ -1009,6 +1009,10 @@ export function* deleteClusterNarFile(api, { payload }) {
 }
 
 export function* deleteClusterDriverFile(api, { payload }) {
+  const restartAfterUpload = yield select(
+    ClustersSelectors.getrestartClusterAfterAction
+  );
+  const loggedInCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const response = yield call(requestSaga, {
     errorSection: 'deleteClusterDriverFile',
     loadingSection: 'deleteClusterDriverFile',
@@ -1017,11 +1021,29 @@ export function* deleteClusterDriverFile(api, { payload }) {
       {
         id: payload?.id,
         driverId: payload?.driverId,
+        restart: payload?.restart,
       },
     ],
   });
   if (response?.ok) {
     toast.success(response?.data?.message || 'Deleted Successfully');
+    if (restartAfterUpload) {
+      yield put(
+        ClustersActions.restartCluster({
+          id: payload?.id,
+          payload: {},
+        })
+      );
+      if (loggedInCluster?.value == payload?.id) {
+        yield put(
+          NamespacesActions.setSelectedCluster({
+            label: '',
+            value: '',
+          })
+        );
+        localStorage.removeItem('selected_cluster');
+      }
+    }
     yield put(ClustersActions.fetchDriversList(payload?.id));
   } else {
     toast.error(response?.data?.message);

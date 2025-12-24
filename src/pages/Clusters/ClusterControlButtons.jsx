@@ -161,7 +161,7 @@ const ClusterControlButtons = () => {
           setTimeout(() => {
             setStopInitiated(false);
             setAction(null);
-            toast.error('Cluster has stopped successfully');
+            toast.success('Cluster has stopped successfully');
           }, 200000);
         }
       } else {
