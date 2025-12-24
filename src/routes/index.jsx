@@ -85,7 +85,6 @@ import AccessManagementTypes from '../pages/Role&Permission/AccessManagementType
 import TreeViewPage from '../pages/Namespaces/TreeViewPage.jsx';
 // import DeploymentStatistics from '../pages/Dashboard/DeploymentStatistics.jsx';
 import ClusterSetupNewConfigKubernetes from '../pages/Clusters/components/ClusterconfigForKubernetes.jsx';
-// import ClusterSetupNewConfigKubernetes from '../pages/Clusters/components/ClusterSetupNewConfigKubernetes.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -271,7 +270,6 @@ export const ROUTES_MENU = [
     ],
     permission: 'view_genai',
   },
-
   {
     name: 'User Management',
     path: 'user-management',

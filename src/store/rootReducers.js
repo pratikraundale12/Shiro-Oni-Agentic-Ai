@@ -16,6 +16,7 @@ import { schedularReducer } from './schedular';
 import { settingsReducer } from './settings';
 import { usersReducer } from './users';
 import { registryReducer } from './registry';
+import { agenticAiReducer } from './agenticAI';
 
 const resettable = resettableReducer('RESET');
 
@@ -41,4 +42,5 @@ export default combineReducers({
   flowValidation: resettable(flowValidationReducer),
   aiFlowGenerator: resettable(aiFlowGeneratorReducer),
   registry: resettable(registryReducer),
+  agenticAI: resettable(agenticAiReducer),
 });

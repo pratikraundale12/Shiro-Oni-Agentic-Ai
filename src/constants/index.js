@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
+import { AGENTIC_AI_CONSTANTS } from './agenticAi.constant';
 import { AI_FLOW_GENERATOR_CONSTANTS } from './aiFlowGenerator.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
@@ -326,6 +327,7 @@ export const KDFM = {
   ...ACTIVITY_HISTORY_CONSTANTS,
   ...USER_CONSTANTS,
   ...AI_FLOW_GENERATOR_CONSTANTS,
+  ...AGENTIC_AI_CONSTANTS,
 };
 
 export const SIDE_MENUS_DISPLAY = [

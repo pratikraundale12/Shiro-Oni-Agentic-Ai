@@ -14,6 +14,7 @@ import { schedularAPI } from './schedular';
 import { settingsAPI } from './setting';
 import { usersAPI } from './users';
 import { registryAPI } from './registry';
+import { agenticAiAPI } from './agenticAi';
 
 const create = (baseURL = `${API_URL}/api`) => {
   const api = apisauce.create({
@@ -90,6 +91,8 @@ const create = (baseURL = `${API_URL}/api`) => {
     ...aiFlowGeneratorAPI(api),
     // Registry Management
     ...registryAPI(api),
+    // Agentic AI
+    ...agenticAiAPI(api),
   };
 };
 
