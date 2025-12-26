@@ -77,6 +77,7 @@ export const Modal = ({
   onSecondarySubmit,
   secondaryButtonProps = {},
   footerAlign = 'center',
+  overlayStyles = {},
   contentStyles,
   tertiaryButton = false,
   tertiaryButtonConfig = {
@@ -97,6 +98,8 @@ export const Modal = ({
   primaryBtnSize,
   formClass,
   clickOutsideToClose = true,
+  showLoggedInCluster = false,
+  loggedInClusterComponent: LoggedInComponent = null,
 }) => {
   const primaryButtonSize = primaryBtnSize
     ? primaryBtnSize
@@ -110,6 +113,7 @@ export const Modal = ({
       left: 0,
       zIndex: 9,
       backgroundColor: theme.colors.shadow,
+      ...overlayStyles,
     },
     content: {
       padding: 0,
@@ -158,21 +162,24 @@ export const Modal = ({
       >
         <Header>
           <Title className="mb-0">{title}</Title>
-          <div className="d-flex gap-2">
-            {isAdditionalIcon && (
-              <CloseButton
-                type="button"
-                icon={additionalIcon}
-                onClick={onAdditionalIconClick}
-              />
-            )}
-            {closeIcon && (
-              <CloseButton
-                type="button"
-                icon={<CloseIcon />}
-                onClick={onRequestClose}
-              />
-            )}
+          <div className="d-flex align-items-center gap-3">
+            {showLoggedInCluster && <LoggedInComponent />}
+            <div className="d-flex gap-2">
+              {isAdditionalIcon && (
+                <CloseButton
+                  type="button"
+                  icon={additionalIcon}
+                  onClick={onAdditionalIconClick}
+                />
+              )}
+              {closeIcon && (
+                <CloseButton
+                  type="button"
+                  icon={<CloseIcon />}
+                  onClick={onRequestClose}
+                />
+              )}
+            </div>
           </div>
         </Header>
         <Body noPadding={noPadding} noScroll={noScroll}>
@@ -249,6 +256,7 @@ Modal.propTypes = {
   loading: PropTypes.bool,
   onSecondarySubmit: PropTypes.func,
   secondaryButtonProps: PropTypes.object,
+  overlayStyles: PropTypes.object,
   contentStyles: PropTypes.object,
   footerAlign: PropTypes.string,
   tertiaryButton: PropTypes.bool,
@@ -266,4 +274,6 @@ Modal.propTypes = {
   primaryBtnSize: PropTypes.string,
   formClass: PropTypes.string,
   clickOutsideToClose: PropTypes.bool,
+  showLoggedInCluster: PropTypes.bool,
+  loggedInClusterComponent: PropTypes.elementType,
 };
