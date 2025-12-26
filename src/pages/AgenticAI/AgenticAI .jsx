@@ -18,6 +18,7 @@ import {
   ChatbotIcon,
 } from '../../assets';
 import { toast } from 'react-toastify';
+import { AgenticAiClusterLoginButton } from './AgenticAiClusterLoginButton';
 
 const Container = styled.div`
   display: flex;
@@ -108,8 +109,21 @@ const MessageHeader = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 8px;
-  font-size: 12px;
+  font-size: 16px;
   color: #888;
+
+  span:nth-of-type(1) {
+    font-size: 16px;
+    font-weight: bold;
+    color: #444445;
+    margin-right: 10px;
+  }
+
+  span:nth-of-type(2) {
+    font-size: 14px;
+    color: #888;
+    font-weight: 400;
+  }
 `;
 
 const Avatar = styled.div`
@@ -132,7 +146,7 @@ const MessageContent = styled.div`
   align-self: ${props => (props.isUser ? 'flex-end' : 'flex-start')};
   background-color: ${props => (props.isUser ? '#ff7a001a' : '#f0f0f0')};
   color: ${props => (props.isUser ? '#444445' : '#333')};
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.6;
   ${props => props.isUser && `white-space: pre-wrap;`}
   word-break: break-word;
@@ -235,7 +249,7 @@ const InputBox = styled.textarea`
   outline: none;
   resize: none;
   background: transparent;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
   font-family: inherit;
   max-height: 120px;
@@ -282,22 +296,34 @@ const DisclaimerText = styled.p`
 `;
 
 const dotAnimation = keyframes`
-  0%, 80%, 100% { opacity: 0; }
-  40% { opacity: 1; }
+  0% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.2; transform: scale(1); }
 `;
 
 const LoaderDots = styled.span`
-  &::after {
-    content: ' .';
-    animation: ${dotAnimation} 1s infinite;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  gap: 6px;
+
+  span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #ff7a00;
+    border-radius: 50%;
+    animation: ${dotAnimation} 1.4s infinite ease-in-out;
   }
-  &::before {
-    content: ' .';
-    animation: ${dotAnimation} 1s infinite 0.33s;
+
+  span:nth-child(1) {
+    animation-delay: 0s;
   }
-  & span {
-    content: ' .';
-    animation: ${dotAnimation} 1s infinite 0.66s;
+  span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  span:nth-child(3) {
+    animation-delay: 0.4s;
   }
 `;
 
@@ -407,11 +433,15 @@ export const AgenticAI = () => {
   useEffect(() => {
     if (!isEmpty(apiResponse)) {
       const timestamp = formattedTime();
+      const displayContent =
+        apiResponse?.message?.content || JSON.stringify(apiResponse);
       const newSystemMessage = {
         role: 'system',
         status: 'completed',
-        data: apiResponse.message || JSON.stringify(apiResponse),
+        data: displayContent,
         time: timestamp,
+        fullResponse: apiResponse,
+        isLoginRequired: apiResponse?.message?.login_required ?? true,
       };
       setConversationalRes(prev => {
         const updated = [...prev];
@@ -427,7 +457,7 @@ export const AgenticAI = () => {
       const errorMessage = {
         role: 'system',
         status: 'error',
-        data: apiError.message || KDFM.GENERIC_CHAT_ERROR,
+        data: KDFM?.GENERIC_CHAT_ERROR,
         time: timestamp,
       };
       setConversationalRes(prev => {
@@ -508,24 +538,31 @@ export const AgenticAI = () => {
 
     if (isPending && isLoading) {
       content = (
-        <p className="mt-1 d-flex align-items-center">
-          <span>Generating Response</span>
-          <LoaderDots />
-        </p>
+        <div className="mt-1 d-flex align-items-center">
+          <span style={{ fontWeight: '500' }}>Generating Response</span>
+          <LoaderDots>
+            <span />
+            <span />
+            <span />
+          </LoaderDots>
+        </div>
       );
     } else if (item.status === 'error') {
-      content = <span style={{ color: 'red' }}>Error: {item.data}</span>;
+      content = <span style={{ color: 'red' }}> {item.data}</span>;
     } else {
       if (isUser) {
         content = <p style={{ margin: 0 }}>{item.data}</p>;
       } else {
         content = (
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={MarkdownComponents}
-          >
-            {item.data}
-          </ReactMarkdown>
+          <>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={MarkdownComponents}
+            >
+              {item.data}
+            </ReactMarkdown>
+            {item.isLoginRequired !== false && <AgenticAiClusterLoginButton />}
+          </>
         );
       }
     }
@@ -540,9 +577,7 @@ export const AgenticAI = () => {
               <AIMiniIcon width={16} height={16} color="white" />
             )}
           </Avatar>
-          <span style={{ fontWeight: 'bold', marginRight: '10px' }}>
-            {isUser ? KDFM.YOU : KDFM.DFM_AI_AGENT}
-          </span>
+          <span>{isUser ? KDFM.YOU : KDFM.DFM_AI_AGENT}</span>
           <span>{item?.time ?? formattedTime()}</span>
         </MessageHeader>
         <MessageContent isUser={isUser}>{content}</MessageContent>
@@ -594,6 +629,7 @@ export const AgenticAI = () => {
             }
             rows={1}
             maxLength={KDFM.MAX_CHAR_LIMIT}
+            id="inputTextArea"
           />
           <SendButton
             type="button"

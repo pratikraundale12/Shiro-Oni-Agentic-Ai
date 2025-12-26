@@ -8,6 +8,7 @@ import { theme } from '../../styles';
 import { KDFM } from '../../constants';
 import { AgenticAiActions, AgenticAiSelectors } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
+import { ShowLoggedInCluster } from './ShowLoggedInCluster';
 
 const ContentWrapper = styled.div`
   height: 100%;
@@ -52,6 +53,17 @@ export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
         onRequestClose();
         dispatch(AgenticAiActions.setAgenticAiModalFullScreen(!isFullscreen));
       }}
+      overlayStyles={{
+        // position: 'relative',
+        position: 'fixed',
+        backgroundColor: '#F5F7FA',
+        // inset: isFullscreen ? 'auto 0 0 auto' : '430px 20px 0px 850px',
+        // width: '522px',
+        // height: '555px',
+        inset: isFullscreen ? 'auto 0 0 auto' : 'auto 0 0 auto',
+        width: isFullscreen ? '100%' : '522px',
+        height: isFullscreen ? '100%' : '555px',
+      }}
       contentStyles={{
         inset: isFullscreen ? 'auto 0 0 auto' : 'auto 20px 90px auto',
         transform: 'none',
@@ -62,12 +74,18 @@ export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
+        boxShadow: 'rgba(0, 0, 0, 0.3) 0px 1px 20px',
+        zIndex: 1000,
+        minHeight: '655px',
       }}
       formClass={'h-100'}
       isAdditionalIcon={true}
       additionalIcon={isFullscreen ? <MinimizeModal /> : <MaximizeModal />}
       onAdditionalIconClick={toggleFullScreen}
       noPadding={true}
+      clickOutsideToClose={false}
+      showLoggedInCluster={true}
+      loggedInClusterComponent={ShowLoggedInCluster}
     >
       <ContentWrapper>
         <AgenticAI />
