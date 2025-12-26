@@ -97,12 +97,15 @@ const MessageList = styled.div`
   flex-direction: column;
   gap: 15px;
   width: 100%;
+  max-width: 750px;
+  margin: 0 auto;
 `;
 
 const MessageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 15px 20px;
+  width: 100%;
 `;
 
 const MessageHeader = styled.div`
@@ -111,6 +114,7 @@ const MessageHeader = styled.div`
   margin-bottom: 8px;
   font-size: 16px;
   color: #888;
+  align-self: ${props => (props.isUser ? 'flex-end' : 'flex-start')};
 
   span:nth-of-type(1) {
     font-size: 16px;
@@ -150,6 +154,8 @@ const MessageContent = styled.div`
   line-height: 1.6;
   ${props => props.isUser && `white-space: pre-wrap;`}
   word-break: break-word;
+  width: ${props => (props.isUser ? 'fit-content' : '100%')};
+  text-align: left;
 
   table {
     width: 100%;
@@ -352,7 +358,9 @@ export const AgenticAI = () => {
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
   const [queryText, setQueryText] = useState('');
-  const [conversationalRes, setConversationalRes] = useState([]);
+  const conversationalRes = useSelector(
+    AgenticAiSelectors.getConversationHistory
+  );
   const apiResponse = useSelector(AgenticAiSelectors.getMessageChatAi);
   const apiError = useSelector(AgenticAiSelectors.getMessageChatAiError);
   const inputRef = useRef(null);
@@ -363,7 +371,7 @@ export const AgenticAI = () => {
   );
 
   const handleNewChat = () => {
-    setConversationalRes([]);
+    dispatch(AgenticAiActions.resetChat());
   };
 
   const adjustTextareaHeight = () => {
@@ -406,12 +414,12 @@ export const AgenticAI = () => {
         time: timestamp,
         data: 'Waiting for response...',
       };
-
-      setConversationalRes(prev => [
-        ...prev,
+      const newHistory = [
+        ...conversationalRes,
         newUserMessage,
         tempSystemMessage,
-      ]);
+      ];
+      dispatch(AgenticAiActions.setConversationHistory(newHistory));
 
       const payload = {
         message: trimmedQuery,
@@ -423,7 +431,7 @@ export const AgenticAI = () => {
 
       if (inputRef.current) inputRef.current.style.height = 'auto';
     },
-    [queryText, isLoading, dispatch, sessionId]
+    [queryText, isLoading, dispatch, sessionId, conversationalRes]
   );
 
   useEffect(() => {
@@ -443,12 +451,15 @@ export const AgenticAI = () => {
         fullResponse: apiResponse,
         isLoginRequired: apiResponse?.message?.login_required ?? true,
       };
-      setConversationalRes(prev => {
-        const updated = [...prev];
-        const lastIndex = updated.map(msg => msg.status).lastIndexOf('pending');
-        if (lastIndex !== -1) updated[lastIndex] = newSystemMessage;
-        return updated;
-      });
+      const updatedHistory = [...conversationalRes];
+      const lastIndex = updatedHistory
+        .map(msg => msg.status)
+        .lastIndexOf('pending');
+
+      if (lastIndex !== -1) {
+        updatedHistory[lastIndex] = newSystemMessage;
+        dispatch(AgenticAiActions.setConversationHistory(updatedHistory));
+      }
       dispatch(AgenticAiActions.setMessageChatAi({}));
     }
 
@@ -460,12 +471,16 @@ export const AgenticAI = () => {
         data: KDFM?.GENERIC_CHAT_ERROR,
         time: timestamp,
       };
-      setConversationalRes(prev => {
-        const updated = [...prev];
-        const lastIndex = updated.map(msg => msg.status).lastIndexOf('pending');
-        if (lastIndex !== -1) updated[lastIndex] = errorMessage;
-        return updated;
-      });
+      const updatedHistory = [...conversationalRes];
+      const lastIndex = updatedHistory
+        .map(msg => msg.status)
+        .lastIndexOf('pending');
+
+      if (lastIndex !== -1) {
+        updatedHistory[lastIndex] = errorMessage;
+        dispatch(AgenticAiActions.setConversationHistory(updatedHistory));
+      }
+
       dispatch(AgenticAiActions.setMessageChatAiError({}));
     }
   }, [apiResponse, apiError, dispatch]);
@@ -568,8 +583,8 @@ export const AgenticAI = () => {
     }
 
     return (
-      <MessageWrapper key={index}>
-        <MessageHeader>
+      <MessageWrapper key={index} isUser={isUser}>
+        <MessageHeader isUser={isUser}>
           <Avatar isUser={isUser}>
             {isUser ? (
               <UserIcon width={16} height={16} color="white" />

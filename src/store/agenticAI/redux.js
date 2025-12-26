@@ -14,6 +14,8 @@ export const AgenticAiActions = {
   setAgenticAiModalFullScreen: createAction(
     `${prefix}setAgenticAiModalFullScreen`
   ),
+  setConversationHistory: createAction(`${prefix}setConversationHistory`),
+  resetChat: createAction(`${prefix}resetChat`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -23,6 +25,7 @@ export const AGENTIC_AI_INITIAL_STATE = {
   messageChatAi: {},
   messageChatAiError: {},
   agenticAiModalFullScreen: false,
+  conversationHistory: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -33,6 +36,7 @@ export const AgenticAiSelectors = {
   getMessageChatAiError: state => state.agenticAI.messageChatAiError,
   getAgenticAiModalFullScreen: state =>
     state.agenticAI.agenticAiModalFullScreen,
+  getConversationHistory: state => state.agenticAI.conversationHistory,
 };
 
 const setSessionId = (state, { payload }) => {
@@ -84,6 +88,22 @@ const setAgenticAiModalFullScreen = (state, { payload }) => {
   };
 };
 
+const setConversationHistory = (state, { payload }) => {
+  return {
+    ...state,
+    conversationHistory: payload,
+  };
+};
+
+const resetChat = state => {
+  return {
+    ...state,
+    conversationHistory: [],
+    messageChatAi: {},
+    messageChatAiError: {},
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const agenticAiReducer = createReducer(
   AGENTIC_AI_INITIAL_STATE,
@@ -98,6 +118,8 @@ export const agenticAiReducer = createReducer(
       .addCase(
         AgenticAiActions.setAgenticAiModalFullScreen,
         setAgenticAiModalFullScreen
-      );
+      )
+      .addCase(AgenticAiActions.setConversationHistory, setConversationHistory)
+      .addCase(AgenticAiActions.resetChat, resetChat);
   }
 );
