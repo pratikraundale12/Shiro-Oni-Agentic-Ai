@@ -7,18 +7,15 @@ import remarkGfm from 'remark-gfm';
 import {
   AgenticAiActions,
   AgenticAiSelectors,
+  AuthenticationSelectors,
   LoadingSelectors,
 } from '../../store';
-import { KDFM } from '../../constants';
+import { API_URL, KDFM } from '../../constants';
 import { formattedTime } from '../AiFlowGenerator/utils';
-import {
-  SendMessageIcon,
-  UserIcon,
-  AIMiniIcon,
-  ChatbotIcon,
-} from '../../assets';
+import { SendMessageIcon, ChatbotIcon } from '../../assets';
 import { toast } from 'react-toastify';
 import { AgenticAiClusterLoginButton } from './AgenticAiClusterLoginButton';
+import { MessageIdentityAvatar } from './MessageIdentityAvatar';
 
 const Container = styled.div`
   display: flex;
@@ -128,19 +125,6 @@ const MessageHeader = styled.div`
     color: #888;
     font-weight: 400;
   }
-`;
-
-const Avatar = styled.div`
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: ${props => (props.isUser ? '#ff7a00' : '#444445')};
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
-  flex-shrink: 0;
 `;
 
 const MessageContent = styled.div`
@@ -369,6 +353,8 @@ export const AgenticAI = () => {
   const isLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchMessageChatAi')
   );
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
+  const [isValidProfilePic, setIsValidProfilePic] = useState(false);
 
   const handleNewChat = () => {
     dispatch(AgenticAiActions.resetChat());
@@ -449,7 +435,8 @@ export const AgenticAI = () => {
         data: displayContent,
         time: timestamp,
         fullResponse: apiResponse,
-        isLoginRequired: apiResponse?.message?.login_required ?? true,
+        isLoginRequired: apiResponse?.message?.login_required ?? false,
+        isLogoutRequired: apiResponse?.message?.logout ?? false,
       };
       const updatedHistory = [...conversationalRes];
       const lastIndex = updatedHistory
@@ -501,6 +488,15 @@ export const AgenticAI = () => {
       }, 50);
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    if (currentUser?.photo) {
+      const img = new Image();
+      img.onload = () => setIsValidProfilePic(true);
+      img.onerror = () => setIsValidProfilePic(false);
+      img.src = `${API_URL}${currentUser.photo}`;
+    }
+  }, [currentUser?.photo]);
 
   const handleKeyDown = e => {
     if (e.key === 'Enter') {
@@ -585,13 +581,11 @@ export const AgenticAI = () => {
     return (
       <MessageWrapper key={index} isUser={isUser}>
         <MessageHeader isUser={isUser}>
-          <Avatar isUser={isUser}>
-            {isUser ? (
-              <UserIcon width={16} height={16} color="white" />
-            ) : (
-              <AIMiniIcon width={16} height={16} color="white" />
-            )}
-          </Avatar>
+          <MessageIdentityAvatar
+            isUser={isUser}
+            userPhoto={currentUser?.photo}
+            isValidProfilePic={isValidProfilePic}
+          />
           <span>{isUser ? KDFM.YOU : KDFM.DFM_AI_AGENT}</span>
           <span>{item?.time ?? formattedTime()}</span>
         </MessageHeader>

@@ -45,7 +45,7 @@ export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
       isOpen={isOpen}
       onRequestClose={() => {
         onRequestClose();
-        dispatch(AgenticAiActions.setAgenticAiModalFullScreen(!isFullscreen));
+        dispatch(AgenticAiActions.setAgenticAiModalFullScreen(false));
       }}
       primaryButtonText=""
       secondaryButtonText=""
@@ -53,13 +53,10 @@ export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
         onRequestClose();
         dispatch(AgenticAiActions.setAgenticAiModalFullScreen(!isFullscreen));
       }}
+      shouldCloseOnEsc={false}
       overlayStyles={{
-        // position: 'relative',
         position: 'fixed',
         backgroundColor: '#F5F7FA',
-        // inset: isFullscreen ? 'auto 0 0 auto' : '430px 20px 0px 850px',
-        // width: '522px',
-        // height: '555px',
         inset: isFullscreen ? 'auto 0 0 auto' : 'auto 0 0 auto',
         width: isFullscreen ? '100%' : '522px',
         height: isFullscreen ? '100%' : '555px',

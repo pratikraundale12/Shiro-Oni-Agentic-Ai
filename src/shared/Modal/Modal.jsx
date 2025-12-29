@@ -100,6 +100,7 @@ export const Modal = ({
   clickOutsideToClose = true,
   showLoggedInCluster = false,
   loggedInClusterComponent: LoggedInComponent = null,
+  shouldCloseOnEsc,
 }) => {
   const primaryButtonSize = primaryBtnSize
     ? primaryBtnSize
@@ -151,6 +152,7 @@ export const Modal = ({
       onRequestClose={onRequestClose}
       style={styleObject}
       shouldCloseOnOverlayClick={clickOutsideToClose}
+      shouldCloseOnEsc={shouldCloseOnEsc}
     >
       <form
         className={`d-flex flex-column overflow-auto ${formClass ? formClass : ''}  cluster-login-modal-111 `}
@@ -276,4 +278,5 @@ Modal.propTypes = {
   clickOutsideToClose: PropTypes.bool,
   showLoggedInCluster: PropTypes.bool,
   loggedInClusterComponent: PropTypes.elementType,
+  shouldCloseOnEsc: PropTypes.bool,
 };
