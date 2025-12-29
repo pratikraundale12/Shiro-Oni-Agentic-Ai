@@ -87,7 +87,6 @@ export function* fetchMessageChatAi(api, { payload }) {
     yield put(
       AgenticAiActions.setMessageChatAiError({ message: errorMessage })
     );
-    // toast.error(errorMessage);
   }
 }
 

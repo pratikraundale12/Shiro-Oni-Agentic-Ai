@@ -1,20 +1,9 @@
 import React from 'react';
-import {
-  // useDispatch,
-  useSelector,
-} from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
-// import { toast } from 'react-toastify';
-// import { ClusterIcon, DownArrowIcon } from '../../assets';
-// import { KDFM } from '../../constants';
-import {
-  //   AuthenticationActions,
-  AuthenticationSelectors,
-  //   ClustersActions,
-  //   LoadingSelectors,
-  NamespacesSelectors,
-} from '../../store';
+
+import { AuthenticationSelectors, NamespacesSelectors } from '../../store';
 
 const IconCusterButton = styled.button`
   min-width: 50px;
@@ -70,30 +59,9 @@ const StatusDiv = styled.div`
 `;
 
 export const ShowLoggedInCluster = () => {
-  //   const dispatch = useDispatch();
-
-  // Selectors moved from Header
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
-  //   const flowGenrating = useSelector(state =>
-  //     LoadingSelectors.getLoading(state, 'generateFlowAPI')
-  //   );
 
-  //   const handleClusterClick = () => {
-  //     if (flowGenrating) {
-  //       if (!toast.isActive('generating-flow')) {
-  //         toast.warning('Flow is generating please wait', {
-  //           toastId: 'generating-flow',
-  //         });
-  //       }
-  //       return;
-  //     }
-  //     // Open the cluster login/selection modal
-  //     dispatch(AuthenticationActions.setClusterLogin(true));
-  //     dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
-  //   };
-
-  // Permission Check
   const canViewCluster =
     !isEmpty(currentUser?.permissions) &&
     currentUser?.permissions?.includes('view_cluster');
@@ -101,26 +69,15 @@ export const ShowLoggedInCluster = () => {
   if (!canViewCluster) return null;
   if (!selectedCluster?.label) return null;
   return (
-    <IconCusterButton
-      id="modal-cluster-icon-btn"
-      //   onClick={handleClusterClick}
-      type="button"
-    >
-      {/* <ClusterIcon width={18} height={18} style={{ flexShrink: 0 }}/> */}
+    <IconCusterButton id="modal-cluster-icon-btn" type="button">
       <NameDiv>
-        {
-          selectedCluster?.label ? (
-            <>
-              <StatusDiv style={{ flexShrink: 0 }} />
-              <ClusterLabel>{selectedCluster.label}</ClusterLabel>
-            </>
-          ) : null
-          // (
-          //   <span>{KDFM.SELECT_CLUSTER}</span>
-          // )
-        }
+        {selectedCluster?.label ? (
+          <>
+            <StatusDiv style={{ flexShrink: 0 }} />
+            <ClusterLabel>{selectedCluster.label}</ClusterLabel>
+          </>
+        ) : null}
       </NameDiv>
-      {/* <DownArrowIcon style={{ flexShrink: 0 }}/> */}
     </IconCusterButton>
   );
 };
