@@ -148,7 +148,6 @@ export const AddRegistryModal = ({ hostToEdit }) => {
   const watchMethodCredentials = watch('methodForCredentials');
   const isAuthenticated = watch('is_registry_authenticated');
   const formData = watch();
-  console.log(formData, 'formData');
 
   const isPrimaryBtnDisable = isAuthenticated ? !testSuccess : false;
 
