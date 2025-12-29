@@ -138,7 +138,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues : {
+    defaultValues: {
       is_registry_authenticated: true,
       methodForCredentials: 'password',
     },
@@ -200,6 +200,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
       const data = {
         name: formData?.name,
         registry_url: formData?.nifi_url,
+        is_registry_authenticated: formData?.is_registry_authenticated,
       };
       dispatch(RegistryActions.createRegistryAfterTest(data));
     }
@@ -271,7 +272,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
               register={register}
               errors={errors}
               icon={<DocumentTextIcon />}
-              disabled={!isEmpty(selectedRegistry) && !isPrimaryBtnDisable}
+              disabled={!isEmpty(selectedRegistry) || !isPrimaryBtnDisable}
             />
           </div>
           <div className="mb-3 d-flex gap-2 align-items-center">
