@@ -147,6 +147,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
   const watchMethodCredentials = watch('methodForCredentials');
   const isAuthenticated = watch('is_registry_authenticated');
   const formData = watch();
+  console.log(formData, 'formData');
 
   const isPrimaryBtnDisable = isAuthenticated ? !testSuccess : false;
 
@@ -201,6 +202,8 @@ export const AddRegistryModal = ({ hostToEdit }) => {
         name: formData?.name,
         registry_url: formData?.nifi_url,
         is_registry_authenticated: formData?.is_registry_authenticated,
+        is_certificate_based_service_account:
+          formData?.methodForCredentials == 'privatekey',
       };
       dispatch(RegistryActions.createRegistryAfterTest(data));
     }
