@@ -176,7 +176,9 @@ export const ListClusters = () => {
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const itemPerClusterList = useSelector(ClustersSelectors.getClusterListItems);
   const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-
+  const isModalOpenProgress = useSelector(
+    ClustersSelectors.getProgressTrackingModalOpen
+  );
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -913,14 +915,16 @@ export const ListClusters = () => {
       />
       <ClusterSuccessModal />
       <EKSClusterDeleteModal deleteKubeClusterData={deleteKubeClusterData} />
-      <ClusterProcessDisplayModal
-        isProcessModalOpen={isProcessModalOpen}
-        setIsProcessModalOpen={setIsProcessModalOpen}
-        setSelectedCluster={setSelectedCluster}
-        selectedCluster={selectedCluster}
-        sortingState={sortingState}
-        itemPerClusterList={itemPerClusterList}
-      />
+      {(isProcessModalOpen || isModalOpenProgress) && (
+        <ClusterProcessDisplayModal
+          isProcessModalOpen={isProcessModalOpen}
+          setIsProcessModalOpen={setIsProcessModalOpen}
+          setSelectedCluster={setSelectedCluster}
+          selectedCluster={selectedCluster}
+          sortingState={sortingState}
+          itemPerClusterList={itemPerClusterList}
+        />
+      )}
       <ClusterLoginWithOutCredModal />
     </>
   );
