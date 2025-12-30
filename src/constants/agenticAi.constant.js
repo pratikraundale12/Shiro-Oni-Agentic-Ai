@@ -7,4 +7,6 @@ export const AGENTIC_AI_CONSTANTS = {
   PROMPT_PLACEHOLDER: 'Message DFM Agent...',
   MAX_CHAR_LIMIT: 2000,
   DFM_AI_AGENT: 'DFM AI Agent',
+  GENERIC_CHAT_ERROR:
+    'Unable to generate response at this moment. Please try again after some time.',
 };

@@ -52,12 +52,11 @@ export function* fetchMessageChatAi(api, { payload }) {
       },
     ],
   });
-
   if (response.ok || response?.data?.status) {
     try {
-      const resContent = response?.data?.message?.content;
-      if (resContent) {
-        yield put(AgenticAiActions.setMessageChatAi({ message: resContent }));
+      const fullData = response?.data;
+      if (fullData && fullData.message) {
+        yield put(AgenticAiActions.setMessageChatAi(fullData));
       } else {
         yield put(
           AgenticAiActions.setMessageChatAi({
@@ -88,7 +87,6 @@ export function* fetchMessageChatAi(api, { payload }) {
     yield put(
       AgenticAiActions.setMessageChatAiError({ message: errorMessage })
     );
-    toast.error(errorMessage);
   }
 }
 
