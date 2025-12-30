@@ -266,6 +266,7 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
     dispatch(ClustersActions.fetchConfigListForKubernetes());
     dispatch(ClustersActions.fetchMasterHostNodesList());
     dispatch(ClustersActions.setAzureTestPassed(false));
+    dispatch(ClustersActions.setansibleClusterProgressData({}));
     return () => {
       dispatch(ClustersActions.setkubConfigVersion({}));
     };

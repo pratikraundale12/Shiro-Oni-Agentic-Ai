@@ -48,6 +48,7 @@ const ClusterSetupGettingStartedTab = () => {
     ClustersSelectors.getCreateClusterMethod
   );
   useEffect(() => {
+    dispatch(ClustersActions.setansibleClusterProgressData({}));
     return () => {
       dispatch(ClustersActions.setLastVisitedTab('getting_started'));
     };
