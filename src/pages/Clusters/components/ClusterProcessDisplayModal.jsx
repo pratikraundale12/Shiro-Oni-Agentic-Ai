@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -518,14 +518,10 @@ export const ClusterProcessDisplayModal = ({
   const processData = useSelector(
     ClustersSelectors.getAnsibleClusterProgressData
   );
-  const currentSteps = useMemo(() => {
-    return (
-      processData?.data?.steps?.map(ele => ({
-        status: ele.status,
-        step: ele?.step,
-      })) || []
-    );
-  }, [processData?.data?.steps]);
+  const currentSteps = processData?.data?.steps?.map(ele => ({
+    status: ele.status,
+    step: ele?.step,
+  }));
   const processExeName =
     selectedCluster?.process_name || ansibleClusterCreationData?.process_name;
 
@@ -642,7 +638,6 @@ export const ClusterProcessDisplayModal = ({
       return 'Cluster registry association completed. Initializing cluster components.';
     }
   };
-
   function calculateCompletionPercentage(modelSteps, currentSteps) {
     const totalSteps = modelSteps?.length;
     let filteredSteps = currentSteps;
@@ -660,23 +655,10 @@ export const ClusterProcessDisplayModal = ({
     const completedSteps = filteredSteps?.filter(
       step => step?.status === 'completed'
     ).length;
+
     const percentage = Math.round((completedSteps / totalSteps) * 100);
     if (processData?.data?.status === 'completed') {
       return 100;
-    }
-
-    if (
-      processData?.isKubeCluster &&
-      processData?.cluster_type === 'aks' &&
-      (processExeName === 'creation' || processExeName === 'upgrade')
-    ) {
-      const percentageCounter = [
-        2, 4, 6, 11, 16, 18, 20, 25, 30, 40, 55, 95, 100,
-      ];
-
-      if (completedSteps > 0) {
-        return percentageCounter?.[completedSteps - 1];
-      }
     }
     return percentage;
   }
