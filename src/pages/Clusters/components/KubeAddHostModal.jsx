@@ -146,8 +146,8 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
               <InputField
                 name="kubeClusterName"
                 type="text"
-                label="Kubernetes Cluster Configuration"
-                placeholder="Enter Kubernetes Cluster Configuration"
+                label="Kubernetes Cluster Configuration Name"
+                placeholder="Enter Kubernetes Cluster Configuration Name"
                 required
                 register={register}
                 errors={errors}
@@ -193,13 +193,13 @@ export const KubernetesAddHostModal = ({ hostToEdit, setHostToEdit }) => {
                     control={control}
                     required
                     rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                    placeholder="Upload kubernetes Configuration file"
+                    placeholder="Upload kubernetes Configuration File"
                     errors={errors}
                     fileLable="File"
                     validExtensionsArray={['.txt', '.yaml', '.yml']}
                     acceptString={'.txt,.yaml,.yml'}
                     errorText={'YAML, YML or TXT'}
-                    label="Kubernetes Configuration file"
+                    label="Kubernetes Configuration File"
                   />
                 </ModalContainer>
               </span>
