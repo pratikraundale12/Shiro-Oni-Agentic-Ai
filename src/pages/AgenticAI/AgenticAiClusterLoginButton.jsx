@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { AuthenticationActions } from '../../store';
+import { AuthenticationActions, ClustersActions } from '../../store';
 import { useDispatch } from 'react-redux';
 
 const LoginButtonWrapper = styled.div`
@@ -37,6 +37,7 @@ export const AgenticAiClusterLoginButton = () => {
     e.preventDefault();
     e.stopPropagation();
     dispatch(AuthenticationActions.setClusterLogin(true));
+    dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
   };
 
   return (
