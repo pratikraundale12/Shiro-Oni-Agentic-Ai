@@ -49,10 +49,6 @@ export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
       }}
       primaryButtonText=""
       secondaryButtonText=""
-      onSubmit={() => {
-        onRequestClose();
-        dispatch(AgenticAiActions.setAgenticAiModalFullScreen(!isFullscreen));
-      }}
       shouldCloseOnEsc={false}
       overlayStyles={{
         position: 'fixed',
@@ -82,7 +78,14 @@ export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
       noPadding={true}
       clickOutsideToClose={false}
       showLoggedInCluster={true}
-      loggedInClusterComponent={ShowLoggedInCluster}
+      loggedInClusterComponent={() => (
+        <ShowLoggedInCluster
+          showCluster={true}
+          showProfileIcon={false}
+          showMinimizeScreenIcon={true}
+          onClick={onRequestClose}
+        />
+      )}
     >
       <ContentWrapper>
         <AgenticAI />

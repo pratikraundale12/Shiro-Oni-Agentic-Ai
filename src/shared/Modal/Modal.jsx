@@ -164,7 +164,7 @@ export const Modal = ({
       >
         <Header>
           <Title className="mb-0">{title}</Title>
-          <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-2">
             {showLoggedInCluster && <LoggedInComponent />}
             <div className="d-flex gap-2">
               {isAdditionalIcon && (
