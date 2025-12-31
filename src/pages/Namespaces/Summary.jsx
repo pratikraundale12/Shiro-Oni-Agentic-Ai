@@ -29,10 +29,7 @@ import { Button, CheckboxField, Modal, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
-<<<<<<< HEAD
   AuthenticationSelectors,
-=======
->>>>>>> 4cfae5132d345d2c7ae903afe26aa6f105791c6c
   ClustersActions,
   ClustersSelectors,
   GridSelectors,
