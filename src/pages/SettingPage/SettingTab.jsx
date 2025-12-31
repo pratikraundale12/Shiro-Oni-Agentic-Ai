@@ -242,7 +242,7 @@ const SettingTab = () => {
                   }
                 />
               </IconContent>
-              Log Export
+              Log Configuration
             </Tab>
             {/* <Tab
               active={activeTab === 'DeleteDownloadHistorySettings'}

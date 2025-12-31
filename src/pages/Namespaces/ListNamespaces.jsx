@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -195,6 +195,12 @@ export const ListNamespaces = () => {
   const selectedClusterString = localStorage.getItem('selected_cluster');
   const parsedSelectedCluster = JSON.parse(selectedClusterString);
 
+  const isFetchingClusters = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusters')
+  );
+  const [isFetchComplete, setIsFetchComplete] = useState(false);
+  const hasFetchStarted = useRef(false);
+
   useEffect(() => {
     const isUnauthorized =
       error &&
@@ -205,6 +211,28 @@ export const ListNamespaces = () => {
 
     if (!settingsFetchStarted) return;
     if (isUnauthorized) return;
+    if (isFetchingClusters) {
+      hasFetchStarted.current = true;
+    }
+    if (!isFetchingClusters && hasFetchStarted.current) {
+      setIsFetchComplete(true);
+    }
+  }, [isFetchingClusters]);
+
+  useEffect(() => {
+    if (
+      !isEmpty(currentUser?.permissions) &&
+      currentUser?.permissions?.includes('view_cluster')
+    ) {
+      dispatch(ClustersActions.fetchClusters());
+    } else if (!isEmpty(currentUser)) {
+      setIsFetchComplete(true);
+    }
+  }, [currentUser, dispatch]);
+
+  useEffect(() => {
+    if (!isFetchComplete) return;
+
     if (
       (!isEmpty(settingsAPIdata) &&
         isEmpty(settingsAPIdata?.username) &&
@@ -247,6 +275,7 @@ export const ListNamespaces = () => {
     settingsAPIdata,
     error,
     settingsFetchStarted,
+    isFetchComplete,
   ]);
 
   const handleScheduleClick = item => {

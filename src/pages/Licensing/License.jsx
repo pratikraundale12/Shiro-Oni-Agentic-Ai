@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { AuthenticationSelectors } from '../../store';
 import Image from '../../assets/images/license-bg.png';
 import { KDFM } from '../../constants';
+import { format } from 'date-fns';
 
 const Container = styled.div`
   height: 95%;
@@ -47,28 +48,72 @@ const Heading = styled.span`
   color: #444445;
 `;
 
+const InfoWrapper = styled.div`
+  width: 100%;
+  max-width: 500px; /* wrapper width */
+  margin-top: 25px; /* space between expiry date and info block */
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+`;
+
+const InfoRow = styled.div`
+  display: flex;
+  &:not(:last-child) {
+    border-bottom: 1px solid #ffe5cc;
+  }
+`;
+
+const TitleCell = styled.div`
+  flex: 0 0 50%;
+  background: #f7f7f5;
+  padding: 14px 16px;
+  font-family: Red Hat Display;
+  font-weight: 600;
+  font-size: 16px;
+  color: #444445;
+`;
+
+const ValueCell = styled.div`
+  flex: 0 0 50%;
+  background: #fff2e5;
+  padding: 14px 16px;
+  font-family: Red Hat Display;
+  font-weight: 500;
+  font-size: 16px;
+  color: #444445;
+`;
+
 const License = () => {
   const licenseInfo = useSelector(AuthenticationSelectors.getLicenseInfo);
+
   const formatDate = isoString => {
+    if (!isoString) return '-';
     const date = new Date(isoString);
-    return date.toLocaleString('en-US', {
-      year: '2-digit',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
+    return format(date, 'do MMM yyyy, hh:mm:ss a');
   };
 
   const getLicenseText = () => {
     if (licenseInfo?.version.toLowerCase() === 'trial') {
-      return 'Your Trial License will expire on';
+      return 'Your trial License will expire on';
     } else {
-      return 'Your License will expire on';
+      return 'Your enterprise license will expire on';
     }
   };
+
+  const infoItems = [
+    { name: 'Customer Id', value: licenseInfo?.customerId },
+    { name: 'License Owner', value: licenseInfo?.customerName },
+    {
+      name: 'License Type',
+      value:
+        licenseInfo?.version.toLowerCase() === 'trial' ? 'Trial' : 'Enterprise',
+    },
+    { name: 'Number Of Nodes', value: licenseInfo?.numberOfNodes },
+  ].filter(
+    item => item.value !== undefined && item.value !== null && item.value !== ''
+  );
 
   return (
     <div className="h-100">
@@ -77,6 +122,17 @@ const License = () => {
         <BgImage src={Image} />
         <Span1>{getLicenseText()}</Span1>
         <Span2>{formatDate(licenseInfo?.exprDate)}</Span2>
+
+        {infoItems.length > 0 && (
+          <InfoWrapper>
+            {infoItems.map((item, idx) => (
+              <InfoRow key={idx}>
+                <TitleCell>{item.name}</TitleCell>
+                <ValueCell>{item.value}</ValueCell>
+              </InfoRow>
+            ))}
+          </InfoWrapper>
+        )}
       </Container>
     </div>
   );
