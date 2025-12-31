@@ -5,6 +5,7 @@ import { SmallSearchIcon, StarInfoIcon } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { theme } from '../../styles';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
+import { ActivityHistorySelectors } from '../../store/activityHistory';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -100,9 +101,14 @@ const DiffLocalChanges = () => {
   const details = useSelector(SchedularSelectors.getScheduleDeploymentDetails);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const schedularId = selectedSchedule?.id;
+  const selectedData = useSelector(ActivityHistorySelectors.getSelectedItem);
 
   useEffect(() => {
-    dispatch(SchedularActions.fetchScheduleDeploymentDetails(schedularId));
+    dispatch(
+      SchedularActions.fetchScheduleDeploymentDetails(
+        schedularId || selectedData?.schedule_id
+      )
+    );
   }, [dispatch]);
 
   const handleIdClick = componentLink => {

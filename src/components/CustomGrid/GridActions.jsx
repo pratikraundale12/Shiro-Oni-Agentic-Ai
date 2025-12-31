@@ -448,6 +448,33 @@ export const GridActions = ({
     }
   };
 
+  const handleRefreshClusterList = () => {
+    window.localStorage.removeItem('scheduleTokenid');
+    setState(prev => ({ ...prev, search: null }));
+    setSearchValue('');
+    setSearchErrorMsg({});
+    inputRef.current.value = '';
+    setCurrentPage(1);
+    onItemsPerPageChange(10);
+
+    if (module === 'clusters') {
+      setValue('is_active', null);
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module: 'clusters',
+          params: {
+            page: 1,
+            limit: itemsPerPage || 10,
+            ...(sortingState && {
+              sort: sortingState,
+            }),
+          },
+        })
+      );
+      setSortingState('name');
+    }
+  };
+
   useEffect(() => {
     if (location.pathname !== '/schedule-deployment') {
       window.localStorage.removeItem('scheduleTokenid');
@@ -913,7 +940,7 @@ export const GridActions = ({
           {['clusters'].includes(module) && (
             <>
               <RefreshIocn
-                onClick={handleRefresh}
+                onClick={handleRefreshClusterList}
                 data-tooltip-id={`tooltip-group-namespace-refresh`}
               >
                 <RefreshIcon style={{ cursor: 'pointer' }} />

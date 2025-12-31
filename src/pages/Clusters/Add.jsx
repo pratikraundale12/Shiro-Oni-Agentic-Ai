@@ -424,8 +424,8 @@ export const Add = () => {
         approver_enable: approverEnable,
         start_stop_requires_approval: approverEnableForStartAndStop,
         change_request_enable: changeRequestEnable,
-        registry_ids: selectedRegistriesId,
-        has_custom_service_account: false,
+        // registry_ids: selectedRegistriesId,
+        has_custom_service_account: data?.has_custom_service_account,
         is_certificate_based_service_account: certificateOption
           ? 'true'
           : 'false',
@@ -435,13 +435,13 @@ export const Add = () => {
         ...(testCertificatePassword && {
           service_account_certificate_password: testCertificatePassword,
         }),
-        ...(editUsername && {
-          service_username: editUsername,
-        }),
-        ...(editPassword && { service_password: editPassword }),
+        service_username: data?.service_username,
+        service_password: data?.service_password,
         ...(selectedRegistriesId && {
           registry_ids: selectedRegistriesId,
         }),
+
+        // default_registry_id: data?.default_registry?.id,
       };
       const id = clusterId;
       const response = await updateCluster(id, payload);

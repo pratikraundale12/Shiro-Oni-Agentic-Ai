@@ -708,9 +708,13 @@ const Summary = () => {
   const registrySelectedId = useSelector(
     NamespacesSelectors.getSelectedRegistryOnDeploy
   );
+  const defaultRegistrySelected = useSelector(
+    NamespacesSelectors.getdefaultRegistrySelected
+  );
 
   const localRegistryIdArr = registryData?.filter(
-    item => item?.nifiRegistryId === registrySelectedId
+    item =>
+      item?.nifiRegistryId === (registrySelectedId || defaultRegistrySelected)
   );
 
   const getChangedParameterObjects = (obj1, obj2) => {
@@ -1413,15 +1417,22 @@ const Summary = () => {
 
   const handleRegistryClick = () => {
     if (
-      !localRegistryIdArr?.[0]?.url ||
-      registryDropdownOptions?.[0]?.url ||
-      defaultRegistryUrl
+      isEmpty(
+        localRegistryIdArr?.[0]?.url ||
+          registryDropdownOptions?.[0]?.url ||
+          defaultRegistryUrl
+      )
     )
       return;
-    window.open(
+    const registryURL =
       localRegistryIdArr?.[0]?.url ||
-        registryDropdownOptions?.[0]?.url ||
-        defaultRegistryUrl,
+      registryDropdownOptions?.[0]?.url ||
+      defaultRegistryUrl;
+
+    window.open(
+      registryURL.endsWith('/nifi-registry')
+        ? registryURL
+        : `${registryURL}/nifi-registry`,
       '_blank'
     );
   };
@@ -2349,12 +2360,12 @@ const Summary = () => {
                 : checkDestCluster?.version || 'N/A'
             }`}
             isFromDeploySummary={true}
-            parametersData={newParametersData}
-            variablesData={variblesReduxData}
-            csData={updatedLocalCsPayloadOnDeploy}
+            parametersData={mergedParametersData}
+            variablesData={mergedVariablesData}
+            csData={mergedControllerServicesData}
           />
         )}
-      <SanityCheckDeployModal />
+        <SanityCheckDeployModal />
       </MainContainer>
       <ModalWithIcon
         title={'Sanity Check Confirmation'}

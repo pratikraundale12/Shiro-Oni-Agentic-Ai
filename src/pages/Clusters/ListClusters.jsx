@@ -448,7 +448,7 @@ export const ListClusters = () => {
                             (item?.created_by_ansible ||
                               item?.is_kube_cluster) &&
                             item?.status !== CLUSTER_STATUS.DISCONNECTED &&
-                            !item?.registry_id && (
+                            !item?.default_registry?.id && (
                               <Item
                                 onClick={() => {
                                   handleCloseMenu();

@@ -15,6 +15,7 @@ import API from './services2/api';
 import { settingsSagas } from './settings';
 import { usersSagas } from './users';
 import { registrySagas } from './registry';
+import { agenticAiSagas } from './agenticAI';
 
 /* ------------- API ------------- */
 export const api = API.create();
@@ -49,5 +50,7 @@ export default function* root() {
     fork(aiFlowGeneratorSagas, api),
     // |---------------------registry-------------------------|
     fork(registrySagas, api),
+    // |---------------------agenticAI-------------------------|
+    fork(agenticAiSagas, api),
   ]);
 }

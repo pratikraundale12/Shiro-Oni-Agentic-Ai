@@ -297,6 +297,7 @@ export function* validateFlowJson(api, { payload }) {
     yield put(AiFlowGeneratorActions.setIsFlowErrorModalOpen(true));
   }
 }
+
 export function* aiFlowGeneratorSagas(api) {
   yield all([
     takeLatest(AiFlowGeneratorActions.fetchDefaultRecentFlows, action =>

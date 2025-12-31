@@ -66,6 +66,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
   const selectedRegistry = useSelector(
     RegistrySelectors.getRegistrySelectedData
   );
+  const [registryFormData, setRegistryFormData] = useState({});
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'testRegistry')
@@ -138,7 +139,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues : {
+    defaultValues: {
       is_registry_authenticated: true,
       methodForCredentials: 'password',
     },
@@ -178,6 +179,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
     const payload = new FormData();
     payload.append('name', data?.name);
     payload.append('nifi_url', data?.nifi_url);
+    setRegistryFormData(data);
 
     if (method === 'password') {
       payload.append('username', data?.username);
@@ -197,11 +199,28 @@ export const AddRegistryModal = ({ hostToEdit }) => {
         })
       );
     } else {
-      const data = {
-        name: formData?.name,
-        registry_url: formData?.nifi_url,
-      };
-      dispatch(RegistryActions.createRegistryAfterTest(data));
+      const payload = new FormData();
+      payload.append('name', formData?.name);
+      payload.append('registry_url', formData?.nifi_url);
+      payload.append(
+        'is_registry_authenticated',
+        formData?.is_registry_authenticated
+      );
+      payload.append(
+        'is_certificate_based_service_account',
+        formData?.methodForCredentials == 'privatekey'
+      );
+      if (formData?.methodForCredentials == 'privatekey') {
+        payload.append(
+          'service_account_certificate',
+          registryFormData?.pfxFile
+        );
+        payload.append(
+          'service_account_certificate_password',
+          registryFormData?.password
+        );
+      }
+      dispatch(RegistryActions.createRegistryAfterTest(payload));
     }
   };
   useEffect(() => {
@@ -271,7 +290,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
               register={register}
               errors={errors}
               icon={<DocumentTextIcon />}
-              disabled={!isEmpty(selectedRegistry) && !isPrimaryBtnDisable}
+              disabled={!isEmpty(selectedRegistry) || !isPrimaryBtnDisable}
             />
           </div>
           <div className="mb-3 d-flex gap-2 align-items-center">

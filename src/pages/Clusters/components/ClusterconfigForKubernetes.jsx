@@ -235,7 +235,7 @@ const ClusterSetupNewConfigKubernetes = () => {
         ...(!isEmpty(data?.ingress_hosts) && {
           ingress_hosts: [data?.ingress_hosts],
           ingress_tls_hosts: data?.ingress_hosts,
-          certManager_additionalIpsAddresses: [data?.ingress_hosts],
+          certManager_additionalIpAddresses: [data?.ingress_hosts],
           zookeeper_url: data?.ingress_hosts,
 
           registry_ingress_hosts_host: data?.ingress_hosts,
@@ -415,7 +415,7 @@ const ClusterSetupNewConfigKubernetes = () => {
       ...(!isEmpty(watch('ingress_hosts')) && {
         ingress_hosts: [watch('ingress_hosts')],
         ingress_tls_hosts: watch('ingress_hosts'),
-        certManager_additionalIpsAddresses: [watch('ingress_hosts')],
+        certManager_additionalIpAddresses: [watch('ingress_hosts')],
         zookeeper_url: watch('ingress_hosts'),
         registry_ingress_hosts_host: watch('ingress_hosts'),
         registry_ingress_tls_hosts: watch('ingress_hosts'),

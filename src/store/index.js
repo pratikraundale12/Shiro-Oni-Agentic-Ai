@@ -16,3 +16,4 @@ export {
   AiFlowGeneratorSelectors,
 } from './aiFlowGenerator';
 export { RegistryActions, RegistrySelectors } from './registry';
+export { AgenticAiActions, AgenticAiSelectors } from './agenticAI';

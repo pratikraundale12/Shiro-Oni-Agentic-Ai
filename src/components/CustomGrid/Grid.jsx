@@ -264,7 +264,7 @@ export const Grid = ({
     scheduler: 'No Schedulers Available',
     nodes: isClusterLoggedIn
       ? 'No Nodes Available!'
-      : 'No Nodes Available Login to Cluster First',
+      : 'No nodes available. Please log in to the cluster first.',
     registry: 'No Registry Available',
   };
 
@@ -519,7 +519,7 @@ export const Grid = ({
         <ClusterRegistryContainer className="row">
           {createdByAnsible && <ClusterControlButtons />}
           <ClusterDetail
-            displayFullWidth
+            displayFullWidth 
             data={{
               name: registryNodesData?.cluster?.name,
               nifi_url: registryNodesData?.cluster?.nifi_url,
@@ -534,11 +534,9 @@ export const Grid = ({
             is_kube_cluster && (
               <RegistryDetail
                 displayFullWidth
-                data={{
-                  name: registryNodesData?.cluster?.registry?.[0]?.name,
-                  registry_url:
-                    registryNodesData?.cluster?.registry?.[0]?.registry_url,
-                }}
+                data={
+                registryNodesData?.cluster?.registry
+              }
                 handleCert={() =>
                   dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true))
                 }
@@ -584,7 +582,7 @@ export const Grid = ({
             setState(prevState => ({ ...prevState, eventModal: false }))
           }
           size="md"
-          primaryButtonText={KDFM.CONTINUE}
+          primaryButtonText={KDFM.BACK}
           onSubmit={() =>
             setState(prevState => ({ ...prevState, eventModal: false }))
           }
