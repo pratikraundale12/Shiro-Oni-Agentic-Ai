@@ -1162,6 +1162,7 @@ export const Add = () => {
               clusterData={clusterData}
               clusterId={clusterId}
               data={data}
+              notificationEnable={notificationEnable}
             />
           </FormContainer>
         )}
