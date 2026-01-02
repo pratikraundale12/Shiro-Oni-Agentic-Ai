@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { ClustersActions, ClustersSelectors } from '../../store';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { Loader } from '../../components';
 import { TriangleIcons, SquareBoxIcon } from '../../assets';
 import styled from 'styled-components';
 import { theme } from '../../styles';
 import { toast } from 'react-toastify';
+import { CLUSTERS_TOKEN } from '../../constants';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -80,6 +86,11 @@ const ClusterControlButtons = () => {
   const [runStopSTO, setRunStopSTO] = useState(true);
 
   const runningStatusData = useSelector(ClustersSelectors.getRunningStatusData);
+  const loggedInCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const selectedClusterLogged = JSON.parse(
+    localStorage.getItem('selected_cluster')
+  );
+  const clusterData = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
 
   const handleStartClick = () => {
     setAction('start');
@@ -94,6 +105,39 @@ const ClusterControlButtons = () => {
   };
 
   const handleStopClick = () => {
+    if (loggedInCluster?.value == clusterId) {
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: '',
+          value: '',
+        })
+      );
+    }
+    if (selectedClusterLogged?.value == clusterId) {
+      localStorage.removeItem('selected_cluster');
+    }
+    const selectedClusterArrSorted = clusterData?.filter(
+      ele => ele?.id != clusterId
+    );
+    localStorage.setItem(
+      CLUSTERS_TOKEN,
+      JSON.stringify(selectedClusterArrSorted)
+    );
+    if (selectedClusterArrSorted.length) {
+      localStorage.setItem(
+        'selected_cluster',
+        JSON.stringify({
+          label: selectedClusterArrSorted?.[0]?.name,
+          value: selectedClusterArrSorted?.[0]?.id,
+        })
+      );
+      dispatch(
+        NamespacesActions.setSelectedCluster({
+          label: selectedClusterArrSorted?.[0]?.name,
+          value: selectedClusterArrSorted?.[0]?.id,
+        })
+      );
+    }
     setAction('stop');
     setStopInitiated(true);
     setRunStopSTO(true);
