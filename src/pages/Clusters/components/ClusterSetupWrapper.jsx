@@ -113,6 +113,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
       if (isEmpty(deselectedNodesIds) && isEmpty(newlySelectedNodesIds)) {
         toast.error('Please update any nodes first');
       } else {
+        setLoadingFullPage(true);
         dispatch(
           ClustersActions.updateNodesAnsibleCluster({
             clusterId: nodesUpdateAnsbibleClusterId,
@@ -185,6 +186,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
               setValue={setValue}
               reset={reset}
               loadingFullPage={loadingFullPage}
+              setLoadingFullPage={setLoadingFullPage}
             />
           </Container>
           <BottomButton className="bottom-button-divs d-flex">

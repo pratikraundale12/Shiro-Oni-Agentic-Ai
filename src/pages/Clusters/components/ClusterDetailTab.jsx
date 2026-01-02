@@ -49,6 +49,7 @@ const ClusterDetailTab = ({
   setHostList,
   setValue,
   loadingFullPage,
+  setLoadingFullPage,
 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
@@ -273,6 +274,7 @@ const ClusterDetailTab = ({
     }
   };
   const handleConfirmDelete = () => {
+    setLoadingFullPage(true);
     const alreadyMarked = deleteNodes.filter(item => item.hasToDelete);
     const deselectedNodesIds = alreadyMarked.map(ele => ele?.id);
     dispatch(
