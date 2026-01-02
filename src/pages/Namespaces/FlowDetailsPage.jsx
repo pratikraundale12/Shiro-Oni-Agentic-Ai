@@ -793,8 +793,8 @@ const FlowDetailsPage = () => {
                       selectedNameSpace?.registryUrl ||
                       registryData?.url ||
                       localRegistryIdArr?.[0]?.url ||
-                      registryDropdownOptions?.[0]?.url ||
-                      defaultRegistryUrl
+                      defaultRegistryUrl ||
+                      registryDropdownOptions?.[0]?.url
                     }
                     icon={<LinkIcon />}
                     disabled
