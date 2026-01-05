@@ -541,7 +541,9 @@ export const Grid = ({
                 }
                 showRegistryDownload={
                   registryNodesData?.cluster?.registry?.[0]?.is_kube_registry &&
-                  registryNodesData?.cluster?.registry?.[0]?.id
+                  registryNodesData?.cluster?.registry?.[0]?.id &&
+                  registryNodesData?.cluster?.registry?.[0]
+                    ?.is_registry_authenticated
                 }
               />
             )}
