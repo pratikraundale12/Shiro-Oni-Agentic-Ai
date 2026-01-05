@@ -271,6 +271,7 @@ export const GridActions = ({
   viewMode = 'list_view',
   setViewMode = () => {},
   itemsPerPage,
+  FlowAnalysisPage = false,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -1151,42 +1152,43 @@ export const GridActions = ({
 
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
-            {module === 'namespaces' && (
-              <>
-                {selectedCluster?.value && (
-                  <Button
-                    id="process-group-list-schdule-deployment"
-                    size="md"
-                    disabled={isButtonDisabled}
-                    onClick={() => handleScheduleClick()}
-                  >
-                    <div
-                      className="d-flex "
-                      style={{ fontSize: '14px', fontWeight: '750' }}
+            {module === 'namespaces' &&
+              location.pathname === '/process-group' && (
+                <>
+                  {selectedCluster?.value && (
+                    <Button
+                      id="process-group-list-schdule-deployment"
+                      size="md"
+                      disabled={isButtonDisabled}
+                      onClick={() => handleScheduleClick()}
                     >
-                      <ScheduleDeploymentIcon
-                        height={19}
-                        width={19}
-                        color={'#fff'}
-                      />
-                      Schedule Deployment
-                    </div>
-                  </Button>
-                )}
-                {canWrite && (
-                  <Button
-                    id="process-group-deploy"
-                    disabled={!canWrite}
-                    size="md"
-                    style={{ width: '84px' }}
-                    onClick={handleClick}
-                    className="tour-process-group-deploy"
-                  >
-                    {KDFM.DEPLOY}
-                  </Button>
-                )}
-              </>
-            )}
+                      <div
+                        className="d-flex "
+                        style={{ fontSize: '14px', fontWeight: '750' }}
+                      >
+                        <ScheduleDeploymentIcon
+                          height={19}
+                          width={19}
+                          color={'#fff'}
+                        />
+                        Schedule Deployment
+                      </div>
+                    </Button>
+                  )}
+                  {canWrite && (
+                    <Button
+                      id="process-group-deploy"
+                      disabled={!canWrite}
+                      size="md"
+                      style={{ width: '84px' }}
+                      onClick={handleClick}
+                      className="tour-process-group-deploy"
+                    >
+                      {KDFM.DEPLOY}
+                    </Button>
+                  )}
+                </>
+              )}
             {module === 'namespaces' &&
               location.pathname === '/flow-analysis' &&
               selectedCluster?.value && (
@@ -1303,15 +1305,17 @@ export const GridActions = ({
         </SearchContainer>
         {module === 'namespaces' && (
           <ViewToggleContainer>
-            <IconContainer
-              active={viewMode === 'list_view'}
-              onClick={() => setViewMode('list_view')}
-              data-tooltip-id={'tooltip-id-list-view'}
-            >
-              <ListIcon
-                stroke={viewMode === 'list_view' ? '#fff' : '#444445'}
-              />
-            </IconContainer>
+            {!FlowAnalysisPage && (
+              <IconContainer
+                active={viewMode === 'list_view'}
+                onClick={() => setViewMode('list_view')}
+                data-tooltip-id={'tooltip-id-list-view'}
+              >
+                <ListIcon
+                  stroke={viewMode === 'list_view' ? '#fff' : '#444445'}
+                />
+              </IconContainer>
+            )}
             <ReactTooltip
               id={'tooltip-id-list-view'}
               place="bottom"
@@ -1324,21 +1328,23 @@ export const GridActions = ({
                 zIndex: 9999,
               }}
             />
-            <IconContainer
-              active={viewMode === 'tree_view'}
-              onClick={() => {
-                setViewMode('tree_view');
-                dispatch(NamespacesActions.setSelectedNamespace({}));
-              }}
-              data-tooltip-id={'tooltip-id-tree-view'}
-              disabled={
-                isEmpty(selectedCluster) || isEmpty(selectedCluster?.value)
-              }
-            >
-              <TreeIcon
-                stroke={viewMode === 'tree_view' ? '#fff' : '#444445'}
-              />
-            </IconContainer>
+            {!FlowAnalysisPage && (
+              <IconContainer
+                active={viewMode === 'tree_view'}
+                onClick={() => {
+                  setViewMode('tree_view');
+                  dispatch(NamespacesActions.setSelectedNamespace({}));
+                }}
+                data-tooltip-id={'tooltip-id-tree-view'}
+                disabled={
+                  isEmpty(selectedCluster) || isEmpty(selectedCluster?.value)
+                }
+              >
+                <TreeIcon
+                  stroke={viewMode === 'tree_view' ? '#fff' : '#444445'}
+                />
+              </IconContainer>
+            )}
             <ReactTooltip
               id={'tooltip-id-tree-view'}
               place="bottom"
@@ -1382,4 +1388,5 @@ GridActions.propTypes = {
   setIsExportReportOpen: PropTypes.func,
   setRemoveSearch: PropTypes.func,
   itemsPerPage: PropTypes.number,
+  FlowAnalysisPage: PropTypes.bool,
 };
