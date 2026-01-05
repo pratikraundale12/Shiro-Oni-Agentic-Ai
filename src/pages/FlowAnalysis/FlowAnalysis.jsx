@@ -286,6 +286,7 @@ const FlowAnalysis = () => {
         state={state}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        FlowAnalysisPage={true}
       />
       <AnalyzeNewFlow />
     </>

@@ -140,6 +140,7 @@ export const Grid = ({
   selectStatus,
   setSelectStatus,
   setRemoveSearch,
+  FlowAnalysisPage = false,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -519,7 +520,7 @@ export const Grid = ({
         <ClusterRegistryContainer className="row">
           {createdByAnsible && <ClusterControlButtons />}
           <ClusterDetail
-            displayFullWidth 
+            displayFullWidth
             data={{
               name: registryNodesData?.cluster?.name,
               nifi_url: registryNodesData?.cluster?.nifi_url,
@@ -534,15 +535,15 @@ export const Grid = ({
             is_kube_cluster && (
               <RegistryDetail
                 displayFullWidth
-                data={
-                registryNodesData?.cluster?.registry
-              }
+                data={registryNodesData?.cluster?.registry}
                 handleCert={() =>
                   dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true))
                 }
                 showRegistryDownload={
                   registryNodesData?.cluster?.registry?.[0]?.is_kube_registry &&
-                  registryNodesData?.cluster?.registry?.[0]?.id
+                  registryNodesData?.cluster?.registry?.[0]?.id &&
+                  registryNodesData?.cluster?.registry?.[0]
+                    ?.is_registry_authenticated
                 }
               />
             )}
@@ -667,6 +668,7 @@ export const Grid = ({
           setRemoveSearch={setRemoveSearch}
           viewMode={viewMode}
           setViewMode={setViewMode}
+          FlowAnalysisPage={FlowAnalysisPage}
         />
       )}
       {module === 'namespaces' && viewMode === 'tree_view' ? (
@@ -765,4 +767,5 @@ Grid.propTypes = {
   selectEvent: PropTypes.string,
   setSelectEvent: PropTypes.func,
   setRemoveSearch: PropTypes.func,
+  FlowAnalysisPage: PropTypes.bool,
 };
