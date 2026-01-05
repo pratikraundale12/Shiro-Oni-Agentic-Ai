@@ -16,6 +16,8 @@ import { SendMessageIcon, ChatbotIcon } from '../../assets';
 import { toast } from 'react-toastify';
 import { AgenticAiClusterLoginButton } from './AgenticAiClusterLoginButton';
 import { MessageIdentityAvatar } from './MessageIdentityAvatar';
+import { AgenticAiClusterLogoutButton } from './AgenticAiClusterLogoutButton';
+import { AgenticAiDisclaimer } from './AgenticAiDisclaimer';
 
 const Container = styled.div`
   display: flex;
@@ -275,14 +277,6 @@ const SendButton = styled.button`
     fill: white;
     /* transform: rotate(-90deg); */
   }
-`;
-
-const DisclaimerText = styled.p`
-  font-size: 14px;
-  color: #999;
-  margin-top: 10px;
-  text-align: center;
-  max-width: 80%;
 `;
 
 const dotAnimation = keyframes`
@@ -573,6 +567,7 @@ export const AgenticAI = () => {
               {item.data}
             </ReactMarkdown>
             {item.isLoginRequired !== false && <AgenticAiClusterLoginButton />}
+            {item.isLogoutRequired === true && <AgenticAiClusterLogoutButton />}
           </>
         );
       }
@@ -648,7 +643,7 @@ export const AgenticAI = () => {
             <SendMessageIcon />
           </SendButton>
         </InputPill>
-        <DisclaimerText>{KDFM.AGENTIC_AI_DISCLAIMER_TEXT}</DisclaimerText>
+        <AgenticAiDisclaimer />
       </FooterContainer>
     </Container>
   );
