@@ -174,7 +174,7 @@ function DeployPage() {
     NamespacesSelectors.getSelectedRegistryOnDeploy
   );
   const registryDropdownOptions = registryData
-    ?.filter(ele => ele?.localRegistryId)
+    ?.filter(ele => ele?.isRegistryOnNifi === true)
     ?.map(item => ({
       label: item?.name,
       value: item?.nifiRegistryId,
