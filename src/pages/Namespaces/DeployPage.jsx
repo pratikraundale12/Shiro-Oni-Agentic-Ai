@@ -466,6 +466,10 @@ function DeployPage() {
   const onRegistryChange = value => {
     dispatch(NamespacesActions.setBucketListDropDownData([]));
     dispatch(NamespacesActions.setSelectedRegistryOnDeploy(value?.value));
+    dispatch(NamespacesActions.setFlowListRegistry([]));
+    dispatch(NamespacesActions.setVersionListData({}));
+    setValue('bucketId', null);
+    setValue('flow_name', null);
   };
 
   const onBucketChange = value => {
