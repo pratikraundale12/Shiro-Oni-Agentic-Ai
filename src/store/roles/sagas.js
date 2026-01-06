@@ -168,7 +168,9 @@ export function* fetchClusterUsers(
     successAction: RolesActions.fetchClusterUsersSuccess,
   });
   if (response?.data?.message) {
-    toast.error(response?.data?.message);
+    toast.error(response?.data?.message, {
+      toastId: 'roles-permission',
+    });
   }
 }
 
@@ -204,7 +206,9 @@ export function* fetchClusterNiFiPolicies(
     successAction: RolesActions.fetchClusterNiFiPoliciesSuccess,
   });
   if (!response.ok) {
-    toast.error(response?.data?.message);
+    toast.error(response?.data?.message, {
+      toastId: 'roles-permission',
+    });
   }
 }
 
