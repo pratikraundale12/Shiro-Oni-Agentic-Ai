@@ -17,6 +17,7 @@ import {
   RegistryActions,
   RegistrySelectors,
 } from '../../store';
+import { CreateRegistryNavigationModal } from './CreateRegistryNavigavtionalModal';
 
 const ListRegistryManagementPage = () => {
   const dispatch = useDispatch();
@@ -25,7 +26,9 @@ const ListRegistryManagementPage = () => {
   const isDeleteModalOpen = useSelector(RegistrySelectors.getIsDeleteModalOpen);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('');
-
+  const isModalCreateRegistryOpen = useSelector(
+    RegistrySelectors.getisCreateRegistryModalOpen
+  );
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -185,6 +188,7 @@ const ListRegistryManagementPage = () => {
         sortingState={sortingState}
         setSortingState={setSortingState}
       />
+      {isModalCreateRegistryOpen && <CreateRegistryNavigationModal />}
     </>
   );
 };

@@ -85,6 +85,11 @@ import AccessManagementTypes from '../pages/Role&Permission/AccessManagementType
 import TreeViewPage from '../pages/Namespaces/TreeViewPage.jsx';
 // import DeploymentStatistics from '../pages/Dashboard/DeploymentStatistics.jsx';
 import ClusterSetupNewConfigKubernetes from '../pages/Clusters/components/ClusterconfigForKubernetes.jsx';
+import RegistryCreationKubeConfigPage from '../pages/Registry/RegistryKubeConfigPage.jsx';
+import RegistryCreationGettingStarted from '../pages/Registry/RegistryGettingStartedPage.jsx';
+import RegistryConfigurationPage from '../pages/Registry/RegistryConfigurationPage.jsx';
+import RegistryDetailsPage from '../pages/Registry/RegistryDetailsPage.jsx';
+import RegistryConfigurationEditorPage from '../pages/Registry/RegistryConfigAddEditPage.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -139,6 +144,27 @@ export const ROUTES_MENU = [
         path: '',
         component: <RegistryManagementPage />,
       },
+      {
+        path: ['kube-config'],
+        component: <RegistryCreationKubeConfigPage />,
+      },
+      {
+        path: ['getting-started'],
+        component: <RegistryCreationGettingStarted />,
+      },
+      {
+        path: ['configuration'],
+        component: <RegistryConfigurationPage />,
+      },
+      {
+        path: ['details'],
+        component: <RegistryDetailsPage />,
+      },
+      {
+        path: ['registry-configuration'],
+        component: <RegistryConfigurationEditorPage />,
+      },
+      ,
     ],
     permission: 'view_registry',
   },

@@ -16,7 +16,35 @@ export const RegistryActions = {
   setRegistrySelectedData: createAction(`${prefix}setRegistrySelectedData`),
   getAllRegistiesList: createAction(`${prefix}getAllRegistiesList`),
   setRegistriesList: createAction(`${prefix}setRegistriesList`),
+  setIsCreateRegistryModalOpen: createAction(
+    `${prefix}setIsCreateRegistryModalOpen`
+  ),
+  setiskubeConfigModalOpen: createAction(`${prefix}setiskubeConfigModalOpen`),
+  createRegistryKubeConfig: createAction(`${prefix}createRegistryKubeConfig`),
+  fetchRegistryKubeConfigList: createAction(
+    `${prefix}fetchRegistryKubeConfigList`
+  ),
+  setregistryKubeConfigList: createAction(`${prefix}setregistryKubeConfigList`),
+  deleteRegistryKubeConfig: createAction(`${prefix}deleteRegistryKubeConfig`),
+  createConfigRegistry: createAction(`${prefix}createConfigRegistry`),
+  fetchRegistryConfigurationList: createAction(
+    `${prefix}fetchRegistryConfigurationList`
+  ),
+  setRegistryConfigurationsList: createAction(
+    `${prefix}setRegistryConfigurationsList`
+  ),
+  fetchRegistryConfigurationDefaultData: createAction(
+    `${prefix}fetchRegistryConfigurationDefaultData`
+  ),
+  setRegistryConfigDefaultData: createAction(
+    `${prefix}setRegistryConfigDefaultData`
+  ),
+  deleteRegistryConfiguration: createAction(
+    `${prefix}deleteRegistryConfiguration`
+  ),
+  setRegistryConfigEditItem: createAction(`${prefix}setRegistryConfigEditItem`),
 };
+
 /* ------------- INITIAL STATE ------------- */
 export const REGISTRY_INITIAL_STATE = {
   count: null,
@@ -29,6 +57,12 @@ export const REGISTRY_INITIAL_STATE = {
   isDeleteModalOpen: false,
   registrySelectedData: {},
   registriesList: [],
+  isCreateRegistryModalOpen: false,
+  iskubeConfigModalOpen: false,
+  registryKubeConfigList: [],
+  registryConfigurationsList: [],
+  registryConfigDefaultData: {},
+  registryConfigEditItem: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -38,6 +72,15 @@ export const RegistrySelectors = {
   getIsDeleteModalOpen: state => state.registry.isDeleteModalOpen,
   getRegistrySelectedData: state => state.registry.registrySelectedData,
   getRegistriesList: state => state.registry.registriesList,
+  getisCreateRegistryModalOpen: state =>
+    state.registry.isCreateRegistryModalOpen,
+  getiskubeConfigModalOpen: state => state.registry.iskubeConfigModalOpen,
+  getregistryKubeConfigList: state => state.registry.registryKubeConfigList,
+  getRegistryConfigurationsList: state =>
+    state.registry.registryConfigurationsList,
+  getregistryConfigDefaultData: state =>
+    state.registry.registryConfigDefaultData,
+  getregistryConfigEditItem: state => state.registry.registryConfigEditItem,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -79,6 +122,43 @@ const setRegistriesList = (state, { payload }) => {
   };
 };
 
+const setIsCreateRegistryModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isCreateRegistryModalOpen: payload,
+  };
+};
+const setiskubeConfigModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    iskubeConfigModalOpen: payload,
+  };
+};
+const setregistryKubeConfigList = (state, { payload }) => {
+  return {
+    ...state,
+    registryKubeConfigList: payload,
+  };
+};
+const setRegistryConfigurationsList = (state, { payload }) => {
+  return {
+    ...state,
+    registryConfigurationsList: payload,
+  };
+};
+const setRegistryConfigDefaultData = (state, { payload }) => {
+  return {
+    ...state,
+    registryConfigDefaultData: payload,
+  };
+};
+const setRegistryConfigEditItem = (state, { payload }) => {
+  return {
+    ...state,
+    registryConfigEditItem: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const registryReducer = createReducer(
   REGISTRY_INITIAL_STATE,
@@ -92,6 +172,30 @@ export const registryReducer = createReducer(
       .addCase(RegistryActions.setRegistryTestSuccess, setRegistryTestSuccess)
       .addCase(RegistryActions.setIsDeleteModalOpen, setIsDeleteModalOpen)
       .addCase(RegistryActions.setRegistrySelectedData, setRegistrySelectedData)
-      .addCase(RegistryActions.setRegistriesList, setRegistriesList);
+      .addCase(RegistryActions.setRegistriesList, setRegistriesList)
+      .addCase(
+        RegistryActions.setIsCreateRegistryModalOpen,
+        setIsCreateRegistryModalOpen
+      )
+      .addCase(
+        RegistryActions.setiskubeConfigModalOpen,
+        setiskubeConfigModalOpen
+      )
+      .addCase(
+        RegistryActions.setregistryKubeConfigList,
+        setregistryKubeConfigList
+      )
+      .addCase(
+        RegistryActions.setRegistryConfigurationsList,
+        setRegistryConfigurationsList
+      )
+      .addCase(
+        RegistryActions.setRegistryConfigDefaultData,
+        setRegistryConfigDefaultData
+      )
+      .addCase(
+        RegistryActions.setRegistryConfigEditItem,
+        setRegistryConfigEditItem
+      );
   }
 );

@@ -13,6 +13,24 @@ export const registryAPI = api => {
     return api.patch(`/registries/${registryId}`, payload);
   };
   const getAllRegistiesList = () => api.get('/list-registries');
+  const createRegistryKubeConfig = ({ payload }) => {
+    return api.post(`/registry/registry-kube-config`, payload);
+  };
+  const fetchRegistryKubeConfigList = () =>
+    api.get('/registry/registry-kube-config');
+  const deleteRegistryKubeConfig = ({ kubeId }) =>
+    api.delete(`/registry/registry-kube-config/${kubeId}`);
+
+  const createConfigRegistry = ({ payload }) => {
+    return api.post(`/registry/registry-configs`, payload);
+  };
+  const fetchRegistryConfigurationList = () =>
+    api.get('/registry/registry-configs');
+
+  const fetchRegistryConfigurationDefaultData = ({ type }) =>
+    api.get(`/registry/registry-configs/template?type=${type}`);
+  const deleteRegistryConfiguration = ({ configId }) =>
+    api.delete(`/registry/registry-configs/${configId}`);
 
   return {
     fetchRegistry,
@@ -21,5 +39,12 @@ export const registryAPI = api => {
     deleteRegistry,
     editRegistry,
     getAllRegistiesList,
+    createRegistryKubeConfig,
+    fetchRegistryKubeConfigList,
+    deleteRegistryKubeConfig,
+    createConfigRegistry,
+    fetchRegistryConfigurationList,
+    fetchRegistryConfigurationDefaultData,
+    deleteRegistryConfiguration,
   };
 };
