@@ -688,42 +688,24 @@ export const ClusterProcessDisplayModal = ({
       (isProcessModalOpen || isModalOpen) &&
       processData?.data?.status !== 'failed'
     ) {
-      const payload = {
-        clusterId:
-          selectedCluster?.id || ansibleClusterCreationData?.cluster_id,
-        process_id:
-          selectedCluster?.process_id || ansibleClusterCreationData?.process_id,
-        process_name:
-          selectedCluster?.process_name ||
-          ansibleClusterCreationData?.process_name,
-        ...(selectedCluster?.cluster_type ||
-        ansibleClusterCreationData?.cluster_type
-          ? {
-              cluster_type:
-                selectedCluster?.cluster_type ||
-                ansibleClusterCreationData?.cluster_type,
-            }
-          : {}),
-      };
-      dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
-    }
-  }, [
-    isProcessModalOpen,
-    isModalOpen,
-    dispatch,
-    selectedCluster,
-    ansibleClusterCreationData,
-    processData?.data?.status,
-  ]);
-
-  useEffect(() => {
-    let intervalId;
-    if (
-      (isProcessModalOpen || isModalOpen) &&
-      progress < 100 &&
-      processData?.data?.status !== 'failed'
-    ) {
-      intervalId = setInterval(() => {
+      if (ansibleClusterCreationData?.request_type === 'registry') {
+        const payload = {
+          clusterId: ansibleClusterCreationData?.registry_id,
+          process_id: ansibleClusterCreationData?.process_id,
+          process_name: ansibleClusterCreationData?.process_name,
+          request_type: 'registry',
+          registry_type: ansibleClusterCreationData?.registry_type,
+          ...(selectedCluster?.cluster_type ||
+          ansibleClusterCreationData?.cluster_type
+            ? {
+                cluster_type:
+                  selectedCluster?.cluster_type ||
+                  ansibleClusterCreationData?.cluster_type,
+              }
+            : {}),
+        };
+        dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
+      } else {
         const payload = {
           clusterId:
             selectedCluster?.id || ansibleClusterCreationData?.cluster_id,
@@ -743,6 +725,63 @@ export const ClusterProcessDisplayModal = ({
             : {}),
         };
         dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
+      }
+    }
+  }, [
+    isProcessModalOpen,
+    isModalOpen,
+    dispatch,
+    selectedCluster,
+    ansibleClusterCreationData,
+    processData?.data?.status,
+  ]);
+
+  useEffect(() => {
+    let intervalId;
+    if (
+      (isProcessModalOpen || isModalOpen) &&
+      progress < 100 &&
+      processData?.data?.status !== 'failed'
+    ) {
+      intervalId = setInterval(() => {
+        if (ansibleClusterCreationData?.request_type === 'registry') {
+          const payload = {
+            clusterId: ansibleClusterCreationData?.registry_id,
+            process_id: ansibleClusterCreationData?.process_id,
+            process_name: ansibleClusterCreationData?.process_name,
+            request_type: 'registry',
+            registry_type: ansibleClusterCreationData?.registry_type,
+            ...(selectedCluster?.cluster_type ||
+            ansibleClusterCreationData?.cluster_type
+              ? {
+                  cluster_type:
+                    selectedCluster?.cluster_type ||
+                    ansibleClusterCreationData?.cluster_type,
+                }
+              : {}),
+          };
+          dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
+        } else {
+          const payload = {
+            clusterId:
+              selectedCluster?.id || ansibleClusterCreationData?.cluster_id,
+            process_id:
+              selectedCluster?.process_id ||
+              ansibleClusterCreationData?.process_id,
+            process_name:
+              selectedCluster?.process_name ||
+              ansibleClusterCreationData?.process_name,
+            ...(selectedCluster?.cluster_type ||
+            ansibleClusterCreationData?.cluster_type
+              ? {
+                  cluster_type:
+                    selectedCluster?.cluster_type ||
+                    ansibleClusterCreationData?.cluster_type,
+                }
+              : {}),
+          };
+          dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
+        }
       }, 5500);
     }
 

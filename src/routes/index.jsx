@@ -164,7 +164,6 @@ export const ROUTES_MENU = [
         path: ['registry-configuration'],
         component: <RegistryConfigurationEditorPage />,
       },
-      ,
     ],
     permission: 'view_registry',
   },

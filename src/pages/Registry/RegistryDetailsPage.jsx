@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,13 +8,21 @@ import { history } from '../../helpers/history';
 import { Button, InputField, SelectField } from '../../shared';
 import { Title } from '../Clusters/components/Title';
 import ClusterSetupNavigationTab from '../Clusters/components/ClusterSetupNavigationTab';
-import { ClustersActions, ClustersSelectors } from '../../store';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  LoadingSelectors,
+  RegistryActions,
+  RegistrySelectors,
+} from '../../store';
 import RegistryNavigationTab from './RegistryNavigationTab';
 import { QRIcons } from '../../assets';
 import { useForm } from 'react-hook-form';
-import { isEmpty } from 'lodash';
+import { isEmpty, uniqBy } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import RegistryCreateUpgradeCredsModal from './RegistryCredsModal';
+import { FullPageLoader } from '../../components';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -44,29 +52,75 @@ const LabelSelect = styled.div`
 `;
 const RegistryDetailsPage = ({ activeTab }) => {
   const dispatch = useDispatch();
+  const [openAddConfigModal, setOpenAddConfigModal] = useState(false);
+  const kubeConfigurationList = useSelector(ClustersSelectors.getHostIpList);
+  const registryConfigurationList = useSelector(
+    RegistrySelectors.getRegistryConfigurationsList
+  );
+  const registryConfigVersionList = useSelector(
+    RegistrySelectors.getregistryConfigVerions
+  );
+
+  //
+  // const kubeConfigurationOptions = kubeConfigurationList?.map(ele => ({
+  //   label: ele?.kube_cluster_name,
+  //   value: ele?.id,
+  // }));
+  const kubeConfigurationOptions = useMemo(() => {
+    return (
+      kubeConfigurationList?.map(ele => ({
+        label: ele?.kube_cluster_name,
+        value: ele?.id,
+      })) || []
+    );
+  }, [kubeConfigurationList]);
+  // const registryConfigurationOptions = registryConfigurationList?.map(ele => ({
+  //   label: ele?.config_name,
+  //   value: ele?.id,
+  // }));
+  const registryConfigurationVersionsOptions = registryConfigVersionList?.map(
+    ele => ({
+      label: ele?.config_version.toString(),
+      value: ele?.id,
+    })
+  );
+
+  // const registryConfigurationOptionsUniques = uniqBy(
+  //   registryConfigurationOptions,
+  //   'label'
+  // );
+  const registryConfigurationOptionsUniques = useMemo(() => {
+    const options = registryConfigurationList?.map(ele => ({
+      label: ele?.config_name,
+      value: ele?.id,
+    }));
+    return uniqBy(options, 'label');
+  }, [registryConfigurationList]);
+
   const noSpaces = /^(\S.*\S|\S)$/;
   const schemaAKS = yup.object().shape({
-    clusterName: yup
+    registryName: yup
       .string()
-      .required('Cluster name is required')
+      .required('Registry name is required')
       .test(
         'no-leading-trailing-spaces',
-        'Cluster name must not start or end with a space.',
+        'Registry name must not start or end with a space.',
         value => value === value?.trim()
       )
       .matches(
         /^[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*$/,
-        'Cluster name must contain only letters, numbers, underscores, or hyphens.'
+        'Registry name must contain only letters, numbers, underscores, or hyphens.'
       ),
-    host: yup.string().required('Master Node is required'),
-    configName: yup.string().required('Config name is required'),
-    configVersion: yup.string().required('Config version is required'),
-    tenantId: yup.string().required('Tenant ID is required'),
-    clientId: yup.string().required('Client ID is required'),
-    clientSecret: yup.string().required('Client Secret is required'),
-    subscriptionId: yup.string().required('Subscription ID is required'),
-    resourceGroup: yup.string().required('Resource Group is required'),
-    nifi_namespace: yup
+    kubeConfigId: yup.string().required('Kubernetes configuration is required'),
+    registryConfigId: yup.string().required('Config version is required'),
+    registryConfigs: yup.string().required('Config name is required'),
+    // configVersion: yup.string().required('Config version is required'),
+    // tenantId: yup.string().required('Tenant ID is required'),
+    // clientId: yup.string().required('Client ID is required'),
+    // clientSecret: yup.string().required('Client Secret is required'),
+    // subscriptionId: yup.string().required('Subscription ID is required'),
+    // resourceGroup: yup.string().required('Resource Group is required'),
+    nifiNamespace: yup
       .string()
       .required('NiFi namespace is required')
       .matches(
@@ -84,14 +138,103 @@ const RegistryDetailsPage = ({ activeTab }) => {
     reset,
   } = useForm({
     resolver: yupResolver(schemaAKS),
-    defaultValues: { cluster_type: 'aks', nifi_namespace: 'nifi' },
+    defaultValues: { registryType: 'aks', nifi_namespace: 'nifi' },
   });
-  const handleCreateRegistry = () => {};
+
+  const registryName = watch('registryName');
+  const kubeConfig = watch('kubeConfigId');
+  const registryConfig = watch('registryConfigs');
+  const registryConfigVersion = watch('registryConfigId');
+  const registryType = watch('registryType');
+  const nifiNamespace = watch('nifiNamespace');
+
+  useEffect(() => {
+    if (
+      !isEmpty(kubeConfigurationOptions) &&
+      kubeConfigurationOptions.length === 1
+    ) {
+      setValue('kubeConfigId', kubeConfigurationOptions?.[0]?.value);
+    }
+  }, [kubeConfigurationOptions]);
+
+  useEffect(() => {
+    if (
+      !isEmpty(registryConfigurationOptionsUniques) &&
+      registryConfigurationOptionsUniques.length === 1
+    ) {
+      setValue(
+        'registryConfigs',
+        registryConfigurationOptionsUniques?.[0]?.value
+      );
+    }
+  }, [registryConfigurationOptionsUniques?.length]);
+
+  useEffect(() => {
+    if (
+      !isEmpty(registryConfigurationVersionsOptions) &&
+      registryConfigurationVersionsOptions?.length === 1
+    ) {
+      setValue(
+        'registryConfigId',
+        registryConfigurationVersionsOptions?.[0]?.value
+      );
+    }
+  }, [registryConfigurationVersionsOptions?.length]);
+
+  const createBtnDisbaled =
+    isEmpty(registryName) ||
+    isEmpty(kubeConfig) ||
+    isEmpty(registryConfig) ||
+    isEmpty(registryConfigVersion) ||
+    isEmpty(registryType) ||
+    isEmpty(nifiNamespace);
+
+  useEffect(() => {
+    if (!isEmpty(registryConfig)) {
+      const selectedConfig = registryConfigurationOptionsUniques.filter(
+        ele => ele?.value === registryConfig
+      );
+      if (selectedConfig?.[0]?.label) {
+        dispatch(
+          RegistryActions.fetchRegistryConfigVersions(
+            selectedConfig?.[0]?.label
+          )
+        );
+      }
+    }
+  }, [registryConfig]);
+
+  const handleSubmitCreate = () => {
+    setOpenAddConfigModal(true);
+  };
+  const handleCreateRegistry = data => {
+    dispatch(RegistryActions.createRegistryViaKube(data));
+    //
+  };
   useEffect(() => {
     dispatch(ClustersActions.fetchMasterHostNodesList());
+    dispatch(RegistryActions.fetchRegistryConfigurationList());
+    return () => {
+      dispatch(RegistryActions.setregistryConfigVerions([]));
+    };
   }, [dispatch]);
+  const onError = errors => {
+    if (isEmpty(errors)) {
+      // handleSubmit(handleCreateCluster)();
+    } else {
+      setOpenAddConfigModal(false);
+    }
+  };
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'testAzureConfig')
+  );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchRegistryConfigVersions')
+  );
+
   return (
     <Wrapper>
+      <FullPageLoader loading={loading || loading2} />
       <Title title={'Add New Registry'} />
       <Container>
         <RegistryNavigationTab activeTab={activeTab} />
@@ -103,7 +246,7 @@ const RegistryDetailsPage = ({ activeTab }) => {
                 Registry Name <span style={{ color: 'red' }}>*</span>
               </LabelSelect>
               <InputField
-                name="clusterName"
+                name="registryName"
                 type="text"
                 placeholder="Enter your registry name"
                 required={true}
@@ -120,12 +263,12 @@ const RegistryDetailsPage = ({ activeTab }) => {
                 Kubernetes Cluster <span style={{ color: 'red' }}>*</span>
               </LabelSelect>
               <SelectField
-                name="host"
+                name="kubeConfigId"
                 icon={<QRIcons />}
                 register={register}
                 errors={errors}
                 control={control}
-                options={[]}
+                options={kubeConfigurationOptions || []}
                 placeholder={'Select Kubernetes Cluster'}
                 required={true}
                 // disabled={!isEmpty(kubeClusterIDEdit)}
@@ -136,12 +279,12 @@ const RegistryDetailsPage = ({ activeTab }) => {
                 Registry Configuration <span style={{ color: 'red' }}>*</span>
               </LabelSelect>
               <SelectField
-                name="configName"
+                name="registryConfigs"
                 icon={<QRIcons />}
                 register={register}
                 errors={errors}
                 control={control}
-                options={[]}
+                options={registryConfigurationOptionsUniques || []}
                 placeholder="Select Registry Configuration"
                 required={true}
               />
@@ -154,23 +297,21 @@ const RegistryDetailsPage = ({ activeTab }) => {
                 <span style={{ color: 'red' }}>*</span>
               </LabelSelect>
               <SelectField
-                name="configVersion"
+                name="registryConfigId"
                 icon={<QRIcons />}
                 register={register}
                 errors={errors}
                 control={control}
-                options={[]}
+                options={registryConfigurationVersionsOptions || []}
                 placeholder={'Select Registry Configuration Version'}
                 required={true}
                 sortAlphabetically={false}
               />
             </div>
             <div className="col-6">
-              <LabelSelect className="mb-3">
-                Kubernetes cluster type
-              </LabelSelect>
+              <LabelSelect className="mb-3">Registry type</LabelSelect>
               <SelectField
-                name="cluster_type"
+                name="registryType"
                 icon={<QRIcons />}
                 register={register}
                 errors={errors}
@@ -188,7 +329,7 @@ const RegistryDetailsPage = ({ activeTab }) => {
                     },
                   ] || []
                 }
-                placeholder={KDFM.SELECT_CONFIG_VERSION}
+                placeholder={'Select registry type'}
                 required={true}
               />
             </div>
@@ -199,7 +340,7 @@ const RegistryDetailsPage = ({ activeTab }) => {
                 NiFi Cluster Namespace <span style={{ color: 'red' }}>*</span>
               </LabelSelect>
               <InputField
-                name="nifi_namespace"
+                name="nifiNamespace"
                 type="text"
                 placeholder="Enter NiFi cluster namespace"
                 required={true}
@@ -211,6 +352,22 @@ const RegistryDetailsPage = ({ activeTab }) => {
           </div>
         </div>
       </Container>
+      <RegistryCreateUpgradeCredsModal
+        register={register}
+        errors={errors}
+        openAddConfigModal={openAddConfigModal}
+        setOpenAddConfigModal={setOpenAddConfigModal}
+        registryType={registryType}
+        control={control}
+        watch={watch}
+        handleCreateRegistry={handleCreateRegistry}
+        handleSubmit={handleSubmit}
+        reset={reset}
+        // kubeClusterIDEdit={kubeClusterIDEdit}
+        onError={onError}
+        // aksSaveDb={aksSaveDb}
+        // setAksSaveDb={setAksSaveDb}
+      />
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button
@@ -222,8 +379,11 @@ const RegistryDetailsPage = ({ activeTab }) => {
           >
             {KDFM.BACK}
           </Button>
-
-          <Button type="submit" onClick={handleSubmit(handleCreateRegistry)}>
+          <Button
+            type="submit"
+            onClick={handleSubmitCreate}
+            disabled={createBtnDisbaled}
+          >
             Create Registry
           </Button>
         </BottomButtonDiv>

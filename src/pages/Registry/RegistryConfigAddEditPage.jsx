@@ -211,11 +211,11 @@ const RegistryConfigurationEditorPage = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchConfigFieldsForKubernetes')
   );
-  const updatedConfigKube = useSelector(ClustersSelectors.getUpdatedKubeConfig);
+  // const updatedConfigKube = useSelector(ClustersSelectors.getUpdatedKubeConfig);
   const hasYamlChanged =
     yamlEditorValue &&
-    updatedConfigKube?.updatedYaml &&
-    yamlEditorValue.trim() !== updatedConfigKube?.updatedYaml.trim();
+    configToEdit?.config_yaml &&
+    yamlEditorValue.trim() !== configToEdit?.config_yaml.trim();
 
   useEffect(() => {
     if (isEmpty(configToEdit)) {
@@ -226,7 +226,7 @@ const RegistryConfigurationEditorPage = () => {
       }
     }
   }, [recentSelectedCluster]);
-  //
+
   return (
     <Wrapper>
       <FullPageLoader loading={loading} />
@@ -369,7 +369,10 @@ const RegistryConfigurationEditorPage = () => {
             <Button
               type="submit"
               onClick={handleSubmit(handleAddConfig)}
-              //   disabled={!isEmpty(errorsInEditor) || !isEmpty(configToEdit)}
+              disabled={
+                !isEmpty(errorsInEditor) ||
+                (!isEmpty(configToEdit) && !hasYamlChanged)
+              }
             >
               {!isEmpty(configToEdit)
                 ? 'Update Configuration'

@@ -43,6 +43,11 @@ export const RegistryActions = {
     `${prefix}deleteRegistryConfiguration`
   ),
   setRegistryConfigEditItem: createAction(`${prefix}setRegistryConfigEditItem`),
+  fetchRegistryConfigVersions: createAction(
+    `${prefix}fetchRegistryConfigVersions`
+  ),
+  setregistryConfigVerions: createAction(`${prefix}setregistryConfigVerions`),
+  createRegistryViaKube: createAction(`${prefix}createRegistryViaKube`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -63,6 +68,7 @@ export const REGISTRY_INITIAL_STATE = {
   registryConfigurationsList: [],
   registryConfigDefaultData: {},
   registryConfigEditItem: {},
+  registryConfigVerions: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -81,6 +87,7 @@ export const RegistrySelectors = {
   getregistryConfigDefaultData: state =>
     state.registry.registryConfigDefaultData,
   getregistryConfigEditItem: state => state.registry.registryConfigEditItem,
+  getregistryConfigVerions: state => state.registry.registryConfigVerions,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -158,6 +165,12 @@ const setRegistryConfigEditItem = (state, { payload }) => {
     registryConfigEditItem: payload,
   };
 };
+const setregistryConfigVerions = (state, { payload }) => {
+  return {
+    ...state,
+    registryConfigVerions: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const registryReducer = createReducer(
@@ -196,6 +209,10 @@ export const registryReducer = createReducer(
       .addCase(
         RegistryActions.setRegistryConfigEditItem,
         setRegistryConfigEditItem
+      )
+      .addCase(
+        RegistryActions.setregistryConfigVerions,
+        setregistryConfigVerions
       );
   }
 );

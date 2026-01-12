@@ -18,6 +18,7 @@ import {
   RegistrySelectors,
 } from '../../store';
 import { CreateRegistryNavigationModal } from './CreateRegistryNavigavtionalModal';
+import { ClusterProcessDisplayModal } from '../Clusters/components/ClusterProcessDisplayModal';
 
 const ListRegistryManagementPage = () => {
   const dispatch = useDispatch();
@@ -188,6 +189,7 @@ const ListRegistryManagementPage = () => {
         sortingState={sortingState}
         setSortingState={setSortingState}
       />
+      <ClusterProcessDisplayModal />
       {isModalCreateRegistryOpen && <CreateRegistryNavigationModal />}
     </>
   );

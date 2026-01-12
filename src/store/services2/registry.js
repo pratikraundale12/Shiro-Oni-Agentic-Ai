@@ -32,6 +32,12 @@ export const registryAPI = api => {
   const deleteRegistryConfiguration = ({ configId }) =>
     api.delete(`/registry/registry-configs/${configId}`);
 
+  const fetchRegistryConfigVersions = ({ configName }) =>
+    api.get(`/registry/registry-configs/versions?config_name=${configName}`);
+  const createRegistryViaKube = ({ payload }) => {
+    return api.post(`/registry/kube-registry`, payload);
+  };
+
   return {
     fetchRegistry,
     testRegistry,
@@ -46,5 +52,7 @@ export const registryAPI = api => {
     fetchRegistryConfigurationList,
     fetchRegistryConfigurationDefaultData,
     deleteRegistryConfiguration,
+    fetchRegistryConfigVersions,
+    createRegistryViaKube,
   };
 };

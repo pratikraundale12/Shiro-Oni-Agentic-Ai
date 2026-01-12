@@ -4,6 +4,7 @@ import { RegistryActions } from './redux';
 import { requestSaga } from '../helpers/request_sagas';
 import { GridActions } from '../grid';
 import { history } from '../../helpers/history';
+import { ClustersActions } from '../clusters';
 
 export function* fetchRegistry(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -217,6 +218,40 @@ export function* deleteRegistryConfiguration(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
+export function* fetchRegistryConfigVersions(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchRegistryConfigVersions',
+    loadingSection: 'fetchRegistryConfigVersions',
+    apiMethod: api.fetchRegistryConfigVersions,
+    apiParams: [{ configName: payload }],
+  });
+
+  if (response.ok) {
+    yield put(RegistryActions.setregistryConfigVerions(response.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+export function* createRegistryViaKube(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'createRegistryViaKube',
+    loadingSection: 'createRegistryViaKube',
+    apiMethod: api.createRegistryViaKube,
+    apiParams: [{ payload: payload }],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield call(history.push, '/registry-management');
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+    );
+    // yield call(history.push, '/registry-management/configuration');
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
 export function* registrySagas(api) {
   yield all([
     takeLatest(RegistryActions.fetchRegistry, fetchRegistry, api),
@@ -258,6 +293,16 @@ export function* registrySagas(api) {
     takeLatest(
       RegistryActions.deleteRegistryConfiguration,
       deleteRegistryConfiguration,
+      api
+    ),
+    takeLatest(
+      RegistryActions.fetchRegistryConfigVersions,
+      fetchRegistryConfigVersions,
+      api
+    ),
+    takeLatest(
+      RegistryActions.createRegistryViaKube,
+      createRegistryViaKube,
       api
     ),
   ]);
