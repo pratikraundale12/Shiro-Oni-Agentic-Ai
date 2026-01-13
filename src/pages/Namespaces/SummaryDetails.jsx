@@ -95,8 +95,9 @@ const SummaryDetails = () => {
   };
 
   const handleRegistryClick = () => {
-    if (!registryData?.url) return;
-    window.open(registryData.url, '_blank');
+    const registry = registryData?.filter(ele => ele?.is_default);
+    if (!registry?.[0]?.url) return;
+    window.open(registry?.[0]?.url, '_blank');
   };
 
   return (
