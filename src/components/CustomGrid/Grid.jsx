@@ -536,10 +536,12 @@ export const Grid = ({
               <RegistryDetail
                 displayFullWidth
                 data={registryNodesData?.cluster?.registry}
-                handleCert={() =>
-                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true))
+                handleCert={
+                  () => {}
+                  // dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true))
                 }
                 showRegistryDownload={
+                  false &&
                   registryNodesData?.cluster?.registry?.[0]?.is_kube_registry &&
                   registryNodesData?.cluster?.registry?.[0]?.id &&
                   registryNodesData?.cluster?.registry?.[0]
