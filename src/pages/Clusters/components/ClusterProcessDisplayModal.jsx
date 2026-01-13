@@ -599,6 +599,12 @@ export const ClusterProcessDisplayModal = ({
     }
   };
   const getModalHeading = processExeName => {
+    if (
+      ansibleClusterCreationData?.registry_id &&
+      processExeName === 'creation'
+    ) {
+      return 'Registry Configuration in Progress';
+    }
     if (processExeName === 'delete') {
       return 'Cluster Deletion Progress';
     } else if (processExeName === 'creation') {
