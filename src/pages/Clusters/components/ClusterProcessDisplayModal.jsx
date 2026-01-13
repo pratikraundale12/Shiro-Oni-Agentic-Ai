@@ -492,6 +492,28 @@ const deleteAKSClusterSteps = [
     status: 'completed',
   },
 ];
+const createRegistryAKS = [
+  { step: 'Verifying Helm chart', status: 'completed' },
+  { step: 'Validating Azure access', status: 'completed' },
+  { step: 'Resolving kubeconfig', status: 'completed' },
+  {
+    step: 'Checking helm/kubectl availability and cluster reachability',
+    status: 'completed',
+  },
+  { step: 'Parsing values file for deployment options', status: 'completed' },
+  { step: 'Ensuring namespace nifi-registry exists', status: 'completed' },
+  {
+    step: 'Evaluating cert-manager release cert-manager in namespace cert-manager',
+    status: 'completed',
+  },
+  { step: 'Validating storage class for persistence', status: 'completed' },
+  {
+    step: 'Creating/validating Load Balancer IP for NiFi Registry',
+    status: 'completed',
+  },
+  { step: 'Installing NiFi Registry', status: 'completed' },
+  { step: 'Collect NiFi Registry pods/services', status: 'completed' },
+];
 export const ClusterProcessDisplayModal = ({
   isProcessModalOpen,
   setIsProcessModalOpen,
@@ -526,6 +548,12 @@ export const ClusterProcessDisplayModal = ({
     selectedCluster?.process_name || ansibleClusterCreationData?.process_name;
 
   const getReferencObjectForComparison = processExeName => {
+    if (processData?.isKubeRegistry) {
+      if (processExeName === 'creation') {
+        return createRegistryAKS;
+      }
+    }
+
     if (processExeName === 'delete') {
       return processData?.isKubeCluster && processData?.cluster_type === 'eks'
         ? deleteEKSClusterSteps
