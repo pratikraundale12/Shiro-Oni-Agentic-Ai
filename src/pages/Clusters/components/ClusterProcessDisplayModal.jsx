@@ -516,8 +516,8 @@ const createRegistryAKS = [
 ];
 export const ClusterProcessDisplayModal = ({
   isProcessModalOpen,
-  setIsProcessModalOpen,
-  setSelectedCluster,
+  setIsProcessModalOpen = () => {},
+  setSelectedCluster = () => {},
   selectedCluster,
   sortingState,
   itemPerClusterList,
