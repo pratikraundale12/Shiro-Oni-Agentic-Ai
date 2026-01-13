@@ -2,6 +2,7 @@ import { React, useState } from 'react';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
+  LicenseIcon,
   PencilIcon,
   SortDownIcon,
   SortUpIcon,
@@ -11,14 +12,17 @@ import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddRegistryModal } from './AddRegistryModal';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { ModalWithIcon } from '../../shared';
+import { Modal, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
   RegistryActions,
   RegistrySelectors,
 } from '../../store';
 import { CreateRegistryNavigationModal } from './CreateRegistryNavigavtionalModal';
 import { ClusterProcessDisplayModal } from '../Clusters/components/ClusterProcessDisplayModal';
+import RegistryCertificateDownloadTab from '../Clusters/components/ClusterRegistryCert';
 
 const ListRegistryManagementPage = () => {
   const dispatch = useDispatch();
@@ -29,6 +33,9 @@ const ListRegistryManagementPage = () => {
   const [sortingState, setSortingState] = useState('');
   const isModalCreateRegistryOpen = useSelector(
     RegistrySelectors.getisCreateRegistryModalOpen
+  );
+  const registryCertDownloadOpen = useSelector(
+    ClustersSelectors.getIsDownloadRegistryCertOpen
   );
   const toggleSorting = column => {
     setSortingState(prevState => {
@@ -151,6 +158,53 @@ const ListRegistryManagementPage = () => {
             content={'Delete Registry'}
             style={{
               width: '120px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+          {item?.is_kube_registry && item?.is_registry_authenticated && (
+            <>
+              <button
+                onClick={() => {
+                  // dispatch(RegistryActions.setRegistrySelectedData(item));
+                  // dispatch(RegistryActions.setIsAddRegistryModalOpen(true));
+                  // setSelectedItem(item);
+                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true));
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                }}
+                data-tooltip-id={`tooltip-group-certificate-registry`}
+              >
+                <IconButton>
+                  <LicenseIcon width={16} height={16} />
+                </IconButton>
+              </button>
+              <Modal
+                title="Registry Details"
+                primaryButtonText={'Back'}
+                isOpen={registryCertDownloadOpen}
+                onRequestClose={() =>
+                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(false))
+                }
+                onSubmit={() =>
+                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(false))
+                }
+                contentStyles={{ minWidth: '50%' }}
+              >
+                <RegistryCertificateDownloadTab clusterId={item?.id} />
+              </Modal>
+            </>
+          )}
+          <ReactTooltip
+            id={`tooltip-group-certificate-registry`}
+            place="left"
+            content={'Download Registry Certificate'}
+            style={{
+              width: '230px',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}
