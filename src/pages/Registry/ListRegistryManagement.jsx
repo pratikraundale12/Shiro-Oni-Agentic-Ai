@@ -1,4 +1,5 @@
-import { React, useState } from 'react';
+/*eslint-disable*/
+import { React, useEffect, useState } from 'react';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
@@ -23,12 +24,14 @@ import {
 import { CreateRegistryNavigationModal } from './CreateRegistryNavigavtionalModal';
 import { ClusterProcessDisplayModal } from '../Clusters/components/ClusterProcessDisplayModal';
 import RegistryCertificateDownloadTab from '../Clusters/components/ClusterRegistryCert';
+import AnimatedProgressBar from '../../shared/AnimatedProgressBar';
 
 const ListRegistryManagementPage = () => {
   const dispatch = useDispatch();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const [selectedItem, setSelectedItem] = useState({});
   const isDeleteModalOpen = useSelector(RegistrySelectors.getIsDeleteModalOpen);
+  const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('');
   const isModalCreateRegistryOpen = useSelector(
@@ -37,6 +40,7 @@ const ListRegistryManagementPage = () => {
   const registryCertDownloadOpen = useSelector(
     ClustersSelectors.getIsDownloadRegistryCertOpen
   );
+  const [selectedCluster, setSelectedCluster] = useState({});
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -44,6 +48,11 @@ const ListRegistryManagementPage = () => {
       }
       return column;
     });
+  };
+  const handleOpenProgressModal = item => {
+    setIsProcessModalOpen(true);
+    dispatch(ClustersActions.setProgressTrackingModalOpen(true));
+    setSelectedCluster(item);
   };
 
   const COLUMNS = [
@@ -93,7 +102,15 @@ const ListRegistryManagementPage = () => {
       width: '10%',
       resize: true,
       renderCell: item => (
-        <StatusRender status={item?.is_active ? 'Active' : 'Inactive'} />
+        <>
+          {item?.process_initiated ? (
+            <div onClick={() => handleOpenProgressModal(item)}>
+              <AnimatedProgressBar id={item?.id} />
+            </div>
+          ) : (
+            <StatusRender status={item?.is_active ? 'Active' : 'Inactive'} />
+          )}
+        </>
       ),
     },
 
@@ -219,6 +236,9 @@ const ListRegistryManagementPage = () => {
   const handleDeleteSubmit = () => {
     dispatch(RegistryActions.deleteRegistry(selectedItem?.id));
   };
+  useEffect(() => {
+    dispatch(ClustersActions.setAzureTestPassed(false));
+  }, [dispatch]);
   return (
     <>
       <AddRegistryModal />
@@ -243,7 +263,12 @@ const ListRegistryManagementPage = () => {
         sortingState={sortingState}
         setSortingState={setSortingState}
       />
-      <ClusterProcessDisplayModal />
+      <ClusterProcessDisplayModal
+        isProcessModalOpen={isProcessModalOpen}
+        setIsProcessModalOpen={setIsProcessModalOpen}
+        setSelectedCluster={setSelectedCluster}
+        selectedCluster={selectedCluster}
+      />
       {isModalCreateRegistryOpen && <CreateRegistryNavigationModal />}
     </>
   );

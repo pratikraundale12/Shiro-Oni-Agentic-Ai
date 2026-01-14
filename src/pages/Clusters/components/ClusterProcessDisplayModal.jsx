@@ -708,7 +708,11 @@ export const ClusterProcessDisplayModal = ({
     setSelectedCluster({});
     dispatch(
       GridActions.fetchGrid({
-        module: 'clusters',
+        module:
+          ansibleClusterCreationData?.request_type === 'registry' ||
+          selectedCluster?.is_kube_registry
+            ? 'registry'
+            : 'clusters',
         params: { page: 1, limit: itemPerClusterList, sort: 'name' },
         ...(sortingState && {
           sort: sortingState,
@@ -722,13 +726,23 @@ export const ClusterProcessDisplayModal = ({
       (isProcessModalOpen || isModalOpen) &&
       processData?.data?.status !== 'failed'
     ) {
-      if (ansibleClusterCreationData?.request_type === 'registry') {
+      if (
+        ansibleClusterCreationData?.request_type === 'registry' ||
+        selectedCluster?.is_kube_registry
+      ) {
         const payload = {
-          clusterId: ansibleClusterCreationData?.registry_id,
-          process_id: ansibleClusterCreationData?.process_id,
-          process_name: ansibleClusterCreationData?.process_name,
+          clusterId:
+            selectedCluster?.id || ansibleClusterCreationData?.registry_id,
+          process_id:
+            selectedCluster?.process_id ||
+            ansibleClusterCreationData?.process_id,
+          process_name:
+            selectedCluster?.process_name ||
+            ansibleClusterCreationData?.process_name,
           request_type: 'registry',
-          registry_type: ansibleClusterCreationData?.registry_type,
+          registry_type:
+            selectedCluster?.registry_type ||
+            ansibleClusterCreationData?.registry_type,
           ...(selectedCluster?.cluster_type ||
           ansibleClusterCreationData?.cluster_type
             ? {
@@ -778,13 +792,23 @@ export const ClusterProcessDisplayModal = ({
       processData?.data?.status !== 'failed'
     ) {
       intervalId = setInterval(() => {
-        if (ansibleClusterCreationData?.request_type === 'registry') {
+        if (
+          ansibleClusterCreationData?.request_type === 'registry' ||
+          selectedCluster?.is_kube_registry
+        ) {
           const payload = {
-            clusterId: ansibleClusterCreationData?.registry_id,
-            process_id: ansibleClusterCreationData?.process_id,
-            process_name: ansibleClusterCreationData?.process_name,
+            clusterId:
+              selectedCluster?.id || ansibleClusterCreationData?.registry_id,
+            process_id:
+              selectedCluster?.process_id ||
+              ansibleClusterCreationData?.process_id,
+            process_name:
+              selectedCluster?.process_name ||
+              ansibleClusterCreationData?.process_name,
             request_type: 'registry',
-            registry_type: ansibleClusterCreationData?.registry_type,
+            registry_type:
+              selectedCluster?.registry_type ||
+              ansibleClusterCreationData?.registry_type,
             ...(selectedCluster?.cluster_type ||
             ansibleClusterCreationData?.cluster_type
               ? {
@@ -908,7 +932,11 @@ export const ClusterProcessDisplayModal = ({
     setSelectedCluster({});
     dispatch(
       GridActions.fetchGrid({
-        module: 'clusters',
+        module:
+          ansibleClusterCreationData?.request_type === 'registry' ||
+          selectedCluster?.is_kube_registry
+            ? 'registry'
+            : 'clusters',
         params: { page: 1, limit: itemPerClusterList, sort: 'name' },
         ...(sortingState && {
           sort: sortingState,
