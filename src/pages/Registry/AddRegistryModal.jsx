@@ -28,6 +28,7 @@ import {
   InfoIcon,
 } from '../../assets';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { theme } from '../../styles';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -56,6 +57,10 @@ const UploadWrapper = styled.div`
   &:hover {
     background-color: rgb(253, 250, 245);
   }
+`;
+const Authdiv = styled.div`
+  font-size: 14px;
+  font-weight: 600;
 `;
 
 export const AddRegistryModal = ({ hostToEdit }) => {
@@ -228,7 +233,6 @@ export const AddRegistryModal = ({ hostToEdit }) => {
       setMethod(watchMethodCredentials);
     }
   }, [watchMethodCredentials]);
-
   return (
     <>
       <FullPageLoader loading={loading} />
@@ -250,7 +254,10 @@ export const AddRegistryModal = ({ hostToEdit }) => {
               : !formData?.name?.trim() || !formData?.nifi_url?.trim()
             : !hasChanges()
         }
-        contentStyles={{ minWidth: '40%', height: '60%' }}
+        contentStyles={{
+          minWidth: '40%',
+          height: isEmpty(selectedRegistry) ? '60%' : '40%',
+        }}
         footerAlign="start"
         tertiaryButton={isAuthenticated}
         tertiaryButtonConfig={{
@@ -277,7 +284,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
               register={register}
               errors={errors}
               icon={<DocumentTextIcon />}
-              disabled={!isEmpty(selectedRegistry) && !isPrimaryBtnDisable}
+              disabled={isEmpty(selectedRegistry) && testSuccess}
             />
           </div>
           <div className="row">
@@ -290,36 +297,52 @@ export const AddRegistryModal = ({ hostToEdit }) => {
               register={register}
               errors={errors}
               icon={<DocumentTextIcon />}
-              disabled={!isEmpty(selectedRegistry) || !isPrimaryBtnDisable}
+              disabled={!isEmpty(selectedRegistry) || testSuccess}
             />
           </div>
-          <div className="mb-3 d-flex gap-2 align-items-center">
-            <CheckboxField
-              name="is_registry_authenticated"
-              label="Authenticated"
-              register={register}
-              defaultChecked={true}
-            />
-            <div data-tooltip-id="registry-auth-tooltip">
-              <InfoIcon />
+          {!isEmpty(selectedRegistry) && (
+            <Authdiv>
+              Registry :{' '}
+              {selectedRegistry?.is_registry_authenticated ? (
+                <span style={{ color: theme.colors.primary }}>
+                  Authenticated
+                </span>
+              ) : (
+                <span style={{ color: theme.colors.primary }}>
+                  Unauthenticated
+                </span>
+              )}
+            </Authdiv>
+          )}
+          {isEmpty(selectedRegistry) && (
+            <div className="mb-3 d-flex gap-2 align-items-center">
+              <CheckboxField
+                name="is_registry_authenticated"
+                label="Authenticated"
+                register={register}
+                defaultChecked={true}
+                disabled={!isEmpty(selectedRegistry)}
+              />
+              <div data-tooltip-id="registry-auth-tooltip">
+                <InfoIcon />
+              </div>
+              <ReactTooltip
+                id="registry-auth-tooltip"
+                place="right"
+                content="Enable this option if authentication is required for your Registry URL"
+                style={{
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                  backgroundColor: '#333',
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  borderRadius: '4px',
+                  zIndex: 9999,
+                }}
+              />
             </div>
-            <ReactTooltip
-              id="registry-auth-tooltip"
-              place="right"
-              content="Enable this option if authentication is required for your Registry URL"
-              style={{
-                whiteSpace: 'normal',
-                wordWrap: 'break-word',
-                backgroundColor: '#333',
-                padding: '8px 12px',
-                fontSize: '14px',
-                borderRadius: '4px',
-                zIndex: 9999,
-              }}
-            />
-          </div>
-
-          {isAuthenticated && (
+          )}
+          {isAuthenticated && isEmpty(selectedRegistry) && (
             <div
               style={{
                 cursor: !isEmpty(selectedRegistry) ? 'not-allowed' : 'pointer',
