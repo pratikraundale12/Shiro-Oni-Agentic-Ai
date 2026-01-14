@@ -61,11 +61,6 @@ const RegistryDetailsPage = ({ activeTab }) => {
     RegistrySelectors.getregistryConfigVerions
   );
 
-  //
-  // const kubeConfigurationOptions = kubeConfigurationList?.map(ele => ({
-  //   label: ele?.kube_cluster_name,
-  //   value: ele?.id,
-  // }));
   const kubeConfigurationOptions = useMemo(() => {
     return (
       kubeConfigurationList?.map(ele => ({
@@ -74,10 +69,7 @@ const RegistryDetailsPage = ({ activeTab }) => {
       })) || []
     );
   }, [kubeConfigurationList]);
-  // const registryConfigurationOptions = registryConfigurationList?.map(ele => ({
-  //   label: ele?.config_name,
-  //   value: ele?.id,
-  // }));
+
   const registryConfigurationVersionsOptions = registryConfigVersionList?.map(
     ele => ({
       label: ele?.config_version.toString(),
@@ -85,10 +77,6 @@ const RegistryDetailsPage = ({ activeTab }) => {
     })
   );
 
-  // const registryConfigurationOptionsUniques = uniqBy(
-  //   registryConfigurationOptions,
-  //   'label'
-  // );
   const registryConfigurationOptionsUniques = useMemo(() => {
     const options = registryConfigurationList?.map(ele => ({
       label: ele?.config_name,
