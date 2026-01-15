@@ -153,7 +153,7 @@ const AgentContent = styled.div`
 
   pre {
     background-color: #282c34;
-    color: #abb2bf;
+    color: #fff;
     padding: 16px;
     border-radius: 8px;
     overflow-x: auto;
@@ -186,6 +186,7 @@ const GeneratingWrapper = styled.div`
   color: #444445;
   font-family: 'Red Hat Display', sans-serif;
   font-size: 16px;
+  padding-top: 12px;
 `;
 
 export const AgenticAiMessageList = ({
@@ -212,7 +213,7 @@ export const AgenticAiMessageList = ({
                 <AgentContent>
                   {isPending && isLoading ? (
                     <GeneratingWrapper>
-                      <span>Generating Response</span>
+                      <span>Thinking</span>
                       <LoaderDots>
                         <span />
                         <span />

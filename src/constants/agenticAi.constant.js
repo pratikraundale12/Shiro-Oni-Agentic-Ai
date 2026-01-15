@@ -1,6 +1,6 @@
 export const AGENTIC_AI_CONSTANTS = {
   AGENTIC_AI: 'Agentic AI',
-  AGENTIC_AI_MODAL_TITLE: 'DFM Assistant',
+  AGENTIC_AI_MODAL_TITLE: 'DFM Nova',
   WELCOME_TEXT: 'How can I help with your NiFi operations?',
   AGENTIC_AI_DISCLAIMER_TEXT:
     'DFM AI AGENT can make mistakes. Check our Terms & Conditions.',
