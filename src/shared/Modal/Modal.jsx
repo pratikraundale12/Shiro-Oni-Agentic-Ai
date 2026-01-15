@@ -98,9 +98,10 @@ export const Modal = ({
   primaryBtnSize,
   formClass,
   clickOutsideToClose = true,
-  showLoggedInCluster = false,
-  loggedInClusterComponent: LoggedInComponent = null,
   shouldCloseOnEsc,
+  headerStyles = {},
+  showAdditionalActions = false,
+  additionalActionsComponent: AdditionalActions = null,
 }) => {
   const primaryButtonSize = primaryBtnSize
     ? primaryBtnSize
@@ -146,6 +147,13 @@ export const Modal = ({
     }
   };
 
+  const renderTitle = () => {
+    if (typeof title === 'string') {
+      return <Title className="mb-0">{title}</Title>;
+    }
+    return title;
+  };
+
   return (
     <ReactModal
       isOpen={isOpen}
@@ -162,10 +170,12 @@ export const Modal = ({
         }}
         onKeyDown={handleKeyDown}
       >
-        <Header>
-          <Title className="mb-0">{title}</Title>
+        <Header style={headerStyles}>
+          <Title className="mb-0">{renderTitle()}</Title>
           <div className="d-flex align-items-center gap-2">
-            {showLoggedInCluster && <LoggedInComponent />}
+            {showAdditionalActions && AdditionalActions && (
+              <AdditionalActions />
+            )}
             <div className="d-flex gap-2">
               {isAdditionalIcon && (
                 <CloseButton
@@ -276,7 +286,8 @@ Modal.propTypes = {
   primaryBtnSize: PropTypes.string,
   formClass: PropTypes.string,
   clickOutsideToClose: PropTypes.bool,
-  showLoggedInCluster: PropTypes.bool,
-  loggedInClusterComponent: PropTypes.elementType,
   shouldCloseOnEsc: PropTypes.bool,
+  headerStyles: PropTypes.object,
+  showAdditionalActions: PropTypes.bool,
+  AdditionalActions: PropTypes.node,
 };
