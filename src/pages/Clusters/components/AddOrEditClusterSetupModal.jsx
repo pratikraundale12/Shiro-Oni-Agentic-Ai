@@ -136,7 +136,10 @@ export const AddOrEditClusterModal = () => {
       !currentUser?.permissions?.includes('add_cluster_setup') &&
       currentUser?.permissions?.includes('view_cluster_setup')
     ) {
-      toast.info('No cluster setup add permission');
+      toast.info('No cluster setup add permission', {
+        toastId: 'add_cluster_setup',
+      });
+      //
     }
   };
   useEffect(() => {
@@ -162,7 +165,9 @@ export const AddOrEditClusterModal = () => {
                 setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
                 setCreateNewCusterMethod('VM');
               } else {
-                toast.info('No cluster setup add permission');
+                toast.info('No cluster setup add permission', {
+                  toastId: 'add_cluster_setup',
+                });
               }
             }}
             borderSelected={
@@ -214,7 +219,9 @@ export const AddOrEditClusterModal = () => {
                 setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
                 setCreateNewCusterMethod('Kubernetes');
               } else {
-                toast.info('No cluster setup add permission');
+                toast.info('No cluster setup add permission', {
+                  toastId: 'add_cluster_setup',
+                });
               }
             }}
             borderSelected={

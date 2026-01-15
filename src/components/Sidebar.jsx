@@ -192,6 +192,20 @@ export const Sidebar = ({
     AiFlowGeneratorSelectors.getIsflowJsonSaved
   );
   const generatedFlow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
+  function getFirstSegment(path) {
+    const segments = path.split('/').filter(segment => segment.length > 0);
+    return segments.length > 0 ? segments[0] : '';
+  }
+  useEffect(() => {
+    if (getFirstSegment(pathname)) {
+      const currentRoutOBJ = ROUTES_MENU?.filter(
+        ele => ele?.path === getFirstSegment(pathname)
+      );
+      if (!userPermissions.includes(currentRoutOBJ?.[0]?.permission)) {
+        history.push('/dashboard');
+      }
+    }
+  }, [pathname]);
 
   const [isAiFlowWarningModalOpen, setIsAiFlowWarningModalOpen] =
     useState(false);
