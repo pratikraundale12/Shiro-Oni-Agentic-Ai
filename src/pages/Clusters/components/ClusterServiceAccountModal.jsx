@@ -2,17 +2,11 @@
 import React, { useEffect, useState } from 'react';
 // import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import {
-  // useDispatch,
-  useSelector,
-} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Button, SwitchButton } from '../../../shared';
 import PropTypes from 'prop-types';
-import {
-  // ClustersActions,
-  ClustersSelectors,
-} from '../../../store/clusters';
+import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { InputField, PasswordField } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
@@ -20,7 +14,7 @@ import {
   CurvedProfileIcon,
   CircleExclamationMarkIcon,
 } from '../../../assets';
-// import { isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
@@ -62,13 +56,13 @@ const FlexWrapper = styled.div`
 
 export const ClusterServiceAccountModal = ({
   tags,
-  // hostToEdit,
+  hostToEdit,
   clusterData,
   clusterId,
   data,
   notificationEnable,
 }) => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [method, setMethod] = useState(
