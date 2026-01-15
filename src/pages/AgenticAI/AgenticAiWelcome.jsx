@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled, { keyframes } from 'styled-components';
 import PropTypes from 'prop-types';
 import { CardLogo, WelcomeCenterLogo } from '../../assets';
 
@@ -13,12 +13,33 @@ const WelcomeContainer = styled.div`
   margin: 0 auto;
 `;
 
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 const Greeting = styled.h1`
   font-size: ${props => (props.isFullscreen ? '32px' : '22px')};
   font-weight: 500;
   color: #616161;
   margin-bottom: ${props => (props.isFullscreen ? '80px' : '50px')};
   text-align: center;
+  min-height: 1.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const DynamicText = styled.span`
+  display: block;
+  animation: ${fadeInUp} 0.6s ease-out forwards;
+  color: #444445;
 `;
 
 const CardsRow = styled.div`
@@ -51,20 +72,40 @@ const CardText = styled.span`
 `;
 
 export const AgenticAiWelcome = ({ isFullscreen }) => {
-  const data = [
-    { id: 1, text: 'Know more about NiFi' },
+  const dynamicMessages = [
+    'Fix invalid process groups.',
+    'Get process groups on a cluster.',
+    'Know more about NiFi',
+  ];
+
+  const [messageIndex, setMessageIndex] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setMessageIndex(prevIndex => (prevIndex + 1) % dynamicMessages.length);
+    }, 3500);
+
+    return () => clearInterval(intervalId);
+  }, [dynamicMessages.length]);
+
+  const cardData = [
+    { id: 1, text: 'Get your cluster list' },
     { id: 2, text: 'Know more about DFM' },
-    { id: 3, text: 'Know more about NiFi' },
+    { id: 3, text: 'Get memory utilization' },
   ];
 
   return (
     <WelcomeContainer isFullscreen={isFullscreen}>
       <WelcomeCenterLogo />
 
-      <Greeting isFullscreen={isFullscreen}>How may I help you?</Greeting>
+      <Greeting isFullscreen={isFullscreen}>
+        <DynamicText key={messageIndex}>
+          {dynamicMessages[messageIndex]}
+        </DynamicText>
+      </Greeting>
 
       <CardsRow isFullscreen={isFullscreen}>
-        {data.map(item => (
+        {cardData.map(item => (
           <StaticCard key={item.id} isFullscreen={isFullscreen}>
             <CardLogo />
             <CardText isFullscreen={isFullscreen}>{item.text}</CardText>

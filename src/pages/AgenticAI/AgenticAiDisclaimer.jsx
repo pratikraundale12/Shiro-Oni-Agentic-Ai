@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { KDFM } from '../../constants';
 // import { history } from '../../helpers/history';
 
 const DisclaimerWrapper = styled.div`
@@ -47,7 +48,7 @@ export const AgenticAiDisclaimer = () => {
 
   return (
     <DisclaimerWrapper>
-      <span>DFM AI AGENT can make mistakes. Check our</span>
+      <span>{KDFM.AGENTIC_AI_MODAL_TITLE} can make mistakes. Check our</span>
       <DisclaimerLink type="button" onClick={handleRedirect}>
         Terms & Conditions.
       </DisclaimerLink>

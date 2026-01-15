@@ -54,7 +54,7 @@ export const AgenticAiModalTitle = () => {
     <TitleContainer>
       <AiAgentIcon />
       <TextStack>
-        <MainTitle>{KDFM.AGENTIC_AI_MODAL_TITLE || 'DFM Assistant'}</MainTitle>
+        <MainTitle>{KDFM.AGENTIC_AI_MODAL_TITLE || 'DFM Nova'}</MainTitle>
         {selectedCluster?.label && (
           <ClusterPill>
             <StatusDot />

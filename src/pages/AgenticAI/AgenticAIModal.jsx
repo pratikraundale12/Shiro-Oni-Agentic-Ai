@@ -37,27 +37,27 @@ export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
         height: '90px',
         padding: '0 24px',
         borderBottom: 'none',
-        borderRadius: isFullscreen ? '0' : '16px 16px 0px 0px',
+        borderRadius: isFullscreen ? '16px 16px 0px 0px' : '16px 16px 0px 0px',
       }}
       overlayStyles={{
         position: 'fixed',
         backgroundColor: '#F5F7FA',
         inset: isFullscreen ? 'auto 0 0 auto' : 'auto 0 0 auto',
-        width: isFullscreen ? '100%' : '2px',
+        width: isFullscreen ? '70%' : '2px',
         height: isFullscreen ? '100%' : '2px',
       }}
       contentStyles={{
-        inset: isFullscreen ? 'auto 0 0 auto' : 'auto 20px 90px auto',
+        inset: isFullscreen ? 'auto 25px 9px auto' : 'auto 25px 9px auto',
         transform: 'none',
         height: '100%',
         minHeight: '707px',
         minWidth: '480px',
         width: isFullscreen ? '100%' : '600px',
         maxWidth: isFullscreen ? '100%' : '40%',
-        maxHeight: isFullscreen ? '100%' : '76%',
+        maxHeight: isFullscreen ? '99%' : '76%',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: 'rgba(0, 0, 0, 0.3) 0px 1px 20px',
+        boxShadow: 'rgba(0, 0, 0, 0.3) 0px 1px 2px',
         zIndex: 1000,
       }}
       formClass={'h-100'}
