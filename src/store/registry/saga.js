@@ -53,7 +53,9 @@ export function* createRegistryAfterTest(api, { payload }) {
       })
     );
   } else {
-    toast.error(response?.data?.message);
+    toast.error(
+      response?.data?.message || response?.message || 'Error occured'
+    );
   }
 }
 
