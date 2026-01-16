@@ -9,6 +9,7 @@ import {
 import { AgenticAIModal } from './AgenticAIModal';
 import { AgenticAiButton } from '../../shared';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { KDFM } from '../../constants';
 
 const ChatbotWrapper = styled.div`
   position: fixed;
@@ -55,8 +56,8 @@ export const AgenticAiIntegration = () => {
       </ChatbotWrapper>
       <ReactTooltip
         id="tooltip-id-agent-icon"
-        place="bottom"
-        content="Ask DFM Nova AI"
+        place="left"
+        content={'Ask ' + KDFM.AGENTIC_AI_MODAL_TITLE}
         style={{
           zIndex: 9999,
         }}

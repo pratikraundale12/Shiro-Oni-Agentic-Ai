@@ -11,7 +11,7 @@ const DisclaimerWrapper = styled.div`
   gap: 4px;
   font-size: 14px;
   color: #999;
-  margin-top: 10px;
+  margin-top: 8px;
   text-align: center;
   max-width: 90%;
 `;
@@ -48,7 +48,7 @@ export const AgenticAiDisclaimer = () => {
 
   return (
     <DisclaimerWrapper>
-      <span>{KDFM.AGENTIC_AI_MODAL_TITLE} can make mistakes. Check our</span>
+      <span>{KDFM.AGENTIC_AI_MODAL_TITLE} may make mistake. Check our</span>
       <DisclaimerLink type="button" onClick={handleRedirect}>
         Terms & Conditions.
       </DisclaimerLink>

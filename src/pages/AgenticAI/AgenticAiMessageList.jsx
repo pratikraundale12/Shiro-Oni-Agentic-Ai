@@ -57,10 +57,10 @@ const MessageRow = styled.div`
 
 const UserBubble = styled.div`
   max-width: 60%;
-  padding: 12px 16px;
+  padding: 8px 16px;
   background-color: #f1f1f1;
   color: #202124;
-  border-radius: 16px 16px 0 16px;
+  border-radius: 8px 8px 0 8px;
   white-space: pre-wrap;
   word-break: break-word;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -76,6 +76,7 @@ const AgentContainer = styled.div`
   gap: 12px;
   max-width: 90%;
   align-items: flex-start;
+  overflow: hidden;
 `;
 
 const LogoWrapper = styled.div`
@@ -88,6 +89,7 @@ const LogoWrapper = styled.div`
 
 const AgentContent = styled.div`
   flex-grow: 1;
+  min-width: 0;
   color: #3c4043;
   font-family: 'Red Hat Display', sans-serif;
   font-size: 16px;
@@ -96,15 +98,24 @@ const AgentContent = styled.div`
   letter-spacing: -0.31px;
 
   table {
+    display: block;
     width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border-collapse: separate;
     border-spacing: 0;
     margin: 16px 0;
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 8px;
-    overflow: hidden;
     font-size: 14px;
+  }
+
+  th {
+    white-space: nowrap;
+    background-color: #f8f8f8;
+    font-weight: 600;
+    color: #444;
   }
 
   th,
@@ -113,6 +124,7 @@ const AgentContent = styled.div`
     border-right: 1px solid #ddd;
     padding: 10px 12px;
     text-align: left;
+    min-width: 100px;
   }
 
   th:last-child,
@@ -195,6 +207,11 @@ export const AgenticAiMessageList = ({
   markdownComponents,
   endRef,
 }) => {
+  const mergedComponents = {
+    ...markdownComponents,
+    // eslint-disable-next-line no-unused-vars
+    table: ({ node, ...props }) => <table {...props} />,
+  };
   return (
     <ListContainer>
       {messages.map((item, index) => {
@@ -224,7 +241,7 @@ export const AgenticAiMessageList = ({
                     <>
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
-                        components={markdownComponents}
+                        components={mergedComponents}
                       >
                         {item.data}
                       </ReactMarkdown>

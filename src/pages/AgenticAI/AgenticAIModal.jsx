@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Modal } from '../../shared';
 import { AgenticAI } from './AgenticAI ';
-import { theme } from '../../styles';
 import { AgenticAiActions, AgenticAiSelectors } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgenticAiModalTitle } from './AgenticAiModalTitle';
@@ -33,11 +32,11 @@ export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
       secondaryButtonText=""
       shouldCloseOnEsc={false}
       headerStyles={{
-        backgroundColor: theme.colors.primary,
-        height: '90px',
-        padding: '0 24px',
+        backgroundColor: '#fff',
+        height: 'auto',
+        padding: '12px',
         borderBottom: 'none',
-        borderRadius: isFullscreen ? '16px 16px 0px 0px' : '16px 16px 0px 0px',
+        borderRadius: '16px 16px 0px 0px',
       }}
       overlayStyles={{
         position: 'fixed',
@@ -57,7 +56,7 @@ export const AgenticAIModal = ({ isOpen, onRequestClose }) => {
         maxHeight: isFullscreen ? '99%' : '76%',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: 'rgba(0, 0, 0, 0.3) 0px 1px 2px',
+        boxShadow: '0px 8px 12px #1E1F2126, 0px 0px 1px #1E1F214F',
         zIndex: 1000,
       }}
       formClass={'h-100'}

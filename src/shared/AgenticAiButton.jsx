@@ -31,7 +31,7 @@ export const AgenticAiButton = ({ onClick }) => {
       onMouseLeave={() => setIsHovered(false)}
       aria-label="Open Chatbot"
     >
-      <CardLogo width={64} height={64} />
+      <CardLogo width={64} height={64} enableHoverRotation={true} />
     </button>
   );
 };

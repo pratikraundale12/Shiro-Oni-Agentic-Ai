@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const MinimizeScreenIcon = ({
+export function MinimizeScreenIcon({
   width = 36,
   height = 36,
-  color = 'white',
-}) => {
+  color = '#313131',
+  ...rest
+}) {
   return (
     <svg
       width={width}
@@ -13,6 +14,7 @@ export const MinimizeScreenIcon = ({
       viewBox="0 0 36 36"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      {...rest}
     >
       <path
         d="M11 18H25"
@@ -22,7 +24,7 @@ export const MinimizeScreenIcon = ({
       />
     </svg>
   );
-};
+}
 
 MinimizeScreenIcon.propTypes = {
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
