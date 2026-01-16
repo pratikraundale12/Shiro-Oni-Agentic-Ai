@@ -9,3 +9,4 @@ export * from './AgenticAiModalTitle';
 export * from './AgenticAiAdditionalActions';
 export * from './AgenticAiWelcome';
 export * from './AgenticAiMessageList';
+export * from './AgenticAiFooter';

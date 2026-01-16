@@ -28,7 +28,8 @@ const Greeting = styled.h1`
   font-size: ${props => (props.isFullscreen ? '32px' : '22px')};
   font-weight: 500;
   color: #616161;
-  margin-bottom: ${props => (props.isFullscreen ? '80px' : '50px')};
+  margin-bottom: ${props => (props.isFullscreen ? '10px' : '10px')};
+  padding: ${props => (props.isFullscreen ? '10px 0' : '0')};
   text-align: center;
   min-height: 1.5em;
   display: flex;
@@ -47,6 +48,8 @@ const CardsRow = styled.div`
   width: 100%;
   grid-template-columns: repeat(3, 1fr);
   gap: ${props => (props.isFullscreen ? '24px' : '12px')};
+  max-width: ${props => (props.isFullscreen ? '800px' : '100%')};
+  margin: 0 auto;
 `;
 
 const StaticCard = styled.div`
@@ -58,13 +61,14 @@ const StaticCard = styled.div`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  min-height: ${props => (props.isFullscreen ? '160px' : '120px')};
+  min-height: ${props => (props.isFullscreen ? '140px' : '120px')};
   cursor: default;
   gap: ${props => (props.isFullscreen ? '36px' : '12px')};
+  box-shadow: 0px 1px 2px #1e1f2126;
 `;
 
 const CardText = styled.span`
-  font-size: ${props => (props.isFullscreen ? '16px' : '13px')};
+  font-size: ${props => (props.isFullscreen ? '16px' : '14px')};
   color: #666;
   font-weight: 500;
   line-height: 1.4;

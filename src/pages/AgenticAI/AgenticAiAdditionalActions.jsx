@@ -1,13 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import {
-  MaximizeModalIconNew,
-  MinimizeModalIconNew,
+  MaximizeModalIcon,
+  MinimizeModalIcon,
   MinimizeScreenIcon,
   NewChatIcon,
 } from '../../assets';
 import { SvgButton } from '../../shared';
-import { theme } from '../../styles';
 import { AgenticAiActions, AgenticAiSelectors } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -30,27 +29,18 @@ const HeaderActionButton = styled(SvgButton)`
 
 const NewChat = styled(NewChatIcon)`
   border-radius: 50%;
-  border: 1px solid ${theme.colors.primary};
-  background: ${theme.colors.primary};
 `;
 
 const MiniScreen = styled(MinimizeScreenIcon)`
-  padding: 5px;
   border-radius: 50%;
-  border: 1px solid ${theme.colors.primary};
-  background: ${theme.colors.primary};
 `;
 
-const MaximizeModal = styled(MaximizeModalIconNew)`
+const MaximizeModal = styled(MaximizeModalIcon)`
   border-radius: 50%;
-  border: 1px solid ${theme.colors.primary};
-  background: ${theme.colors.primary};
 `;
 
-const MinimizeModal = styled(MinimizeModalIconNew)`
+const MinimizeModal = styled(MinimizeModalIcon)`
   border-radius: 50%;
-  border: 1px solid ${theme.colors.primary};
-  background: ${theme.colors.primary};
 `;
 
 export const AgenticAiAdditionalActions = ({
@@ -107,7 +97,7 @@ export const AgenticAiAdditionalActions = ({
       />
       <HeaderActionButton
         type="button"
-        icon={<MiniScreen color="#fff" />}
+        icon={<MiniScreen />}
         onClick={onMinimizeScreenClick}
         data-tooltip-id={'tooltip-id-minimize-screen'}
       />

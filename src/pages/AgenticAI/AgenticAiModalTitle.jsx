@@ -9,18 +9,18 @@ const TitleContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #ffffff;
+  color: #313131;
 `;
 
 const TextStack = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 `;
 
 const MainTitle = styled.h2`
   margin: 0;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
   line-height: 1.2;
   font-family: 'Red Hat Display', sans-serif;
@@ -29,11 +29,12 @@ const MainTitle = styled.h2`
 const ClusterPill = styled.div`
   display: flex;
   align-items: center;
-  background-color: #fef0e6;
+  background-color: #ffe9d6;
   color: #444445;
-  padding: 2px 12px;
-  border-radius: 16px;
-  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 15px;
+  border: 1px solid #ffc188;
+  font-size: 12px;
   font-weight: 500;
   width: fit-content;
   gap: 6px;
@@ -43,7 +44,7 @@ const ClusterPill = styled.div`
 const StatusDot = styled.div`
   width: 8px;
   height: 8px;
-  background-color: #0cbf59;
+  background-color: #05df72;
   border-radius: 50%;
 `;
 
@@ -54,7 +55,7 @@ export const AgenticAiModalTitle = () => {
     <TitleContainer>
       <AiAgentIcon />
       <TextStack>
-        <MainTitle>{KDFM.AGENTIC_AI_MODAL_TITLE || 'DFM Nova'}</MainTitle>
+        <MainTitle>{KDFM.AGENTIC_AI_MODAL_TITLE || 'KNOWE'}</MainTitle>
         {selectedCluster?.label && (
           <ClusterPill>
             <StatusDot />
