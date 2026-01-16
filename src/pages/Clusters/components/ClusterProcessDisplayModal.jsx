@@ -628,7 +628,12 @@ export const ClusterProcessDisplayModal = ({
   };
 
   const getFinalText = processExeName => {
-    if (processExeName === 'delete') {
+    if (
+      ansibleClusterCreationData?.registry_id &&
+      processExeName === 'creation'
+    ) {
+      return 'Registry successfully created and initialized.';
+    } else if (processExeName === 'delete') {
       return 'Cluster deleted successfully';
     } else if (processExeName === 'creation') {
       return 'Cluster successfully created and initialized.';
@@ -651,7 +656,12 @@ export const ClusterProcessDisplayModal = ({
   };
 
   const getInitialingText = processExeName => {
-    if (processExeName === 'delete') {
+    if (
+      ansibleClusterCreationData?.registry_id &&
+      processExeName === 'creation'
+    ) {
+      return 'Registry setup completed. Initializing registry components.';
+    } else if (processExeName === 'delete') {
       return 'Cluster has been deleted. Initializing cluster components.';
     } else if (processExeName === 'creation') {
       return 'Cluster configuration completed. Initializing cluster components.';
@@ -869,7 +879,7 @@ export const ClusterProcessDisplayModal = ({
   useEffect(() => {
     const extractedTime = extractNumberFromTimeString('1 mins');
     if (extractedTime !== null && !isNaN(extractedTime)) {
-      if (processData?.isKubeCluster) {
+      if (processData?.isKubeCluster || processData?.isKubeRegistry) {
         setInitialisingTime(60 * 1000);
       } else {
         setInitialisingTime(180 * 1000);
