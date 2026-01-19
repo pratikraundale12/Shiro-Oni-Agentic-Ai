@@ -288,7 +288,7 @@ export const Dashboard = () => {
   );
   const [updatedErrors, setUpdatedErrors] = useState([]);
   const [activeTab, setActiveTab] = useState('QuickInsights');
-
+  const [showTool, setShowTool] = useState(true);
   // Reset selectedRange when cluster changes
   useEffect(() => {
     setSelectedRange(null);
@@ -536,6 +536,8 @@ export const Dashboard = () => {
                         : 'not-allowed',
                   }}
                   data-tooltip-id={`tooltip-group-dashboard-value`}
+                  onClick={() => setShowTool(false)}
+                  onMouseLeave={() => setShowTool(true)}
                 >
                   <SelectField
                     options={
@@ -559,20 +561,23 @@ export const Dashboard = () => {
                     control={control}
                     name="namespaceDropdown"
                   />
-                  <ReactTooltip
-                    id={`tooltip-group-dashboard-value`}
-                    place="left"
-                    content={
-                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
-                        ? KDFM.SELECT_PROCESS_GROUP
-                        : KDFM.PLEASE_LOGIN_TO_CLUSTER
-                    }
-                    style={{
-                      width: 'auto',
-                      whiteSpace: 'normal',
-                      wordWrap: 'break-word',
-                    }}
-                  />
+                  {showTool && (
+                    <ReactTooltip
+                      id={`tooltip-group-dashboard-value`}
+                      place="left"
+                      content={
+                        selectedCluster?.value &&
+                        !isEmpty(selectedCluster?.value)
+                          ? KDFM.SELECT_PROCESS_GROUP
+                          : KDFM.PLEASE_LOGIN_TO_CLUSTER
+                      }
+                      style={{
+                        width: 'auto',
+                        whiteSpace: 'normal',
+                        wordWrap: 'break-word',
+                      }}
+                    />
+                  )}
                 </DropdownContainer>
               )}
               {activeTab === 'DeploymentStatistics' && (
