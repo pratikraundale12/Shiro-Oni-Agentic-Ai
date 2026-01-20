@@ -97,7 +97,7 @@ const SummaryDetails = () => {
   const handleRegistryClick = () => {
     const registry = registryData?.filter(ele => ele?.is_default);
     if (!registry?.[0]?.url) return;
-    window.open(registry?.[0]?.url, '_blank');
+    window.open(`${registry?.[0]?.url}/nifi-registry`, '_blank');
   };
 
   return (
