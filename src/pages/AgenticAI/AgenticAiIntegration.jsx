@@ -8,6 +8,8 @@ import {
 } from '../../store';
 import { AgenticAIModal } from './AgenticAIModal';
 import { AgenticAiButton } from '../../shared';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { KDFM } from '../../constants';
 
 const ChatbotWrapper = styled.div`
   position: fixed;
@@ -46,9 +48,20 @@ export const AgenticAiIntegration = () => {
 
   return (
     <>
-      <ChatbotWrapper hide={isFullscreen}>
+      <ChatbotWrapper
+        hide={isFullscreen || isChatModalOpen}
+        data-tooltip-id={'tooltip-id-agent-icon'}
+      >
         <AgenticAiButton onClick={onChatbotClick} />
       </ChatbotWrapper>
+      <ReactTooltip
+        id="tooltip-id-agent-icon"
+        place="left"
+        content={'Ask ' + KDFM.AGENTIC_AI_MODAL_TITLE}
+        style={{
+          zIndex: 9999,
+        }}
+      />
 
       <AgenticAIModal
         isOpen={isChatModalOpen}

@@ -1,31 +1,52 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const MaximizeModalIcon = ({
-  width = 24,
-  height = 24,
-  color = '#444445',
+export function MaximizeModalIcon({
+  width = 36,
+  height = 36,
+  color = '#313131',
   ...rest
-}) => {
+}) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke={color}
       width={width}
       height={height}
+      viewBox="0 0 36 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       {...rest}
     >
       <path
+        d="M20.5 10.5H25.5V15.5"
+        stroke={color}
+        strokeWidth="1.66667"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth="1.5"
-        d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+      />
+      <path
+        d="M25.4993 10.5L19.666 16.3333"
+        stroke={color}
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.5 25.5001L16.3333 19.6667"
+        stroke={color}
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15.5 25.5H10.5V20.5"
+        stroke={color}
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
-};
+}
 
 MaximizeModalIcon.propTypes = {
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

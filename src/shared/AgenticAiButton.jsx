@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { ChatbotIcon } from '../assets';
+import { CardLogo } from '../assets';
 
 export const AgenticAiButton = ({ onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -31,7 +31,7 @@ export const AgenticAiButton = ({ onClick }) => {
       onMouseLeave={() => setIsHovered(false)}
       aria-label="Open Chatbot"
     >
-      <ChatbotIcon />
+      <CardLogo width={64} height={64} enableHoverRotation={true} />
     </button>
   );
 };

@@ -441,7 +441,7 @@ export const Layout = ({ children }) => {
     history.push('/admin/login');
   };
   useEffect(() => {
-    if (!isEmpty(settingLogo)) {
+    if (!isEmpty(settingLogo) && !pathname.includes('forgot')) {
       if (!settingLogo?.sso_enabled && !settingLogo?.ldapEnabled) {
         handleRedirectionAdmin();
         setTimeout(() => {
@@ -648,7 +648,12 @@ export const Layout = ({ children }) => {
             {(isForgotPassword || isReset) && (
               <SignInContainer>
                 {ALREADY_HAVE_AN_ACCOUNT}
-                <TextButton onClick={() => history.replace('/login')}>
+                <TextButton
+                  onClick={() => {
+                    history.replace('/admin/login');
+                    window.location.reload();
+                  }}
+                >
                   {SIGN_IN}
                 </TextButton>
               </SignInContainer>

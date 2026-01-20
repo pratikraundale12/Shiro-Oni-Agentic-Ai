@@ -568,7 +568,8 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                   currentUser?.permissions?.includes('view_cluster') && (
                     <IconCusterButton
                       id="cluster-icon-btn"
-                      onClick={() => {
+                      onClick={e => {
+                        e.currentTarget.blur();
                         if (flowGenrating) {
                           if (!toast.isActive('generating-flow')) {
                             toast.warning('Flow is generating please wait', {

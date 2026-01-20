@@ -1,31 +1,52 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const MinimizeModalIcon = ({
-  width = 24,
-  height = 24,
-  color = '#444445',
+export function MinimizeModalIcon({
+  width = 36,
+  height = 36,
+  color = '#313131',
   ...rest
-}) => {
+}) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke={color}
       width={width}
       height={height}
+      viewBox="0 0 36 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       {...rest}
     >
       <path
+        d="M25.5 15.5H20.5V10.5"
+        stroke={color}
+        strokeWidth="1.66667"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth="1.5"
-        d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25"
+      />
+      <path
+        d="M20.5 15.5L26.3333 9.66667"
+        stroke={color}
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.5 20.5H15.5V25.5"
+        stroke={color}
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15.5 20.5L9.66667 26.3333"
+        stroke={color}
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
-};
+}
 
 MinimizeModalIcon.propTypes = {
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

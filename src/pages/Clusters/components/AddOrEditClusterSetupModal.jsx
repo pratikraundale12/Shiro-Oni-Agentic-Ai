@@ -18,6 +18,7 @@ import {
 } from '../../../assets';
 import { theme } from '../../../styles';
 import { history } from '../../../helpers/history';
+import { toast } from 'react-toastify';
 const Container = styled.div`
   display: flex;
   gap: 25px;
@@ -123,9 +124,22 @@ export const AddOrEditClusterModal = () => {
     if (selectedFlow === KDFM.MANAGE_CLUSTER_FLOW) {
       history.push(`/clusters/add`);
       onRequestClose();
-    } else if (selectedFlow === KDFM.CREATE_CLUSTER_FLOW) {
+    } else if (
+      selectedFlow === KDFM.CREATE_CLUSTER_FLOW &&
+      currentUser?.permissions?.includes('add_cluster_setup')
+    ) {
       history.push(`/clusters/setup-cluster`);
       onRequestClose();
+    }
+    if (
+      selectedFlow === KDFM.CREATE_CLUSTER_FLOW &&
+      !currentUser?.permissions?.includes('add_cluster_setup') &&
+      currentUser?.permissions?.includes('view_cluster_setup')
+    ) {
+      toast.info('No cluster setup add permission', {
+        toastId: 'add_cluster_setup',
+      });
+      //
     }
   };
   useEffect(() => {
@@ -144,11 +158,17 @@ export const AddOrEditClusterModal = () => {
       footerAlign="start"
     >
       <Container>
-        {currentUser?.permissions?.includes('add_cluster_setup') && (
+        {currentUser?.permissions?.includes('view_cluster_setup') && (
           <BulletContainer
             onClick={() => {
-              setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
-              setCreateNewCusterMethod('VM');
+              if (currentUser?.permissions?.includes('add_cluster_setup')) {
+                setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
+                setCreateNewCusterMethod('VM');
+              } else {
+                toast.info('No cluster setup add permission', {
+                  toastId: 'add_cluster_setup',
+                });
+              }
             }}
             borderSelected={
               createNewClusterMethod === 'VM' &&
@@ -192,11 +212,17 @@ export const AddOrEditClusterModal = () => {
             </div>
           </BulletContainer>
         )}
-        {currentUser?.permissions?.includes('add_cluster_setup') && (
+        {currentUser?.permissions?.includes('view_cluster_setup') && (
           <BulletContainer
             onClick={() => {
-              setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
-              setCreateNewCusterMethod('Kubernetes');
+              if (currentUser?.permissions?.includes('add_cluster_setup')) {
+                setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
+                setCreateNewCusterMethod('Kubernetes');
+              } else {
+                toast.info('No cluster setup add permission', {
+                  toastId: 'add_cluster_setup',
+                });
+              }
             }}
             borderSelected={
               createNewClusterMethod === 'Kubernetes' &&

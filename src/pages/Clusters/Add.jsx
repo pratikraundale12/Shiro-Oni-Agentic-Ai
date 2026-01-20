@@ -1002,6 +1002,30 @@ export const Add = () => {
 
     handleBack();
   };
+  useEffect(() => {
+    if (
+      activeTab === CLUSTER_MODULE_TABS.REGISTRY &&
+      !newRegistry &&
+      !isEmpty(registries) &&
+      isEmpty(data) &&
+      registries?.length === 1
+    ) {
+      setValue('registry', registries);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (
+      !isEmpty(selectedRegistryId) &&
+      activeTab === CLUSTER_MODULE_TABS.REGISTRY &&
+      !newRegistry &&
+      !isEmpty(registries) &&
+      isEmpty(data) &&
+      selectedRegistryId?.length === 1
+    ) {
+      setValue('default_registry', selectedRegistryId?.[0]?.value);
+    }
+  }, [selectedRegistryId]);
 
   return (
     <Wrapper>
