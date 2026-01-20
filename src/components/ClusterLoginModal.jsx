@@ -128,6 +128,15 @@ export const ClusterLoginModal = () => {
           name: response?.cluster_name,
           token: response?.token,
         };
+        dispatch(
+          ClustersActions.setClusterLoggedInSuccessfully({
+            ...{
+              cluster: newCluster,
+              loggedInSuccessfully: true,
+              switchedSuccessfully: false,
+            },
+          })
+        );
         clusterData.push(newCluster);
         localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(clusterData));
         if (!clusterLogin.is_deploy) {
@@ -255,6 +264,23 @@ export const ClusterLoginModal = () => {
       NamespacesActions.setSelectedCluster({
         label: clusterName,
         value: getValues()?.cluster_id,
+      })
+    );
+
+    const newCluster = {
+      id: getValues()?.cluster_id,
+      name: clusterName,
+    };
+
+    console.log('switched cluster:', newCluster);
+
+    dispatch(
+      ClustersActions.setClusterLoggedInSuccessfully({
+        ...{
+          cluster: newCluster,
+          loggedInSuccessfully: false,
+          switchedSuccessfully: true,
+        },
       })
     );
 

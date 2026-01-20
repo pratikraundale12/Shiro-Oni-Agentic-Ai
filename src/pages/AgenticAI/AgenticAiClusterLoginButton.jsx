@@ -36,6 +36,7 @@ export const AgenticAiClusterLoginButton = () => {
   const handleLoginClick = e => {
     e.preventDefault();
     e.stopPropagation();
+    dispatch(ClustersActions.setIsLoggedInFromAgent(true));
     dispatch(AuthenticationActions.setClusterLogin(true));
     dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
   };

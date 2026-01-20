@@ -5,6 +5,8 @@ import { isEmpty } from 'lodash';
 import {
   AgenticAiActions,
   AgenticAiSelectors,
+  ClustersActions,
+  ClustersSelectors,
   LoadingSelectors,
 } from '../../store';
 import { KDFM } from '../../constants';
@@ -46,15 +48,52 @@ export const AgenticAI = () => {
   const apiError = useSelector(AgenticAiSelectors.getMessageChatAiError);
   const inputRef = useRef(null);
   const sessionId = useSelector(AgenticAiSelectors.getSessionId);
-
   const isLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchMessageChatAi')
   );
-
   const isFullscreen = useSelector(
     AgenticAiSelectors.getAgenticAiModalFullScreen
   );
+  const loginData = useSelector(
+    ClustersSelectors.getIsClusterLoggedInSuccessfully
+  );
+  const loginFromAgent = useSelector(ClustersSelectors.getIsLoggedInFromAgent);
 
+  useEffect(() => {
+    const { loggedInSuccessfully, switchedSuccessfully, cluster } =
+      loginData || {};
+
+    if (loginFromAgent) {
+      const clusterName = cluster?.name || 'Cluster';
+      let infoMessage = null;
+
+      if (loggedInSuccessfully && !switchedSuccessfully) {
+        infoMessage = {
+          role: 'info',
+          infoType: 'login',
+          data: `Logged in to the **${clusterName}**`,
+        };
+      } else if (!loggedInSuccessfully && switchedSuccessfully) {
+        infoMessage = {
+          role: 'info',
+          infoType: 'switch',
+          data: `Switched to the **${clusterName}**`,
+        };
+      }
+
+      if (infoMessage) {
+        const timestamp = formattedTime();
+        dispatch(
+          AgenticAiActions.setConversationHistory([
+            ...conversationalRes,
+            { ...infoMessage, status: 'completed', time: timestamp },
+          ])
+        );
+        dispatch(ClustersActions.setIsLoggedInFromAgent(false));
+        dispatch(ClustersActions.setClusterLoggedInSuccessfully({}));
+      }
+    }
+  }, [loginFromAgent, loginData, conversationalRes, dispatch]);
   const adjustTextareaHeight = () => {
     const textarea = inputRef.current;
     if (textarea) {
@@ -114,8 +153,10 @@ export const AgenticAI = () => {
   );
 
   useEffect(() => {
-    dispatch(AgenticAiActions.fetchSessionId());
-  }, [dispatch]);
+    if (isEmpty(sessionId) || sessionId === null) {
+      dispatch(AgenticAiActions.fetchSessionId());
+    }
+  }, [dispatch, sessionId]);
 
   useEffect(() => {
     if (!isEmpty(apiResponse)) {
