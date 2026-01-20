@@ -164,7 +164,6 @@ const ClusterSetupNewConfigKubernetes = () => {
   });
 
   const clusterType = watch('cluster_type');
-  const registryEnabled = watch('registry_enabled');
 
   const handleAddConfig = async data => {
     if (!isEmpty(configToEdit)) {
@@ -203,18 +202,6 @@ const ClusterSetupNewConfigKubernetes = () => {
         auth_admin: data?.auth_admin,
         persistence_enabled: data?.persistence_enabled === 'true',
         persistence_dataStorage_size: data?.dataStorage_size,
-        registry_url: data?.registry_url,
-        registry_port: data?.registry_port,
-        registry_enabled: Boolean(data?.registry_enabled),
-        ...(data?.registry_enabled !== 'true' && {
-          initContainers: {},
-          extraVolumeMounts: [],
-          extraVolumes: [],
-          registry_enabled: false,
-          registry_certManager_enabled: false,
-          registry_initContainers: {},
-          registry_persistence_enabled: false,
-        }),
 
         //
         resources_limits_cpu: data?.resources_limits_cpu,
@@ -222,12 +209,6 @@ const ClusterSetupNewConfigKubernetes = () => {
         resources_requests_cpu: data?.resources_requests_cpu,
         resources_requests_memory: data?.resources_requests_memory,
 
-        registry_resources_limits_cpu: data?.registry_resources_limits_cpu,
-        registry_resources_limits_memory:
-          data?.registry_resources_limits_memory,
-        registry_resources_requests_cpu: data?.registry_resources_requests_cpu,
-        registry_resources_requests_memory:
-          data?.registry_resources_requests_memory,
         //
         ...(!isEmpty(data?.properties_webProxyHost) && {
           properties_webProxyHost: data?.properties_webProxyHost,
@@ -237,10 +218,6 @@ const ClusterSetupNewConfigKubernetes = () => {
           ingress_tls_hosts: data?.ingress_hosts,
           certManager_additionalIpAddresses: [data?.ingress_hosts],
           zookeeper_url: data?.ingress_hosts,
-
-          registry_ingress_hosts_host: data?.ingress_hosts,
-          registry_ingress_tls_hosts: data?.ingress_hosts,
-          registry_certManager_additionalIpAddresses: [data?.ingress_hosts],
         }),
       },
       valuesYaml: !isEmpty(configToEdit)
@@ -309,12 +286,6 @@ const ClusterSetupNewConfigKubernetes = () => {
       setValue('jvmMemory', parsedJson?.jvmMemory || parsedJson?.jvmMemory);
       setValue('properties_webProxyHost', parsedJson?.properties?.webProxyHost);
       setValue('ingress_hosts', parsedJson?.ingress?.hosts?.[0]);
-      setValue(
-        'registry_enabled',
-        String(parsedJson?.registry?.enabled) === 'true' ? 'true' : 'false'
-      );
-      setValue('registry_url', parsedJson?.registry?.url);
-      setValue('registry_port', String(parsedJson?.registry?.port));
       setValue('resources_limits_cpu', parsedJson?.resources?.limits?.cpu);
       setValue(
         'resources_limits_memory',
@@ -324,22 +295,6 @@ const ClusterSetupNewConfigKubernetes = () => {
       setValue(
         'resources_requests_memory',
         parsedJson?.resources?.requests?.memory
-      );
-      setValue(
-        'registry_resources_limits_cpu',
-        parsedJson?.registry?.resources?.limits?.cpu
-      );
-      setValue(
-        'registry_resources_limits_memory',
-        parsedJson?.registry?.resources?.limits?.memory
-      );
-      setValue(
-        'registry_resources_requests_cpu',
-        parsedJson?.registry?.resources?.requests?.cpu
-      );
-      setValue(
-        'registry_resources_requests_memory',
-        parsedJson?.registry?.resources?.requests?.memory
       );
     }
   }, [parsedJson]);
@@ -361,19 +316,7 @@ const ClusterSetupNewConfigKubernetes = () => {
     parsedJson?.resources?.limits?.memory == watch('resources_limits_memory') &&
     parsedJson?.resources?.requests?.cpu == watch('resources_requests_cpu') &&
     parsedJson?.resources?.requests?.memory ==
-      watch('resources_requests_memory') &&
-    (String(parsedJson?.registry?.enabled) === 'true' ? 'true' : 'false') ==
-      watch('registry_enabled') &&
-    parsedJson?.registry?.url == watch('registry_url') &&
-    String(parsedJson?.registry?.port) == watch('registry_port') &&
-    parsedJson?.registry?.resources?.limits?.cpu ==
-      watch('registry_resources_limits_cpu') &&
-    parsedJson?.registry?.resources?.limits?.memory ==
-      watch('registry_resources_limits_memory') &&
-    parsedJson?.registry?.resources?.requests?.cpu ==
-      watch('registry_resources_requests_cpu') &&
-    parsedJson?.registry?.resources?.requests?.memory ==
-      watch('registry_resources_requests_memory');
+      watch('resources_requests_memory');
 
   const handleOpenEditor = () => {
     let createValue = dirtyFields.ingress_hosts
@@ -394,17 +337,6 @@ const ClusterSetupNewConfigKubernetes = () => {
       auth_admin: watch('auth_admin'),
       persistence_enabled: watch('persistence_enabled'),
       persistence_dataStorage_size: watch('dataStorage_size'),
-      registry_url: watch('registry_url'),
-      registry_port: watch('registry_port'),
-      registry_enabled: watch('registry_enabled'),
-      registry_resources_limits_cpu: watch('registry_resources_limits_cpu'),
-      registry_resources_limits_memory: watch(
-        'registry_resources_limits_memory'
-      ),
-      registry_resources_requests_cpu: watch('registry_resources_requests_cpu'),
-      registry_resources_requests_memory: watch(
-        'registry_resources_requests_memory'
-      ),
       resources_limits_cpu: watch('resources_limits_cpu'),
       resources_limits_memory: watch('resources_limits_memory'),
       resources_requests_cpu: watch('resources_requests_cpu'),
@@ -417,9 +349,6 @@ const ClusterSetupNewConfigKubernetes = () => {
         ingress_tls_hosts: watch('ingress_hosts'),
         certManager_additionalIpAddresses: [watch('ingress_hosts')],
         zookeeper_url: watch('ingress_hosts'),
-        registry_ingress_hosts_host: watch('ingress_hosts'),
-        registry_ingress_tls_hosts: watch('ingress_hosts'),
-        registry_certManager_additionalIpAddresses: [watch('ingress_hosts')],
       }),
     };
     const payload = { values: fieldValues, valuesYaml: yamlValue };
@@ -466,28 +395,6 @@ const ClusterSetupNewConfigKubernetes = () => {
       yamlParsedValue?.properties?.webProxyHost
     );
     setValue('ingress_hosts', yamlParsedValue?.ingress?.hosts);
-    setValue(
-      'registry_enabled',
-      String(yamlParsedValue?.registry?.enabled) === 'true' ? 'true' : 'false'
-    );
-    setValue('registry_url', yamlParsedValue?.registry?.url);
-    setValue('registry_port', yamlParsedValue?.registry?.port);
-    setValue(
-      'registry_resources_limits_cpu',
-      yamlParsedValue?.registry?.resources?.limits?.cpu
-    );
-    setValue(
-      'registry_resources_limits_memory',
-      yamlParsedValue?.registry?.resources?.limits?.memory
-    );
-    setValue(
-      'registry_resources_requests_cpu',
-      yamlParsedValue?.registry?.resources?.requests?.cpu
-    );
-    setValue(
-      'registry_resources_requests_memory',
-      yamlParsedValue?.registry?.resources?.requests?.memory
-    );
     setValue('resources_limits_cpu', yamlParsedValue?.resources?.limits?.cpu);
     setValue(
       'resources_limits_memory',
@@ -753,99 +660,6 @@ const ClusterSetupNewConfigKubernetes = () => {
                 rightIconToolTipContent="Defines the external domain/hostname used to access the NiFi UI. Must match DNS and certificate values in secured deployments"
               />
             </div>
-            {/*  */}
-            <div className="col-3">
-              <LabelSelect className="mb-3">Registry Enabled</LabelSelect>
-              <SelectField
-                name="registry_enabled"
-                icon={<QRIcons />}
-                register={register}
-                errors={errors}
-                control={control}
-                options={[
-                  { label: 'True', value: 'true' },
-                  { label: 'False', value: 'false' },
-                ]}
-                placeholder="Select Registry Enabled"
-                sortAlphabetically={false}
-              />
-            </div>
-            {registryEnabled === 'true' && (
-              <>
-                <div className="col-3">
-                  <InputField
-                    label={'Registry URL'}
-                    name="registry_url"
-                    type="text"
-                    register={register}
-                    errors={errors}
-                    icon={<NotePadIcon />}
-                    rightIcon={<InfoIcon />}
-                    rightIconToolTipContent="URL or hostname of the NiFi Registry instance. This is where NiFi will push or fetch versioned flows."
-                  />
-                </div>
-                <div className="col-3">
-                  <InputField
-                    label={'Registry Port'}
-                    name="registry_port"
-                    type="text"
-                    register={register}
-                    errors={errors}
-                    icon={<NotePadIcon />}
-                    rightIcon={<InfoIcon />}
-                    rightIconToolTipContent="Port number on which the NiFi Registry service is running. Default secure port is 18443 for HTTPS. Must match the port configured in the Registry deployment."
-                  />
-                </div>
-                <div className="col-3">
-                  <InputField
-                    label={'Registry CPU Limit'}
-                    name="registry_resources_limits_cpu"
-                    type="text"
-                    register={register}
-                    errors={errors}
-                    icon={<NotePadIcon />}
-                    rightIcon={<InfoIcon />}
-                    rightIconToolTipContent="The maximum CPU that the NiFi Registry container can use. Prevents the registry from consuming excessive compute resources."
-                  />
-                </div>{' '}
-                <div className="col-3">
-                  <InputField
-                    label={'Registry Memory Limit'}
-                    name="registry_resources_limits_memory"
-                    type="text"
-                    register={register}
-                    errors={errors}
-                    icon={<NotePadIcon />}
-                    rightIcon={<InfoIcon />}
-                    rightIconToolTipContent="The upper memory limit for the NiFi Registry container. Container will be terminated if it exceeds this memory."
-                  />
-                </div>{' '}
-                <div className="col-3">
-                  <InputField
-                    label={'Registry CPU Request'}
-                    name="registry_resources_requests_cpu"
-                    type="text"
-                    register={register}
-                    errors={errors}
-                    icon={<NotePadIcon />}
-                    rightIcon={<InfoIcon />}
-                    rightIconToolTipContent="The minimal CPU guaranteed for registry performance & availability. Helps scheduler choose the right node."
-                  />
-                </div>
-                <div className="col-3">
-                  <InputField
-                    label={'Registry Memory Request'}
-                    name="registry_resources_requests_memory"
-                    type="text"
-                    register={register}
-                    errors={errors}
-                    icon={<NotePadIcon />}
-                    rightIcon={<InfoIcon />}
-                    rightIconToolTipContent="The minimum RAM reserved for the NiFi Registry container to run smoothly. Pod will not start without this much memory available."
-                  />
-                </div>
-              </>
-            )}
             <div className="col-3">
               <InputField
                 label={'NIFi CPU Limit'}

@@ -996,7 +996,7 @@ export const GridActions = ({
               <Button
                 size="md"
                 onClick={() =>
-                  dispatch(RegistryActions.setIsAddRegistryModalOpen(true))
+                  dispatch(RegistryActions.setIsCreateRegistryModalOpen(true))
                 }
               >
                 <div

@@ -6,7 +6,7 @@ import { ACCESS_TOKEN, API_URL } from '../../../constants';
 const RegistryCertificateDownloadTab = ({ clusterId }) => {
   const handleDownload = async type => {
     const response = await fetch(
-      `${API_URL}/api/clusters/${clusterId}/download-certs/${type}`,
+      `${API_URL}/api/registry/${clusterId}/download-certs/${type}`,
       {
         method: 'GET',
         headers: {
