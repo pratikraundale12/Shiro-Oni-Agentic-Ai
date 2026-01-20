@@ -134,7 +134,16 @@ export const settingSchema = yup.object().shape({
       value => value === null || value.trim().length > 0
     ),
 });
+export const verifyEmailSchema = yup.object().shape({
+  to_email: yup
+    .string()
+    .required('Email is required')
+    .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
+    .max(50, 'Email can not be greater than 25 characters'),
+});
 export const EmailConfigurationSettings = () => {
+  const [isVerifyEmailOpen, setIsVerifyEmailOpen] = useState(false);
+  const formSchema = isVerifyEmailOpen ? verifyEmailSchema : settingSchema;
   const {
     handleSubmit,
     register,
@@ -142,15 +151,14 @@ export const EmailConfigurationSettings = () => {
     setValue,
     reset,
     formState: { errors, dirtyFields },
-  } = useForm({ resolver: yupResolver(settingSchema) });
+  } = useForm({ resolver: yupResolver(formSchema) });
+
   const dispatch = useDispatch();
   const settingData = useSelector(SettingsSelectors.getSettings);
   const isEmailVerified = useSelector(SettingsSelectors.getEmailVerified);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
-  const [isVerifyEmailOpen, setIsVerifyEmailOpen] = useState(false);
-  const [toEmail, setToEmail] = useState('');
-  const [emailError, setEmailError] = useState({});
+
   const [changedData, setChangedData] = useState({});
   const [disableSaveSetting, setDisableSaveSetting] = useState(true);
   const onSubmit = async data => {
@@ -290,14 +298,7 @@ export const EmailConfigurationSettings = () => {
     setIsVerifyEmailOpen(true);
   };
 
-  useEffect(() => {
-    if (Object.keys(errors).length) {
-      setIsVerifyEmailOpen(false);
-      setToEmail('');
-      setEmailError({});
-    }
-  }, [errors]);
-  const handleSendEmail = () => {
+  const handleSendEmail = data => {
     const changedSmtpData = {
       ...(smtpService !== settingData?.smtp_service && {
         smtp_service: smtpService,
@@ -311,29 +312,17 @@ export const EmailConfigurationSettings = () => {
       ...(fromEmail !== settingData?.from_email && { from_email: fromEmail }),
     };
     setChangedData(changedSmtpData);
-    if (!toEmail || !EMAIL_REGEX.test(toEmail)) {
-      setEmailError({
-        to_email: {
-          message: 'Please enter a valid email address.',
-        },
-      });
-      return;
-    } else {
-      dispatch(
-        SettingsActions.verifyEmail({
-          to_email: toEmail,
-          changedSmtpData: changedSmtpData,
-        })
-      );
-      setToEmail('');
-      setEmailError({});
-      setIsVerifyEmailOpen(false);
-    }
+    dispatch(
+      SettingsActions.verifyEmail({
+        to_email: data?.to_email,
+        changedSmtpData: changedSmtpData,
+      })
+    );
+    setIsVerifyEmailOpen(false);
+    setValue('to_email', null);
   };
 
   const handleCancel = () => {
-    setToEmail('');
-    setEmailError({});
     setIsVerifyEmailOpen(false);
   };
 
@@ -365,10 +354,6 @@ export const EmailConfigurationSettings = () => {
     smtpService,
   ]);
 
-  const handleChange = e => {
-    setToEmail(e.target.value);
-    setEmailError({});
-  };
   const verifyEmailLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'verifyEmail')
   );
@@ -492,18 +477,16 @@ export const EmailConfigurationSettings = () => {
           isOpen={isVerifyEmailOpen}
           primaryButtonText={KDFM.SEND_EMAIL}
           secondaryButtonText={KDFM.CANCEL}
-          primaryButtonDisabled={!toEmail}
           onSubmit={handleSubmit(handleSendEmail)}
         >
           <InputField
             name="to_email"
-            value={toEmail}
-            onChange={handleChange}
+            errors={errors}
             icon={<SmsNotificationIcon />}
             label={KDFM.TO_EMAIL}
             placeholder={KDFM.ENTER_EMAIL}
             required={true}
-            errors={emailError}
+            register={register}
           />
         </Modal>
       )}
