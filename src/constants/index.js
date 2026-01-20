@@ -4,6 +4,7 @@ import { AGENTIC_AI_CONSTANTS } from './agenticAi.constant';
 import { AI_FLOW_GENERATOR_CONSTANTS } from './aiFlowGenerator.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
+import { REGISTRY_CONSTANTS } from './registry.constants';
 import { USER_CONSTANTS } from './user.constant';
 
 // modules constants exports
@@ -328,6 +329,7 @@ export const KDFM = {
   ...USER_CONSTANTS,
   ...AI_FLOW_GENERATOR_CONSTANTS,
   ...AGENTIC_AI_CONSTANTS,
+  ...REGISTRY_CONSTANTS,
 };
 
 export const SIDE_MENUS_DISPLAY = [

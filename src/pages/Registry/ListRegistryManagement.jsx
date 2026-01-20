@@ -1,7 +1,9 @@
-import { React, useState } from 'react';
+/*eslint-disable*/
+import { React, useEffect, useState } from 'react';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
+  LicenseIcon,
   PencilIcon,
   SortDownIcon,
   SortUpIcon,
@@ -11,21 +13,34 @@ import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddRegistryModal } from './AddRegistryModal';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { ModalWithIcon } from '../../shared';
+import { Modal, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
   RegistryActions,
   RegistrySelectors,
 } from '../../store';
+import { CreateRegistryNavigationModal } from './CreateRegistryNavigavtionalModal';
+import { ClusterProcessDisplayModal } from '../Clusters/components/ClusterProcessDisplayModal';
+import RegistryCertificateDownloadTab from '../Clusters/components/ClusterRegistryCert';
+import AnimatedProgressBar from '../../shared/AnimatedProgressBar';
 
 const ListRegistryManagementPage = () => {
   const dispatch = useDispatch();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const [selectedItem, setSelectedItem] = useState({});
   const isDeleteModalOpen = useSelector(RegistrySelectors.getIsDeleteModalOpen);
+  const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('');
-
+  const isModalCreateRegistryOpen = useSelector(
+    RegistrySelectors.getisCreateRegistryModalOpen
+  );
+  const registryCertDownloadOpen = useSelector(
+    ClustersSelectors.getIsDownloadRegistryCertOpen
+  );
+  const [selectedCluster, setSelectedCluster] = useState({});
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -33,6 +48,11 @@ const ListRegistryManagementPage = () => {
       }
       return column;
     });
+  };
+  const handleOpenProgressModal = item => {
+    setIsProcessModalOpen(true);
+    dispatch(ClustersActions.setProgressTrackingModalOpen(true));
+    setSelectedCluster(item);
   };
 
   const COLUMNS = [
@@ -82,7 +102,15 @@ const ListRegistryManagementPage = () => {
       width: '10%',
       resize: true,
       renderCell: item => (
-        <StatusRender status={item?.is_active ? 'Active' : 'Inactive'} />
+        <>
+          {item?.process_initiated ? (
+            <div onClick={() => handleOpenProgressModal(item)}>
+              <AnimatedProgressBar id={item?.id} />
+            </div>
+          ) : (
+            <StatusRender status={item?.is_active ? 'Active' : 'Inactive'} />
+          )}
+        </>
       ),
     },
 
@@ -151,6 +179,53 @@ const ListRegistryManagementPage = () => {
               wordWrap: 'break-word',
             }}
           />
+          {item?.is_kube_registry && item?.is_registry_authenticated && (
+            <>
+              <button
+                onClick={() => {
+                  // dispatch(RegistryActions.setRegistrySelectedData(item));
+                  // dispatch(RegistryActions.setIsAddRegistryModalOpen(true));
+                  // setSelectedItem(item);
+                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true));
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                }}
+                data-tooltip-id={`tooltip-group-certificate-registry`}
+              >
+                <IconButton>
+                  <LicenseIcon width={16} height={16} />
+                </IconButton>
+              </button>
+              <Modal
+                title="Registry Details"
+                primaryButtonText={'Back'}
+                isOpen={registryCertDownloadOpen}
+                onRequestClose={() =>
+                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(false))
+                }
+                onSubmit={() =>
+                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(false))
+                }
+                contentStyles={{ minWidth: '50%' }}
+              >
+                <RegistryCertificateDownloadTab clusterId={item?.id} />
+              </Modal>
+            </>
+          )}
+          <ReactTooltip
+            id={`tooltip-group-certificate-registry`}
+            place="left"
+            content={'Download Registry Certificate'}
+            style={{
+              width: '230px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
         </div>
       ),
     },
@@ -161,6 +236,9 @@ const ListRegistryManagementPage = () => {
   const handleDeleteSubmit = () => {
     dispatch(RegistryActions.deleteRegistry(selectedItem?.id));
   };
+  useEffect(() => {
+    dispatch(ClustersActions.setAzureTestPassed(false));
+  }, [dispatch]);
   return (
     <>
       <AddRegistryModal />
@@ -185,6 +263,13 @@ const ListRegistryManagementPage = () => {
         sortingState={sortingState}
         setSortingState={setSortingState}
       />
+      <ClusterProcessDisplayModal
+        isProcessModalOpen={isProcessModalOpen}
+        setIsProcessModalOpen={setIsProcessModalOpen}
+        setSelectedCluster={setSelectedCluster}
+        selectedCluster={selectedCluster}
+      />
+      {isModalCreateRegistryOpen && <CreateRegistryNavigationModal />}
     </>
   );
 };

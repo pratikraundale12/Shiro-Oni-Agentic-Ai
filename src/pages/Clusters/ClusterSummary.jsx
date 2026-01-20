@@ -143,11 +143,11 @@ export const ClusterSummary = () => {
           is_kube_cluster={state?.is_kube_cluster}
         />
       )}
-      {activeTab === 'registry_cert' && (
+      {/* {activeTab === 'registry_cert' && (
         <div style={{ height: '100%' }}>
           <RegistryCertificateDownloadTab clusterId={clusterId} />
         </div>
-      )}
+      )} */}
       <Modal
         title="Registry Details"
         primaryButtonText={'Back'}

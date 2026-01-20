@@ -492,10 +492,32 @@ const deleteAKSClusterSteps = [
     status: 'completed',
   },
 ];
+const createRegistryAKS = [
+  { step: 'Verifying Helm chart', status: 'completed' },
+  { step: 'Validating Azure access', status: 'completed' },
+  { step: 'Resolving kubeconfig', status: 'completed' },
+  {
+    step: 'Checking helm/kubectl availability and cluster reachability',
+    status: 'completed',
+  },
+  { step: 'Parsing values file for deployment options', status: 'completed' },
+  { step: 'Ensuring namespace nifi-registry exists', status: 'completed' },
+  {
+    step: 'Evaluating cert-manager release cert-manager in namespace cert-manager',
+    status: 'completed',
+  },
+  { step: 'Validating storage class for persistence', status: 'completed' },
+  {
+    step: 'Creating/validating Load Balancer IP for NiFi Registry',
+    status: 'completed',
+  },
+  { step: 'Installing NiFi Registry', status: 'completed' },
+  { step: 'Collect NiFi Registry pods/services', status: 'completed' },
+];
 export const ClusterProcessDisplayModal = ({
   isProcessModalOpen,
-  setIsProcessModalOpen,
-  setSelectedCluster,
+  setIsProcessModalOpen = () => {},
+  setSelectedCluster = () => {},
   selectedCluster,
   sortingState,
   itemPerClusterList,
@@ -526,6 +548,12 @@ export const ClusterProcessDisplayModal = ({
     selectedCluster?.process_name || ansibleClusterCreationData?.process_name;
 
   const getReferencObjectForComparison = processExeName => {
+    if (processData?.isKubeRegistry) {
+      if (processExeName === 'creation') {
+        return createRegistryAKS;
+      }
+    }
+
     if (processExeName === 'delete') {
       return processData?.isKubeCluster && processData?.cluster_type === 'eks'
         ? deleteEKSClusterSteps
@@ -571,6 +599,12 @@ export const ClusterProcessDisplayModal = ({
     }
   };
   const getModalHeading = processExeName => {
+    if (
+      ansibleClusterCreationData?.registry_id &&
+      processExeName === 'creation'
+    ) {
+      return 'Registry Configuration in Progress';
+    }
     if (processExeName === 'delete') {
       return 'Cluster Deletion Progress';
     } else if (processExeName === 'creation') {
@@ -594,7 +628,12 @@ export const ClusterProcessDisplayModal = ({
   };
 
   const getFinalText = processExeName => {
-    if (processExeName === 'delete') {
+    if (
+      ansibleClusterCreationData?.registry_id &&
+      processExeName === 'creation'
+    ) {
+      return 'Registry successfully created and initialized.';
+    } else if (processExeName === 'delete') {
       return 'Cluster deleted successfully';
     } else if (processExeName === 'creation') {
       return 'Cluster successfully created and initialized.';
@@ -617,7 +656,12 @@ export const ClusterProcessDisplayModal = ({
   };
 
   const getInitialingText = processExeName => {
-    if (processExeName === 'delete') {
+    if (
+      ansibleClusterCreationData?.registry_id &&
+      processExeName === 'creation'
+    ) {
+      return 'Registry setup completed. Initializing registry components.';
+    } else if (processExeName === 'delete') {
       return 'Cluster has been deleted. Initializing cluster components.';
     } else if (processExeName === 'creation') {
       return 'Cluster configuration completed. Initializing cluster components.';
@@ -674,7 +718,11 @@ export const ClusterProcessDisplayModal = ({
     setSelectedCluster({});
     dispatch(
       GridActions.fetchGrid({
-        module: 'clusters',
+        module:
+          ansibleClusterCreationData?.request_type === 'registry' ||
+          selectedCluster?.is_kube_registry
+            ? 'registry'
+            : 'clusters',
         params: { page: 1, limit: itemPerClusterList, sort: 'name' },
         ...(sortingState && {
           sort: sortingState,
@@ -688,42 +736,34 @@ export const ClusterProcessDisplayModal = ({
       (isProcessModalOpen || isModalOpen) &&
       processData?.data?.status !== 'failed'
     ) {
-      const payload = {
-        clusterId:
-          selectedCluster?.id || ansibleClusterCreationData?.cluster_id,
-        process_id:
-          selectedCluster?.process_id || ansibleClusterCreationData?.process_id,
-        process_name:
-          selectedCluster?.process_name ||
-          ansibleClusterCreationData?.process_name,
-        ...(selectedCluster?.cluster_type ||
-        ansibleClusterCreationData?.cluster_type
-          ? {
-              cluster_type:
-                selectedCluster?.cluster_type ||
-                ansibleClusterCreationData?.cluster_type,
-            }
-          : {}),
-      };
-      dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
-    }
-  }, [
-    isProcessModalOpen,
-    isModalOpen,
-    dispatch,
-    selectedCluster,
-    ansibleClusterCreationData,
-    processData?.data?.status,
-  ]);
-
-  useEffect(() => {
-    let intervalId;
-    if (
-      (isProcessModalOpen || isModalOpen) &&
-      progress < 100 &&
-      processData?.data?.status !== 'failed'
-    ) {
-      intervalId = setInterval(() => {
+      if (
+        ansibleClusterCreationData?.request_type === 'registry' ||
+        selectedCluster?.is_kube_registry
+      ) {
+        const payload = {
+          clusterId:
+            selectedCluster?.id || ansibleClusterCreationData?.registry_id,
+          process_id:
+            selectedCluster?.process_id ||
+            ansibleClusterCreationData?.process_id,
+          process_name:
+            selectedCluster?.process_name ||
+            ansibleClusterCreationData?.process_name,
+          request_type: 'registry',
+          registry_type:
+            selectedCluster?.registry_type ||
+            ansibleClusterCreationData?.registry_type,
+          ...(selectedCluster?.cluster_type ||
+          ansibleClusterCreationData?.cluster_type
+            ? {
+                cluster_type:
+                  selectedCluster?.cluster_type ||
+                  ansibleClusterCreationData?.cluster_type,
+              }
+            : {}),
+        };
+        dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
+      } else {
         const payload = {
           clusterId:
             selectedCluster?.id || ansibleClusterCreationData?.cluster_id,
@@ -743,6 +783,73 @@ export const ClusterProcessDisplayModal = ({
             : {}),
         };
         dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
+      }
+    }
+  }, [
+    isProcessModalOpen,
+    isModalOpen,
+    dispatch,
+    selectedCluster,
+    ansibleClusterCreationData,
+    processData?.data?.status,
+  ]);
+
+  useEffect(() => {
+    let intervalId;
+    if (
+      (isProcessModalOpen || isModalOpen) &&
+      progress < 100 &&
+      processData?.data?.status !== 'failed'
+    ) {
+      intervalId = setInterval(() => {
+        if (
+          ansibleClusterCreationData?.request_type === 'registry' ||
+          selectedCluster?.is_kube_registry
+        ) {
+          const payload = {
+            clusterId:
+              selectedCluster?.id || ansibleClusterCreationData?.registry_id,
+            process_id:
+              selectedCluster?.process_id ||
+              ansibleClusterCreationData?.process_id,
+            process_name:
+              selectedCluster?.process_name ||
+              ansibleClusterCreationData?.process_name,
+            request_type: 'registry',
+            registry_type:
+              selectedCluster?.registry_type ||
+              ansibleClusterCreationData?.registry_type,
+            ...(selectedCluster?.cluster_type ||
+            ansibleClusterCreationData?.cluster_type
+              ? {
+                  cluster_type:
+                    selectedCluster?.cluster_type ||
+                    ansibleClusterCreationData?.cluster_type,
+                }
+              : {}),
+          };
+          dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
+        } else {
+          const payload = {
+            clusterId:
+              selectedCluster?.id || ansibleClusterCreationData?.cluster_id,
+            process_id:
+              selectedCluster?.process_id ||
+              ansibleClusterCreationData?.process_id,
+            process_name:
+              selectedCluster?.process_name ||
+              ansibleClusterCreationData?.process_name,
+            ...(selectedCluster?.cluster_type ||
+            ansibleClusterCreationData?.cluster_type
+              ? {
+                  cluster_type:
+                    selectedCluster?.cluster_type ||
+                    ansibleClusterCreationData?.cluster_type,
+                }
+              : {}),
+          };
+          dispatch(ClustersActions.fetchAnsibleCLusterProcessData(payload));
+        }
       }, 5500);
     }
 
@@ -772,7 +879,7 @@ export const ClusterProcessDisplayModal = ({
   useEffect(() => {
     const extractedTime = extractNumberFromTimeString('1 mins');
     if (extractedTime !== null && !isNaN(extractedTime)) {
-      if (processData?.isKubeCluster) {
+      if (processData?.isKubeCluster || processData?.isKubeRegistry) {
         setInitialisingTime(60 * 1000);
       } else {
         setInitialisingTime(180 * 1000);
@@ -835,7 +942,11 @@ export const ClusterProcessDisplayModal = ({
     setSelectedCluster({});
     dispatch(
       GridActions.fetchGrid({
-        module: 'clusters',
+        module:
+          ansibleClusterCreationData?.request_type === 'registry' ||
+          selectedCluster?.is_kube_registry
+            ? 'registry'
+            : 'clusters',
         params: { page: 1, limit: itemPerClusterList, sort: 'name' },
         ...(sortingState && {
           sort: sortingState,

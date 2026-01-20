@@ -85,11 +85,16 @@ export const clustersAPI = api => {
     process_id,
     process_name,
     cluster_type,
+    request_type,
+    registry_type,
   }) => {
-    let url = `/clusters/${clusterId}/ansible-logs?process_id=${process_id}&process_name=${process_name}`;
+    let url = `/clusters/${clusterId}/ansible-logs?process_id=${process_id}&process_name=${process_name}&request_type=${request_type}`;
 
     if (cluster_type) {
       url += `&cluster_type=${cluster_type}`;
+    }
+    if (registry_type) {
+      url += `&registry_type=${registry_type}`;
     }
 
     return api.get(url);
