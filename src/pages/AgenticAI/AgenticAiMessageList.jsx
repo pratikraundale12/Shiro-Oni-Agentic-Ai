@@ -201,6 +201,45 @@ const GeneratingWrapper = styled.div`
   padding-top: 12px;
 `;
 
+const InfoBannerRow = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 12px 0;
+`;
+
+const StatusDot = styled.span`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: ${props =>
+    props.type === 'login' ? '#1e8e3e' : '#f97700'};
+  flex-shrink: 0;
+`;
+
+const InfoBanner = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-family: 'Red Hat Display', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+
+  background-color: ${props =>
+    props.type === 'login' ? '#e6f4ea' : '#ffe9d6'};
+  color: ${props => (props.type === 'login' ? '#1e8e3e' : '#f97700')};
+  border: 1px solid ${props => (props.type === 'login' ? '#ceead6' : '#ffe9d6')};
+
+  p {
+    margin: 0;
+  }
+  strong {
+    font-weight: 700;
+  }
+`;
+
 export const AgenticAiMessageList = ({
   messages,
   isLoading,
@@ -216,7 +255,24 @@ export const AgenticAiMessageList = ({
     <ListContainer>
       {messages.map((item, index) => {
         const isUser = item.role === 'user';
+        const isInfo = item.role === 'info';
         const isPending = item.status === 'pending';
+
+        if (isInfo) {
+          return (
+            <InfoBannerRow key={index}>
+              <InfoBanner type={item.infoType}>
+                <StatusDot type={item.infoType} />
+                <ReactMarkdown
+                  components={markdownComponents}
+                  allowedElements={['p', 'strong', 'em']}
+                >
+                  {item.data}
+                </ReactMarkdown>
+              </InfoBanner>
+            </InfoBannerRow>
+          );
+        }
 
         return (
           <MessageRow key={index} isUser={isUser}>
