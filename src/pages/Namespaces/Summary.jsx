@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import { namespace } from 'd3';
 import { flow, isEmpty } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -51,6 +51,7 @@ import NamespaceDeploy from './NamespaceDeploy';
 import SanityCheckDeployModal from './SanityCheckDeployModal';
 import Upgrade from './Upgrade';
 import { FlowValidationSelectors } from '../../store/flowValidation';
+import { SettingsSelectors } from '../../store/settings';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -975,7 +976,7 @@ const Summary = () => {
     setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
     // dispatch(SchedularActions.setScheduleModal());
   };
-
+  const settingsAPIdata = useSelector(SettingsSelectors.getSettings);
   const handleBackClick = () => {
     history.push('/process-group/flow-validation');
   };
@@ -1042,17 +1043,71 @@ const Summary = () => {
       forPopup: true,
     });
   };
+
+  const activeFormat = useMemo(() => {
+    if (settingsAPIdata?.time_format === 'YYYY/MM/DD HH:MM:SS') {
+      return {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      };
+    }
+    if (settingsAPIdata?.time_format === 'DD/MM/YYYY HH:MM') {
+      return {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      };
+    }
+    if (settingsAPIdata?.time_format === 'MM/DD/YYYY HH:MM AM/PM') {
+      return {
+        month: '2-digit',
+        day: '2-digit',
+        year: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      };
+    }
+    return 'MMMM dd, yyyy h:mm aa';
+  }, [settingsAPIdata?.time_format]);
+
   const formatDateTime = date => {
     if (!date) return 'No date selected';
-    return date.toLocaleString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
+
+    if (typeof activeFormat === 'string') return 'Jan 30, 2026...';
+
+    const d = new Date(date);
+    const formatter = new Intl.DateTimeFormat('en-US', activeFormat);
+    const parts = formatter.formatToParts(d);
+
+    const getPart = type => parts.find(p => p.type === type)?.value;
+
+    const month = getPart('month');
+    const day = getPart('day');
+    const year = getPart('year');
+    const hour = getPart('hour');
+    const minute = getPart('minute');
+    const second = getPart('second');
+    const dayPeriod = getPart('dayPeriod');
+
+    switch (settingsAPIdata?.time_format) {
+      case 'YYYY/MM/DD HH:MM:SS':
+        return `${year}/${month}/${day} ${hour}:${minute}:${second} ${dayPeriod}`;
+      case 'DD/MM/YYYY HH:MM':
+        return `${day}/${month}/${year} ${hour}:${minute}`;
+      default:
+        return d.toLocaleString('en-US', activeFormat);
+    }
   };
 
   const handledeployByRegistry = () => {

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useMemo } from 'react';
 import DatePicker from 'react-datepicker';
 import { Controller } from 'react-hook-form';
 import styled from 'styled-components';
@@ -9,6 +9,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { CalendarIcon } from '../../../../assets';
 import { hasError } from '../../../../helpers';
 import FieldErrorMessage from '../FieldErrorMessage';
+import { SettingsSelectors } from '../../../../store/settings';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
   width: 100%;
@@ -92,6 +94,19 @@ const DateField = ({
   ...props
 }) => {
   const error = hasError(errors, name);
+  const settingsAPIdata = useSelector(SettingsSelectors.getSettings);
+  const activeFormat = useMemo(() => {
+    if (settingsAPIdata?.time_format === 'YYYY/MM/DD HH:MM:SS') {
+      return 'yyyy MMMM dd, h:mm aa';
+    }
+    if (settingsAPIdata?.time_format === 'DD/MM/YYYY HH:MM') {
+      return 'dd MMMM yyyy, h:mm aa';
+    }
+    if (settingsAPIdata?.time_format === 'MM/DD/YYYY HH:MM AM/PM') {
+      return 'MMMM dd yyyy, h:mm aa';
+    }
+    return 'MMMM dd, yyyy h:mm aa';
+  }, [settingsAPIdata?.time_format]);
 
   return (
     <Container
@@ -133,7 +148,7 @@ const DateField = ({
                 isToday ? new Date() : new Date(new Date().setHours(0, 0, 0, 0))
               }
               maxTime={new Date(new Date().setHours(23, 59, 59, 0))}
-              dateFormat="MMMM d, yyyy h:mm aa"
+              dateFormat={activeFormat || 'MMMM d, yyyy h:mm aa'}
               popperPlacement="bottom-start"
               icon={
                 <span className="icon-placeholder">
