@@ -168,8 +168,8 @@ export const ClusterCustomScript = ({ data }) => {
                   placeholder={'Upload Script'}
                   errors={errors}
                   fileLable="Custom Script"
-                  validExtensionsArray={['.groovy', '.py']}
-                  acceptString={'.groovy,.py'}
+                  validExtensionsArray={['.groovy', '.py', '.zip']}
+                  acceptString={'.groovy,.py,.zip'}
                   errorText={'Script'}
                   key={fileInputKey}
                 />
