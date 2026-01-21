@@ -273,7 +273,7 @@ export const ClusterLoginModal = () => {
     <>
       <FullPageLoader loading={loading} />
       <Modal
-        title="Enable Cluster"
+        title="Cluster Login"
         isOpen={isObject(clusterLogin) || clusterLogin}
         onRequestClose={() =>
           dispatch(AuthenticationActions.setClusterLogin(false))
