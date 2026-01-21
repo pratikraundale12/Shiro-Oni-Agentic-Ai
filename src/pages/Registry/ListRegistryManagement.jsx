@@ -185,7 +185,7 @@ const ListRegistryManagementPage = () => {
                 onClick={() => {
                   // dispatch(RegistryActions.setRegistrySelectedData(item));
                   // dispatch(RegistryActions.setIsAddRegistryModalOpen(true));
-                  // setSelectedItem(item);
+                  setSelectedItem(item);
                   dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true));
                 }}
                 style={{
@@ -212,7 +212,7 @@ const ListRegistryManagementPage = () => {
                 }
                 contentStyles={{ minWidth: '50%' }}
               >
-                <RegistryCertificateDownloadTab clusterId={item?.id} />
+                <RegistryCertificateDownloadTab clusterId={selectedItem?.id} />
               </Modal>
             </>
           )}
