@@ -3,7 +3,12 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button, ModalWithIcon } from '../../../shared';
+import {
+  Button,
+  CheckboxField,
+  InputField,
+  ModalWithIcon,
+} from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { isEmpty } from 'lodash';
@@ -14,6 +19,7 @@ import PemUploadField from '../PEMUploadFile';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
+  DocumentTextIcon,
   NotePadIcon,
 } from '../../../assets';
 import { LoadingSelectors } from '../../../store';
@@ -55,6 +61,7 @@ export const ClusterCustomScript = ({ data }) => {
   const [fileInputKey, setFileInputKey] = useState(0);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [scriptSelected, setScriptSelected] = useState({});
+  const [installDependency, setInstallDependency] = useState(false);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'addScript')
   );
@@ -81,14 +88,37 @@ export const ClusterCustomScript = ({ data }) => {
         }
       ),
   });
+
+  const schemaWithCommad = yup.object().shape({
+    script_file: yup
+      .mixed()
+      .required('File is required')
+      .test(
+        'no-special-char',
+        'Filename contains invalid characters',
+        value => {
+          if (!value) return true;
+          const fileName = value.name;
+          const fileNameRegex = /^[a-zA-Z0-9._-]+$/;
+          return fileNameRegex.test(fileName);
+        }
+      ),
+    installDepCmd: yup.string().required('Command is required'),
+  });
+
+  const formSchema = installDependency ? schemaWithCommad : schema;
   const {
     watch,
     handleSubmit,
     control,
     formState: { errors },
+    register,
     reset,
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(formSchema),
+    defaultValues: {
+      installDepCmd: 'pip install -r requirements.txt',
+    },
   });
   const handleDeleteClick = item => {
     setScriptSelected(item);
@@ -159,6 +189,9 @@ export const ClusterCustomScript = ({ data }) => {
     // }
     const payloadFile = new FormData();
     payloadFile.append('scriptFile', formdata?.script_file);
+    if (installDependency) {
+      payloadFile.append('installDepCmd', formdata?.installDepCmd);
+    }
     let payload = { payload: payloadFile, id: data?.id };
     dispatch(ClustersActions.addScript(payload));
     setFileInputKey(prev => prev + 1);
@@ -195,7 +228,31 @@ export const ClusterCustomScript = ({ data }) => {
                   errorText={'Script'}
                   key={fileInputKey}
                 />
-              </ModalContainer>
+              </ModalContainer>{' '}
+            </div>
+            <div className="col-6 d-flex align-items-center">
+              <CheckboxField
+                name="check"
+                label="Do you want to install script dependency?"
+                checked={installDependency}
+                onChange={e => setInstallDependency(e.target.checked)}
+              />
+            </div>
+            <div className="row d-flex mt-3">
+              <div className="col-12">
+                {installDependency && (
+                  <InputField
+                    name="installDepCmd"
+                    type="text"
+                    label="Installation Command"
+                    placeholder="Enter command"
+                    required
+                    register={register}
+                    errors={errors}
+                    icon={<DocumentTextIcon />}
+                  />
+                )}
+              </div>
             </div>
           </>
         </div>
