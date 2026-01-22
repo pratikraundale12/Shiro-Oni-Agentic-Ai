@@ -233,13 +233,14 @@ export const ClusterCustomScript = ({ data }) => {
             <div className="col-6 d-flex align-items-center">
               <CheckboxField
                 name="check"
-                label="Do you want to install script dependency?"
+                label="Want to install python dependencies?"
                 checked={installDependency}
                 onChange={e => setInstallDependency(e.target.checked)}
               />
             </div>
+
             <div className="row d-flex mt-3">
-              <div className="col-12">
+              <div className="col-6">
                 {installDependency && (
                   <InputField
                     name="installDepCmd"
