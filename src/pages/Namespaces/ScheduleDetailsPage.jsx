@@ -308,7 +308,6 @@ const ScheduleDeploymentTab = ({
             </span>
           }
         />
-
         <div className=" p-3">
           <ConfigTitle className="config-title">
             <ConfigTitleHTwo className="p-3 mb-0">
@@ -316,7 +315,6 @@ const ScheduleDeploymentTab = ({
             </ConfigTitleHTwo>
           </ConfigTitle>
         </div>
-
         <IconsvgDiv>
           {(scheduleDeploymentFlow || scheduleUpgradeFromList) && (
             <CustomNine className="col-4 mb-3">

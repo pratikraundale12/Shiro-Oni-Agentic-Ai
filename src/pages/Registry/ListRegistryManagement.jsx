@@ -122,10 +122,11 @@ const ListRegistryManagementPage = () => {
         <div className="d-flex align-self-end gap-2">
           {userPermissions.includes('edit_registry') && (
             <button
-              onClick={() => {
+              onClick={event => {
                 dispatch(RegistryActions.setRegistrySelectedData(item));
                 dispatch(RegistryActions.setIsAddRegistryModalOpen(true));
                 setSelectedItem(item);
+                event.currentTarget.blur();
               }}
               style={{
                 background: 'none',

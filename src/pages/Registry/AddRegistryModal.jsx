@@ -256,7 +256,7 @@ export const AddRegistryModal = ({ hostToEdit }) => {
         }
         contentStyles={{
           minWidth: '40%',
-          height: isEmpty(selectedRegistry) ? '60%' : '40%',
+          height: isEmpty(selectedRegistry) ? '60%' : '50%',
         }}
         footerAlign="start"
         tertiaryButton={isAuthenticated}

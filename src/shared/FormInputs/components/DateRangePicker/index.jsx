@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
 import styled, { createGlobalStyle } from 'styled-components';
+import { SettingsSelectors } from '../../../../store/settings';
 
 const ContainerRangePicker = styled.div`
   & div {
@@ -55,6 +57,20 @@ const DateRangePredefinedGlobalStyle = createGlobalStyle`
 `;
 
 const DateRangePickerInput = ({ value, handleChange, customRanges }) => {
+  const settingsAPIdata = useSelector(SettingsSelectors.getSettingsData);
+  const activeFormat = useMemo(() => {
+    if (settingsAPIdata?.time_format === 'YYYY/MM/DD HH:MM:SS') {
+      return 'yyyy/MM/dd HH:mm';
+    }
+    if (settingsAPIdata?.time_format === 'DD/MM/YYYY HH:MM') {
+      return 'dd/MM/yyyy HH:mm';
+    }
+    if (settingsAPIdata?.time_format === 'MM/DD/YYYY HH:MM AM/PM') {
+      return 'MM/dd/yyyy HH:mm';
+    }
+    return 'MM/dd/yyyy HH:mm';
+  }, [settingsAPIdata?.time_format]);
+
   return (
     <>
       <DateRangePredefinedGlobalStyle />
@@ -70,7 +86,7 @@ const DateRangePickerInput = ({ value, handleChange, customRanges }) => {
           showHeader={false}
           editable={true}
           showTime={{ format: 'HH:mm' }}
-          format="MM/dd/yyyy HH:mm"
+          format={activeFormat}
         />
       </ContainerRangePicker>
     </>

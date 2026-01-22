@@ -128,6 +128,15 @@ export const ClusterLoginModal = () => {
           name: response?.cluster_name,
           token: response?.token,
         };
+        dispatch(
+          ClustersActions.setClusterLoggedInSuccessfully({
+            ...{
+              cluster: newCluster,
+              loggedInSuccessfully: true,
+              switchedSuccessfully: false,
+            },
+          })
+        );
         clusterData.push(newCluster);
         localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(clusterData));
         if (!clusterLogin.is_deploy) {
@@ -258,6 +267,23 @@ export const ClusterLoginModal = () => {
       })
     );
 
+    const newCluster = {
+      id: getValues()?.cluster_id,
+      name: clusterName,
+    };
+
+    console.log('switched cluster:', newCluster);
+
+    dispatch(
+      ClustersActions.setClusterLoggedInSuccessfully({
+        ...{
+          cluster: newCluster,
+          loggedInSuccessfully: false,
+          switchedSuccessfully: true,
+        },
+      })
+    );
+
     if (!clusterLogin.is_deploy) {
       localStorage.setItem(
         'selected_cluster',
@@ -273,7 +299,7 @@ export const ClusterLoginModal = () => {
     <>
       <FullPageLoader loading={loading} />
       <Modal
-        title="Enable Cluster"
+        title="Cluster Login"
         isOpen={isObject(clusterLogin) || clusterLogin}
         onRequestClose={() =>
           dispatch(AuthenticationActions.setClusterLogin(false))

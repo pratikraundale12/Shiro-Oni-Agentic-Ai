@@ -213,6 +213,10 @@ export const ClustersActions = {
     `${prefix}setRestartDelayLoadingState`
   ),
   setCreateLoadingState: createAction(`${prefix}setCreateLoadingState`),
+  setIsLoggedInFromAgent: createAction(`${prefix}setIsLoggedInFromAgent`),
+  setClusterLoggedInSuccessfully: createAction(
+    `${prefix}setClusterLoggedInSuccessfully`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -293,6 +297,8 @@ export const CLUSTERS_INITIAL_STATE = {
   restartClusterAfterAction: false,
   restartDelayLoadingState: false,
   createLoadingState: false,
+  isLoggedInFromAgent: false,
+  clusterLoggedInSuccessfully: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -391,6 +397,9 @@ export const ClustersSelectors = {
     state.clusters.restartClusterAfterAction,
   getrestartDelayLoadingState: state => state.clusters.restartDelayLoadingState,
   getcreateLoadingState: state => state.clusters.createLoadingState,
+  getIsLoggedInFromAgent: state => state.clusters.isLoggedInFromAgent,
+  getIsClusterLoggedInSuccessfully: state =>
+    state.clusters.clusterLoggedInSuccessfully,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -877,6 +886,19 @@ const setCreateLoadingState = (state, { payload }) => {
   };
 };
 
+const setIsLoggedInFromAgent = (state, { payload }) => {
+  return {
+    ...state,
+    isLoggedInFromAgent: payload,
+  };
+};
+const setClusterLoggedInSuccessfully = (state, { payload }) => {
+  return {
+    ...state,
+    clusterLoggedInSuccessfully: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -1067,6 +1089,11 @@ export const clustersReducer = createReducer(
         ClustersActions.setRestartDelayLoadingState,
         setRestartDelayLoadingState
       )
-      .addCase(ClustersActions.setCreateLoadingState, setCreateLoadingState);
+      .addCase(ClustersActions.setCreateLoadingState, setCreateLoadingState)
+      .addCase(ClustersActions.setIsLoggedInFromAgent, setIsLoggedInFromAgent)
+      .addCase(
+        ClustersActions.setClusterLoggedInSuccessfully,
+        setClusterLoggedInSuccessfully
+      );
   }
 );
