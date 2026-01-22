@@ -177,16 +177,6 @@ export const ClusterCustomScript = ({ data }) => {
   ];
 
   const handleUpload = formdata => {
-    // const file = formdata?.script_file;
-    // if (file) {
-    //   const fileNameRegex = /^[a-zA-Z0-9._-]+$/;
-    //   if (!fileNameRegex.test(file.name)) {
-    //     alert(
-    //       'Invalid filename: Please remove spaces and special characters (except . _ -)'
-    //     );
-    //     return;
-    //   }
-    // }
     const payloadFile = new FormData();
     payloadFile.append('scriptFile', formdata?.script_file);
     if (installDependency) {
