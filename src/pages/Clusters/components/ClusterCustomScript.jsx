@@ -67,7 +67,19 @@ export const ClusterCustomScript = ({ data }) => {
   );
 
   const schema = yup.object().shape({
-    script_file: yup.mixed().required('File is required'),
+    script_file: yup
+      .mixed()
+      .required('File is required')
+      .test(
+        'no-special-char',
+        'Filename contains invalid characters',
+        value => {
+          if (!value) return true;
+          const fileName = value.name;
+          const fileNameRegex = /^[a-zA-Z0-9._-]+$/;
+          return fileNameRegex.test(fileName);
+        }
+      ),
   });
   const {
     watch,
@@ -135,6 +147,16 @@ export const ClusterCustomScript = ({ data }) => {
   ];
 
   const handleUpload = formdata => {
+    // const file = formdata?.script_file;
+    // if (file) {
+    //   const fileNameRegex = /^[a-zA-Z0-9._-]+$/;
+    //   if (!fileNameRegex.test(file.name)) {
+    //     alert(
+    //       'Invalid filename: Please remove spaces and special characters (except . _ -)'
+    //     );
+    //     return;
+    //   }
+    // }
     const payloadFile = new FormData();
     payloadFile.append('scriptFile', formdata?.script_file);
     let payload = { payload: payloadFile, id: data?.id };
