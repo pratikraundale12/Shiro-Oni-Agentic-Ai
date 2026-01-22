@@ -197,7 +197,7 @@ const CompareValidation = () => {
           <LabelSelect>{FLOWVALIDATION_CONSTANTS.COMPARE_VERSION}</LabelSelect>
           <LabelRequiredContent>*</LabelRequiredContent>
         </div>
-        <div className="row align-items-center mb-4 mb-lg-5">
+        <div className="row align-items-center ">
           <div className="col-md-3">
             <SelectField
               name="select_version_A"
@@ -220,25 +220,21 @@ const CompareValidation = () => {
               disabled={versionOptions.length === 1} // Disable if only one version
             />
           </div>
-          <div className="col-md-auto">
-            <Button
-              onClick={handleCompareFlow}
-              disabled={
-                !selectedVersionA ||
-                !selectedVersionB ||
-                versionOptions.length === 1
-              }
-              icon={
-                <CompareValidationIcon
-                  width="18px"
-                  height="18px"
-                  color="#fff"
-                />
-              }
-            >
-              {FLOWVALIDATION_CONSTANTS.COMPARE}
-            </Button>
-          </div>
+        </div>
+        <div className="col-2 mb-2">
+          <Button
+            onClick={handleCompareFlow}
+            disabled={
+              !selectedVersionA ||
+              !selectedVersionB ||
+              versionOptions.length === 1
+            }
+            icon={
+              <CompareValidationIcon width="18px" height="18px" color="#fff" />
+            }
+          >
+            {FLOWVALIDATION_CONSTANTS.COMPARE}
+          </Button>
         </div>
         {!selectedVersionA || !selectedVersionB ? (
           <div className="d-flex flex-column align-items-center mt-5">
