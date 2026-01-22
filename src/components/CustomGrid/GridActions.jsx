@@ -485,7 +485,9 @@ export const GridActions = ({
     if (location.pathname !== '/schedule-deployment') {
       dispatch(SchedularActions.setScheduleSelectRange([]));
     }
-  }, [dispatch]);
+    return () => dispatch(SchedularActions.setScheduleSelectRange([]));
+  }, [dispatch, location.pathname]);
+
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
 
   useEffect(() => {
