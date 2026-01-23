@@ -147,7 +147,7 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
           <PrimaryText>{KDFM.HARD_DELETE_CLUSTER_WARNING}</PrimaryText>
           {deleteKubeClusterData?.registry_ids?.length &&
             deleteKubeClusterData?.is_kube_cluster &&
-            data?.registry_ids?.length > 0 && (
+            deleteKubeClusterData?.registry_ids?.length > 0 && (
               <SecondaryText>
                 Cluster deletion triggers the deletion of the linked registry.
                 Consequently, any secondary clusters reliant on this registry
