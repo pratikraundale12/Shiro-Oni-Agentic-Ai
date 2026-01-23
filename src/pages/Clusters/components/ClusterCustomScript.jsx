@@ -187,7 +187,6 @@ export const ClusterCustomScript = ({ data }) => {
     setFileInputKey(prev => prev + 1);
     reset();
   };
-  // Fetching your list...
   useEffect(() => {
     if (!isEmpty(data?.id)) {
       dispatch(ClustersActions.fetchScriptList(data?.id));
