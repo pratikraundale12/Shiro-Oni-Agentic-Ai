@@ -43,19 +43,13 @@ const ClusterNavigationTab = ({
   isRegistryDetailDisable,
   data,
   setClusterFormData = () => {},
-  certificateOption
+  certificateOption,
 }) => {
   const dispatch = useDispatch();
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
-  const sshDataAdded = useSelector(ClustersSelectors.getsshAddedStatus);
+  const sshDataAdded = data?.checkSshDetails;
   const isSuperAdmin = currentUserData?.role === 'superadmin';
   const { state } = useGlobalContext();
-
-  useEffect(() => {
-    if (data?.id && !state?.is_kube_cluster) {
-      dispatch(ClustersActions.fetchSSHstatus(data?.id));
-    }
-  }, [data?.id, activeTab]);
 
   return (
     <NavTabs id="nav-tab" role="tablist">
