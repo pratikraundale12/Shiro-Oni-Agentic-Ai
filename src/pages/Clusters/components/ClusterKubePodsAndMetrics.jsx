@@ -176,7 +176,7 @@ const KubeClusterPodsAndMetrics = () => {
     }, 30000);
     return () => clearInterval(interval);
   }, [activeTab, state?.nodeClusterId, dispatch]);
-  
+
   const handleRestart = () => {
     dispatch(ClustersActions.setrestartClusterAfterAction(false));
     dispatch(
@@ -208,6 +208,11 @@ const KubeClusterPodsAndMetrics = () => {
       <FullPageLoader
         loading={(loading && isEmpty(podsList)) || loading2}
         restartText={loading2}
+        newLoaderText={
+          loading2
+            ? 'The cluster is restarting and should take approximately 5 minutes...'
+            : ''
+        }
       />{' '}
       <div className="row">
         <div className="col-2">

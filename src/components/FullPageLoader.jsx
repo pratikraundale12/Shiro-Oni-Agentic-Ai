@@ -31,16 +31,17 @@ const Text = styled.p`
   color: ${theme.colors.darker};
 `;
 
-export const FullPageLoader = ({ loading, restartText = false, ...props }) => {
+export const FullPageLoader = ({
+  loading,
+  restartText = false,
+  newLoaderText,
+  ...props
+}) => {
   if (!loading) return null;
   return (
     <Container {...props}>
       <Loader src={loader} alt="loader" />
-      <Text>
-        {restartText
-          ? 'The cluster is restarting and should take approximately 5 minutes...'
-          : KDFM.LOADING}
-      </Text>
+      <Text>{restartText ? newLoaderText : KDFM.LOADING}</Text>
     </Container>
   );
 };
@@ -48,4 +49,5 @@ export const FullPageLoader = ({ loading, restartText = false, ...props }) => {
 FullPageLoader.propTypes = {
   loading: PropTypes.bool,
   restartText: PropTypes.bool,
+  newLoaderText: PropTypes.string,
 };
