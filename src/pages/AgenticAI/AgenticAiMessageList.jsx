@@ -301,7 +301,11 @@ export const AgenticAiMessageList = ({
                       >
                         {item.data}
                       </ReactMarkdown>
-                      {item.isLoginRequired && <AgenticAiClusterLoginButton />}
+                      {item.isLoginRequired && (
+                        <AgenticAiClusterLoginButton
+                          clusterId={item.clusterId}
+                        />
+                      )}
                       {item.isLogoutRequired && (
                         <AgenticAiClusterLogoutButton />
                       )}
