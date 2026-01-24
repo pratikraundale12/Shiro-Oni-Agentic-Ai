@@ -187,7 +187,6 @@ export const ClusterCustomScript = ({ data }) => {
     setFileInputKey(prev => prev + 1);
     reset();
   };
-
   useEffect(() => {
     if (!isEmpty(data?.id)) {
       dispatch(ClustersActions.fetchScriptList(data?.id));
@@ -196,12 +195,16 @@ export const ClusterCustomScript = ({ data }) => {
 
   return (
     <>
-      <FullPageLoader loading={loading || loading3 || loading4} />
+      <FullPageLoader
+        loading={loading || loading3 || loading4}
+        restartText={loading3}
+        newLoaderText={'Fetching list...'}
+      />
 
       <Container>
         <div className="row mb-3">
           <>
-            <div className="col-6">
+            <div className="col-6" style={{ paddingRight: '24px' }}>
               <ModalContainer>
                 <PemUploadField
                   name="script_file"
@@ -220,7 +223,10 @@ export const ClusterCustomScript = ({ data }) => {
                 />
               </ModalContainer>{' '}
             </div>
-            <div className="col-6 d-flex align-items-center">
+            <div
+              className="col-6 d-flex align-items-center"
+              style={{ paddingTop: '30px' }}
+            >
               <CheckboxField
                 name="check"
                 label="Want to install python dependencies?"

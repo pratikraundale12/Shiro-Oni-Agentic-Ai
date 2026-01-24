@@ -183,7 +183,12 @@ export const DriversCluster = ({ data }) => {
     <>
       <FullPageLoader
         loading={loading || loading2 || loading3 || loading4}
-        restartText={loading2}
+        restartText={loading2 || loading4}
+        newLoaderText={
+          loading2
+            ? 'The cluster is restarting and should take approximately 5 minutes...'
+            : 'Fetching list...'
+        }
       />
 
       <Container>
