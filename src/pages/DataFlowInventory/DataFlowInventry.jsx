@@ -62,7 +62,7 @@ const Title = styled.h2`
   font-weight: 500;
 `;
 
-const RefreshButton = styled.button`
+const RefreshIocnPanel = styled.div`
   cursor: pointer;
   background-color: #f5f7fa;
   border: 1px solid #dde4f0;
@@ -71,8 +71,8 @@ const RefreshButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 10px;
   border-radius: 4px;
-  min-width: 37px;
 `;
 
 const SearchContainer = styled.div`
@@ -327,6 +327,14 @@ const StyledSelectField = styled(SelectField)`
   .react-select__control {
     padding: 5px 4px;
   }
+  .react-select__control--is-disabled {
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+  }
+  .react-select__control--is-disabled .react-select__indicator {
+    opacity: 0.5;
+  }
+
 `;
 
 const DataFlowInventory = () => {
@@ -513,6 +521,16 @@ const DataFlowInventory = () => {
     URL.revokeObjectURL(url);
   };
 
+  const isUploadDisabled = hasTriedFetchingClusters && !fetchingClusters && isEmpty(selectedCluster?.value);
+
+  const handleRefresh = () => {
+    if (selectedCluster?.value && !isEmpty(selectedCluster?.value)) {
+      dispatch(FlowValidationActions.fetchFlows());
+      setSearchTerm('');
+      setSelectedFlowByDefalut(null);
+    }
+  };
+
   return (
     <>
       <Container>
@@ -523,6 +541,7 @@ const DataFlowInventory = () => {
               <Title>Data Flow Inventory</Title>
               <div className="d-flex align-items-center justify-content-center gap-2">
                 <StyledSelectField
+                  isDisabled={isUploadDisabled}
                   name="selectflows"
                   placeholder="Select Flow"
                   value={selectedFlowByDefalut}
@@ -533,6 +552,7 @@ const DataFlowInventory = () => {
                   ]}
                 />
                 <Button
+                  disabled={isUploadDisabled}
                   onClick={() => {
                     setFlowUploadModalOpen(true);
                   }}
@@ -540,15 +560,43 @@ const DataFlowInventory = () => {
                   Upload
                 </Button>
 
-                <RefreshButton
-                  onClick={() => {
-                    dispatch(FlowValidationActions.fetchFlows());
-                    setSearchTerm('');
-                    setSelectedFlowByDefalut(null);
+                <RefreshIocnPanel
+                  onClick={handleRefresh}
+                  style={{
+                    opacity: 1,
+                    minWidth: '37px',
+                    cursor:
+                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                        ? 'pointer'
+                        : 'not-allowed',
                   }}
+                  data-tooltip-id={`tooltip-group-namespace-refresh`}
                 >
-                  <RefreshIcon />
-                </RefreshButton>
+                  <RefreshIcon
+                    style={{
+                      cursor:
+                        selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                          ? 'pointer'
+                          : 'not-allowed',
+                    }}
+                  />
+                </RefreshIocnPanel>
+                {
+                  <ReactTooltip
+                    id={`tooltip-group-namespace-refresh`}
+                    place="left"
+                    content={
+                      !(selectedCluster?.value && !isEmpty(selectedCluster?.value))
+                        ? 'Login to the cluster'
+                        : 'Refresh'
+                    }
+                    style={{
+                      width: 'auto',
+                      whiteSpace: 'normal',
+                      wordWrap: 'break-word',
+                    }}
+                  />
+                }
               </div>
             </HeaderContainer>
 
