@@ -160,10 +160,10 @@ const RegistryCreationGettingStarted = ({ activeTab }) => {
                 <RightHolder className="col h-100 row">
                   <div className="col-10 h-100">
                     <div className="h-50 d-flex align-items-center justify-content-start">
-                      <HighLightText>Cluster Details</HighLightText>
+                      <HighLightText>Registry Details</HighLightText>
                     </div>
                     <div className="h-50 d-flex align-items-center justify-content-start">
-                      <BottomText>Manage Cluster Details</BottomText>
+                      <BottomText>Manage Registry Details</BottomText>
                     </div>
                     <div className="h-50 d-flex align-items-center justify-content-start">
                       <BottomText
@@ -173,7 +173,7 @@ const RegistryCreationGettingStarted = ({ activeTab }) => {
                         }
                         style={{ cursor: 'pointer' }}
                       >
-                        {KDFM.CLUSTER_DETAILS}
+                        {KDFM.REGISTRY_DETAILS}
                       </BottomText>
                     </div>
                   </div>
