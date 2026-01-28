@@ -700,6 +700,15 @@ export function* deleteKubeConfig(api, { payload }) {
   }
 }
 export function* createKubernetesCluster(api, { payload }) {
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const nameFromFormData = payload.get('clusterName');
+  const selectedClusterToken = clustersToken.find(
+    item => item?.name === nameFromFormData
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'createKubernetesCluster',
     loadingSection: 'createKubernetesCluster',
