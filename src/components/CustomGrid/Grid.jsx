@@ -186,10 +186,11 @@ export const Grid = ({
   const watchStatus = watch('is_active');
 
   useEffect(() => {
-    if (watchStatus) {
-      dispatch(SchedularActions.setStatusFilterData(watchStatus));
-    }
-  }, [watchStatus]);
+  const statusToSet = watchStatus && watchStatus !== '' ? watchStatus : 'all';
+  dispatch(SchedularActions.setStatusFilterData(statusToSet));
+  setCurrentPage(1);
+}, [watchStatus]);
+
 
   const {
     state: { search, page, eventModal, selectedNode },
