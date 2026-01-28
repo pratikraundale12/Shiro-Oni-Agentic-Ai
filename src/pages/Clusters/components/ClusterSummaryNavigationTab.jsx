@@ -59,7 +59,7 @@ const ClusterSummaryNavigationTab = ({
         </div>
       </NavButton>
 
-      {state?.is_kube_cluster && state?.isRegistrySecured && (
+      {/* {state?.is_kube_cluster && state?.isRegistrySecured && (
         <NavButton
           active={activeTab === 'registry_cert'}
           onClick={() => {
@@ -75,7 +75,7 @@ const ClusterSummaryNavigationTab = ({
             Registry
           </div>
         </NavButton>
-      )}
+      )} */}
 
       {createdByAnsible && (
         <NavButton
