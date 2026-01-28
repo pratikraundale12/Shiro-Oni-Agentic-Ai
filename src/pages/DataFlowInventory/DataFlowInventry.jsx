@@ -334,7 +334,6 @@ const StyledSelectField = styled(SelectField)`
   .react-select__control--is-disabled .react-select__indicator {
     opacity: 0.5;
   }
-
 `;
 
 const DataFlowInventory = () => {
@@ -521,7 +520,10 @@ const DataFlowInventory = () => {
     URL.revokeObjectURL(url);
   };
 
-  const isUploadDisabled = hasTriedFetchingClusters && !fetchingClusters && isEmpty(selectedCluster?.value);
+  const isUploadDisabled =
+    hasTriedFetchingClusters &&
+    !fetchingClusters &&
+    isEmpty(selectedCluster?.value);
 
   const handleRefresh = () => {
     if (selectedCluster?.value && !isEmpty(selectedCluster?.value)) {
@@ -575,7 +577,8 @@ const DataFlowInventory = () => {
                   <RefreshIcon
                     style={{
                       cursor:
-                        selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                        selectedCluster?.value &&
+                        !isEmpty(selectedCluster?.value)
                           ? 'pointer'
                           : 'not-allowed',
                     }}
@@ -586,7 +589,10 @@ const DataFlowInventory = () => {
                     id={`tooltip-group-namespace-refresh`}
                     place="left"
                     content={
-                      !(selectedCluster?.value && !isEmpty(selectedCluster?.value))
+                      !(
+                        selectedCluster?.value &&
+                        !isEmpty(selectedCluster?.value)
+                      )
                         ? 'Login to the cluster'
                         : 'Refresh'
                     }
