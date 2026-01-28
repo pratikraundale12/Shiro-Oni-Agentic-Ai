@@ -380,19 +380,19 @@ export const AddUserModal = props => {
                         />
                       </div>
                     )}
-                    {(currentUserData?.id === state?.selectedItem?.id ||
-                      password) && (
-                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
-                        <StyledPasswordField
-                          name="confirm_password"
-                          register={register}
-                          errors={errors}
-                          watch={watch}
-                          required
-                          label="Confirm Password"
-                        />
-                      </div>
-                    )}
+                    {currentUserData?.id === state?.selectedItem?.id &&
+                      password && (
+                        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
+                          <StyledPasswordField
+                            name="confirm_password"
+                            register={register}
+                            errors={errors}
+                            watch={watch}
+                            required
+                            label="Confirm Password"
+                          />
+                        </div>
+                      )}
                   </>
                 )}
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
