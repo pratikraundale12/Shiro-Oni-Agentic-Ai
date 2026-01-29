@@ -240,7 +240,7 @@ export const ClusterCustomProcessor = ({ data }) => {
                   errors={errors}
                   fileLable="Custom Nar file"
                   validExtensionsArray={
-                    Number(state?.nifi_version?.[0]) >= 2
+                    Number(state?.nifi_version?.[0]) >= 2 || state?.isNifi2x
                       ? ['.nar', '.py']
                       : ['.nar']
                   }
