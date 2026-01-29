@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 import { Table } from '../../../components';
+import { useDispatch } from 'react-redux';
+import { AgenticAiActions } from '../../../store';
+import { SolveWithAiIcon } from '../../../assets';
 
 const TableWrapper = styled.section`
   background: #ffffff;
@@ -20,7 +23,39 @@ const MessageCell = styled.div`
   white-space: nowrap;
 `;
 
+const SolveWithAiButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+
+  background-color: #ff7a00;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #e66d01;
+  }
+
+  &:active {
+    background-color: #cc5f01;
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;
+
 const LogTable = ({ data = [] }) => {
+  const dispatch = useDispatch();
   const columns = useMemo(
     () => [
       {
@@ -61,9 +96,21 @@ const LogTable = ({ data = [] }) => {
           console.log(item);
           return (
             <>
-              {item?.level === 'ERROR' || item?.severity === 'ERROR'
-                ? 'Solve with AI'
-                : ''}
+              <SolveWithAiButton
+                onClick={() => {
+                  dispatch(
+                    AgenticAiActions.setQueryText(
+                      `resolve the error in the log: ${item.message}`
+                    )
+                  );
+                  dispatch(AgenticAiActions.setAgenticAiModalOpen(true));
+                }}
+              >
+                <span>
+                  <SolveWithAiIcon height={15} width={15} />
+                </span>
+                <span>Solve with AI</span>
+              </SolveWithAiButton>
             </>
           );
         },

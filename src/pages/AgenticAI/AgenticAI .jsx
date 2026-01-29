@@ -11,7 +11,6 @@ import {
 } from '../../store';
 import { KDFM } from '../../constants';
 import { formattedTime } from '../AiFlowGenerator/utils';
-import { toast } from 'react-toastify';
 import { AgenticAiDisclaimer } from './AgenticAiDisclaimer';
 import { AgenticAiWelcome } from './AgenticAiWelcome';
 import { AgenticAiMessageList } from './AgenticAiMessageList';
@@ -41,13 +40,23 @@ export const AgenticAI = () => {
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
   const [queryText, setQueryText] = useState('');
+  const sessionId = useSelector(AgenticAiSelectors.getSessionId);
+  const [pendingAutoSend, setPendingAutoSend] = useState(null);
+  const isSessionFetching = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchSessionId')
+  );
+  const isSessionReady = useCallback(() => {
+    return (
+      sessionId && typeof sessionId === 'string' && sessionId.trim().length > 0
+    );
+  }, [sessionId]);
+  const reduxQueryText = useSelector(AgenticAiSelectors.getQueryText);
   const conversationalRes = useSelector(
     AgenticAiSelectors.getConversationHistory
   );
   const apiResponse = useSelector(AgenticAiSelectors.getMessageChatAi);
   const apiError = useSelector(AgenticAiSelectors.getMessageChatAiError);
   const inputRef = useRef(null);
-  const sessionId = useSelector(AgenticAiSelectors.getSessionId);
   const isLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchMessageChatAi')
   );
@@ -108,49 +117,51 @@ export const AgenticAI = () => {
 
   const hasMessages = !isEmpty(conversationalRes);
 
-  const handleSendMessage = useCallback(
-    e => {
-      if (e) e.preventDefault();
-      const trimmedQuery = queryText.trim();
+  const triggerSendMessage = useCallback(
+    textToSend => {
+      const message = textToSend || queryText.trim();
+      if (!message || isLoading || !sessionId) return;
 
-      if (!trimmedQuery || isLoading || !sessionId) {
-        if (!sessionId) {
-          toast.warning('Session ID not found. Please try again.');
-        }
-        return;
-      }
       const timestamp = formattedTime();
       const newUserMessage = {
         role: 'user',
-        data: trimmedQuery,
+        data: message,
         status: 'completed',
         time: timestamp,
       };
+
       const tempSystemMessage = {
         role: 'system',
         status: 'pending',
         time: timestamp,
         data: 'Waiting for response...',
       };
-      const newHistory = [
-        ...conversationalRes,
-        newUserMessage,
-        tempSystemMessage,
-      ];
-      dispatch(AgenticAiActions.setConversationHistory(newHistory));
 
-      const payload = {
-        message: trimmedQuery,
-        session_id: sessionId,
-      };
+      dispatch(
+        AgenticAiActions.setConversationHistory([
+          ...conversationalRes,
+          newUserMessage,
+          tempSystemMessage,
+        ])
+      );
 
-      dispatch(AgenticAiActions.fetchMessageChatAi(payload));
+      dispatch(
+        AgenticAiActions.fetchMessageChatAi({
+          message: message,
+          session_id: sessionId,
+        })
+      );
+
       setQueryText('');
-
       if (inputRef.current) inputRef.current.style.height = 'auto';
     },
     [queryText, isLoading, dispatch, sessionId, conversationalRes]
   );
+
+  const handleSendMessage = e => {
+    if (e) e.preventDefault();
+    triggerSendMessage();
+  };
 
   useEffect(() => {
     if (isEmpty(sessionId) || sessionId === null) {
@@ -223,6 +234,32 @@ export const AgenticAI = () => {
     }
   }, [isLoading]);
 
+  useEffect(() => {
+    if (reduxQueryText) {
+      setQueryText(reduxQueryText);
+
+      if (isSessionReady()) {
+        triggerSendMessage(reduxQueryText);
+      } else {
+        setPendingAutoSend(reduxQueryText);
+        dispatch(AgenticAiActions.fetchSessionId());
+      }
+      dispatch(AgenticAiActions.setQueryText(''));
+    }
+  }, [reduxQueryText, dispatch, isSessionReady]);
+
+  useEffect(() => {
+    if (isSessionReady() && pendingAutoSend && !isSessionFetching) {
+      triggerSendMessage(pendingAutoSend);
+      setPendingAutoSend(null);
+    }
+  }, [
+    sessionId,
+    pendingAutoSend,
+    isSessionFetching,
+    isSessionReady,
+    triggerSendMessage,
+  ]);
   const MarkdownComponents = {
     a: ({ children, ...props }) => (
       <a

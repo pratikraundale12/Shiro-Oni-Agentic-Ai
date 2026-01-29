@@ -26,14 +26,13 @@ const InputContainer = styled.div`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   position: relative;
+  height: 'auto';
+  min-height: '100px';
 
   &:focus-within {
     border-color: #ff7a00;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   }
-
-  height: 'auto';
-  min-height: '100px';
 `;
 
 const InputBox = styled.textarea`
@@ -51,6 +50,9 @@ const InputBox = styled.textarea`
   padding: 16px 20px 10px 20px;
   color: #414141;
   min-height: 48px;
+
+  max-height: 300px;
+  overflow-y: auto;
 
   &::placeholder {
     color: #aaa;
