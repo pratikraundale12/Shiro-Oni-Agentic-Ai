@@ -28,7 +28,6 @@ import {
 } from '../../assets';
 import { CrossIcon } from '../../assets/Icons/CrossIcon';
 import {
-  // AuthenticationSelectors,
   DashboardActions,
   DashboardSelectors,
   LoadingSelectors,
@@ -38,6 +37,7 @@ import {
 import { SettingsActions } from '../../store/settings';
 import { KDFM } from '../../constants';
 import { useForm } from 'react-hook-form';
+import { LogDashboard } from '../Clusters/Observability/LogDashboard';
 
 const TopSection = styled.div`
   display: flex;
@@ -522,6 +522,18 @@ export const Dashboard = () => {
                 Deployment Statistics
               </QuickInsightHeadingText>
             </Tab>
+
+            <Tab
+              active={activeTab === 'Monitoring'}
+              onClick={() => setActiveTab('Monitoring')}
+            >
+              <InsightIconContiner active={activeTab === 'Monitoring'}>
+                <DeploymentStaticsIcon
+                  color={activeTab === 'Monitoring' ? '#f0701a' : '#6c757d'}
+                />
+              </InsightIconContiner>
+              <QuickInsightHeadingText>Monitoring</QuickInsightHeadingText>
+            </Tab>
           </div>
 
           <TopSection>
@@ -712,6 +724,12 @@ export const Dashboard = () => {
       )}
       {activeTab === 'DeploymentStatistics' && (
         <DeploymentStatistics selectedRange={selectedRange} />
+      )}
+
+      {activeTab === 'Monitoring' && (
+        <>
+          <LogDashboard />
+        </>
       )}
     </>
   );

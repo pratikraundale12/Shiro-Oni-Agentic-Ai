@@ -619,7 +619,10 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
           handleDiscardFlow={() => handleRoute('setting', true)}
         />
       )}
-      {isLoggedIn && <AgenticAiIntegration />}
+
+      {!isEmpty(currentUser?.permissions) &&
+        currentUser?.permissions?.includes('view_cluster') &&
+        isLoggedIn && <AgenticAiIntegration />}
 
       {/* Tooltips */}
       <ReactTooltip

@@ -16,6 +16,7 @@ import { settingsSagas } from './settings';
 import { usersSagas } from './users';
 import { registrySagas } from './registry';
 import { agenticAiSagas } from './agenticAI';
+import { observabilitySagas } from './observability';
 
 /* ------------- API ------------- */
 export const api = API.create();
@@ -52,5 +53,7 @@ export default function* root() {
     fork(registrySagas, api),
     // |---------------------agenticAI-------------------------|
     fork(agenticAiSagas, api),
+    // |---------------------observability-------------------------|
+    fork(observabilitySagas, api),
   ]);
 }

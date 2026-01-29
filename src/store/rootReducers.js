@@ -17,6 +17,7 @@ import { settingsReducer } from './settings';
 import { usersReducer } from './users';
 import { registryReducer } from './registry';
 import { agenticAiReducer } from './agenticAI';
+import { observabilityReducer } from './observability';
 
 const resettable = resettableReducer('RESET');
 
@@ -43,4 +44,5 @@ export default combineReducers({
   aiFlowGenerator: resettable(aiFlowGeneratorReducer),
   registry: resettable(registryReducer),
   agenticAI: resettable(agenticAiReducer),
+  observability: resettable(observabilityReducer),
 });
