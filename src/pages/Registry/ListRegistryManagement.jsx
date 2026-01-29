@@ -151,7 +151,7 @@ const ListRegistryManagementPage = () => {
               wordWrap: 'break-word',
             }}
           />
-          {/* {userPermissions.includes('delete_registry') && (
+          {userPermissions.includes('delete_registry') && (
             <button
               onClick={() => {
                 setSelectedItem(item);
@@ -169,7 +169,7 @@ const ListRegistryManagementPage = () => {
                 <DeleteSmallIcon width={14} height={14} color="red" />
               </IconButton>
             </button>
-          )} */}
+          )}
           <ReactTooltip
             id={`tooltip-group-delete-registry`}
             place="left"
@@ -243,7 +243,7 @@ const ListRegistryManagementPage = () => {
   return (
     <>
       <AddRegistryModal />
-      {/* <ModalWithIcon
+      <ModalWithIcon
         title="Delete Registry"
         primaryButtonText={'Delete'}
         secondaryButtonText="Cancel"
@@ -252,7 +252,7 @@ const ListRegistryManagementPage = () => {
         onRequestClose={handleDeleteModalClose}
         primaryText={`Are you sure you want to delete registry?`}
         onSubmit={handleDeleteSubmit}
-      /> */}
+      />
       <Grid
         module="registry"
         title={'Registry List'}
