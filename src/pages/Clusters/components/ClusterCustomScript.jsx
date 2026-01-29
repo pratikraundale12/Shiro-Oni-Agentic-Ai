@@ -148,15 +148,24 @@ export const ClusterCustomScript = ({ data }) => {
         </>
       ),
       resize: true,
-      width: '40%',
+      width: '20%',
     },
     {
       label: 'File',
       renderCell: item => <>{item?.scriptPath}</>,
       resize: true,
-      width: '50%',
+      width: '30%',
     },
-
+    ...(scriptList.some(data => data.pythonPath)
+      ? [
+          {
+            label: 'Python Path',
+            renderCell: item => <>{item?.pythonPath}</>,
+            resize: true,
+            width: '40%',
+          },
+        ]
+      : []),
     {
       label: 'Actions',
       renderCell: item => (
