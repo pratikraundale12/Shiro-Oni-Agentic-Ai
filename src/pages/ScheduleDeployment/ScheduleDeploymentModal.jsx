@@ -24,6 +24,7 @@ import {
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
+  GridSelectors,
 } from '../../store';
 import {
   SchedularActions,
@@ -214,6 +215,7 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
     dispatch(SchedularActions.setSelectedSchedule({}));
     setScheduleErrors({});
   };
+  const limit = useSelector(GridSelectors.getItemsPerPage);
 
   useEffect(() => {
     if (
@@ -233,6 +235,7 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
     const payload = {
       schedularId: selectedSchedule?.id,
       scheduled_time: new Date(data?.scheduled_time).toISOString(),
+      limit: limit,
     };
     const currentTime = new Date();
     const scheduledTime = new Date(data?.scheduled_time);
@@ -408,4 +411,5 @@ ScheduleDeploymentModal.propTypes = {
   loadingButton: PropTypes.bool,
   setActiveButton: PropTypes.func,
   activeButton: PropTypes.string,
+  limit: PropTypes.number,
 };

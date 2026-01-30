@@ -12,7 +12,7 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
-import { LoadingSelectors } from '../../store';
+import { LoadingSelectors, GridSelectors } from '../../store';
 
 const IconWrapper = styled.div`
   text-align: center;
@@ -55,6 +55,7 @@ export const RejectScheduleModal = ({ onConfirm }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'editScheduleDeployment')
   );
+  const limit = useSelector(GridSelectors.getItemsPerPage);
   const {
     register,
     formState: { errors },
@@ -76,6 +77,7 @@ export const RejectScheduleModal = ({ onConfirm }) => {
       reason_for_cancellation: data?.note,
       schedularId: selectedSchedule?.id,
       state: rejectApproval ? 'REJECTED' : 'STOPPED',
+      limit: limit,
     };
     dispatch(SchedularActions.rejectScheduleDeployment(payload));
     reset();
@@ -134,4 +136,5 @@ RejectScheduleModal.propTypes = {
   errors: PropTypes.object.isRequired,
   register: PropTypes.object.isRequired,
   loadingButton: PropTypes.bool,
+  limit: PropTypes.number,
 };

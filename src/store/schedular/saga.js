@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { history } from '../../helpers/history';
 import { AuthenticationActions } from '../authentication';
-import { GridActions, fetchGrid } from '../grid';
+import { GridActions, fetchGrid, GridSelectors } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularActions, SchedularSelectors } from './redux';
 import { NamespacesActions } from '../namespaces';
@@ -26,6 +26,7 @@ export function* createScheduleDeployment(api, { payload }) {
 }
 
 export function* editScheduleDeployment(api, { payload }) {
+  const limit = payload?.limit;
   const { schedularId, ...rest } = payload;
   const response = yield call(requestSaga, {
     errorSection: 'editScheduleDeployment',
@@ -71,7 +72,7 @@ export function* editScheduleDeployment(api, { payload }) {
         module: 'scheduler',
         params: {
           page: 1,
-          limit: 10,
+          limit: limit,
           ...(search && { search }),
           ...(statusData &&
             statusData !== 'all' && {
@@ -91,11 +92,17 @@ export function* editScheduleByRegistry(api, { payload }) {
   const selectedRange = yield select(SchedularSelectors.getScheduleSelectRange);
   const statusData = yield select(SchedularSelectors.getStatusFilterData);
   const search = yield select(SchedularSelectors.getSearchText);
+  const limit = payload?.limit;
   const response = yield call(requestSaga, {
     errorSection: 'editScheduleByRegistry',
     loadingSection: 'editScheduleByRegistry',
     apiMethod: api.editScheduleByRegistry,
-    apiParams: [{ schedularId: payload?.schedularId, state: payload?.state }],
+    apiParams: [
+      {
+        schedularId: payload?.schedularId,
+        state: payload?.state,
+      },
+    ],
   });
   if (response.ok) {
     yield put(SchedularActions.setCancelScheduleModal(false));
@@ -105,7 +112,7 @@ export function* editScheduleByRegistry(api, { payload }) {
         module: 'scheduler',
         params: {
           page: 1,
-          limit: 10,
+          limit: limit,
           ...(search && { search }),
           ...(statusData &&
             statusData !== 'all' && {
@@ -126,6 +133,7 @@ export function* editScheduleByRegistry(api, { payload }) {
 }
 
 export function* rejectScheduleDeployment(api, { payload }) {
+  const limit = payload?.limit;
   const { schedularId, ...rest } = payload;
   const selectedRange = yield select(SchedularSelectors.getScheduleSelectRange);
   const statusData = yield select(SchedularSelectors.getStatusFilterData);
@@ -145,7 +153,7 @@ export function* rejectScheduleDeployment(api, { payload }) {
         module: 'scheduler',
         params: {
           page: 1,
-          limit: 10,
+          limit: limit,
           ...(search && { search }),
           ...(statusData &&
             statusData !== 'all' && {
