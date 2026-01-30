@@ -176,7 +176,7 @@ const UnAuthGuard = () => {
         </List>
         <KDFMVersion>
           {/* FIX_ME: Later will come from API */}
-          <span className="version-content">Version 3.0.1</span>
+          <span className="version-content">Version 3.0.2</span>
         </KDFMVersion>
       </Container>
       <Content>

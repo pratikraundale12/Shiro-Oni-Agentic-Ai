@@ -475,7 +475,7 @@ export const Sidebar = ({
       </List>
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
-        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 3.0.1`}</span>
+        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 3.0.2`}</span>
       </KDFMVersion>
       {isAiFlowWarningModalOpen && (
         <DiscardFlowConfirmationModal
