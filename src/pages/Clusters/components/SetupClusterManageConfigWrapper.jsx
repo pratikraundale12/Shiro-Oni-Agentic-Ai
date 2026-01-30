@@ -200,7 +200,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
       width: '50%',
     },
     {
-      label: 'Config Version',
+      label: 'Config Type',
       renderCell: item => <>{toUpperIfAlphanumeric(item?.type)}</>,
       resize: true,
       width: '10%',

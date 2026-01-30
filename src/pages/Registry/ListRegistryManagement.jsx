@@ -8,7 +8,7 @@ import {
   SortDownIcon,
   SortUpIcon,
 } from '../../assets';
-import { Grid, IconButton, StatusRender, TextRender } from '../../components';
+import { Grid, IconButton, StatusRender, TextRender, UrlRender } from '../../components';
 import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddRegistryModal } from './AddRegistryModal';
@@ -90,10 +90,10 @@ const ListRegistryManagementPage = () => {
       width: '40%',
       resize: true,
       renderCell: item => (
-        <TextRender
-          text={item?.registry_url || ''}
-          capitalizeText={false}
-          toolTip={true}
+        <UrlRender
+          tooltipId={'registry-url-tooltip'}
+          copy_btn_tooltip={'Copy Registry URL'}
+          url={item?.registry_url || ''}
         />
       ),
     },
