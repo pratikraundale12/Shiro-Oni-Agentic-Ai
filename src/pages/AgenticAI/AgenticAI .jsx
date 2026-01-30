@@ -7,6 +7,7 @@ import {
   AgenticAiSelectors,
   ClustersActions,
   ClustersSelectors,
+  GridSelectors,
   LoadingSelectors,
 } from '../../store';
 import { KDFM } from '../../constants';
@@ -16,6 +17,8 @@ import { AgenticAiDisclaimer } from './AgenticAiDisclaimer';
 import { AgenticAiWelcome } from './AgenticAiWelcome';
 import { AgenticAiMessageList } from './AgenticAiMessageList';
 import { AgenticAiFooter } from './AgenticAiFooter';
+import { history } from '../../helpers/history';
+import { useGlobalContext } from '../../utils';
 
 const Container = styled.div`
   display: flex;
@@ -36,6 +39,43 @@ const ContentArea = styled.div`
   justify-content: ${props => (props.hasMessages ? 'flex-start' : 'center')};
   scroll-behavior: smooth;
 `;
+
+const InternalActionButton = styled.button`
+  background-color: #ff7a00;
+  color: #ffffff;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Red Hat Display', sans-serif;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: #e66e00;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+`;
+
+const INTERNAL_ROUTE_RULES = [
+  {
+    pattern: '/clusters/',
+    getRoute: id => `/clusters/${id}`,
+    state: { clusterSummaryPage: true },
+  },
+  {
+    pattern: '/process-group/',
+    getRoute: id => `/process-group/${id}`,
+    state: {},
+  },
+  // for other routes, define new object here.
+];
 
 export const AgenticAI = () => {
   const dispatch = useDispatch();
@@ -169,7 +209,12 @@ export const AgenticAI = () => {
         data: displayContent,
         time: timestamp,
         fullResponse: apiResponse,
-        isLoginRequired: apiResponse?.message?.login_required ?? false,
+        isLoginRequired:
+          apiResponse?.message?.login_required ||
+          apiResponse?.login_required ||
+          false,
+        clusterId:
+          apiResponse?.message?.cluster_id || apiResponse?.cluster_id || null,
         isLogoutRequired: apiResponse?.message?.logout ?? false,
       };
       const updatedHistory = [...conversationalRes];
@@ -223,18 +268,70 @@ export const AgenticAI = () => {
     }
   }, [isLoading]);
 
-  const MarkdownComponents = {
-    a: ({ children, ...props }) => (
-      <a
-        {...props}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ color: '#ff7a00', textDecoration: 'underline' }}
-      >
-        {children}
-      </a>
-    ),
+  const { state, setState } = useGlobalContext();
+  const clusters = useSelector(state =>
+    GridSelectors.getGridData(state, 'clusters')
+  );
 
+  const resolveLinkAction = href => {
+    if (!href) return { isInternal: false };
+    const rule = INTERNAL_ROUTE_RULES.find(r => href.includes(r.pattern));
+    if (rule) {
+      const id = href.split(rule.pattern)[1]?.split('/')[0]?.split('?')[0];
+      if (id) {
+        return {
+          isInternal: true,
+          handler: () => {
+            history.push(rule.getRoute(id), rule.state);
+            if (href.includes('clusters')) {
+              const targetCluster = id
+                ? clusters.find(c => c.id === id)
+                : clusters[0];
+
+              setState({
+                ...state,
+                nodeClusterId: targetCluster?.id,
+                created_by_ansible: targetCluster?.created_by_ansible,
+                is_kube_cluster: targetCluster?.is_kube_cluster,
+                isRegistrySecured: targetCluster?.isRegistrySecured,
+              });
+            }
+          },
+        };
+      }
+    }
+    return { isInternal: false };
+  };
+
+  const MarkdownComponents = {
+    a: ({ children, href, ...props }) => {
+      const { isInternal, handler } = resolveLinkAction(href);
+
+      if (isInternal) {
+        return (
+          <InternalActionButton
+            onClick={e => {
+              e.preventDefault();
+              handler();
+            }}
+          >
+            {children}
+          </InternalActionButton>
+        );
+      }
+
+      return (
+        <a
+          {...props}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#ff7a00', textDecoration: 'underline' }}
+        >
+          {children}
+        </a>
+      );
+    },
     code: ({ inline, className, children, ...props }) => {
       return !inline ? (
         <pre>

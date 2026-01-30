@@ -1,7 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import { AuthenticationActions, ClustersActions } from '../../store';
-import { useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
+import {
+  AuthenticationActions,
+  ClustersActions,
+  ClustersSelectors,
+} from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
 
 const LoginButtonWrapper = styled.div`
   margin-top: 12px;
@@ -30,14 +35,28 @@ const StyledButton = styled.button`
   }
 `;
 
-export const AgenticAiClusterLoginButton = () => {
+export const AgenticAiClusterLoginButton = ({ clusterId = null }) => {
   const dispatch = useDispatch();
+  const clusters = useSelector(ClustersSelectors.getAllClustersList);
 
   const handleLoginClick = e => {
     e.preventDefault();
     e.stopPropagation();
+
+    const targetCluster = clusterId && clusters.find(c => c.id === clusterId);
+
+    if (targetCluster) {
+      dispatch(
+        AuthenticationActions.setClusterLogin({
+          label: targetCluster?.name,
+          value: targetCluster?.id,
+        })
+      );
+    } else {
+      dispatch(AuthenticationActions.setClusterLogin(true));
+    }
+
     dispatch(ClustersActions.setIsLoggedInFromAgent(true));
-    dispatch(AuthenticationActions.setClusterLogin(true));
     dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
   };
 
@@ -48,4 +67,8 @@ export const AgenticAiClusterLoginButton = () => {
       </StyledButton>
     </LoginButtonWrapper>
   );
+};
+
+AgenticAiClusterLoginButton.propTypes = {
+  clusterId: PropTypes.string,
 };
