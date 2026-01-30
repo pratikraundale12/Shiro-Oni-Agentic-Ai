@@ -288,7 +288,6 @@ export const AgenticAI = () => {
                 ? clusters.find(c => c.id === id)
                 : clusters[0];
 
-              console.log('Executed!!');
               setState({
                 ...state,
                 nodeClusterId: targetCluster?.id,
