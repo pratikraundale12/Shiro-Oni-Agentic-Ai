@@ -147,7 +147,7 @@ const StyledSelectField = styled(SelectField)`
   }
 
   .react-select__menu-list {
-    white-space: wrap;
+    white-space: nowrap;
     text-overflow: ellipsis;
   }
 
