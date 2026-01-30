@@ -8,7 +8,7 @@ import {
   SortDownIcon,
   SortUpIcon,
 } from '../../assets';
-import { Grid, IconButton, StatusRender, TextRender } from '../../components';
+import { Grid, IconButton, StatusRender, TextRender, UrlRender } from '../../components';
 import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddRegistryModal } from './AddRegistryModal';
@@ -90,10 +90,10 @@ const ListRegistryManagementPage = () => {
       width: '40%',
       resize: true,
       renderCell: item => (
-        <TextRender
-          text={item?.registry_url || ''}
-          capitalizeText={false}
-          toolTip={true}
+        <UrlRender
+          tooltipId={'registry-url-tooltip'}
+          copy_btn_tooltip={'Copy Registry URL'}
+          url={item?.registry_url || ''}
         />
       ),
     },
@@ -151,7 +151,7 @@ const ListRegistryManagementPage = () => {
               wordWrap: 'break-word',
             }}
           />
-          {/* {userPermissions.includes('delete_registry') && (
+          {userPermissions.includes('delete_registry') && (
             <button
               onClick={() => {
                 setSelectedItem(item);
@@ -169,7 +169,7 @@ const ListRegistryManagementPage = () => {
                 <DeleteSmallIcon width={14} height={14} color="red" />
               </IconButton>
             </button>
-          )} */}
+          )}
           <ReactTooltip
             id={`tooltip-group-delete-registry`}
             place="left"
@@ -243,7 +243,7 @@ const ListRegistryManagementPage = () => {
   return (
     <>
       <AddRegistryModal />
-      {/* <ModalWithIcon
+      <ModalWithIcon
         title="Delete Registry"
         primaryButtonText={'Delete'}
         secondaryButtonText="Cancel"
@@ -252,7 +252,7 @@ const ListRegistryManagementPage = () => {
         onRequestClose={handleDeleteModalClose}
         primaryText={`Are you sure you want to delete registry?`}
         onSubmit={handleDeleteSubmit}
-      /> */}
+      />
       <Grid
         module="registry"
         title={'Registry List'}

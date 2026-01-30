@@ -74,14 +74,14 @@ const RegistryEditorKubernetesConfig = ({
             },
           }}
           // onValidate={() => {}}
-          onMount={editor => {
-            editor.onKeyDown(e => {
-              if (e.keyCode === 3) {
-                e.preventDefault();
-                e.stopPropagation();
-              }
-            });
-          }}
+          // onMount={editor => {
+          //   editor.onKeyDown(e => {
+          //     if (e.keyCode === 3) {
+          //       e.preventDefault();
+          //       e.stopPropagation();
+          //     }
+          //   });
+          // }}
         />
       </div>
     </>

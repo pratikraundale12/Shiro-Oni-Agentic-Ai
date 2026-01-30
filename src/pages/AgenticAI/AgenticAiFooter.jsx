@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { KDFM } from '../../constants';
@@ -95,6 +95,15 @@ export const AgenticAiFooter = ({
   const inputRef = useRef(null);
   const isInputValid = queryText.trim().length > 0;
   const isSendBtnDisabled = isLoading || !isInputValid || !sessionId;
+
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
 
   const handleInputChange = e => {
     const val = e.target.value;

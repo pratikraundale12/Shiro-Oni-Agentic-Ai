@@ -122,7 +122,7 @@ export const ClusterSummary = () => {
   };
   useEffect(() => {
     dispatch(ClustersActions.fetchClusterRegistryNodes(clusterId));
-  }, [dispatch]);
+  }, [dispatch, clusterId]);
 
   return (
     <Container>

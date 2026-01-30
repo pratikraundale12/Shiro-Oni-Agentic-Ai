@@ -286,7 +286,7 @@ export const AgenticAiMessageList = ({
                 <AgentContent>
                   {isPending && isLoading ? (
                     <GeneratingWrapper>
-                      <span>Thinking</span>
+                      {/* <span>Thinking</span> */}
                       <LoaderDots>
                         <span />
                         <span />
@@ -301,7 +301,11 @@ export const AgenticAiMessageList = ({
                       >
                         {item.data}
                       </ReactMarkdown>
-                      {item.isLoginRequired && <AgenticAiClusterLoginButton />}
+                      {item.isLoginRequired && (
+                        <AgenticAiClusterLoginButton
+                          clusterId={item.clusterId}
+                        />
+                      )}
                       {item.isLogoutRequired && (
                         <AgenticAiClusterLogoutButton />
                       )}

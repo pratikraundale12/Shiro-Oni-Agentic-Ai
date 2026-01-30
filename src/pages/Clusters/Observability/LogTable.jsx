@@ -100,7 +100,7 @@ const LogTable = ({ data = [] }) => {
                 onClick={() => {
                   dispatch(
                     AgenticAiActions.setQueryText(
-                      `resolve the error in the log: ${item.message}`
+                      `resolve the error: ${item.message}`
                     )
                   );
                   dispatch(AgenticAiActions.setAgenticAiModalOpen(true));
