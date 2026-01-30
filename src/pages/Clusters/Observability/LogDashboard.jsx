@@ -11,10 +11,11 @@ import {
   ObservabilityActions,
   ObservabilitySelectors,
 } from '../../../store';
-import { MetricsCarousel } from './MetricsCarousel';
+// import { MetricsCarousel } from './MetricsCarousel';
+import MetricsGauges from './MetricsGauges';
 
 const DashboardWrapper = styled.div`
-  padding: 24px;
+  padding: 0 24px;
   color: #333;
   background: #ffffff;
 `;
@@ -68,7 +69,9 @@ export const LogDashboard = () => {
       <HeaderSection>
         <HeaderRow>{loading && <SyncText>Syncing logs...</SyncText>}</HeaderRow>
 
-        <MetricsCarousel />
+        {/* <MetricsCarousel /> */}
+
+        <MetricsGauges />
 
         <LogVolumeChart
           logs={logs}
