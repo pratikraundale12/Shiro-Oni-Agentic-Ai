@@ -30,7 +30,7 @@ export const LogVolumeChart = ({
   useEffect(() => {
     if (!svgRef.current || dimensions.width <= 0) return;
 
-    const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+    const margin = { top: 10, right: 10, bottom: 30, left: 40 };
     const innerWidth = dimensions.width - margin.left - margin.right;
     const innerHeight = dimensions.height - margin.top - margin.bottom;
 
@@ -62,6 +62,45 @@ export const LogVolumeChart = ({
     const g = svg
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    g.append('rect')
+      .attr('width', innerWidth)
+      .attr('height', innerHeight)
+      .attr('fill', '#fee1c6')
+      .attr('fill-opacity', 0.3);
+
+    // 2. Grid Group (Forms the rectangles in the background)
+    const gridGroup = g.append('g').attr('class', 'chart-grid');
+
+    // Horizontal Grid Lines
+    gridGroup
+      .append('g')
+      .attr('class', 'grid-horizontal')
+      .call(d3.axisLeft(yScale).ticks(5).tickSize(-innerWidth).tickFormat(''))
+      .selectAll('line')
+      .attr('stroke', '#3e3d3d') // Explicitly set stroke color
+      .attr('stroke-opacity', 0.2) // Increased from 0.05 to ensure visibility
+      .attr('shape-rendering', 'crispEdges');
+
+    // Vertical Grid Lines
+    gridGroup
+      .append('g')
+      .attr('class', 'grid-vertical')
+      .attr('transform', `translate(0, ${innerHeight})`)
+      .call(
+        d3
+          .axisBottom(xScale)
+          .ticks(Math.max(2, Math.floor(innerWidth / 80)))
+          .tickSize(-innerHeight)
+          .tickFormat('')
+      )
+      .selectAll('line')
+      .attr('stroke', '#3e3d3d') // Explicitly set stroke color
+      .attr('stroke-opacity', 0.2) // Increased visibility
+      .attr('shape-rendering', 'crispEdges');
+
+    // Remove the default domain lines (borders) of the grid groups for a cleaner look
+    gridGroup.selectAll('.domain').remove();
 
     // --- 3. AXES & GRID ---
     g.append('g')
@@ -110,6 +149,16 @@ export const LogVolumeChart = ({
       .attr('rx', 1);
 
     // --- 5. INTERACTION: BRUSH & DOUBLE CLICK ---
+
+    const focusLine = g
+      .append('line')
+      .attr('class', 'focus-line')
+      .attr('y1', 0)
+      .attr('y2', innerHeight)
+      .attr('stroke', '#e02f44') // Matching your Error color or red
+      .attr('stroke-width', 1)
+      .attr('opacity', 0)
+      .style('pointer-events', 'none'); // Important: line shouldn't block the brush
     const brush = d3
       .brushX()
       .extent([
@@ -126,6 +175,26 @@ export const LogVolumeChart = ({
 
     // eslint-disable-next-line no-unused-vars
     const brushG = g.append('g').attr('class', 'brush').call(brush);
+    brushG
+      .select('.selection')
+      .attr('fill', '#7c7e80') // Blue tint for the zoomed area
+      .attr('fill-opacity', 0.15)
+      // .attr('stroke', '#007bff') // Subtle border for the drag area
+      .attr('stroke-width', 1);
+
+    brushG
+      .select('.overlay')
+      .on('mousemove', event => {
+        const [mouseX] = d3.pointer(event);
+
+        // Ensure the line stays within chart bounds
+        if (mouseX >= 0 && mouseX <= innerWidth) {
+          focusLine.attr('x1', mouseX).attr('x2', mouseX).attr('opacity', 0.6); // Visible on hover
+        }
+      })
+      .on('mouseleave', () => {
+        focusLine.attr('opacity', 0); // Hide when mouse leaves chart area
+      });
 
     // Double-click to reset
     svg.on('dblclick', () => {
@@ -137,6 +206,17 @@ export const LogVolumeChart = ({
     svg.selectAll('.tick line').attr('stroke', '#eee');
   }, [chartData, dimensions, timeRange, onTimeRangeChange, onReset]);
 
+  const totals = useMemo(() => {
+    return chartData.reduce(
+      (acc, d) => {
+        acc.info += d.INFO || 0;
+        acc.error += d.ERROR || 0;
+        return acc;
+      },
+      { info: 0, error: 0 }
+    );
+  }, [chartData]);
+
   // ... (Keep the Legend/Totals section same as before)
   return (
     <div
@@ -144,8 +224,10 @@ export const LogVolumeChart = ({
       style={{
         width: '100%',
         background: '#fff',
-        padding: '15px',
+        padding: '0',
+        paddingTop: '10px',
         userSelect: 'none',
+        position: 'relative',
       }}
     >
       {/* Legend... */}
@@ -153,8 +235,49 @@ export const LogVolumeChart = ({
         ref={svgRef}
         width="100%"
         height={height}
-        style={{ overflow: 'visible', cursor: 'crosshair' }}
+        style={{ overflow: 'visible', cursor: 'crosshair', display: 'block' }}
       />
+
+      <div
+        style={{
+          position: 'absolute',
+          right: '25px', // Matches SVG margin.right
+          bottom: '-15px', // Sits just above the X-axis labels
+          display: 'flex',
+          gap: '15px',
+          pointerEvents: 'none', // Ensures it doesn't block zoom clicks
+          fontFamily: 'sans-serif',
+          fontSize: '14px',
+          fontWeight: '600',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div
+            style={{
+              width: 8,
+              height: 8,
+              background: '#73bf69',
+              borderRadius: '2px',
+            }}
+          />
+          <span style={{ color: '#666' }}>
+            INFO: <span style={{ color: '#222' }}>{totals.info}</span>
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div
+            style={{
+              width: 8,
+              height: 8,
+              background: '#e02f44',
+              borderRadius: '2px',
+            }}
+          />
+          <span style={{ color: '#666' }}>
+            ERROR: <span style={{ color: '#222' }}>{totals.error}</span>
+          </span>
+        </div>
+      </div>
     </div>
   );
 };

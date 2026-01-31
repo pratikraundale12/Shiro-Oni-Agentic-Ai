@@ -29,8 +29,10 @@ export function* fetchLogs(api, { payload: { params } }) {
   if (response.ok) {
     yield put(ObservabilityActions.setLogs(response?.data));
   } else {
-    toast.error(
-      response?.message || response?.data?.message || 'Failed to fetch logs'
+    toast.info(
+      response?.message ||
+        response?.data?.message ||
+        'Unable to fetch logs at this moment.'
     );
   }
 }
