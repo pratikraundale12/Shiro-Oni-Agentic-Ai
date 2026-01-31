@@ -38,10 +38,7 @@ export const LogVolumeChart = ({
     svg.selectAll('*').remove();
 
     // --- 1. DYNAMIC X-AXIS BASED ON PROPS ---
-    const xScale = d3
-      .scaleTime()
-      .domain(timeRange) // Use the range passed from parent
-      .range([0, innerWidth]);
+    const xScale = d3.scaleTime().domain(timeRange).range([0, innerWidth]);
 
     const maxVal = d3.max(chartData, d => d.total) || 10;
     const yScale = d3
@@ -67,7 +64,9 @@ export const LogVolumeChart = ({
       .attr('width', innerWidth)
       .attr('height', innerHeight)
       .attr('fill', '#fee1c6')
-      .attr('fill-opacity', 0.3);
+      .attr('fill-opacity', 0.3)
+      .attr('stroke-opacity', 0.35)
+      .attr('stroke-width', 1);
 
     // 2. Grid Group (Forms the rectangles in the background)
     const gridGroup = g.append('g').attr('class', 'chart-grid');
@@ -78,8 +77,8 @@ export const LogVolumeChart = ({
       .attr('class', 'grid-horizontal')
       .call(d3.axisLeft(yScale).ticks(5).tickSize(-innerWidth).tickFormat(''))
       .selectAll('line')
-      .attr('stroke', '#3e3d3d') // Explicitly set stroke color
-      .attr('stroke-opacity', 0.2) // Increased from 0.05 to ensure visibility
+      .attr('stroke', '#3e3d3d')
+      .attr('stroke-opacity', 0.2)
       .attr('shape-rendering', 'crispEdges');
 
     // Vertical Grid Lines
@@ -95,22 +94,17 @@ export const LogVolumeChart = ({
           .tickFormat('')
       )
       .selectAll('line')
-      .attr('stroke', '#3e3d3d') // Explicitly set stroke color
-      .attr('stroke-opacity', 0.2) // Increased visibility
+      .attr('stroke', '#3e3d3d')
+      .attr('stroke-opacity', 0.2)
       .attr('shape-rendering', 'crispEdges');
 
-    // Remove the default domain lines (borders) of the grid groups for a cleaner look
     gridGroup.selectAll('.domain').remove();
 
     // --- 3. AXES & GRID ---
-    g.append('g')
-      .attr('class', 'grid')
-      .call(d3.axisLeft(yScale).ticks(5).tickSize(-innerWidth).tickFormat(''))
-      .attr('stroke-opacity', 0.1);
 
     const xAxis = d3
       .axisBottom(xScale)
-      .ticks(Math.max(2, Math.floor(innerWidth / 80))) // Dynamic tick count
+      .ticks(Math.max(2, Math.floor(innerWidth / 80)))
       .tickFormat(d3.timeFormat('%H:%M:%S'));
 
     g.append('g')
@@ -124,12 +118,8 @@ export const LogVolumeChart = ({
     const stack = d3.stack().keys(['INFO', 'ERROR']);
     const layers = stack(chartData);
     const colorMap = { INFO: '#73bf69', ERROR: '#e02f44' };
-
-    // Calculate bar width based on current zoom domain
-    // If the domain is 1hr (3600s), bars are narrow. If 1min (60s), bars are wide.
     const domainDiffSeconds = (timeRange[1] - timeRange[0]) / 1000;
     const barWidth = Math.max(2, (innerWidth / (domainDiffSeconds / 60)) * 0.8);
-
     const barGroup = g.append('g').attr('clip-path', 'url(#chart-clip)');
 
     barGroup
@@ -149,16 +139,28 @@ export const LogVolumeChart = ({
       .attr('rx', 1);
 
     // --- 5. INTERACTION: BRUSH & DOUBLE CLICK ---
-
-    const focusLine = g
+    const focusVertical = g
       .append('line')
-      .attr('class', 'focus-line')
+      .attr('class', 'focus-line-vertical')
       .attr('y1', 0)
       .attr('y2', innerHeight)
-      .attr('stroke', '#e02f44') // Matching your Error color or red
+      .attr('stroke', '#e02f44')
       .attr('stroke-width', 1)
+      .attr('stroke-dasharray', '4 4')
       .attr('opacity', 0)
-      .style('pointer-events', 'none'); // Important: line shouldn't block the brush
+      .style('pointer-events', 'none');
+
+    const focusHorizontal = g
+      .append('line')
+      .attr('class', 'focus-line-horizontal')
+      .attr('x1', 0)
+      .attr('x2', innerWidth)
+      .attr('stroke', '#e02f44')
+      .attr('stroke-width', 1)
+      .attr('stroke-dasharray', '4 4')
+      .attr('opacity', 0)
+      .style('pointer-events', 'none');
+
     const brush = d3
       .brushX()
       .extent([
@@ -168,7 +170,6 @@ export const LogVolumeChart = ({
       .on('end', event => {
         if (!event.selection) return;
         const [x0, x1] = event.selection.map(xScale.invert);
-        // Clear brush overlay immediately
         g.select('.brush').call(brush.move, null);
         onTimeRangeChange(x0, x1);
       });
@@ -177,23 +178,35 @@ export const LogVolumeChart = ({
     const brushG = g.append('g').attr('class', 'brush').call(brush);
     brushG
       .select('.selection')
-      .attr('fill', '#7c7e80') // Blue tint for the zoomed area
+      .attr('fill', '#7c7e80')
       .attr('fill-opacity', 0.15)
-      // .attr('stroke', '#007bff') // Subtle border for the drag area
       .attr('stroke-width', 1);
 
     brushG
       .select('.overlay')
       .on('mousemove', event => {
-        const [mouseX] = d3.pointer(event);
+        const [mouseX, mouseY] = d3.pointer(event);
 
-        // Ensure the line stays within chart bounds
-        if (mouseX >= 0 && mouseX <= innerWidth) {
-          focusLine.attr('x1', mouseX).attr('x2', mouseX).attr('opacity', 0.6); // Visible on hover
+        if (
+          mouseX >= 0 &&
+          mouseX <= innerWidth &&
+          mouseY >= 0 &&
+          mouseY <= innerHeight
+        ) {
+          focusVertical
+            .attr('x1', mouseX)
+            .attr('x2', mouseX)
+            .attr('opacity', 0.6);
+
+          focusHorizontal
+            .attr('y1', mouseY)
+            .attr('y2', mouseY)
+            .attr('opacity', 0.6);
         }
       })
       .on('mouseleave', () => {
-        focusLine.attr('opacity', 0); // Hide when mouse leaves chart area
+        focusVertical.attr('opacity', 0);
+        focusHorizontal.attr('opacity', 0);
       });
 
     // Double-click to reset
@@ -201,9 +214,9 @@ export const LogVolumeChart = ({
       if (onReset) onReset();
     });
 
-    // Clean UI styles
     svg.selectAll('.domain').attr('stroke', '#ccc');
-    svg.selectAll('.tick line').attr('stroke', '#eee');
+    svg.selectAll('.x-axis .tick line').attr('stroke', '#eee');
+    svg.selectAll('.y-axis .tick line').attr('stroke', '#eee');
   }, [chartData, dimensions, timeRange, onTimeRangeChange, onReset]);
 
   const totals = useMemo(() => {
@@ -217,7 +230,6 @@ export const LogVolumeChart = ({
     );
   }, [chartData]);
 
-  // ... (Keep the Legend/Totals section same as before)
   return (
     <div
       ref={containerRef}
@@ -230,7 +242,6 @@ export const LogVolumeChart = ({
         position: 'relative',
       }}
     >
-      {/* Legend... */}
       <svg
         ref={svgRef}
         width="100%"
@@ -241,11 +252,11 @@ export const LogVolumeChart = ({
       <div
         style={{
           position: 'absolute',
-          right: '25px', // Matches SVG margin.right
-          bottom: '-15px', // Sits just above the X-axis labels
+          right: '25px',
+          bottom: '-15px',
           display: 'flex',
           gap: '15px',
-          pointerEvents: 'none', // Ensures it doesn't block zoom clicks
+          pointerEvents: 'none',
           fontFamily: 'sans-serif',
           fontSize: '14px',
           fontWeight: '600',
