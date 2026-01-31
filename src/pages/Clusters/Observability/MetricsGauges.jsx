@@ -5,7 +5,7 @@ import { Gauge } from './Gauge';
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: space-around;
   gap: 20px;
   // padding: 40px;
   background-color: #ffffff;
@@ -13,27 +13,25 @@ const Container = styled.div`
 
 export default function MetricsGauges() {
   const data = [
+    { label: 'CPU Utilization', value: 21.0, max: 100, precision: 1 },
     {
-      label: 'Small Precision',
-      value: 0.0004668,
-      max: 0.001,
-      precision: 7,
-      showPercentSymbol: false,
-    },
-    { label: 'Average CPU Utilization', value: 21.0, max: 100, precision: 1 },
-    {
-      label: 'Average Memory Utilization',
+      label: 'Memory Utilization',
       value: 65.5,
       max: 100,
       precision: 1,
     },
     {
-      label: 'Average Node + Storage Utilization',
-      value: 81.7,
+      label: 'Storage Utilization',
+      value: 61.7,
       max: 100,
       precision: 1,
     },
-    { label: 'Average Pods Created', value: 0 }, // Represents "No data"
+    {
+      label: 'Thread Count',
+      value: 24,
+      max: 100,
+      showPercentSymbol: false,
+    },
   ];
 
   return (

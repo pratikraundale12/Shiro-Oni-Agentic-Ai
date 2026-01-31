@@ -43,6 +43,10 @@ export const transformLogsForTable = (logs = []) => {
     const ms = Number(log.timestamp.toString().substring(0, 13));
     const dateObj = new Date(ms);
 
+    const rawLevel = log.labels?.level || log.labels?.detected_level || 'INFO';
+    const normalizedLevel =
+      String(rawLevel).toUpperCase() === 'ERROR' ? 'ERROR' : 'INFO';
+
     return {
       id: log.timestamp,
       timestamp: dateObj.toISOString(),
@@ -57,8 +61,8 @@ export const transformLogsForTable = (logs = []) => {
       }),
 
       message: log.parsedBody || 'N/A',
-      severity: log.labels?.level || log.labels?.detected_level || 'N/A',
-      level: log.labels?.level || log.labels?.detected_level || 'N/A',
+      severity: normalizedLevel,
+      level: normalizedLevel,
 
       service: log.labels?.service_name || 'N/A',
       host: log.labels?.service_instance_id || 'N/A',
