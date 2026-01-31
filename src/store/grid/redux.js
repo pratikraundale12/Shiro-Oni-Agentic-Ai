@@ -6,6 +6,7 @@ const prefix = '@@KDFM-GRID/';
 export const GridActions = {
   fetchGrid: createAction(`${prefix}fetchGrid`),
   fetchGridSuccess: createAction(`${prefix}fetchGridSuccess`),
+  setItemsPerPage: createAction(`${prefix}setItemsPerPage`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -28,6 +29,7 @@ export const GridSelectors = {
   getNamespaceGridRegistry: (state, module) =>
     state.grid?.[module]?.registry || [],
   getModuleAllData: (state, module) => state.grid?.[module],
+  getItemsPerPage: state => state.grid.itemsPerPage,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -40,7 +42,13 @@ const fetchGridSuccess = (state, { payload: { module, data } }) => {
   };
 };
 
+const setItemsPerPage = (state, { payload }) => ({
+  ...state,
+  itemsPerPage: payload,
+});
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const gridReducer = createReducer(GRID_INITIAL_STATE, builder => {
   builder.addCase(GridActions.fetchGridSuccess, fetchGridSuccess);
+  builder.addCase(GridActions.setItemsPerPage, setItemsPerPage);
 });

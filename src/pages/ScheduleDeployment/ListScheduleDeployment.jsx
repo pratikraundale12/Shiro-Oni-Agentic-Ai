@@ -35,6 +35,7 @@ import {
   GridActions,
   LoadingSelectors,
   NamespacesActions,
+  GridSelectors,
 } from '../../store';
 import {
   SchedularActions,
@@ -151,6 +152,7 @@ const NoapproverText = styled.div`
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
+  const limit = useSelector(GridSelectors.getItemsPerPage);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const approveScheduleModal = useSelector(
@@ -900,6 +902,7 @@ export const ListScheduleDeployment = () => {
     const payload = {
       state: 'NOT_APPROVED',
       schedularId: selectedSchedule.id,
+      limit: limit,
     };
     dispatch(SchedularActions.editScheduleByRegistry(payload));
     setCurrentPage(1);
@@ -908,6 +911,7 @@ export const ListScheduleDeployment = () => {
     const payload = {
       state: 'APPROVED',
       schedularId: selectedSchedule.id,
+      limit: limit,
     };
     dispatch(SchedularActions.editScheduleByRegistry(payload));
     setCurrentPage(1);
@@ -955,6 +959,7 @@ export const ListScheduleDeployment = () => {
         module: 'scheduler',
         params: {
           page: currentPage,
+          limit: limit,
           ...(selectedRange && {
             start_date: selectedRange?.[0]?.toISOString(),
             end_date: selectedRange?.[1]?.toISOString(),
@@ -983,6 +988,7 @@ export const ListScheduleDeployment = () => {
     selctedStatus,
     search,
     currentPage,
+    limit,
     settingData?.refresh,
   ]);
   const handleCloseMenu = () => {
@@ -1090,6 +1096,8 @@ export const ListScheduleDeployment = () => {
         currentPage={currentPage}
         sortingState={sortingState}
         setSortingState={setSortingState}
+        limit={limit}
+        setLimit={(val) => dispatch(GridActions.setItemsPerPage(val))}
       />
       <DiffModalScheduleList />
       <ScheduleSanityCheckModal fetchSchedule={fetchRecords} />
