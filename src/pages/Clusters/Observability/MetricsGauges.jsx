@@ -13,20 +13,25 @@ const Container = styled.div`
 
 export default function MetricsGauges() {
   const data = [
-    { label: 'Average CPU Utilization', value: 21.0, max: 100, precision: 1 },
+    { label: 'CPU Utilization', value: 21.0, max: 100, precision: 1 },
     {
-      label: 'Average Memory Utilization',
+      label: 'Memory Utilization',
       value: 65.5,
       max: 100,
       precision: 1,
     },
     {
-      label: 'Average Node + Storage Utilization',
-      value: 81.7,
+      label: 'Storage Utilization',
+      value: 61.7,
       max: 100,
       precision: 1,
     },
-    { label: 'Average Pods Created', value: 0 }, // Represents "No data"
+    {
+      label: 'Thread Count',
+      value: 24,
+      max: 100,
+      showPercentSymbol: false,
+    },
   ];
 
   return (
