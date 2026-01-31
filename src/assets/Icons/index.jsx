@@ -238,3 +238,4 @@ export * from './MinimizeScreenIcon';
 export * from './WelcomeCenterLogo';
 export * from './CardLogo';
 export * from './SendIcon';
+export * from './SolveWithAiIcon';

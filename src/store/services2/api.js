@@ -15,6 +15,7 @@ import { settingsAPI } from './setting';
 import { usersAPI } from './users';
 import { registryAPI } from './registry';
 import { agenticAiAPI } from './agenticAi';
+import { observabilityAPI } from './observability';
 
 const create = (baseURL = `${API_URL}/api`) => {
   const api = apisauce.create({
@@ -93,6 +94,8 @@ const create = (baseURL = `${API_URL}/api`) => {
     ...registryAPI(api),
     // Agentic AI
     ...agenticAiAPI(api),
+    // Observability
+    ...observabilityAPI(api),
   };
 };
 

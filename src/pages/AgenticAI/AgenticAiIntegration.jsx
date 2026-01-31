@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -30,15 +30,15 @@ export const AgenticAiIntegration = () => {
   const isFullscreen = useSelector(
     AgenticAiSelectors.getAgenticAiModalFullScreen
   );
-  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const isChatModalOpen = useSelector(AgenticAiSelectors.getAgenticAiModalOpen);
 
   const onChatbotClick = () => {
-    setIsChatModalOpen(prev => !prev);
+    dispatch(AgenticAiActions.setAgenticAiModalOpen(state => !state));
     dispatch(AgenticAiActions.setAgenticAiModalFullScreen(false));
   };
 
   const handleCloseModal = () => {
-    setIsChatModalOpen(false);
+    dispatch(AgenticAiActions.setAgenticAiModalOpen(false));
     dispatch(AgenticAiActions.setAgenticAiModalFullScreen(false));
   };
 
