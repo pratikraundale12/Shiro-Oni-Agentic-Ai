@@ -1,18 +1,17 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { transformLogsForTable } from './helper';
 import LogVolumeChart from './LogVolumeChart';
 import LogTable from './LogTable';
+import MetricsGauges from './MetricsGauges';
 
 import {
   LoadingSelectors,
   ObservabilityActions,
   ObservabilitySelectors,
 } from '../../../store';
-// import { MetricsCarousel } from './MetricsCarousel';
-import MetricsGauges from './MetricsGauges';
 
 const DashboardWrapper = styled.div`
   padding: 0 24px;
@@ -34,8 +33,25 @@ const SyncText = styled.small`
   color: #666;
 `;
 
+const Section = styled.section`
+  margin-bottom: 32px;
+`;
+
+const SectionHeading = styled.h3`
+  // margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+  letter-spacing: 0.3px;
+`;
+
 export const LogDashboard = () => {
   const dispatch = useDispatch();
+
+  const [timeRange, setTimeRange] = useState(() => {
+    const now = new Date();
+    return [new Date(now.getTime() - 60 * 60 * 1000), now];
+  });
 
   const { logs = [] } = useSelector(ObservabilitySelectors.getLogs) || {};
 
@@ -48,40 +64,50 @@ export const LogDashboard = () => {
   useEffect(() => {
     dispatch(
       ObservabilityActions.fetchLogs({
-        params: { limit: 100 },
+        params: {
+          start: timeRange[0].toISOString(),
+          end: timeRange[1].toISOString(),
+          limit: 500,
+        },
       })
     );
-  }, [dispatch]);
+  }, [dispatch, timeRange]);
 
-  const handleTimeRangeChange = useCallback(
-    (start, end) => {
-      dispatch(
-        ObservabilityActions.fetchLogs({
-          params: { start, end },
-        })
-      );
-    },
-    [dispatch]
-  );
+  const handleZoom = useCallback((start, end) => {
+    setTimeRange([new Date(start), new Date(end)]);
+  }, []);
+
+  const resetZoom = useCallback(() => {
+    const now = new Date();
+    setTimeRange([new Date(now.getTime() - 60 * 60 * 1000), now]);
+  }, []);
 
   return (
     <DashboardWrapper>
       <HeaderSection>
         <HeaderRow>{loading && <SyncText>Syncing logs...</SyncText>}</HeaderRow>
 
-        {/* <MetricsCarousel /> */}
+        <Section>
+          <SectionHeading>Metrics</SectionHeading>
+          <MetricsGauges />
+        </Section>
 
-        <MetricsGauges />
-
-        <LogVolumeChart
-          logs={logs}
-          onTimeRangeChange={handleTimeRangeChange}
-          showBar
-          showLine
-        />
+        <Section>
+          <SectionHeading>Logs Volume</SectionHeading>
+          <LogVolumeChart
+            logs={logs}
+            timeRange={timeRange}
+            onTimeRangeChange={handleZoom}
+            onReset={resetZoom}
+            height={250}
+          />
+        </Section>
       </HeaderSection>
 
-      <LogTable data={tableData} />
+      <Section>
+        <SectionHeading>Logs</SectionHeading>
+        <LogTable data={tableData} />
+      </Section>
     </DashboardWrapper>
   );
 };

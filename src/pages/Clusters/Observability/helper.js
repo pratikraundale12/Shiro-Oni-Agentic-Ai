@@ -39,11 +39,12 @@ export const aggregateLogsForChart = logs => {
 // 2. Flattening for the Table
 export const transformLogsForTable = (logs = []) => {
   return logs.map(log => {
+    // Convert nanoseconds → milliseconds
     const ms = Number(log.timestamp.toString().substring(0, 13));
     const dateObj = new Date(ms);
 
     return {
-      id: log.timestamp, // Keep nanoseconds as unique ID
+      id: log.timestamp,
       timestamp: dateObj.toISOString(),
       formattedTimestamp: dateObj.toLocaleString('en-GB', {
         day: '2-digit',
@@ -54,12 +55,14 @@ export const transformLogsForTable = (logs = []) => {
         second: '2-digit',
         hour12: true,
       }),
-      severity: log.severity,
-      message: log.body,
-      job: log.labels?.job || 'N/A',
-      level: log.labels?.level || log.severity,
-      host: log.resources?.['host.name'] || 'N/A',
+
+      message: log.parsedBody || 'N/A',
+      severity: log.labels?.level || log.labels?.detected_level || 'N/A',
+      level: log.labels?.level || log.labels?.detected_level || 'N/A',
+
       service: log.labels?.service_name || 'N/A',
+      host: log.labels?.service_instance_id || 'N/A',
+      job: log.labels?.scope_name || 'N/A',
     };
   });
 };

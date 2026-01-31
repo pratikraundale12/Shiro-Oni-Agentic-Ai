@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import { Table } from '../../../components';
 import { useDispatch } from 'react-redux';
 import { AgenticAiActions } from '../../../store';
-import { SolveWithAiIcon } from '../../../assets';
+import { CardLogo } from '../../../assets';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const TableWrapper = styled.section`
   background: #ffffff;
@@ -13,7 +14,8 @@ const TableWrapper = styled.section`
 `;
 
 const SeverityText = styled.span`
-  font-weight: ${({ severity }) => (severity === 'ERROR' ? 600 : 400)};
+  font-weight: 600;
+  color: ${({ severity }) => SEVERITY_COLORS[severity] || '#000000'};
 `;
 
 const MessageCell = styled.div`
@@ -23,41 +25,24 @@ const MessageCell = styled.div`
   white-space: nowrap;
 `;
 
-const SolveWithAiButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+const SolveWithAiButton2 = styled.button``;
 
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-
-  background-color: #ff7a00;
-  color: #ffffff;
-
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-
-  transition: background-color 0.15s ease;
-
-  &:hover {
-    background-color: #e66d01;
-  }
-
-  &:active {
-    background-color: #cc5f01;
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
+const SEVERITY_COLORS = {
+  INFO: '#42C173',
+  WARN: '#F8B827',
+  ERROR: '#F21710',
+};
 
 const LogTable = ({ data = [] }) => {
   const dispatch = useDispatch();
   const columns = useMemo(
     () => [
+      {
+        label: 'Time',
+        renderCell: item => <>{item?.formattedTimestamp || '—'}</>,
+        resize: true,
+        width: '18%',
+      },
       {
         label: 'Level',
         renderCell: item => (
@@ -67,12 +52,6 @@ const LogTable = ({ data = [] }) => {
         ),
         resize: true,
         width: '12%',
-      },
-      {
-        label: 'Time',
-        renderCell: item => <>{item?.formattedTimestamp || '—'}</>,
-        resize: true,
-        width: '18%',
       },
       {
         label: 'Service',
@@ -93,10 +72,11 @@ const LogTable = ({ data = [] }) => {
       {
         label: 'Action',
         renderCell: item => {
-          console.log(item);
+          if (item.severity !== 'ERROR') return null;
+
           return (
             <>
-              <SolveWithAiButton
+              <SolveWithAiButton2
                 onClick={() => {
                   dispatch(
                     AgenticAiActions.setQueryText(
@@ -105,17 +85,29 @@ const LogTable = ({ data = [] }) => {
                   );
                   dispatch(AgenticAiActions.setAgenticAiModalOpen(true));
                 }}
+                data-tooltip-id={'tooltip-id-ask-knowe'}
               >
                 <span>
-                  <SolveWithAiIcon height={15} width={15} />
+                  <CardLogo
+                    width={26}
+                    height={26}
+                    enableHoverRotation={false}
+                  />
                 </span>
-                <span>Solve with AI</span>
-              </SolveWithAiButton>
+              </SolveWithAiButton2>
+              <ReactTooltip
+                id="tooltip-id-ask-knowe"
+                place="bottom"
+                content="Ask KNOWE"
+                style={{
+                  zIndex: 9999,
+                }}
+              />
             </>
           );
         },
         resize: true,
-        width: '12%',
+        width: '10%',
       },
     ],
     []

@@ -5,9 +5,9 @@ import { Gauge } from './Gauge';
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 48px;
-  padding: 40px;
+  justify-content: space-between;
+  gap: 20px;
+  // padding: 40px;
   background-color: #ffffff;
 `;
 
