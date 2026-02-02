@@ -487,6 +487,16 @@ export const Dashboard = () => {
     setActiveTab('DeploymentStatistics');
   };
 
+  const handleMetricsClick = () => {
+    if (!selectedCluster?.value) {
+      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
+        toastId: 'please-login-cluster-toast',
+      });
+      return;
+    }
+    setActiveTab('Monitoring');
+  };
+
   return (
     <>
       <Loader loading={loading} />
@@ -525,7 +535,7 @@ export const Dashboard = () => {
 
             <Tab
               active={activeTab === 'Monitoring'}
-              onClick={() => setActiveTab('Monitoring')}
+              onClick={handleMetricsClick}
             >
               <InsightIconContiner active={activeTab === 'Monitoring'}>
                 <DeploymentStaticsIcon
