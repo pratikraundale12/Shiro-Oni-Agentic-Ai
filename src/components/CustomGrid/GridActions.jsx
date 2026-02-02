@@ -847,6 +847,20 @@ export const GridActions = ({
     LoadingSelectors.getLoading(state, 'fetchEmailReport')
   );
 
+  const sortedActivityEvents = useMemo(() => {
+    return [...ACTIVITY_EVENTS].sort((a, b) => a.label.localeCompare(b.label));
+  }, []);
+
+  const sortedActivityEntity = useMemo(() => {
+    return [...MODULE_LIST_MAP].sort((a, b) => a.label.localeCompare(b.label));
+  }, []);
+
+  const sortedActivityStatus = useMemo(() => {
+    return [...ACTIVITY_STATUS_OPTIONS].sort((a, b) =>
+      a.label.localeCompare(b.label)
+    );
+  }, []);
+
   return (
     <>
       <Flex className="flex-wrap gap-2">
@@ -1054,7 +1068,7 @@ export const GridActions = ({
                   control={control}
                   label={KDFM.SELECT_EVENT}
                   placeholder={KDFM.SELECT_EVENT}
-                  options={ACTIVITY_EVENTS}
+                  options={sortedActivityEvents}
                   customValue={selectEvent}
                   customOnChange={(onChange, selectedOptions) => {
                     handleEventChange(selectedOptions);
@@ -1074,7 +1088,7 @@ export const GridActions = ({
                   control={control}
                   label={KDFM.SELECT_ENTITY}
                   placeholder={KDFM.SELECT_ENTITY}
-                  options={MODULE_LIST_MAP}
+                  options={sortedActivityEntity}
                   customValue={selectEntity}
                   enableSelectAll={true} // Enable select all
                   selectAllLabel="Select All"
@@ -1094,7 +1108,7 @@ export const GridActions = ({
                   control={control}
                   label="Select Status"
                   placeholder="Select Status"
-                  options={ACTIVITY_STATUS_OPTIONS}
+                  options={sortedActivityStatus}
                   customValue={selectStatus}
                   customOnChange={(onChange, selectedOptions) => {
                     handleStatusChange(selectedOptions);
