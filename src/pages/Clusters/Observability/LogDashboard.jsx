@@ -12,6 +12,8 @@ import {
   ObservabilityActions,
   ObservabilitySelectors,
 } from '../../../store';
+import { TimeRangeSelector } from './TimeRangeSelector';
+import { FullPageLoader } from '../../../components';
 
 const DashboardWrapper = styled.div`
   padding: 0 24px;
@@ -21,16 +23,6 @@ const DashboardWrapper = styled.div`
 
 const HeaderSection = styled.section`
   margin-bottom: 20px;
-`;
-
-const HeaderRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const SyncText = styled.small`
-  color: #666;
 `;
 
 const Section = styled.section`
@@ -47,7 +39,8 @@ const SectionHeading = styled.h3`
 
 export const LogDashboard = () => {
   const dispatch = useDispatch();
-
+  const [selectedRange, setSelectedRange] = useState('1H');
+  const [isZoomed, setIsZoomed] = useState(false);
   const [timeRange, setTimeRange] = useState(() => {
     const now = new Date();
     return [new Date(now.getTime() - 60 * 60 * 1000), now];
@@ -73,19 +66,36 @@ export const LogDashboard = () => {
     );
   }, [dispatch, timeRange]);
 
+  const handleRangeSelect = option => {
+    const now = new Date();
+    const start = new Date(now.getTime() - option.value * 60 * 1000);
+    setSelectedRange(option.label);
+    setIsZoomed(false);
+    setTimeRange([start, now]);
+  };
+
   const handleZoom = useCallback((start, end) => {
     setTimeRange([new Date(start), new Date(end)]);
+    setIsZoomed(true);
+    setSelectedRange(null);
   }, []);
 
   const resetZoom = useCallback(() => {
     const now = new Date();
+    setSelectedRange('1H');
+    setIsZoomed(false);
     setTimeRange([new Date(now.getTime() - 60 * 60 * 1000), now]);
   }, []);
 
   return (
     <DashboardWrapper>
       <HeaderSection>
-        <HeaderRow>{loading && <SyncText>Syncing logs...</SyncText>}</HeaderRow>
+        {loading && <FullPageLoader loading={loading} />}
+
+        <TimeRangeSelector
+          selectedRange={selectedRange}
+          onRangeSelect={handleRangeSelect}
+        />
 
         <Section>
           <SectionHeading>Metrics</SectionHeading>
@@ -97,9 +107,10 @@ export const LogDashboard = () => {
           <LogVolumeChart
             logs={logs}
             timeRange={timeRange}
-            onTimeRangeChange={handleZoom}
             onReset={resetZoom}
             height={250}
+            isZoomed={isZoomed}
+            onTimeRangeChange={handleZoom}
           />
         </Section>
       </HeaderSection>

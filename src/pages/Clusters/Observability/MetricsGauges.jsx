@@ -13,21 +13,21 @@ const Container = styled.div`
 
 export default function MetricsGauges() {
   const data = [
-    { label: 'CPU Utilization', value: 21.0, max: 100, precision: 1 },
+    { label: 'CPU  Utilization', value: 21.0, max: 100, precision: 1 },
     {
-      label: 'Memory Utilization',
+      label: 'Memory  Utilization',
       value: 65.5,
       max: 100,
       precision: 1,
     },
     {
-      label: 'Storage Utilization',
+      label: 'Storage  Utilization',
       value: 61.7,
       max: 100,
       precision: 1,
     },
     {
-      label: 'Thread Count',
+      label: 'Thread  Count',
       value: 24,
       max: 100,
       showPercentSymbol: false,

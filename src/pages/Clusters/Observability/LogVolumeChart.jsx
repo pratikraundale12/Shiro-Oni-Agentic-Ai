@@ -2,6 +2,42 @@ import React, { useRef, useEffect, useMemo, useState } from 'react';
 import * as d3 from 'd3';
 import PropTypes from 'prop-types';
 import { aggregateLogsForChart } from './helper';
+import styled from 'styled-components';
+
+const ResetButton = styled.button`
+  position: absolute;
+  top: -16px;
+  right: 10px;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: none;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  background-color: #edeeee;
+
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #e2e3e3;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    background-color: #d1d2d2;
+    transform: translateY(0);
+  }
+`;
 
 export const LogVolumeChart = ({
   logs = [],
@@ -9,6 +45,7 @@ export const LogVolumeChart = ({
   onTimeRangeChange,
   onReset,
   height = 200,
+  isZoomed,
 }) => {
   const containerRef = useRef(null);
   const svgRef = useRef(null);
@@ -113,6 +150,27 @@ export const LogVolumeChart = ({
       .call(xAxis);
 
     g.append('g').call(d3.axisLeft(yScale).ticks(5));
+
+    g.append('text')
+      .attr('class', 'x-axis-label')
+      .attr('x', innerWidth / 2)
+      .attr('y', innerHeight + margin.bottom + 10)
+      .attr('text-anchor', 'middle')
+      .style('fill', '#222')
+      .style('font-size', '12px')
+      .style('font-weight', '600')
+      .text('Time');
+
+    g.append('text')
+      .attr('class', 'y-axis-label')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -innerHeight / 2)
+      .attr('y', -margin.left)
+      .attr('text-anchor', 'middle')
+      .style('fill', '#222')
+      .style('font-size', '12px')
+      .style('font-weight', '600')
+      .text('Logs Volume');
 
     // --- 4. BARS WITH CLIPPING ---
     const stack = d3.stack().keys(['INFO', 'ERROR']);
@@ -242,6 +300,7 @@ export const LogVolumeChart = ({
         position: 'relative',
       }}
     >
+      {isZoomed && <ResetButton onClick={onReset}>Reset Zoom</ResetButton>}
       <svg
         ref={svgRef}
         width="100%"
@@ -299,6 +358,7 @@ LogVolumeChart.propTypes = {
   onTimeRangeChange: PropTypes.func.isRequired,
   onReset: PropTypes.func.isRequired,
   height: PropTypes.number,
+  isZoomed: PropTypes.bool,
 };
 
 export default React.memo(LogVolumeChart);
