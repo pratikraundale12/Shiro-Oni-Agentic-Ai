@@ -84,7 +84,7 @@ const LogoWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 4px; /* Aligns icon with the first line of text */
+  margin-top: 4px;
 `;
 
 const AgentContent = styled.div`
@@ -98,33 +98,33 @@ const AgentContent = styled.div`
   letter-spacing: -0.31px;
 
   table {
-    display: block;
+    display: table;
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin: 16px 0;
+    table-layout: auto;
+    border-collapse: collapse;
     background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
     font-size: 14px;
   }
 
-  th {
-    white-space: nowrap;
-    background-color: #f8f8f8;
-    font-weight: 600;
-    color: #444;
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 16px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
   }
 
-  th,
-  td {
-    border-bottom: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-    padding: 10px 12px;
+  th {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
     text-align: left;
-    min-width: 100px;
+  }
+
+  td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    text-align: left;
   }
 
   th:last-child,
@@ -134,6 +134,12 @@ const AgentContent = styled.div`
 
   tr:last-child td {
     border-bottom: none;
+  }
+
+  th,
+  td:first-child {
+    border-left: none;
+    border-top: none;
   }
 
   th {
@@ -249,7 +255,11 @@ export const AgenticAiMessageList = ({
   const mergedComponents = {
     ...markdownComponents,
     // eslint-disable-next-line no-unused-vars
-    table: ({ node, ...props }) => <table {...props} />,
+    table: ({ node, ...props }) => (
+      <div className="table-wrapper">
+        <table {...props} />
+      </div>
+    ),
   };
   return (
     <ListContainer>

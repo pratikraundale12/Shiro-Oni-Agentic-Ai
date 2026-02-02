@@ -169,7 +169,7 @@ export const ClusterLoginModal = () => {
           dispatch(NamespacesActions.checkDestCluster());
         }
         dispatch(AuthenticationActions.setClusterLogin(false));
-        toast.success('The cluster is now enabled successfully');
+        toast.success('The cluster is now connected successfully');
 
         reset(DEFAULT_VALUES);
         dispatch(
@@ -307,7 +307,7 @@ export const ClusterLoginModal = () => {
         size="sm"
         loading={loading}
         secondaryButtonText="Back"
-        primaryButtonText={isFieldsDisabled ? 'Switch' : 'Submit'}
+        primaryButtonText={isFieldsDisabled ? 'Switch' : 'Login'}
         primaryButtonDisabled={selectedCluster?.value == clusterId}
         onSubmit={isFieldsDisabled ? onSwitchCluster : handleSubmit(onSubmit)}
         footerAlign="start"
