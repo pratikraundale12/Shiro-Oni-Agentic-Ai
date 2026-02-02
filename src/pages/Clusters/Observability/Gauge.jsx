@@ -57,10 +57,12 @@ export const Gauge = ({
   // Format display value: use precision for decimals, or toLocaleString for large numbers
   const displayValue = isNoData
     ? 'No data'
-    : value.toLocaleString(undefined, {
-        minimumFractionDigits: precision,
-        maximumFractionDigits: precision,
-      });
+    : Number.isInteger(value)
+      ? value.toLocaleString()
+      : value.toLocaleString(undefined, {
+          minimumFractionDigits: precision,
+          maximumFractionDigits: precision,
+        });
 
   return (
     <GaugeWrapper>
@@ -126,6 +128,7 @@ export const Gauge = ({
             marginTop: '12px',
             fontWeight: 600,
             textTransform: 'uppercase',
+            whiteSpace: 'pre',
           }}
         >
           {label}

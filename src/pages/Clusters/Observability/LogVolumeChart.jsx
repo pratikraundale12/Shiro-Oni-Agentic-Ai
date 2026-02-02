@@ -114,6 +114,27 @@ export const LogVolumeChart = ({
 
     g.append('g').call(d3.axisLeft(yScale).ticks(5));
 
+    g.append('text')
+      .attr('class', 'x-axis-label')
+      .attr('x', innerWidth / 2)
+      .attr('y', innerHeight + margin.bottom)
+      .attr('text-anchor', 'middle')
+      .style('fill', '#8c8c8c')
+      .style('font-size', '12px')
+      .style('font-weight', '600')
+      .text('Time');
+
+    g.append('text')
+      .attr('class', 'y-axis-label')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -innerHeight / 2)
+      .attr('y', -margin.left)
+      .attr('text-anchor', 'middle')
+      .style('fill', '#8c8c8c')
+      .style('font-size', '12px')
+      .style('font-weight', '600')
+      .text('Logs Volume');
+
     // --- 4. BARS WITH CLIPPING ---
     const stack = d3.stack().keys(['INFO', 'ERROR']);
     const layers = stack(chartData);
