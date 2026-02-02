@@ -154,9 +154,9 @@ export const LogVolumeChart = ({
     g.append('text')
       .attr('class', 'x-axis-label')
       .attr('x', innerWidth / 2)
-      .attr('y', innerHeight + margin.bottom)
+      .attr('y', innerHeight + margin.bottom + 10)
       .attr('text-anchor', 'middle')
-      .style('fill', '#8c8c8c')
+      .style('fill', '#222')
       .style('font-size', '12px')
       .style('font-weight', '600')
       .text('Time');
@@ -167,7 +167,7 @@ export const LogVolumeChart = ({
       .attr('x', -innerHeight / 2)
       .attr('y', -margin.left)
       .attr('text-anchor', 'middle')
-      .style('fill', '#8c8c8c')
+      .style('fill', '#222')
       .style('font-size', '12px')
       .style('font-weight', '600')
       .text('Logs Volume');
