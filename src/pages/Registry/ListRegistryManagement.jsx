@@ -8,12 +8,18 @@ import {
   SortDownIcon,
   SortUpIcon,
 } from '../../assets';
-import { Grid, IconButton, StatusRender, TextRender, UrlRender } from '../../components';
+import {
+  Grid,
+  IconButton,
+  StatusRender,
+  TextRender,
+  UrlRender,
+} from '../../components';
 import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddRegistryModal } from './AddRegistryModal';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { Modal, ModalWithIcon } from '../../shared';
+import { CheckboxField, Modal } from '../../shared';
 import {
   AuthenticationSelectors,
   ClustersActions,
@@ -25,7 +31,19 @@ import { CreateRegistryNavigationModal } from './CreateRegistryNavigavtionalModa
 import { ClusterProcessDisplayModal } from '../Clusters/components/ClusterProcessDisplayModal';
 import RegistryCertificateDownloadTab from '../Clusters/components/ClusterRegistryCert';
 import AnimatedProgressBar from '../../shared/AnimatedProgressBar';
-
+import styled from 'styled-components';
+const PrimaryText = styled.h5`
+  color: ${props => props.theme.colors.darker};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 14px;
+`;
+const IconWrapper = styled.div`
+  text-align: center;
+`;
 const ListRegistryManagementPage = () => {
   const dispatch = useDispatch();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
@@ -41,6 +59,8 @@ const ListRegistryManagementPage = () => {
     ClustersSelectors.getIsDownloadRegistryCertOpen
   );
   const [selectedCluster, setSelectedCluster] = useState({});
+  const [unInstallNiFi, setUninstallNiFi] = useState(true);
+
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -153,9 +173,10 @@ const ListRegistryManagementPage = () => {
           />
           {userPermissions.includes('delete_registry') && (
             <button
-              onClick={() => {
+              onClick={event => {
                 setSelectedItem(item);
                 dispatch(RegistryActions.setIsDeleteModalOpen(true));
+                event.currentTarget.blur();
               }}
               style={{
                 background: 'none',
@@ -235,7 +256,15 @@ const ListRegistryManagementPage = () => {
     dispatch(RegistryActions.setIsDeleteModalOpen(false));
   };
   const handleDeleteSubmit = () => {
-    dispatch(RegistryActions.deleteRegistry(selectedItem?.id));
+    dispatch(
+      RegistryActions.deleteRegistry({
+        registryId: selectedItem?.id,
+        type:
+          selectedItem?.is_kube_registry && unInstallNiFi
+            ? 'nifi_uninstall'
+            : 'db_only',
+      })
+    );
   };
   useEffect(() => {
     dispatch(ClustersActions.setAzureTestPassed(false));
@@ -243,16 +272,32 @@ const ListRegistryManagementPage = () => {
   return (
     <>
       <AddRegistryModal />
-      <ModalWithIcon
+
+      <Modal
         title="Delete Registry"
-        primaryButtonText={'Delete'}
-        secondaryButtonText="Cancel"
-        icon={<DeleteDustbinIcon />}
         isOpen={isDeleteModalOpen}
         onRequestClose={handleDeleteModalClose}
-        primaryText={`Are you sure you want to delete registry?`}
+        size="sm"
+        secondaryButtonText="Back"
+        primaryButtonText="Delete"
         onSubmit={handleDeleteSubmit}
-      />
+        contentStyles={{ minWidth: '45%' }}
+      >
+        <IconWrapper>
+          <DeleteDustbinIcon />
+        </IconWrapper>{' '}
+        <PrimaryText>Are you sure you want to delete registry?</PrimaryText>
+        {selectedItem?.is_kube_registry && (
+          <div className="d-flex justify-content-center">
+            <CheckboxField
+              name="check"
+              label="Do you also want to uninstall NiFi via helm?"
+              checked={unInstallNiFi}
+              onChange={e => setUninstallNiFi(e.target.checked)}
+            />
+          </div>
+        )}
+      </Modal>
       <Grid
         module="registry"
         title={'Registry List'}
