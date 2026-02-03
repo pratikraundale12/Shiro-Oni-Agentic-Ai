@@ -121,7 +121,7 @@ const RegistryConfigurationPage = ({ activeTab }) => {
               }}
               className="pencil-icon-schedule-list"
               data-tooltip-id={'config-ansible-delete-option'}
-              disabled={item?.is_part_of_cluster}
+              disabled={item?.is_part_of_registry}
             >
               <DeleteSmallIcon width={16} height={16} color="red" />
             </IconButton>
