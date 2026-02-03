@@ -62,6 +62,17 @@ const InternalActionButton = styled.button`
   }
 `;
 
+const AgenticAiDisclaimerWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-self: center;
+  width: 100%;
+  max-width: 1000px;
+  padding: 8px 0;
+`;
+
 const INTERNAL_ROUTE_RULES = [
   {
     pattern: '/clusters/',
@@ -90,6 +101,8 @@ export const AgenticAI = () => {
       sessionId && typeof sessionId === 'string' && sessionId.trim().length > 0
     );
   }, [sessionId]);
+  const isSessionActive = isSessionReady() && !isSessionFetching;
+
   const reduxQueryText = useSelector(AgenticAiSelectors.getQueryText);
   const conversationalRes = useSelector(
     AgenticAiSelectors.getConversationHistory
@@ -271,13 +284,13 @@ export const AgenticAI = () => {
   }, [queryText]);
 
   useEffect(() => {
-    if (!isLoading && inputRef.current) {
+    if (!isLoading && isSessionActive && inputRef.current) {
       setTimeout(() => {
         inputRef.current?.focus();
         adjustTextareaHeight();
       }, 50);
     }
-  }, [isLoading]);
+  }, [isLoading, isSessionActive]);
 
   useEffect(() => {
     if (reduxQueryText) {
@@ -305,17 +318,7 @@ export const AgenticAI = () => {
     isSessionReady,
     triggerSendMessage,
   ]);
-  // const MarkdownComponents = {
-  //   a: ({ children, ...props }) => (
-  //     <a
-  //       {...props}
-  //       target="_blank"
-  //       rel="noopener noreferrer"
-  //       style={{ color: '#ff7a00', textDecoration: 'underline' }}
-  //     >
-  //       {children}
-  //     </a>
-  //   ),
+
   const { state, setState } = useGlobalContext();
   const clusters = useSelector(state =>
     GridSelectors.getGridData(state, 'clusters')
@@ -419,18 +422,12 @@ export const AgenticAI = () => {
         isLoading={isLoading}
         sessionId={sessionId}
         hasMessages={hasMessages}
+        isSessionActive={isSessionActive}
       />
 
-      <div
-        style={{
-          alignSelf: 'center',
-          width: '100%',
-          maxWidth: '1000px',
-          padding: '8px 0',
-        }}
-      >
+      <AgenticAiDisclaimerWrapper>
         <AgenticAiDisclaimer />
-      </div>
+      </AgenticAiDisclaimerWrapper>
     </Container>
   );
 };

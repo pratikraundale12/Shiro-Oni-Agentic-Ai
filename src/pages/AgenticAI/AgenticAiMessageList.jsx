@@ -227,15 +227,15 @@ const InfoBanner = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 18px;
-  border-radius: 20px;
+  padding: 6px 12px;
+  border-radius: 5px;
   font-family: 'Red Hat Display', sans-serif;
   font-size: 13px;
   font-weight: 500;
 
   background-color: ${props =>
     props.type === 'login' ? '#e6f4ea' : '#ffe9d6'};
-  color: ${props => (props.type === 'login' ? '#1e8e3e' : '#f97700')};
+  color: '#444445';
   border: 1px solid ${props => (props.type === 'login' ? '#ceead6' : '#ffe9d6')};
 
   p {

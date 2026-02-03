@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { KDFM } from '../../constants';
-// import { history } from '../../helpers/history';
+import { Modal } from '../../shared';
+import { TermsOfUse } from '../PolicyAndTermsOfUse/TermsOfUse';
 
 const DisclaimerWrapper = styled.div`
   display: flex;
@@ -13,7 +14,7 @@ const DisclaimerWrapper = styled.div`
   color: #999;
   margin-top: 8px;
   text-align: center;
-  max-width: 90%;
+  max-width: 95%;
 `;
 
 const DisclaimerLink = styled.button`
@@ -40,18 +41,40 @@ const DisclaimerLink = styled.button`
 `;
 
 export const AgenticAiDisclaimer = () => {
+  const [isTermsAndConditionsOpen, setIsTermsAndConditionsOpen] =
+    useState(false);
   const handleRedirect = e => {
     e.preventDefault();
-    return;
-    // history.push('/policy/privacy-policy');
+    setIsTermsAndConditionsOpen(p => !p);
   };
 
   return (
-    <DisclaimerWrapper>
-      <span>{KDFM.AGENTIC_AI_MODAL_TITLE} may make mistake. Check our</span>
-      <DisclaimerLink type="button" onClick={handleRedirect}>
-        Terms & Conditions.
-      </DisclaimerLink>
-    </DisclaimerWrapper>
+    <>
+      <DisclaimerWrapper>
+        <span>
+          {KDFM.AGENTIC_AI_MODAL_TITLE} is an AI agent, and results generated
+          may vary. Check our
+        </span>
+        <DisclaimerLink type="button" onClick={handleRedirect}>
+          Terms & Conditions.
+        </DisclaimerLink>
+      </DisclaimerWrapper>
+      <Modal
+        size="lg"
+        title="Terms of Use"
+        isOpen={isTermsAndConditionsOpen}
+        contentStyles={{ minWidth: '65%' }}
+        primaryButtonText={'Continue'}
+        primaryBtnSize="md"
+        onSubmit={() => setIsTermsAndConditionsOpen(false)}
+        closeIcon={true}
+        onRequestClose={() => setIsTermsAndConditionsOpen(false)}
+        footerAlign="end"
+      >
+        <>
+          <TermsOfUse />
+        </>
+      </Modal>
+    </>
   );
 };
