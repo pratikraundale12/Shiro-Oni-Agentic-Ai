@@ -313,6 +313,7 @@ export const ClusterLoginModal = () => {
         footerAlign="start"
         contentStyles={{ maxWidth: '30%', maxHeight: '50%' }}
         primaryButtonProps={{ id: 'enable-cluster-submit-btn' }}
+        primaryBtnLoadingText="Connecting"
       >
         <SelectField
           label="Select Cluster"

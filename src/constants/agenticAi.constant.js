@@ -7,4 +7,6 @@ export const AGENTIC_AI_CONSTANTS = {
   DFM_AI_AGENT: 'DFM AI Agent',
   GENERIC_CHAT_ERROR:
     'Unable to generate response at this moment. Please try again after some time.',
+  ERROR_CONNECTING_MCP:
+    'We’re having trouble reaching the agent. Please check your connection or try again shortly.',
 };

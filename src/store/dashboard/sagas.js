@@ -64,8 +64,6 @@ export function* fetchDeploymentMetrics(api, action) {
         response?.data?.message ||
         'Failed to fetch deployment metrics'
     );
-  } else {
-    toast.success('Deployment metrics fetched successfully!');
   }
 }
 
