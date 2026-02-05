@@ -514,6 +514,16 @@ const createRegistryAKS = [
   { step: 'Installing NiFi Registry', status: 'completed' },
   { step: 'Collect NiFi Registry pods/services', status: 'completed' },
 ];
+const deleteRegistryAKS = [
+  { step: 'Validating CLI tools (helm/kubectl)', status: 'completed' },
+  { step: 'Checking Helm release nifi-registry', status: 'completed' },
+  {
+    step: 'Deleting PersistentVolumeClaims in nifi-aks-registry',
+    status: 'completed',
+  },
+  { step: 'Deleting Secrets in nifi-aks-registry', status: 'completed' },
+  { step: 'Deleting namespace nifi-aks-registry', status: 'completed' },
+];
 export const ClusterProcessDisplayModal = ({
   isProcessModalOpen,
   setIsProcessModalOpen = () => {},
@@ -551,6 +561,8 @@ export const ClusterProcessDisplayModal = ({
     if (processData?.isKubeRegistry) {
       if (processExeName === 'creation') {
         return createRegistryAKS;
+      } else if (processExeName === 'delete') {
+        return deleteRegistryAKS;
       }
     }
 
@@ -605,6 +617,12 @@ export const ClusterProcessDisplayModal = ({
     ) {
       return 'Registry Configuration in Progress';
     }
+    if (
+      ansibleClusterCreationData?.registry_id &&
+      processExeName === 'delete'
+    ) {
+      return 'Registry Deletion in Progress';
+    }
     if (processExeName === 'delete') {
       return 'Cluster Deletion Progress';
     } else if (processExeName === 'creation') {
@@ -633,6 +651,11 @@ export const ClusterProcessDisplayModal = ({
       processExeName === 'creation'
     ) {
       return 'Registry successfully created and initialized.';
+    } else if (
+      ansibleClusterCreationData?.registry_id &&
+      processExeName === 'delete'
+    ) {
+      return 'Registry deleted successfully';
     } else if (processExeName === 'delete') {
       return 'Cluster deleted successfully';
     } else if (processExeName === 'creation') {
@@ -661,6 +684,11 @@ export const ClusterProcessDisplayModal = ({
       processExeName === 'creation'
     ) {
       return 'Registry setup completed. Initializing registry components.';
+    } else if (
+      ansibleClusterCreationData?.registry_id &&
+      processExeName === 'delete'
+    ) {
+      return 'Registry has been deleted. Initializing registry components.';
     } else if (processExeName === 'delete') {
       return 'Cluster has been deleted. Initializing cluster components.';
     } else if (processExeName === 'creation') {

@@ -17,9 +17,6 @@ export function* fetchSessionId(api) {
     yield put(AgenticAiActions.setSessionId(response?.data?.session_id));
   } else {
     yield put(AgenticAiActions.setSessionIdError(response?.data));
-    toast.error(
-      response?.message || response?.data?.message || 'Failed to get session id'
-    );
   }
 }
 
@@ -59,9 +56,9 @@ export function* fetchMessageChatAi(api, { payload }) {
         yield put(AgenticAiActions.setMessageChatAi(fullData));
       } else {
         yield put(
-          AgenticAiActions.setMessageChatAi({
-            message: 'Received successful but empty response from AI.',
-          })
+          AgenticAiActions.setMessageChatAi(
+            'Unable to generate response at this moment. Please try again after some time.'
+          )
         );
       }
     } catch (error) {

@@ -146,6 +146,7 @@ const Button = ({
   loading = false,
   children,
   style,
+  buttonLoadingText = 'Loading',
   ...buttonProps
 }) => {
   if (loading) {
@@ -157,7 +158,9 @@ const Button = ({
         disabled
         {...buttonProps}
       >
-        <LoadingText>{loading === true ? 'Loading' : loading}</LoadingText>
+        <LoadingText>
+          {loading === true ? buttonLoadingText : loading}
+        </LoadingText>
         <StyledLoader size="sm" color="white" />
       </StyledButton>
     );
@@ -189,6 +192,7 @@ Button.propTypes = {
   disabled: PropTypes.bool,
   style: PropTypes.object,
   isBtnDisable: PropTypes.bool,
+  buttonLoadingText: PropTypes.string,
 };
 
 export default Button;

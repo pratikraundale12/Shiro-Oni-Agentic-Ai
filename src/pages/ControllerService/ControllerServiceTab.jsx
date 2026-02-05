@@ -1063,7 +1063,7 @@ const ControllerServiceTab = ({
           (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
         const serviceId = item?.configuredData
           ? item?.configuredData?.id
-          : item?.controllerService[0]?.id || item?.id || item?.updatedValue;
+          : item?.controllerService?.[0]?.id || item?.id || item?.updatedValue;
 
         return (
           <div className="d-flex align-items-center justify-content-center">

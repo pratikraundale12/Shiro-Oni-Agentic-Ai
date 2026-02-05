@@ -110,6 +110,16 @@ export const MODULE_LIST_MAP = [
   { label: 'Cluster Permission', value: 'Cluster Permission' },
   { label: 'Config', value: 'Config' },
   { label: 'Host', value: 'Host' },
+  {
+    label: 'NiFi Cluster Access Management',
+    value: 'NiFi Cluster Access Management',
+  },
+  {
+    label: 'NiFi Process Group Access Management',
+    value: 'NiFi Process Group Access Management',
+  },
+  { label: 'LDAP User Auto Sync Job', value: 'LDAP user auto sync job' },
+  { label: 'Cluster Policies', value: 'Cluster Policies' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -196,6 +206,11 @@ export const ACTIVITY_EVENTS = [
   { label: 'Restart Cluster', value: 'Restart Cluster' },
   { label: 'Initiate Cluster Delete', value: 'Initiate Cluster Delete' },
   { label: 'Delete Cluster', value: 'Delete Cluster' },
+  { label: 'Job', value: 'Job' },
+  { label: 'Edit Node', value: 'Edit Node' },
+  { label: 'Add Registry', value: 'Add registry' },
+  { label: 'Script Delete', value: 'Script Delete' },
+  { label: 'Schedule Deployed', value: 'Schedule deployed' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },

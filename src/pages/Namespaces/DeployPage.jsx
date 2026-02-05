@@ -656,7 +656,6 @@ function DeployPage() {
           isOpen={successTest}
           onRequestClose={() => {
             setSuccessTest(false);
-            history.push('/process-group');
           }}
           size="sm"
           secondaryButtonText="Cancel"

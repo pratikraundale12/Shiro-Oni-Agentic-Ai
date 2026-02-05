@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
 import { KDFM } from '../../constants';
 import { SendIcon } from '../../assets';
@@ -9,10 +9,40 @@ const FooterWrapper = styled.div`
   background: transparent;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
+  gap: 8px; /* Space between banner and input box */
+`;
+
+const StatusBanner = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #fff;
+  border: 1px solid #ff7a00;
+  border-radius: 8px;
+`;
+
+const StatusText = styled.span`
+  font-family: 'Red Hat Display', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ff7a00;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #ff7a00;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
 `;
 
 const InputContainer = styled.div`
@@ -26,12 +56,19 @@ const InputContainer = styled.div`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   position: relative;
-  height: 'auto';
-  min-height: '100px';
+
+  ${props =>
+    props.disabled &&
+    css`
+      background-color: #fafafa;
+      opacity: 0.7;
+      cursor: not-allowed;
+    `}
 
   &:focus-within {
-    border-color: #ff7a00;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-color: ${props => (props.disabled ? '#eaeaea' : '#ff7a00')};
+    box-shadow: ${props =>
+      props.disabled ? 'none' : '0 4px 16px rgba(0, 0, 0, 0.1)'};
   }
 `;
 
@@ -91,19 +128,21 @@ export const AgenticAiFooter = ({
   isLoading,
   sessionId,
   hasMessages,
+  isSessionActive,
 }) => {
   const inputRef = useRef(null);
+  const isInputDisabled = isLoading || !sessionId || !isSessionActive;
   const isInputValid = queryText.trim().length > 0;
   const isSendBtnDisabled = isLoading || !isInputValid || !sessionId;
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && isSessionActive) {
       const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [isLoading]);
+  }, [isLoading, isSessionActive]);
 
   const handleInputChange = e => {
     const val = e.target.value;
@@ -129,13 +168,18 @@ export const AgenticAiFooter = ({
 
   return (
     <FooterWrapper>
+      {!isSessionActive && (
+        <StatusBanner>
+          <StatusText>{KDFM.ERROR_CONNECTING_MCP}</StatusText>
+        </StatusBanner>
+      )}
       <InputContainer>
         <InputBox
           ref={inputRef}
           value={queryText}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          disabled={isLoading || !sessionId}
+          disabled={isInputDisabled}
           placeholder={
             hasMessages ? KDFM.PROMPT_PLACEHOLDER : 'Type your message...'
           }
@@ -164,4 +208,5 @@ AgenticAiFooter.propTypes = {
   isLoading: PropTypes.bool.isRequired,
   sessionId: PropTypes.string,
   hasMessages: PropTypes.bool.isRequired,
+  isSessionActive: PropTypes.bool.isRequired,
 };

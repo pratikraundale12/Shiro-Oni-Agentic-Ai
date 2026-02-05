@@ -66,10 +66,12 @@ export function* deleteRegistry(api, { payload }) {
     errorSection: 'deleteRegistry',
     loadingSection: 'deleteRegistry',
     apiMethod: api.deleteRegistry,
-    apiParams: [{ registryId: payload }],
+    apiParams: [{ registryId: payload?.registryId, type: payload?.type }],
   });
   if (response.ok) {
-    toast.success('Deleted Successfully');
+    toast.success(
+      response?.data?.message || response?.message || 'Deleted Successfully'
+    );
     yield put(RegistryActions.setIsDeleteModalOpen(false));
     yield put(
       GridActions.fetchGrid({
@@ -77,6 +79,12 @@ export function* deleteRegistry(api, { payload }) {
         params: {},
       })
     );
+    if (payload?.type === 'nifi_uninstall') {
+      yield put(ClustersActions.setProgressTrackingModalOpen(true));
+      yield put(
+        ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+      );
+    }
   } else {
     toast.error(response?.data?.message);
   }

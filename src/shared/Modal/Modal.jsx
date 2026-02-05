@@ -102,6 +102,7 @@ export const Modal = ({
   headerStyles = {},
   showAdditionalActions = false,
   additionalActionsComponent: AdditionalActions = null,
+  primaryBtnLoadingText = 'Loading',
 }) => {
   const primaryButtonSize = primaryBtnSize
     ? primaryBtnSize
@@ -232,6 +233,7 @@ export const Modal = ({
                 data-dismiss="modal"
                 disabled={primaryButtonDisabled}
                 size={primaryButtonSize || 'md'}
+                buttonLoadingText={primaryBtnLoadingText}
                 {...primaryButtonProps}
               >
                 {primaryButtonText}
@@ -290,4 +292,5 @@ Modal.propTypes = {
   headerStyles: PropTypes.object,
   showAdditionalActions: PropTypes.bool,
   AdditionalActions: PropTypes.node,
+  primaryBtnLoadingText: PropTypes.string,
 };
