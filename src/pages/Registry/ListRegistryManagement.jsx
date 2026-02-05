@@ -140,27 +140,29 @@ const ListRegistryManagementPage = () => {
       resize: true,
       renderCell: item => (
         <div className="d-flex align-self-end gap-2">
-          {userPermissions.includes('edit_registry') && (
-            <button
-              onClick={event => {
-                dispatch(RegistryActions.setRegistrySelectedData(item));
-                dispatch(RegistryActions.setIsAddRegistryModalOpen(true));
-                setSelectedItem(item);
-                event.currentTarget.blur();
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-              }}
-              data-tooltip-id={`tooltip-group-edit-registry`}
-            >
-              <IconButton>
-                <PencilIcon width={14} height={14} />
-              </IconButton>
-            </button>
-          )}
+          {userPermissions.includes('edit_registry') &&
+            item?.state !== 'DRAFT' &&
+            item?.state !== 'FAILED' && (
+              <button
+                onClick={event => {
+                  dispatch(RegistryActions.setRegistrySelectedData(item));
+                  dispatch(RegistryActions.setIsAddRegistryModalOpen(true));
+                  setSelectedItem(item);
+                  event.currentTarget.blur();
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                }}
+                data-tooltip-id={`tooltip-group-edit-registry`}
+              >
+                <IconButton>
+                  <PencilIcon width={14} height={14} />
+                </IconButton>
+              </button>
+            )}
           <ReactTooltip
             id={`tooltip-group-edit-registry`}
             place="left"
@@ -201,43 +203,54 @@ const ListRegistryManagementPage = () => {
               wordWrap: 'break-word',
             }}
           />
-          {item?.is_kube_registry && item?.is_registry_authenticated && (
-            <>
-              <button
-                onClick={() => {
-                  // dispatch(RegistryActions.setRegistrySelectedData(item));
-                  // dispatch(RegistryActions.setIsAddRegistryModalOpen(true));
-                  setSelectedItem(item);
-                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(true));
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                }}
-                data-tooltip-id={`tooltip-group-certificate-registry`}
-              >
-                <IconButton>
-                  <LicenseIcon width={16} height={16} />
-                </IconButton>
-              </button>
-              <Modal
-                title="Registry Details"
-                primaryButtonText={'Back'}
-                isOpen={registryCertDownloadOpen}
-                onRequestClose={() =>
-                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(false))
-                }
-                onSubmit={() =>
-                  dispatch(ClustersActions.setIsDownloadRegistryCertOpen(false))
-                }
-                contentStyles={{ minWidth: '50%' }}
-              >
-                <RegistryCertificateDownloadTab clusterId={selectedItem?.id} />
-              </Modal>
-            </>
-          )}
+          {item?.is_kube_registry &&
+            item?.is_registry_authenticated &&
+            item?.state !== 'DRAFT' &&
+            item?.state !== 'FAILED' && (
+              <>
+                <button
+                  onClick={() => {
+                    // dispatch(RegistryActions.setRegistrySelectedData(item));
+                    // dispatch(RegistryActions.setIsAddRegistryModalOpen(true));
+                    setSelectedItem(item);
+                    dispatch(
+                      ClustersActions.setIsDownloadRegistryCertOpen(true)
+                    );
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
+                  data-tooltip-id={`tooltip-group-certificate-registry`}
+                >
+                  <IconButton>
+                    <LicenseIcon width={16} height={16} />
+                  </IconButton>
+                </button>
+                <Modal
+                  title="Registry Details"
+                  primaryButtonText={'Back'}
+                  isOpen={registryCertDownloadOpen}
+                  onRequestClose={() =>
+                    dispatch(
+                      ClustersActions.setIsDownloadRegistryCertOpen(false)
+                    )
+                  }
+                  onSubmit={() =>
+                    dispatch(
+                      ClustersActions.setIsDownloadRegistryCertOpen(false)
+                    )
+                  }
+                  contentStyles={{ minWidth: '50%' }}
+                >
+                  <RegistryCertificateDownloadTab
+                    clusterId={selectedItem?.id}
+                  />
+                </Modal>
+              </>
+            )}
           <ReactTooltip
             id={`tooltip-group-certificate-registry`}
             place="left"
