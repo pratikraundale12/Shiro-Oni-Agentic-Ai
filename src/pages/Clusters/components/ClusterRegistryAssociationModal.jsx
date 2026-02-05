@@ -182,7 +182,7 @@ export const ClusterRegistryAssociationModal = ({
         primaryButtonText="Save"
         secondaryButtonText="Back"
         // primaryButtonDisabled={isPrimaryBtnDisable}
-        contentStyles={{ minWidth: '55%', height: '65%' }}
+        contentStyles={{ minWidth: '60%', height: '65%' }}
         footerAlign="start"
       >
         <Container
@@ -203,10 +203,11 @@ export const ClusterRegistryAssociationModal = ({
               disableToggle={false}
               errors={errors}
               options={registryOption || []}
+              required
             />
           </div>
           <div className="row mt-2">
-            <div className="col-6">
+            <div className="col-3">
               <StyledSelectField
                 name="truststoreType"
                 control={control}
@@ -220,7 +221,7 @@ export const ClusterRegistryAssociationModal = ({
                 errors={errors}
               />
             </div>{' '}
-            <div className="col-6">
+            <div className="col-4">
               <ModalContainer>
                 <PemUploadField
                   label="Truststore File"
@@ -240,12 +241,11 @@ export const ClusterRegistryAssociationModal = ({
                   errorText={
                     watchValues?.truststoreType === 'JKS' ? 'JKS' : 'P12'
                   }
+                  required
                 />
               </ModalContainer>
             </div>
-          </div>
-          <div className="row mt-1">
-            <div className="col-6">
+            <div className="col-5">
               <PasswordField
                 name="truststorePassword"
                 register={register}
@@ -255,23 +255,12 @@ export const ClusterRegistryAssociationModal = ({
                 placeholder="Enter Password"
                 disableToggle={false}
                 errors={errors}
-              />
-            </div>
-            <div className="col-6">
-              <PasswordField
-                name="keystorePassword"
-                register={register}
-                watch={watch}
-                label="Keystore Password"
-                icon={<CurvedLockIcon />}
-                placeholder="Enter Password"
-                disableToggle={false}
-                errors={errors}
+                required
               />
             </div>
           </div>
           <div className="row mt-2">
-            <div className="col-6">
+            <div className="col-3">
               <StyledSelectField
                 label="Keystore Type"
                 id="keystore-type"
@@ -284,7 +273,7 @@ export const ClusterRegistryAssociationModal = ({
                 options={typeOptions}
               />
             </div>
-            <div className="col-6">
+            <div className="col-4">
               <ModalContainer>
                 <PemUploadField
                   label="Keystore File"
@@ -304,8 +293,22 @@ export const ClusterRegistryAssociationModal = ({
                   errorText={
                     watchValues?.keystoreType === 'JKS' ? 'JKS' : 'P12'
                   }
+                  required
                 />
               </ModalContainer>
+            </div>{' '}
+            <div className="col-5">
+              <PasswordField
+                name="keystorePassword"
+                register={register}
+                watch={watch}
+                label="Keystore Password"
+                icon={<CurvedLockIcon />}
+                placeholder="Enter Password"
+                disableToggle={false}
+                errors={errors}
+                required
+              />
             </div>
           </div>
           <div className="row">
@@ -318,6 +321,7 @@ export const ClusterRegistryAssociationModal = ({
               placeholder="Enter Password"
               disableToggle={false}
               errors={errors}
+              required
             />
           </div>
         </Container>
