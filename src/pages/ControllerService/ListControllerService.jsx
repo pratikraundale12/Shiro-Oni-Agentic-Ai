@@ -46,8 +46,8 @@ const SearchContainer = styled.div`
 `;
 
 const StyledTableWrapper = styled.div`
-  height: auto;
-}`;
+  height: calc(100vh - 200px);
+`;
 const Search = styled.input`
   width: 100%;
   border-radius: 2px;
@@ -654,7 +654,16 @@ export const ListControllerService = () => {
     LoadingSelectors.getLoading(state, 'changeStatusControllerService')
   );
   return (
-    <>
+    <div
+      style={{
+        position: 'absolute',
+        bottom: '24px',
+        left: '24px',
+        right: '24px',
+        overflow: 'hidden',
+        top: '100px',
+      }}
+    >
       <FullPageLoader loading={statusLoading || loading} />
 
       <div className="d-flex justify-content-between align-items-center">
@@ -827,7 +836,7 @@ export const ListControllerService = () => {
         primaryText={`Are you sure you want to delete ${selectedItemFromList?.name}?`}
         onSubmit={handleDeleteControllerServiceClick}
       />
-    </>
+    </div>
   );
 };
 
