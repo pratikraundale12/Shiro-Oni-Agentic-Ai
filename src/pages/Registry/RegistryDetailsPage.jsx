@@ -86,6 +86,7 @@ const RegistryDetailsPage = ({ activeTab }) => {
   }, [registryConfigurationList]);
 
   const noSpaces = /^(\S.*\S|\S)$/;
+  const k8sNamespaceRegex = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/;
   const schemaAKS = yup.object().shape({
     registryName: yup
       .string()
@@ -111,9 +112,10 @@ const RegistryDetailsPage = ({ activeTab }) => {
     nifiNamespace: yup
       .string()
       .required('NiFi namespace is required')
+      .max(32, 'NiFi namespace must be 32 characters or less')
       .matches(
-        noSpaces,
-        'NiFi namespace must not contain leading or trailing spaces'
+        k8sNamespaceRegex,
+        'NiFi namespace must consist of lower case alphanumeric characters or "-", and must start and end with an alphanumeric character'
       ),
   });
   const {
@@ -126,7 +128,7 @@ const RegistryDetailsPage = ({ activeTab }) => {
     reset,
   } = useForm({
     resolver: yupResolver(schemaAKS),
-    defaultValues: { registryType: 'aks', nifi_namespace: 'nifi' },
+    defaultValues: { registryType: 'aks', nifiNamespace: 'nifi' },
   });
 
   const registryName = watch('registryName');
