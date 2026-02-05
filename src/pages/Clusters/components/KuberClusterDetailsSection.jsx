@@ -67,12 +67,10 @@ const KubeClusterDetailsSection = ({ activeTab }) => {
 
   const loadingState = useSelector(ClustersSelectors.getcreateLoadingState);
 
-  const hostOptions = listHostIpData
-    ?.filter(ele => !ele?.is_selected)
-    ?.map(ele => ({
-      label: ele?.kube_cluster_name,
-      value: ele?.id,
-    }));
+  const hostOptions = listHostIpData?.map(ele => ({
+    label: ele?.kube_cluster_name,
+    value: ele?.id,
+  }));
   const hostOptionsOnUpgrade = listHostIpData?.map(ele => ({
     label: ele?.kube_cluster_name,
     value: ele?.id,
