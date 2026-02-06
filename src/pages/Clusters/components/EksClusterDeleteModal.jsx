@@ -29,15 +29,6 @@ const LabelSelect = styled.div`
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
 `;
-const SecondaryText = styled.p`
-  color: ${props => props.theme.colors.darker};
-  font-family: ${props => props.theme.fontNato};
-  font-size: 14px;
-  font-weight: 500;
-  text-align: center;
-  margin-right: 16px;
-  margin-left: 16px;
-`;
 const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(ClustersSelectors.getisOpenDeleteKubeClusterModal);
@@ -145,15 +136,6 @@ const EKSClusterDeleteModal = ({ deleteKubeClusterData }) => {
             <DeleteDustbinIcon />
           </div>
           <PrimaryText>{KDFM.HARD_DELETE_CLUSTER_WARNING}</PrimaryText>
-          {deleteKubeClusterData?.registry_ids?.length &&
-            deleteKubeClusterData?.is_kube_cluster &&
-            deleteKubeClusterData?.registry_ids?.length > 0 && (
-              <SecondaryText>
-                Cluster deletion triggers the deletion of the linked registry.
-                Consequently, any secondary clusters reliant on this registry
-                will become unassociated.
-              </SecondaryText>
-            )}
           <div className="">
             {deleteKubeClusterData?.cluster_type !== 'ec2' &&
               deleteKubeClusterData?.cluster_type !== 'aks' && (
