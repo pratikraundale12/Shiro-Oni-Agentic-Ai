@@ -184,11 +184,9 @@ export const ClusterLoginModal = () => {
           })
         );
         if (window.location.pathname.includes('/process-group')) {
-          window.location.reload();
           history.push('/process-group');
         }
         if (window.location.pathname.includes('/flow-analysis')) {
-          window.location.reload();
           history.push('/flow-analysis');
         }
         if (enableTour) {
@@ -227,11 +225,9 @@ export const ClusterLoginModal = () => {
   const onSwitchCluster = () => {
     dispatch(DashboardActions.setResetNamespaceOption(true));
     if (window.location.pathname.includes('/process-group')) {
-      window.location.reload();
       history.push('/process-group');
     }
     if (window.location.pathname.includes('/flow-analysis')) {
-      window.location.reload();
       history.push('/flow-analysis');
     }
 
