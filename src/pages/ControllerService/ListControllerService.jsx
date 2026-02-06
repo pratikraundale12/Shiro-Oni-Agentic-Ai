@@ -261,17 +261,6 @@ export const ListControllerService = () => {
     setIsEnableModalOpen(true);
   };
 
-  useEffect(() => {
-    if (
-      hasTriedFetchingClusters &&
-      !fetchingClusters &&
-      isEmpty(selectedCluster?.value)
-    ) {
-      toast.info(KDFM.PLEASE_LOGIN_TO_CLUSTER, {
-        toastId: 'please-login-cluster-toast',
-      });
-    }
-  }, [selectedCluster?.value, fetchingClusters, hasTriedFetchingClusters]);
   const handleDeleteClick = item => {
     setSelectedItemFromList(item);
     setIsDeleteModalOpen(true);
@@ -590,7 +579,7 @@ export const ListControllerService = () => {
   ];
   useEffect(() => {
     dispatch(NamespacesActions.getRootControllerServiceNamespace([]));
-  }, []);
+  }, [dispatch, selectedCluster?.value]);
   useEffect(() => {
     if (!modalOpenState && selectedCluster?.value) {
       dispatch(NamespacesActions.getControllerServiceList());
