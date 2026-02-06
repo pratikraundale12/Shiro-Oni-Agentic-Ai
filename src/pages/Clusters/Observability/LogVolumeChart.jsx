@@ -139,10 +139,17 @@ export const LogVolumeChart = ({
 
     // --- 3. AXES & GRID ---
 
+    const domainDiffSeconds = (timeRange[1] - timeRange[0]) / 1000;
+
     const xAxis = d3
       .axisBottom(xScale)
       .ticks(Math.max(2, Math.floor(innerWidth / 80)))
-      .tickFormat(d3.timeFormat('%H:%M:%S'));
+      .tickFormat(d => {
+        // If range is less than 3 minutes, always show seconds for context
+        // Otherwise, only show seconds if they aren't "00"
+        const useSeconds = domainDiffSeconds < 180 || d.getSeconds() !== 0;
+        return d3.timeFormat(useSeconds ? '%H:%M:%S' : '%H:%M')(d);
+      });
 
     g.append('g')
       .attr('class', 'x-axis')
@@ -176,7 +183,6 @@ export const LogVolumeChart = ({
     const stack = d3.stack().keys(['INFO', 'ERROR']);
     const layers = stack(chartData);
     const colorMap = { INFO: '#73bf69', ERROR: '#e02f44' };
-    const domainDiffSeconds = (timeRange[1] - timeRange[0]) / 1000;
     const barWidth = Math.max(2, (innerWidth / (domainDiffSeconds / 60)) * 0.8);
     const barGroup = g.append('g').attr('clip-path', 'url(#chart-clip)');
 

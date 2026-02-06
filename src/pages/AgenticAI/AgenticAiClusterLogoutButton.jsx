@@ -31,13 +31,9 @@ const LogoutButtonContainer = styled.button`
     background-color: #a51e1e;
     color: #fff;
     svg {
-      fill: #fff;
+      fill: #a51e1e;
+      stroke: #fff;
     }
-  }
-
-  svg {
-    width: 16px;
-    height: 16px;
   }
 `;
 
