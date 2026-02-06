@@ -281,7 +281,8 @@ export const ListNamespaces = () => {
   const handleScheduleClick = item => {
     if (isEmpty(registryData)) {
       toast.error(
-        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
+        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration',
+        { toastId: 'namepsace-registry-list' }
       );
       return;
     }
@@ -718,7 +719,8 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setSelectedRegistryOnDeploy(item?.registryId));
     if (isEmpty(registryData)) {
       toast.error(
-        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
+        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration',
+        { toastId: 'namepsace-registry-list' }
       );
       return;
     }
