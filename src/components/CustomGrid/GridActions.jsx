@@ -598,7 +598,8 @@ export const GridActions = ({
   const handleClick = () => {
     if (isEmpty(registryData)) {
       toast.error(
-        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
+        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration',
+        { toastId: 'namepsace-registry-list' }
       );
       return;
     }
@@ -612,7 +613,8 @@ export const GridActions = ({
   const handleScheduleClick = () => {
     if (isEmpty(registryData)) {
       toast.error(
-        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration'
+        'Registry is linked to the cluster, but not found in the NiFi setup. Please check the NiFi registry configuration or wait until the registry data is fully fetched.',
+        { toastId: 'namepsace-registry-list' }
       );
       return;
     }
