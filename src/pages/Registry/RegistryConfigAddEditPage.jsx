@@ -211,6 +211,10 @@ const RegistryConfigurationEditorPage = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchConfigFieldsForKubernetes')
   );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'createConfigRegistry')
+  );
+
   // const updatedConfigKube = useSelector(ClustersSelectors.getUpdatedKubeConfig);
   const hasYamlChanged =
     yamlEditorValue &&
@@ -229,7 +233,7 @@ const RegistryConfigurationEditorPage = () => {
 
   return (
     <Wrapper>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loading2} />
       <Title
         title={
           !isEmpty(configToEdit)
