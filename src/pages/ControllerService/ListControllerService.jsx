@@ -457,18 +457,21 @@ export const ListControllerService = () => {
                   disabled={
                     item?.state === 'ENABLING' ||
                     item?.state === 'ENABLED' ||
+                    item?.state === 'DISABLING' ||
                     !item?.canWrite
                   }
                   style={{
                     opacity:
                       item?.state === 'ENABLING' ||
                       item?.state === 'ENABLED' ||
+                      item?.state === 'DISABLING' ||
                       !item?.canWrite
                         ? 0.3
                         : 1,
                     cursor:
                       item?.state === 'ENABLING' ||
                       item?.state === 'ENABLED' ||
+                      item?.state === 'DISABLING' ||
                       !item?.canWrite
                         ? 'not-allowed'
                         : 'pointer',
