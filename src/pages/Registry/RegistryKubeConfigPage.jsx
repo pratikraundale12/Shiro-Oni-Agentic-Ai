@@ -9,6 +9,7 @@ import { Button, ModalWithIcon } from '../../shared';
 import { Title } from '../Clusters/components/Title';
 import {
   ClustersSelectors,
+  LoadingSelectors,
   RegistryActions,
   RegistrySelectors,
 } from '../../store';
@@ -18,7 +19,7 @@ import {
   DeleteSmallIcon,
   PlusCircleIcon,
 } from '../../assets';
-import { IconButton, Table } from '../../components';
+import { FullPageLoader, IconButton, Table } from '../../components';
 import { KubeRegistryConfigurationModal } from './KubeRegistryConfigurationModal';
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -116,9 +117,19 @@ const RegistryCreationKubeConfigPage = ({ activeTab }) => {
   useEffect(() => {
     dispatch(RegistryActions.fetchRegistryKubeConfigList());
   }, [dispatch]);
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchRegistryKubeConfigList')
+  );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'createRegistryKubeConfig')
+  );
+  const loading3 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'deleteRegistryKubeConfig')
+  );
   return (
     <Wrapper>
       <Title title={'Add New Registry'} />
+      <FullPageLoader loading={loading || loading2 || loading3} />
       <Container>
         <RegistryNavigationTab activeTab={activeTab} />
         <TableContainer>

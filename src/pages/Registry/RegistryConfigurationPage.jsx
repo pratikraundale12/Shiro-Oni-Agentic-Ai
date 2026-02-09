@@ -11,6 +11,7 @@ import { Title } from '../Clusters/components/Title';
 import {
   ClustersActions,
   ClustersSelectors,
+  LoadingSelectors,
   RegistryActions,
   RegistrySelectors,
 } from '../../store';
@@ -21,7 +22,7 @@ import {
   PencilIcon,
   PlusCircleIcon,
 } from '../../assets';
-import { IconButton, Table } from '../../components';
+import { FullPageLoader, IconButton, Table } from '../../components';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -151,9 +152,17 @@ const RegistryConfigurationPage = ({ activeTab }) => {
     dispatch(RegistryActions.fetchRegistryConfigurationList());
     dispatch(RegistryActions.setRegistryConfigEditItem({}));
   }, [dispatch]);
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchRegistryConfigurationList')
+  );
+  const loading2 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'deleteRegistryConfiguration')
+  );
+
   return (
     <Wrapper>
       <Title title={'Add New Registry'} />
+      <FullPageLoader loading={loading || loading2} />
       <Container>
         <RegistryNavigationTab activeTab={activeTab} />
         <TableContainer>
