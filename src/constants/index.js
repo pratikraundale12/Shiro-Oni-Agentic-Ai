@@ -109,7 +109,6 @@ export const MODULE_LIST_MAP = [
   { label: 'Audit', value: 'Audit' },
   { label: 'Cluster Permission', value: 'Cluster Permission' },
   { label: 'Config', value: 'Config' },
-  { label: 'Host', value: 'Host' },
   {
     label: 'NiFi Cluster Access Management',
     value: 'NiFi Cluster Access Management',
@@ -211,6 +210,7 @@ export const ACTIVITY_EVENTS = [
   { label: 'Add Registry', value: 'Add registry' },
   { label: 'Script Delete', value: 'Script Delete' },
   { label: 'Schedule Deployed', value: 'Schedule deployed' },
+  { label: 'Delete Node', value: 'Delete Node' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
