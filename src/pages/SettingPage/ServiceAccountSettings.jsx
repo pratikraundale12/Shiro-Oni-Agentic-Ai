@@ -60,7 +60,47 @@ const ButtonDiv = styled.div`
   gap: 1rem;
 `;
 
-export const settingSchema = yup.object().shape({});
+export const settingSchema = yup
+  .object()
+  .shape({
+    username: yup
+      .string()
+      .nullable()
+      .transform(value => (value === '' ? null : value))
+      .test(
+        'not-empty',
+        'Username cannot be an empty',
+        value => value === null || value.trim().length > 0
+      ),
+
+    password: yup
+      .string()
+      .transform(value => (value === '' ? null : value))
+      .nullable()
+      .test(
+        'not-empty',
+        'Password cannot be an empty',
+        value => value === null || value.trim().length > 0
+      ),
+  })
+  .test(
+    'username-password-pair',
+    'If one of username or password is filled, the other is required.',
+    function (value) {
+      const { username, password } = value || {};
+      const hasUsername = !!username;
+      const hasPassword = !!password;
+
+      if ((hasUsername && !hasPassword) || (!hasUsername && hasPassword)) {
+        return this.createError({
+          path: !hasPassword ? 'password' : 'username',
+          message: 'Both username and password must be filled together',
+        });
+      }
+
+      return true;
+    }
+  );
 export const ServiceAccountSettings = () => {
   const {
     handleSubmit,
@@ -69,7 +109,10 @@ export const ServiceAccountSettings = () => {
     setValue,
     reset,
     formState: { errors, dirtyFields },
-  } = useForm({ resolver: yupResolver(settingSchema) });
+  } = useForm({
+    resolver: yupResolver(settingSchema),
+    mode: 'onChange',
+  });
   const dispatch = useDispatch();
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
@@ -77,6 +120,18 @@ export const ServiceAccountSettings = () => {
 
   const onSubmit = async data => {
     setLoading(true);
+    const trimmedUsername =
+      typeof data?.username === 'string'
+        ? data.username.trim()
+        : data?.username;
+    const trimmedPassword =
+      typeof data?.password === 'string'
+        ? data.password.trim()
+        : data?.password;
+
+    setValue('username', trimmedUsername, { shouldDirty: false });
+    setValue('password', trimmedPassword, { shouldDirty: false });
+
     const payload = new FormData();
     const updatedFields = [];
     const appendIfChanged = (key, value, compareValue, isImage = false) => {
@@ -91,8 +146,8 @@ export const ServiceAccountSettings = () => {
 
     if (settingData?.id) payload.append('id', settingData.id);
 
-    appendIfChanged('username', data?.username, settingData?.username);
-    appendIfChanged('password', data?.password, settingData?.password);
+    appendIfChanged('username', trimmedUsername, settingData?.username);
+    appendIfChanged('password', trimmedPassword, settingData?.password);
 
     if (dirtyFields.refresh || data.refresh !== settingData?.refresh) {
       const refreshValue = [false, 'Off'].includes(data.refresh)
@@ -214,7 +269,7 @@ export const ServiceAccountSettings = () => {
             <StyledSaveButton
               type="submit"
               loading={loading}
-              disabled={!isChanged}
+              disabled={!isChanged || Object.keys(errors).length > 0}
             >
               <ButtonText>{KDFM.SAVE_SETTINGS}</ButtonText>
             </StyledSaveButton>
