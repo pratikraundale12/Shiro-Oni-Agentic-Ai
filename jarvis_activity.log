@@ -1,0 +1,128 @@
+2026-03-04 02:55:13,476 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 02:56:54,677 - INFO - Action: open_application | Details: Started brave-browser
+2026-03-04 03:36:54,970 - INFO - Action: search_google | Details: Query: chrome new application
+2026-03-04 03:37:34,624 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 03:38:04,406 - INFO - Action: execute_terminal | Details: Running: 
+2026-03-04 03:40:41,376 - INFO - Action: execute_terminal | Details: Running: 
+2026-03-04 03:41:10,396 - INFO - Action: open_application | Details: Started pip3
+2026-03-04 03:41:35,508 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 03:41:48,210 - INFO - Action: search_google | Details: Query: chrome search now
+2026-03-04 04:16:24,729 - INFO - Action: start_monitoring | Monitor started
+2026-03-04 04:16:24,730 - INFO - Action: start_auto_clean | every 6h
+2026-03-04 04:20:18,315 - INFO - Action: start_monitoring | Monitor started
+2026-03-04 04:20:18,315 - INFO - Action: start_auto_clean | every 6h
+2026-03-04 04:20:56,600 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 04:20:56,600 - INFO - Action: wait | Details: 1s
+2026-03-04 04:20:57,601 - INFO - Action: press_key | Details: enter
+2026-03-04 04:21:08,615 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 04:21:08,615 - INFO - Action: wait | Details: 1s
+2026-03-04 04:21:09,616 - INFO - Action: press_key | Details: enter
+2026-03-04 04:21:32,569 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 04:21:32,569 - INFO - Action: wait | Details: 1s
+2026-03-04 04:21:33,570 - INFO - Action: press_key | Details: enter
+2026-03-04 04:22:18,279 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 04:22:18,279 - INFO - Action: wait | Details: 2s
+2026-03-04 04:22:20,279 - INFO - Action: press_key | Details: enter
+2026-03-04 04:30:33,096 - INFO - Action: wait | Details: 1s
+2026-03-04 04:30:34,096 - INFO - Action: press_key | Details: enter
+2026-03-04 04:31:59,207 - INFO - Action: open_application | Details: Started brave-browser
+2026-03-04 04:31:59,207 - INFO - Action: wait | Details: 1s
+2026-03-04 04:32:00,207 - INFO - Action: press_key | Details: enter
+2026-03-04 04:32:09,047 - INFO - Action: wait | Details: 2s
+2026-03-04 04:32:11,047 - INFO - Action: press_key | Details: enter
+2026-03-04 04:32:44,578 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 04:32:44,579 - INFO - Action: wait | Details: 1s
+2026-03-04 04:32:45,580 - INFO - Action: press_key | Details: enter
+2026-03-04 15:47:49,514 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:48:14,135 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:48:30,150 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:51:16,670 - INFO - Action: open_application | Details: Started nautilus
+2026-03-04 15:51:16,670 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:51:17,672 - INFO - Action: press_key | Details: enter
+2026-03-04 15:52:56,811 - INFO - Action: open_application | Details: Started nautilus
+2026-03-04 15:52:56,811 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:52:57,812 - INFO - Action: type_text | Details: create a folder named manual_verify_test
+2026-03-04 15:52:57,815 - INFO - Action: press_key | Details: enter
+2026-03-04 15:53:31,310 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 15:53:33,811 - INFO - Action: wait | Details: 2.0s
+2026-03-04 15:53:35,812 - INFO - Action: type_text | Details: note.txt
+2026-03-04 15:53:35,813 - INFO - Action: press_key | Details: enter
+2026-03-04 15:53:35,824 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:53:36,825 - INFO - Action: type_text | Details: manual_verify_test
+2026-03-04 15:53:36,825 - INFO - Action: press_key | Details: enter
+2026-03-04 15:53:36,827 - INFO - Action: open_application | Details: Started brave-browser
+2026-03-04 15:53:39,328 - INFO - Action: wait | Details: 2.0s
+2026-03-04 15:53:41,329 - INFO - Action: type_text | Details: youtube.com
+2026-03-04 15:53:41,330 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:53:42,331 - INFO - Action: search_google | Details: Query: 
+2026-03-04 15:53:42,334 - INFO - Action: wait | Details: 2.0s
+2026-03-04 15:53:44,334 - INFO - Action: type_text | Details: search youtube
+2026-03-04 15:53:44,335 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:53:45,336 - INFO - Action: wait | Details: 2.0s
+2026-03-04 15:53:47,338 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:53:48,339 - INFO - Action: type_text | Details: test successful
+2026-03-04 15:53:52,522 - INFO - Action: wait | Details: 5.0s
+2026-03-04 15:53:57,523 - INFO - Action: type_text | Details: what is my system type?
+2026-03-04 15:53:57,524 - INFO - Action: press_key | Details: enter
+2026-03-04 15:54:25,090 - INFO - Action: open_application | Details: Started brave-browser
+2026-03-04 15:54:27,591 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:54:28,592 - INFO - Action: type_text | Details: youtube.com
+2026-03-04 15:54:28,596 - INFO - Action: press_key | Details: enter
+2026-03-04 15:54:36,640 - INFO - Action: open_application | Details: Started brave-browser
+2026-03-04 15:54:39,141 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:54:40,142 - INFO - Action: type_text | Details: search for current weather in London
+2026-03-04 15:54:40,143 - INFO - Action: press_key | Details: enter
+2026-03-04 15:54:45,443 - INFO - Action: open_application | Details: Started brave-browser
+2026-03-04 15:54:47,944 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:54:48,945 - INFO - Action: type_text | Details: youtube.com
+2026-03-04 15:54:48,946 - INFO - Action: press_key | Details: enter
+2026-03-04 15:55:12,868 - INFO - Action: open_application | Details: Started brave-browser
+2026-03-04 15:55:15,369 - INFO - Action: wait | Details: 1.0s
+2026-03-04 15:55:16,370 - INFO - Action: type_text | Details: youtube.com
+2026-03-04 15:55:16,370 - INFO - Action: press_key | Details: enter
+2026-03-04 15:56:43,927 - INFO - Action: create_folder | data
+2026-03-04 16:03:44,305 - INFO - Action: manage_file | Details:  on 
+2026-03-04 16:04:39,680 - INFO - Action: create_folder | /
+2026-03-04 16:07:40,139 - INFO - Action: open_url_in_browser | https://www.google.com/search?q=weather+in+mumbai
+2026-03-04 16:08:53,266 - ERROR - Critical error in map_intent_to_tool: [Errno 13] Permission denied: '/home/user'
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/pathlib.py", line 1313, in mkdir
+    os.mkdir(self, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/home/user/Documents/10_10_verification'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/pathlib.py", line 1313, in mkdir
+    os.mkdir(self, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/home/user/Documents'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pratikraundale/AI_Agent/jarvis_tools.py", line 467, in map_intent_to_tool
+    return create_folder(omni_get(["path", "folder", "name"]))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pratikraundale/AI_Agent/nova_filesystem.py", line 20, in create_folder
+    full_path.mkdir(parents=True, exist_ok=True)
+  File "/usr/lib/python3.12/pathlib.py", line 1317, in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+  File "/usr/lib/python3.12/pathlib.py", line 1317, in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+  File "/usr/lib/python3.12/pathlib.py", line 1313, in mkdir
+    os.mkdir(self, mode)
+PermissionError: [Errno 13] Permission denied: '/home/user'
+
+2026-03-04 16:09:18,772 - INFO - Action: search_google | Details: Query: Bitcoin price
+2026-03-04 16:10:37,746 - INFO - Action: create_folder | /home/pratikraundale/Documents/10_10_FINAL_VERIFY
+2026-03-04 16:11:18,731 - ERROR - Critical error in map_intent_to_tool: unsupported format string passed to MagicMock.__format__
+Traceback (most recent call last):
+  File "/home/pratikraundale/AI_Agent/jarvis_tools.py", line 505, in map_intent_to_tool
+    return get_system_report()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/pratikraundale/AI_Agent/nova_monitor.py", line 99, in get_system_report
+    f"CPU: {cpu:.0f}% | "
+           ^^^^^^^^^
+TypeError: unsupported format string passed to MagicMock.__format__
+
+2026-03-04 16:11:18,758 - INFO - Action: clean_temp_files | Freed 43.5 MB

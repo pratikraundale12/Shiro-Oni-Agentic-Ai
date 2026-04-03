@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.mp3
+*.log
+*.db
+*.db-journal
+shiro_undo_log.json
+shiro_security_prefs.json
+shiro_schedule.json
+.env

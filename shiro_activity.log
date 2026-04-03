@@ -1,0 +1,60 @@
+2026-03-04 17:46:39,178 - INFO - Action: open_application | Details: Started firefox
+2026-03-04 17:51:54,891 - INFO - Action: start_monitoring | Monitor started
+2026-03-04 17:51:54,892 - INFO - Action: start_auto_clean | every 6h
+2026-03-04 17:52:27,031 - INFO - Action: optimize_memory | Done
+2026-03-04 17:52:27,044 - WARNING - Monitor Alerts: ['RAM at 89% — memory pressure!']
+2026-03-04 17:52:58,097 - INFO - Action: optimize_memory | Done
+2026-03-04 17:52:58,118 - WARNING - Monitor Alerts: ['RAM at 90% — memory pressure!']
+2026-03-04 17:53:29,163 - INFO - Action: optimize_memory | Done
+2026-03-04 17:53:29,184 - WARNING - Monitor Alerts: ['RAM at 92% — memory pressure!']
+2026-03-04 17:54:00,236 - INFO - Action: optimize_memory | Done
+2026-03-04 17:54:00,258 - WARNING - Monitor Alerts: ['RAM at 92% — memory pressure!']
+2026-03-04 17:54:31,316 - INFO - Action: optimize_memory | Done
+2026-03-04 17:54:31,346 - WARNING - Monitor Alerts: ['RAM at 94% — memory pressure!']
+2026-03-04 17:55:02,394 - INFO - Action: optimize_memory | Done
+2026-03-04 17:55:02,422 - WARNING - Monitor Alerts: ['RAM at 95% — memory pressure!']
+2026-03-04 17:55:33,547 - INFO - Action: optimize_memory | Done
+2026-03-04 17:55:33,571 - WARNING - Monitor Alerts: ['RAM at 94% — memory pressure!']
+2026-03-04 17:59:37,965 - INFO - Action: start_monitoring | Monitor started
+2026-03-04 17:59:37,965 - INFO - Action: start_auto_clean | every 6h
+2026-03-04 18:01:57,962 - INFO - Action: search_google | Details: Query: mumbai weather
+2026-03-04 18:03:02,497 - INFO - Action: search_google | Details: Query: desi
+2026-03-04 18:08:01,830 - INFO - Action: start_monitoring | Monitor started
+2026-03-04 18:08:01,831 - INFO - Action: start_auto_clean | every 6h
+2026-03-04 18:08:40,962 - INFO - Action: search_google | Details: Query: search
+2026-03-04 18:09:13,613 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 18:09:16,118 - INFO - Action: open_url_in_browser | https://www.youtube.com
+2026-03-04 18:09:49,569 - INFO - Action: open_application | Details: Started google-chrome
+2026-03-04 18:09:52,070 - INFO - Action: type_text | Details: search gojo on youtube
+2026-03-04 18:09:52,179 - INFO - Action: press_key | Details: enter
+2026-03-04 18:10:28,771 - INFO - Action: take_screenshot | Details: Captured screen
+2026-03-08 23:43:00,031 - INFO - Action: start_monitoring | Monitor started
+2026-03-08 23:43:00,035 - INFO - Action: start_auto_clean | every 6h
+2026-03-08 23:43:04,518 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:43:12,295 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:43:19,779 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:43:34,283 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:44:03,130 - INFO - Action: optimize_memory | Done
+2026-03-08 23:44:03,146 - WARNING - Monitor Alerts: ['RAM at 92% — memory pressure!']
+2026-03-08 23:44:05,688 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:44:16,656 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:44:26,275 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:44:34,213 - INFO - Action: optimize_memory | Done
+2026-03-08 23:44:34,231 - WARNING - Monitor Alerts: ['RAM at 91% — memory pressure!']
+2026-03-08 23:44:34,546 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:44:47,309 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:45:05,285 - INFO - Action: optimize_memory | Done
+2026-03-08 23:45:05,310 - WARNING - Monitor Alerts: ['RAM at 90% — memory pressure!']
+2026-03-08 23:45:26,908 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:45:36,359 - INFO - Action: optimize_memory | Done
+2026-03-08 23:45:36,375 - WARNING - Monitor Alerts: ['RAM at 90% — memory pressure!']
+2026-03-08 23:46:07,446 - INFO - Action: optimize_memory | Done
+2026-03-08 23:46:07,478 - WARNING - Monitor Alerts: ['RAM at 89% — memory pressure!']
+2026-03-08 23:46:34,189 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:48:00,049 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:48:18,576 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:48:43,423 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:53:06,781 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:55:15,884 - ERROR - Local LLM Error: 404 Client Error: Not Found for url: http://localhost:11434/api/generate
+2026-03-08 23:58:50,330 - ERROR - Ollama Error: model 'llama3.1:latest' not found
+2026-03-08 23:59:16,184 - ERROR - Ollama Error: model 'llama3.1:latest' not found
